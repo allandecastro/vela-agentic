@@ -67,9 +67,11 @@ the quality signal.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that
    proves it. `dotnet test` green, `vela plan` clean — paste the evidence.
 5. **Quality gate before the apply gate.** The apply gate is unreachable unless: the full
-   harness suite is **green** and covers every declared acceptance case, **and** the build has
-   **no analyzer (VELA00x) violations**. A happy-path-only test, a red test, or an analyzer
-   violation blocks the gate. The Build Report records both.
+   harness suite is **green** and covers every declared acceptance case, **and** the **authored
+   code** (your plugin + your tests) has **no analyzer (VELA00x) violations**. A happy-path-only
+   test, a red test, or an analyzer violation in authored code blocks the gate. The scaffold's
+   own demo files may carry cosmetic VELA013 — clean or remove demo files for a real project,
+   but never let a demo warning mask a real violation in your code. The Build Report records both.
 6. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
    `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
    `--auto-approve` unless the user explicitly authorized it for this run.

@@ -64,7 +64,8 @@ vela_cli: 0.15.1
 framework: 0.26.2
 packages: [Zava.Plugins.1.0.0.nupkg]
 harness: pass             # pass | fail  (must be pass to reach the gate)
-analyzers: clean          # clean | violations  (must be clean to reach the gate)
+analyzers: clean          # clean | violations  (authored code must be clean to reach the gate;
+                          # scaffold demo files' cosmetic VELA013 excluded — clean them for real)
 plan_preview: clean       # clean | changes | skipped(no-org)
 apply: pending
 ---

@@ -74,5 +74,7 @@ Announce: `Using vela-test-harness to <purpose>`.
 - The tests were seen to **fail first** (RED), then pass after implementation.
 - The runner reports **all green** — paste the summary line and name the runner used — and the
   green cases match the declared acceptance cases.
-- The build is **clean of analyzer (VELA00x) violations** (part of the quality gate).
+- The **authored code** (your plugin + your tests) is **clean of analyzer (VELA00x) violations**
+  (part of the quality gate). The scaffold's demo files may carry cosmetic VELA013 — clean or
+  remove them for a real project; don't let a demo warning hide a real one in your code.
   Without all three, the loop does not proceed to `vela plan`/`apply`.
