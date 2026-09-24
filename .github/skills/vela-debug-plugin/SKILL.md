@@ -15,19 +15,24 @@ what is actually registered, and by reproducing the fault in the harness.
 
 ## Process
 
-Announce: `Using vela-debug-plugin to <purpose>`.
+Announce: `Using vela-debug-plugin to <purpose>`. Follow a disciplined loop — reproduce →
+minimize → hypothesize → instrument → fix → regression-test — not trial and error.
 
-1. State the symptom precisely (which message/entity/stage, expected vs observed).
-2. Read the code's intended registration (the step/plugin definition and filtering attributes).
-3. Compare with the live org using `vela inspect` (and `vela plan` to see pending diffs).
-4. Check the usual suspects from `references/dataverse-gotchas.md`:
+1. **Reproduce.** State the symptom precisely (message/entity/stage, expected vs observed), then
+   write a failing harness test (`vela-test-harness`) that captures it — a live symptom becomes
+   a local, repeatable red.
+2. **Minimize.** Strip the case to the smallest input that still fails.
+3. **Hypothesize.** Read the code's intended registration (step/plugin, filtering attributes)
+   and compare with the live org via `vela inspect` (and `vela plan` for pending diffs). Check
+   the usual suspects in `references/dataverse-gotchas.md`:
    - Associate/Disassociate matched by primary entity only (won't fire),
    - filtering attribute excludes the changed attribute,
-   - a required image is missing or lacks the attribute,
+   - a required image missing or lacking the attribute,
    - custom API param name with a dot (uncallable).
-5. **Reproduce in the harness** (`vela-test-harness`): write a failing test that captures the
-   fault. This turns a live symptom into a local, repeatable red.
-6. Form a single most-likely hypothesis with evidence, then fix and prove green.
+4. **Instrument** if the cause is still unclear (`ctx.Trace(...)`, inspect images/target).
+5. **Fix** the single most-likely cause with evidence.
+6. **Regression-test.** The red test now passes; `vela inspect`/`vela plan` confirm the
+   registration matches intent.
 
 ## Rationalizations (excuse → rebuttal)
 

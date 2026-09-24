@@ -10,13 +10,28 @@ Targets both **Claude Code** and **GitHub Copilot** from a single source of trut
 
 ```
 skills/            Source of truth — portable Agent Skills (SKILL.md), used by Claude Code directly
-agents/            Source of truth — agent / persona definitions
-AGENTS.md          Source of truth — durable rules every agent follows
+  Model-invoked (auto):   using-vela, vela-plugin-authoring, vela-test-harness,
+                          vela-plan-review, writing-vela-skills, diagnosing-vela,
+                          vela-scaffold, vela-models, vela-apply, vela-debug-plugin
+  User-invoked (/cmd):    vela-grill  (and the build loop / apply as commands)
+agents/            Source of truth — vela-builder (the gated build loop)
+references/        Verbatim, grounded knowledge: cli-surface, plugin-authoring-api,
+                   harness-api, dataverse-gotchas, build-report-template
+evals/             Loop engineering — pressure scenarios + protocol (TDD for the skills)
+AGENTS.md          Source of truth — durable rules + the build loop
 
 .claude-plugin/    Claude Code distribution: plugin marketplace + plugin manifest
 .github/           GitHub Copilot distribution: skills, chat modes, instructions (GENERATED)
 scripts/           sync-copilot.mjs regenerates .github/ from the source of truth
 ```
+
+## The build loop
+
+`vela-builder` takes a user story and drives it through: Intake → Plan → **Challenge**
+(self-grill, advisory gate) → Scaffold → Model → Implement → Verify (build + harness +
+`vela plan`) → **🚧 apply gate** (human approves) → Report. It emits a **Plan artifact** at the
+front and a **Build Report** at the end (committed under `docs/vela-builds/` and used as the PR
+body). The org is only ever touched at `vela apply`, which a human runs.
 
 Edit `skills/`, `agents/`, and `AGENTS.md`. Then regenerate the Copilot surface:
 

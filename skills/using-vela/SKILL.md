@@ -13,16 +13,25 @@ A user story becomes a shipped plugin through this loop. Everything is local and
 reversible until the gate; the org is only touched at `apply`.
 
 1. **Intake** — turn the story into a concrete spec (entity, message, images, rules).
-   State your assumptions; only ask the user if something is genuinely blocking.
 2. **Plan** — list the tasks: scaffold or existing project? which models? what logic?
-3. **Scaffold** — `vela-scaffold`
-4. **Model** — `vela-models`
-5. **Implement** — `vela-plugin-authoring`
-6. **Verify** — `vela-test-harness` (build + `dotnet test` + `vela plan`)
-7. **🚧 Gate** — stop. A human runs `vela apply`.
-8. **Report** — PR with the evidence.
+3. **Challenge** — `vela-plan-review`: self-grill the plan, emit the **Plan artifact**, flag
+   assumptions. Advisory gate — continue (the user may interrupt). If only the human can
+   resolve an ambiguity, use `/vela-grill`.
+4. **Scaffold** — `vela-scaffold`
+5. **Model** — `vela-models`
+6. **Implement** — `vela-plugin-authoring`
+7. **Verify** — `vela-test-harness` (build + tests) then `vela plan` (preview, never writes).
+8. **🚧 Apply gate** — emit the **Build Report**, stop. A human runs `vela apply`.
+9. **Report** — PR with the Build Report as its body; commit the artifact in the project.
 
 If something misbehaves, switch to `vela-debug-plugin`.
+
+## Skill kinds
+
+- **Model-invoked** (auto): `using-vela`, `vela-plugin-authoring`, `vela-test-harness`,
+  `vela-plan-review`, `writing-vela-skills`, `diagnosing-vela`.
+- **User-invoked** (`/command`): `/vela-build` (the whole loop), `/vela-grill` (interview the
+  story), `/vela-apply` (gated deploy).
 
 ## Non-negotiable rules
 

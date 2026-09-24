@@ -37,6 +37,13 @@ symptom → cause → fix.
 - **You compiled against a stale framework.** Purge the `vela.plugins` / `vela.testing`
   caches under `~/.nuget` before a smoke build, or you build against an old package.
 
+## Analyzers
+
+- **VELA002** — every `RegisterStep()` chain must end with `.Handle(...)`.
+- **VELA013** — `new ColumnSet(true)` retrieves every column and is flagged. Prefer an explicit
+  `new ColumnSet("attr1", "attr2")`. (The scaffold's own demo tests use `ColumnSet(true)` and
+  trip this — cosmetic in generated demo code, but do not copy the pattern into real queries.)
+
 ## Verification discipline
 
 - Report the **observed** org/build/test state, never the intended one.

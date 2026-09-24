@@ -38,21 +38,31 @@ for the battle-tested pitfalls.
 
 ## The build loop (user story → shipped)
 
-Local and reversible up to the gate; the org is only ever touched at `apply`:
+Local and reversible up to the apply gate; the org is only ever touched at `apply`. Two gates:
+an advisory **plan gate** at the front and a blocking **apply gate** at the end.
 
 ```
-INTAKE → PLAN → SCAFFOLD → MODEL → IMPLEMENT → VERIFY ──🚧gate🚧── APPLY → REPORT
-                (init/add)  (models) (code)     (build +          (human
-                                                 dotnet test +     approves)
-                                                 vela plan)
+INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → IMPLEMENT → VERIFY ──🚧apply gate🚧── APPLY → REPORT
+                (self-grill  (advisory:  (init/add) (models) (code)     (build +   (human         (only if
+                 the plan)    flag +                                    dotnet      approves)      authorized)
+                              continue)                                 test +
+                                                                        vela plan)
 ```
+
+- **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), emit a **Plan
+  artifact**, flag assumptions, and **continue** — do not block. A human may interrupt.
+- **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.
+- Artifacts (see `references/build-report-template.md`) are committed in the target project
+  under `docs/vela-builds/<slug>.md` and reused as the PR body.
 
 ## Golden rules
 
 1. **The CLI is the contract.** Confirm flags with `vela <command> --help` before
    composing a command. Never invent a flag.
-2. **Check the version first.** Run `vela version`. If a skill needs a newer CLI than is
-   installed, stop and tell the user to `vela update` rather than working around it.
+2. **Check the version.** Run `vela version`. Each skill states a minimum as a real floor.
+   If the installed CLI is at or above it, proceed. Only **stop** if a *named* feature a skill
+   depends on is genuinely missing — then tell the user to `vela update`. Do not halt merely
+   because the patch version differs (e.g. 0.15.1 vs 0.15.2 is fine).
 3. **Announce the skill.** When you start a skill, say `Using <skill> to <purpose>` so the
    run is traceable.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that

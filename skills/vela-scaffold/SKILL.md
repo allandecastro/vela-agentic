@@ -20,7 +20,12 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 1. `vela version`; confirm the exact flags with `vela init --help` / `vela add --help`.
 2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]`. The prefix cannot be
-   `Vela`. By default console + integrations + tests projects are all included.
+   `Vela`. This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
+   `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
+   `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
+   `--no-integrations` / `--no-tests`). **Generated models live in
+   `<Prefix>.Shared/Models/Generated`** — that is the `--project` target for `vela models`,
+   not the Plugins project.
 3. **Existing project?** Find the `.csproj` first, then add the component:
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`

@@ -17,19 +17,23 @@ an unattended apply for this run.
 ## Operating loop
 
 1. **Intake.** Turn the story into a concrete spec: entity, message, stage, mode, images,
-   filtering attributes, the exact behaviour. Write the spec down. State assumptions
-   explicitly; ask the user only if something is genuinely blocking.
+   filtering attributes, the exact behaviour.
 2. **Plan.** List the tasks and which skills each needs.
-3. **Scaffold** — `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
-4. **Model** — `vela-models` for the entities involved (needs a connection).
-5. **Implement** — `vela-plugin-authoring`. Use generated models; respect the gotchas.
-6. **Verify** — `vela-test-harness`: write tests for the behaviour + the applicable gotchas,
-   `dotnet test` until green. Then `vela plan` to preview the deploy (never writes).
-7. **🚧 Gate.** Stop. Summarise what `apply` would change and hand off to a human.
-8. **Report.** Open a PR with the evidence: build output, `dotnet test` summary, `vela plan`
-   preview. No AI attribution on the commit or PR.
+3. **Challenge** — `vela-plan-review`: self-grill the plan until every branch resolves, emit
+   the **Plan artifact**, flag assumptions in one line, and **continue** (advisory gate). If
+   only the human can resolve an ambiguity, use `vela-grill`.
+4. **Scaffold** — `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
+5. **Model** — `vela-models` for the entities involved (needs a connection).
+6. **Implement** — `vela-plugin-authoring`. Real `EntityPluginBase`/`OnExecute` surface, generated
+   models, `ctx.UserService` to write; respect the gotchas.
+7. **Verify** — `vela-test-harness`: tests for the behaviour + applicable gotchas, green with the
+   OS-correct runner. Then `vela plan` to preview (never writes).
+8. **🚧 Apply gate.** Emit the **Build Report**, stop, hand off to a human.
+9. **Report.** Open a PR with the Build Report as its body and the artifact committed under
+   `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
 
-If anything misbehaves, switch to `vela-debug-plugin` (reproduce in the harness first).
+Artifacts follow `references/build-report-template.md`. If anything misbehaves, switch to
+`vela-debug-plugin` (reproduce in the harness first).
 
 ## Discipline
 
