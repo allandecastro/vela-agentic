@@ -77,6 +77,25 @@ the quality signal.
    `--auto-approve` unless the user explicitly authorized it for this run.
 7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
+## Environment (local, fleet, cloud)
+
+The stop-before-apply boundary holds identically whether run by a human, a fleet worker, or a
+cloud agent. Prerequisites for a non-interactive or remote environment:
+
+- **The pack must be reachable.** Locally, point at this repo. On another machine or in the
+  cloud, install it as a plugin marketplace (**requires the repo to be pushed**) or make sure
+  the workspace carries `skills/` + `agents/` + `AGENTS.md` + `references/`.
+- **Toolchain present.** Install the `vela` global tool (`dotnet tool install --global Vela.Cli`)
+  and a matching `dotnet` SDK. If missing, stop and say so — do not improvise an alternative.
+- **Non-interactive auth (no browser).** `-i`/`--interactive` needs a screen and won't work
+  headless. Use `DATAVERSE_CONNECTION_STRING`, or `--url` + `--tenant-id` + `--client-id` with
+  the secret via `DATAVERSE_CLIENT_SECRET` / `--client-secret-stdin`, or `DefaultAzureCredential`
+  (managed identity / `az login`). See `references/cli-surface.md`. Never echo a secret to logs.
+- **Test runner by OS.** net462 tests: Windows can `dotnet test`; Linux/macOS need Mono +
+  xunit console `-parallel none` (see `references/harness-api.md`).
+- **Never auto-`apply`.** Even unattended, stop at the gate; only pass `--auto-approve` if the
+  user explicitly authorized an unattended apply for that run.
+
 ## House rules
 
 - Never add an AI co-author trailer or AI attribution to commits or PRs.
