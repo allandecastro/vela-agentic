@@ -1,39 +1,50 @@
 ---
 name: vela-scaffold
-description: Scaffold a new Vela plugin project or add a plugin message/component to an existing one. Use when the user wants to start a Vela project, add a plugin step, or generate boilerplate that compiles and applies unedited.
+description: Use when you need to create a new Vela solution (vela init) or add a component to an existing project (vela add plugin/customapi/service/test/step). Local only, never touches Dataverse. Generated code must compile and apply unedited.
 ---
 
 # Scaffold Vela projects and components
 
-Drive the `vela` CLI to create a new plugin project or add components to an existing
-one. Generated code must compile and apply **without hand edits** — that is the
-contract of Vela's scaffolding.
-
-## Minimum CLI version
-
-`0.15.0` — run `vela --version` and stop if older.
+Drive `vela init` and `vela add` to create a solution or add components. These commands are
+**local only** and never connect to Dataverse. Generated code must compile and apply
+**without hand edits** — that is the contract.
 
 ## When to use
 
-- The user wants to start a new Vela plugin project.
-- The user wants to add a plugin message, custom API, or ribbon script to an existing
-  Vela project.
+- Start a new Vela solution.
+- Add a plugin, step, custom API, service, or test to an existing Vela project.
 
-## Steps
+## Process
 
-1. Confirm the CLI is present and new enough: `vela --version`.
-2. Discover the exact subcommands and flags — **do not guess**:
-   `vela --help`, then `vela <command> --help` for the scaffold/add command shown.
-3. Determine the target: a new project (empty directory) or an existing Vela project
-   (look for the project's `.csproj` and Vela packages first).
-4. Run the scaffold/add command with the flags confirmed in step 2.
-5. Build to prove the generated code compiles. Report the exact build output.
-6. Summarize what was generated and the follow-up commands (for example applying the
-   change to an org via the `vela-apply` skill).
+Announce: `Using vela-scaffold to <purpose>`.
 
-## Guardrails
+1. `vela version`; confirm the exact flags with `vela init --help` / `vela add --help`.
+2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]`. The prefix cannot be
+   `Vela`. By default console + integrations + tests projects are all included.
+3. **Existing project?** Find the `.csproj` first, then add the component:
+   - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
+   - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
+   - Custom API: `vela add customapi <Name> [--bound|--global] [--function|--action]`
+   - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
+4. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+5. Summarise what was generated and the next skill in the loop.
 
-- Never hand-edit generated files to make them compile; if they do not compile, that is
-  a bug to report, not to patch around.
-- Adding a typed plugin message touches several files that must stay in sync; rely on
-  the CLI's `add` command to keep them consistent rather than editing by hand.
+## Rationalizations (excuse → rebuttal)
+
+- "I'll just edit the generated file to make it compile." → If generated code doesn't
+  compile, that's a bug to report, not to patch. Re-run the command with correct inputs.
+- "I'll create the plugin file by hand, it's just a class." → A typed message touches
+  several files that must stay in sync (see gotchas). Use `vela add`.
+- "`--message` doesn't matter, I'll set it in code." → It drives the registration and the
+  filtering-attribute requirement. Pass it.
+
+## Red flags
+
+- You are about to hand-edit a generated file.
+- Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
+- You guessed a flag instead of reading `--help`.
+
+## Verification
+
+- `dotnet build` succeeds — paste the output.
+- The generated component is present where the CLI reported it, unedited.

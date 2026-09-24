@@ -1,38 +1,52 @@
 ---
 name: vela-models
-description: Generate strongly-typed models from a Dataverse environment with the Vela CLI — early-bound tables, form models, option sets, in C# or TypeScript. Use when the user needs typed models, table interfaces, or form models generated or refreshed.
+description: Use when you need strongly-typed models generated from a Dataverse environment — early-bound C# tables, or TypeScript form/table models — or to verify generated models still match the org. Connects to Dataverse to read metadata.
 ---
 
 # Generate typed models
 
-Drive `vela models` to generate early-bound tables, form models, and option sets from a
-Dataverse environment, in C# or TypeScript.
-
-## Minimum CLI version
-
-`0.15.0` — run `vela --version` and stop if older.
+Drive `vela models` to generate early-bound C# models or TypeScript form/table models from
+a Dataverse environment, or to verify drift. This command **connects to Dataverse** to read
+metadata, so it needs a resolved connection.
 
 ## When to use
 
-- The user wants typed table/record models or form models generated or refreshed.
-- The user wants to verify generated models still match the live environment.
+- You need typed models for the entities a plugin touches.
+- You want to check whether committed models still match the live org (`--verify`).
 
-## Steps
+## Process
 
-1. `vela --version`, then `vela models --help` to confirm the exact flags available
-   (for example table vs form generation, and the language selector). Do not assume
-   flag names — read them from `--help`.
-2. Confirm the target environment and output location with the user before generating.
-3. Run the generation command. For large environments, pass the CLI's timeout option so
-   long reads do not abort midway.
-4. If the user only wants to check drift rather than regenerate, use the CLI's verify
-   mode instead of overwriting files.
-5. Report what was written and whether it is consistent with the live environment.
+Announce: `Using vela-models to <purpose>`.
 
-## Guardrails
+1. `vela version`; `vela models --help` to confirm flags.
+2. **Choose a scope — it is required.** One of `--solution <name>`, `--entities a,b`,
+   `--custom-apis`, `--messages`, `--roles`, `--solution-roles`. The command refuses to
+   generate every table.
+3. Resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
+   or connection string / client secret for automation.
+4. Generate:
+   - C# early-bound (default): `vela models --entities account,contact -i`
+   - TypeScript: add `--forms` and/or `--tables`.
+   - Large orgs: pass `--timeout <minutes>`.
+5. **Verify mode** (no write): `vela models --verify ...` — exit `5` means drift.
+6. Report what was written (or the drift) and where.
 
-- Generated model files are the source of truth — regenerate, do not hand-edit.
-- Never name a committed file `*.generated.cs`; that pattern is gitignored and will
-  compile locally but be missing on CI. Follow the CLI's own output naming.
-- TypeScript and C# generators share option-set output; regenerate the whole set
-  together rather than a single file.
+## Rationalizations (excuse → rebuttal)
+
+- "I'll just hand-write the model class." → Generated models are the source of truth and
+  stay in sync with the org; hand-written ones rot. Generate.
+- "No scope needed, generate everything." → The command refuses that on purpose; pick a
+  real scope.
+- "Drift is probably fine." → `--verify` exited 5 for a reason. Regenerate or explain.
+
+## Red flags
+
+- A committed model file named `*.generated.cs` (gitignored — will be missing on CI).
+- You are about to combine `--verify` with `--forms`/`--tables` (not allowed).
+- Editing a generated model instead of regenerating.
+
+## Verification
+
+- The command exits `0` and the files exist where it reported.
+- For drift checks, `vela models --verify` exits `0` (no drift). A `5` must be resolved,
+  a `6` is a connection failure to surface.
