@@ -23,6 +23,9 @@ assumptions:
   - "Description is empty means null or whitespace."
   - "Standard Account.Description; no custom column."
 open_questions: []
+acceptance_cases:
+  - "empty Description -> defaulted to 'Created via Vela plugin'"
+  - "non-empty Description -> left untouched"
 skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-test-harness]
 ---
 
@@ -34,6 +37,9 @@ skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, ve
 
 ## Grilling (self-challenge) — every branch resolved
 <the vela-plan-review questions and their answers; unresolved ones become open_questions>
+
+## Acceptance cases (the RED test list)
+<one line per test: primary behaviour, each edge, each applicable gotcha>
 
 ## Proposed approach
 <scaffold plan, models needed, handler outline, test cases including gotcha coverage>
@@ -57,7 +63,8 @@ message: Create
 vela_cli: 0.15.1
 framework: 0.26.2
 packages: [Zava.Plugins.1.0.0.nupkg]
-harness: pass             # pass | fail
+harness: pass             # pass | fail  (must be pass to reach the gate)
+analyzers: clean          # clean | violations  (must be clean to reach the gate)
 plan_preview: clean       # clean | changes | skipped(no-org)
 apply: pending
 ---
@@ -71,9 +78,15 @@ apply: pending
 - Handler summary (what OnExecute does) + gotchas addressed
 
 ## Evidence
-- `dotnet build`: <summary line, 0 errors>
+- `dotnet build`: <summary line, 0 errors, and 0 analyzer VELA00x violations>
+- Acceptance cases (RED→green):
+  - [x] empty Description -> defaulted
+  - [x] non-empty Description -> left untouched
 - Harness: <test runner summary, e.g. "Total: 11, Failed: 0">  (state runner: dotnet test / Mono)
 - `vela plan`: <the diff apply WOULD make, or "skipped — no org">
+
+Quality gate: harness green over all declared cases **and** analyzers clean — both required
+before the apply gate.
 
 ## Gate — human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`

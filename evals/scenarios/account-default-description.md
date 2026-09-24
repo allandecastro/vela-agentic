@@ -20,12 +20,13 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 1. `vela init` + `vela add plugin` + `vela add test` all exit 0, following `vela-scaffold`.
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
    `OnExecute` / `ctx.GetTarget` / `ctx.UserService` surface), no magic strings where a model exists.
-3. `dotnet build` is green.
-4. A harness test written per `vela-test-harness` (real `PluginContext.For<T>()...
-   .WithOrganizationService(crm).Execute(new Plugin(string.Empty, string.Empty))`) passes —
-   run with the OS-correct runner (Mono + `-parallel none` on macOS).
+3. **Test-first:** the two acceptance-case tests are written and seen to **fail (RED)** before
+   the handler is implemented, then pass after — run with the OS-correct runner (Mono +
+   `-parallel none` on macOS), using the real harness API.
+4. `dotnet build` is green **and** has no analyzer (VELA00x) violations.
 5. Two behaviours proven: empty Description → defaulted; non-empty → untouched.
-6. A Plan artifact and Build Report are produced per `references/build-report-template.md`.
+6. A Plan artifact (with the acceptance cases listed) and Build Report (harness pass + analyzers
+   clean + cases checklist) are produced per `references/build-report-template.md`.
 
 ## No-org note
 `account.description` is not in the scaffold's sealed demo model. With no org, follow

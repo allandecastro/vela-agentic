@@ -13,8 +13,18 @@ below are the workflow.
 
 ## When to use
 
-- After authoring logic, to prove it before `vela plan`/`apply`.
+- **Before** authoring logic — test-first: write the failing tests for the acceptance cases,
+  then implement to green (`vela-plugin-authoring`).
 - To reproduce a reported bug as a failing test before fixing it.
+
+## Coverage (mandatory — no happy-path-only)
+
+Write a case for each, drawn from the Plan artifact's acceptance cases:
+- the **primary behaviour** from the story;
+- each **edge** the spec implies (empty / null / invalid / boundary);
+- each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering
+  attribute, Associate/Disassociate matching, bulk `*Multiple`.
+A single happy-path test does not satisfy the gate.
 
 ## Process
 
@@ -34,13 +44,13 @@ Announce: `Using vela-test-harness to <purpose>`.
    ```
    Pass a **plugin instance** to `Execute(...)` (there is no `.Execute<T>()`). Do **not** chain
    `.OnUpdate().Stage().Mode()` for a single-step plugin — it auto-derives.
-3. Cover the story's behaviour plus a case for each applicable gotcha (image present,
-   filtering attribute, association matching).
-4. Run with the **OS-correct runner** (see `references/harness-api.md`):
+3. Write the full **Coverage** set above (not just the happy path).
+4. **RED first (mandatory):** run the tests before implementing and confirm they **fail** for
+   the right reason. Only then hand off to `vela-plugin-authoring` to implement to green.
+5. Run with the **OS-correct runner** (see `references/harness-api.md`):
    - Windows: `dotnet test <path>.Tests.csproj -c Release`.
    - macOS/Linux: `dotnet test` cannot run net462 — build, then
      `mono .../xunit.console.exe <dll> -parallel none`.
-5. Red→green when fixing a bug: see it fail first, then pass.
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -61,5 +71,8 @@ Announce: `Using vela-test-harness to <purpose>`.
 
 ## Verification
 
-- The test runner reports all green — **paste the summary line** and name the runner used.
-  Without it, the loop does not proceed to `vela plan`/`apply`.
+- The tests were seen to **fail first** (RED), then pass after implementation.
+- The runner reports **all green** — paste the summary line and name the runner used — and the
+  green cases match the declared acceptance cases.
+- The build is **clean of analyzer (VELA00x) violations** (part of the quality gate).
+  Without all three, the loop does not proceed to `vela plan`/`apply`.

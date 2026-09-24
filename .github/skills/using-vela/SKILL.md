@@ -19,10 +19,13 @@ reversible until the gate; the org is only touched at `apply`.
    resolve an ambiguity, use `/vela-grill`.
 4. **Scaffold** — `vela-scaffold`
 5. **Model** — `vela-models`
-6. **Implement** — `vela-plugin-authoring`
-7. **Verify** — `vela-test-harness` (build + tests) then `vela plan` (preview, never writes).
-8. **🚧 Apply gate** — emit the **Build Report**, stop. A human runs `vela apply`.
-9. **Report** — PR with the Build Report as its body; commit the artifact in the project.
+6. **Test (RED)** — `vela-test-harness`: write the failing harness tests for the declared
+   acceptance cases, and watch them fail. Test-first is mandatory.
+7. **Implement** — `vela-plugin-authoring`: write logic until the tests go **green**.
+8. **Verify** — full harness suite green **and** build clean of analyzer (VELA00x) violations,
+   then `vela plan` (preview, never writes).
+9. **🚧 Apply gate** — emit the **Build Report**, stop. A human runs `vela apply`.
+10. **Report** — PR with the Build Report as its body; commit the artifact in the project.
 
 If something misbehaves, switch to `vela-debug-plugin`.
 

@@ -13,7 +13,9 @@ the notes below are the workflow.
 
 ## When to use
 
-- The scaffold and models exist and you now implement the behaviour from the spec.
+- The scaffold, models, and the **failing (RED) harness tests** exist, and you now implement the
+  behaviour to make those tests **green**. Do not start here before the tests are written and
+  seen to fail (`vela-test-harness`).
 
 ## Process
 

@@ -30,8 +30,10 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Custom API:** Any parameter name with a dot? (Uncallable on a real org.)
    - **Ambiguity:** Is "empty", "changed", "valid" defined? What are the edge cases?
+   - **Acceptance cases:** Turn the definition of done into a concrete list of test cases —
+     the primary behaviour, each edge, and each applicable gotcha. These become the RED tests.
 3. **Emit the Plan artifact** (`references/build-report-template.md`): spec, the grilling Q&A,
-   assumptions, open questions, proposed approach, risks.
+   the **acceptance cases** (the test list), assumptions, open questions, proposed approach, risks.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold`.
 
 ## Rationalizations (excuse → rebuttal)

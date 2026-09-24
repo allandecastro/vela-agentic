@@ -42,12 +42,17 @@ Local and reversible up to the apply gate; the org is only ever touched at `appl
 an advisory **plan gate** at the front and a blocking **apply gate** at the end.
 
 ```
-INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → IMPLEMENT → VERIFY ──🚧apply gate🚧── APPLY → REPORT
-                (self-grill  (advisory:  (init/add) (models) (code)     (build +   (human         (only if
-                 the plan)    flag +                                    dotnet      approves)      authorized)
-                              continue)                                 test +
-                                                                        vela plan)
+INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY ──🚧apply gate🚧── APPLY → REPORT
+                (self-grill  (advisory:  (init/add) (models) (write     (code to   (full suite  (human       (only if
+                 declare      flag +                          FAILING    green)     green +      approves)    authorized)
+                 acceptance   continue)                       harness               analyzers
+                 cases)                                       tests)                clean + plan)
 ```
+
+**Test-first is mandatory.** After MODEL, write the harness tests for the declared acceptance
+cases and watch them **fail (RED)** before writing plugin logic; then implement to **green**.
+Tests are not optional and not written after the fact — they are the acceptance criteria and
+the quality signal.
 
 - **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), emit a **Plan
   artifact**, flag assumptions, and **continue** — do not block. A human may interrupt.
@@ -67,10 +72,14 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → IMPLEMENT
    run is traceable.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that
    proves it. `dotnet test` green, `vela plan` clean — paste the evidence.
-5. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
+5. **Quality gate before the apply gate.** The apply gate is unreachable unless: the full
+   harness suite is **green** and covers every declared acceptance case, **and** the build has
+   **no analyzer (VELA00x) violations**. A happy-path-only test, a red test, or an analyzer
+   violation blocks the gate. The Build Report records both.
+6. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
    `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
    `--auto-approve` unless the user explicitly authorized it for this run.
-6. **Prefer generated code.** Regenerate models; never hand-edit generated files.
+7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## House rules
 

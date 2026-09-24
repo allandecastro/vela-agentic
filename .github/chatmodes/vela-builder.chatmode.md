@@ -24,13 +24,16 @@ an unattended apply for this run.
    only the human can resolve an ambiguity, use `vela-grill`.
 4. **Scaffold** — `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
 5. **Model** — `vela-models` for the entities involved (needs a connection).
-6. **Implement** — `vela-plugin-authoring`. Real `EntityPluginBase`/`OnExecute` surface, generated
-   models, `ctx.UserService` to write; respect the gotchas.
-7. **Verify** — `vela-test-harness`: tests for the behaviour + applicable gotchas, green with the
-   OS-correct runner. Then `vela plan` to preview (never writes).
-8. **🚧 Apply gate.** Emit the **Build Report**, stop, hand off to a human.
-9. **Report.** Open a PR with the Build Report as its body and the artifact committed under
-   `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
+6. **Test (RED)** — `vela-test-harness`: write the failing harness tests for the acceptance
+   cases declared in the Plan artifact, run them, and confirm they **fail** first. Mandatory.
+7. **Implement** — `vela-plugin-authoring`: real `EntityPluginBase`/`OnExecute` surface, generated
+   models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
+8. **Verify** — full harness suite green (OS-correct runner) **and** build clean of analyzer
+   (VELA00x) violations. Then `vela plan` to preview (never writes).
+9. **🚧 Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + cases checklist),
+   stop, hand off to a human.
+10. **Report.** Open a PR with the Build Report as its body and the artifact committed under
+    `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
 
 Artifacts follow `references/build-report-template.md`. If anything misbehaves, switch to
 `vela-debug-plugin` (reproduce in the harness first).
