@@ -27,7 +27,14 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 5. Two behaviours proven: empty Description → defaulted; non-empty → untouched.
 6. A Plan artifact and Build Report are produced per `references/build-report-template.md`.
 
+## No-org note
+`account.description` is not in the scaffold's sealed demo model. With no org, follow
+`vela-plugin-authoring`'s documented no-org exception (a labelled stand-in property); a real run
+regenerates via `vela-models`. Keep the scaffold's `FilterOn(e => e.Name)` — a Create step
+requires a filter at build even though Create ignores it at runtime.
+
 ## Known findings closed
-Iteration 1 blockers (harness API, macOS test runner, authoring surface) must NOT recur: an
-agent following the skills should reach a green harness run without having to discover the real
-API or the Mono runner on its own.
+- Iteration 1 blockers (harness API, macOS Mono runner, `EntityPluginBase`/`OnExecute` authoring
+  surface) must NOT recur — the skills give the correct path without rediscovery.
+- Iteration 2 (F1) mandatory Create/Update `FilterOn`, (F2) no-org non-demo-attribute path, (F3)
+  `target.Id` vs `ctx.PrimaryEntityId` in the harness — all now documented in the skills/references.

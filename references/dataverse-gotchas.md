@@ -11,6 +11,10 @@ symptom → cause → fix.
 - **Create/Update step never triggers on the change you expect.** A filtering attribute
   excludes the attribute that actually changed. Check the filtering attributes against the
   attribute being written.
+- **Create/Update step throws at build: "must declare at least one filtering attribute".**
+  Every Create/Update step requires a `FilterOn(...)`. On Create the filter is ignored at
+  runtime but still mandatory at build — default it to the primary column and never drop it,
+  even when the step should fire on every create. On Update the filter actually gates the trigger.
 - **Image is empty at runtime.** The image was not registered for that message/stage, or the
   requested attributes were not included. Verify the image registration, not just the code.
 

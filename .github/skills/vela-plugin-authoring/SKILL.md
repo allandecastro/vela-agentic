@@ -21,8 +21,12 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 
 1. Re-read the spec: message, stage, mode; which attributes are read/written.
 2. **Model first for any non-demo attribute.** The scaffold's generated model only covers
-   demo columns. If the story touches any other attribute, run `vela-models` first — do not
-   fall back to a magic string. MODEL precedes IMPLEMENT for this reason.
+   demo columns (and is `sealed` — no partial extension). If the story touches any other
+   attribute, run `vela-models` first — do not fall back to a magic string. MODEL precedes
+   IMPLEMENT for this reason. **No-org exception (evals/rehearsals only):** when `vela-models`
+   genuinely cannot run, hand-add just the needed typed property with an explicit
+   `// STAND-IN for vela-models (no org)` comment; this is a documented rehearsal shim, never a
+   pattern for a real run (which has an org and regenerates the model properly).
 3. Open the generated `OnExecute(I<Message>PostContext<Entity> ctx)` method (the handler is
    `OnExecute`, not `Handle<Message>`). Do not create a parallel class by hand.
 4. Read with the typed helpers: `ctx.GetTarget<Entity>()`, `ctx.GetPreImage<Entity>()`,

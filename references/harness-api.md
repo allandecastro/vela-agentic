@@ -42,6 +42,9 @@ Critical, easy-to-get-wrong facts:
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.
 - Assert by reading records back from `crm`, not by counting calls.
+- `ctx.PrimaryEntityId` in the harness is a random id, **not** `target.Id`. For a Create
+  PostOperation, the new record's id is `target.Id` (set it, e.g. `new Account { Id = Guid.NewGuid() }`);
+  use `target.Id` for write-backs, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".
 
 Builder entry points (`Vela.Testing.PluginContext`): `PluginContext.For<TEntity>()` for entity
 plugins; `PluginContext.ForMessage("<uniquename>").Build()` for custom APIs / message-only,

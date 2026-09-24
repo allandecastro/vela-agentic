@@ -21,7 +21,9 @@ Announce: `Using vela-plan-review to grill the plan`.
 2. **Grill it** — answer each question; an unanswered one becomes an assumption or open question:
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Is the stage
      right (PostOperation to see committed values; Pre to change the write)? Sync or Async?
-   - **Trigger:** Which filtering attribute actually gates this? Will it fire only when intended?
+   - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
+     is **mandatory** (build throws without one); on Create it's ignored at runtime, so keep the
+     primary column and never drop it — even for a step that must fire on every create.
    - **Images:** Do you need prior values (pre-image) or final values (post-image)? Registered?
    - **Association:** If it's Associate/Disassociate, are you matching the message regardless of
      primary entity? (Matching by entity alone never fires — see `references/dataverse-gotchas.md`.)
