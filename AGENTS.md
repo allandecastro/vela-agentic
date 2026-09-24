@@ -1,0 +1,42 @@
+# Vela agent guide
+
+Durable rules for any AI agent (Claude Code, GitHub Copilot, or other) that drives
+**Vela** through its command-line interface. This file is the shared source of truth;
+tool-specific surfaces (`.github/copilot-instructions.md`, chat modes) are generated
+from it by `scripts/sync-copilot.mjs`.
+
+## What Vela is
+
+Vela is a .NET framework and CLI for building and shipping Dataverse plugins. The CLI
+is the stable, versioned contract this agentic layer targets. You automate Vela by
+composing `vela` commands, never by reaching around the CLI into internal APIs.
+
+## Golden rules
+
+1. **The CLI is the contract.** Discover capabilities and exact flags with
+   `vela --help` and `vela <command> --help` before composing a command. Never guess
+   a flag; if `--help` does not list it, it does not exist for the installed version.
+2. **Check the version first.** Run `vela --version`. Each skill declares a minimum
+   CLI version; if the installed CLI is older, stop and tell the user to upgrade
+   rather than working around a missing feature.
+3. **Read before you write.** Inspect the current project, generated files, and target
+   environment before running any command that mutates a Dataverse org.
+4. **Confirm mutations.** Commands that write to a Dataverse org (apply, register,
+   deploy) are outward-facing. Summarize what will change and confirm before running,
+   unless the user has explicitly said to proceed.
+5. **Prefer generated code.** Vela's generators (models, forms, tables) are the source
+   of truth. Regenerate rather than hand-editing generated output.
+6. **Report faithfully.** If a command fails, surface its exact output. Do not claim a
+   step succeeded without seeing the CLI confirm it.
+
+## Environment expectations
+
+- The `vela` CLI is on `PATH` (dotnet global tool). If it is missing, stop and tell the
+  user how to install it rather than attempting an alternative.
+- Dataverse authentication is handled by the CLI's own token cache. Do not ask the user
+  to paste secrets; direct them to the CLI's auth command.
+
+## House rules
+
+- Never add an AI co-author trailer or AI attribution to commits or PRs.
+- Keep changes reviewable: one logical change per commit.

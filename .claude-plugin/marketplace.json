@@ -1,0 +1,17 @@
+{
+  "name": "vela-agentic",
+  "owner": {
+    "name": "Allan De Castro"
+  },
+  "metadata": {
+    "description": "Agentic layer for Vela: skills and agents that drive the Vela CLI.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "vela",
+      "source": "./",
+      "description": "Skills and agents to scaffold, model, apply, and debug Vela plugins through the Vela CLI."
+    }
+  ]
+}
