@@ -92,9 +92,6 @@ async function genHooks() {
       preToolUse: [
         { type: "command", matcher: "bash", bash: "./hooks/bin/guard.sh cp", timeoutSec: 10 },
       ],
-      postToolUse: [
-        { type: "command", matcher: "bash", bash: "./hooks/bin/trace.sh cp", timeoutSec: 10 },
-      ],
     },
   };
   const dst = path.join(root, ".github", "hooks", "vela.json");

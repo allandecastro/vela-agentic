@@ -87,10 +87,9 @@ the quality signal.
    violation in your code. The Build Report records all three.
 6. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
    `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
-   `--auto-approve` unless the user explicitly authorized it for this run. An **optional hook
-   layer** (`hooks/`, dual-target Claude Code + Copilot) enforces this deterministically: it
-   **denies** `vela apply` unless `VELA_APPLY_APPROVED=1` is set, and logs every command to a run
-   trace. The rule holds whether or not the hooks are installed.
+   `--auto-approve` unless the user explicitly authorized it for this run. An **optional hook**
+   (`hooks/`, dual-target Claude Code + Copilot) can enforce this deterministically — it **denies**
+   `vela apply` unless `VELA_APPLY_APPROVED=1`. The rule holds whether or not the hook is installed.
 7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)

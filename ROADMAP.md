@@ -30,8 +30,7 @@ independent of the framework/CLI NuGet releases.
       registration legality (`references/registration-rules.md`)
 - [x] Trigger-only skill descriptions + claim->proof evidence table
 - [x] Observability: machine-readable Run trace in the Build Report
-- [x] Dual-target enforcement hooks (Claude Code + Copilot): deny `vela apply` without approval,
-      auto-log the run trace
+- [x] Optional dual-target guard hook (Claude Code + Copilot): deny `vela apply` without approval
 - [x] CI: pack lint (frontmatter, references) + `.github/` sync check
 - [x] Agent: vela-builder (Intake→…→review→apply gate)
 
