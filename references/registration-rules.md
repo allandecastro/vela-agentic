@@ -26,6 +26,20 @@ it is usually an illegal registration, not a framework bug.
 - Create's FilterOn is a registration requirement but ignored at runtime — default it to the
   primary column, never drop it (see `dataverse-gotchas.md`).
 
+## Target solution & publisher (prerequisite — decide in the Canvas)
+
+Everything must land in an **unmanaged solution** tied to a **publisher** (its customization
+prefix), or components fall into the org's default solution.
+
+- `vela apply --solution <uniquename>` **tags every component** (assembly, steps, images, custom
+  APIs) into that solution. **Always pass `--solution`.**
+- **Vela does NOT create the solution or the publisher** — they must already exist in the org
+  (created by a maker / `pac solution init` / Power Apps). A non-existent `--solution` is rejected.
+- The scaffold **`--prefix` must equal the target solution's publisher customization prefix** — or
+  custom-API / component unique names (`prefix_...`) are rejected by `vela apply --solution`.
+- So the Canvas must record the **target solution unique name** and the **publisher prefix**, and
+  confirm the solution exists before apply.
+
 ## Judgment calls (NOT enforced — decide these in `vela-plan-review`, record in the Plan artifact)
 
 ### Sync vs Async

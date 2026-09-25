@@ -20,7 +20,10 @@ Announce: `Using vela-apply to <purpose>`.
 2. Build the package (`dotnet pack` as the project defines) and resolve the connection
    (see `references/cli-surface.md`).
 3. **Preview — always:** `vela plan -p <pkg>.nupkg --solution <uniquename> -i`. Read the
-   previewed changes. `plan` never writes.
+   previewed changes. `plan` never writes. **Always pass `--solution`** (the Canvas's target
+   solution): every component is tagged into it. The solution + its publisher must already exist
+   (Vela does not create them); without `--solution`, components fall into the default solution.
+   The scaffold `--prefix` must match that solution's publisher prefix.
 4. Summarise exactly what `apply` would change and present it to the user.
 5. **🚧 Stop here by default.** Do not run `apply`. Let the human run it, or wait for an
    explicit "go ahead and apply" for this run.

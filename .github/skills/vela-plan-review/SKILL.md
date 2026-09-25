@@ -29,6 +29,10 @@ Announce: `Using vela-plan-review to grill the plan`.
      never duplicate; never hand-create a class.
    - **Structure — service?** Keep the handler thin (SRP). Real/reusable logic → a service
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
+   - **Structure — target solution & publisher:** which **unmanaged solution** (unique name) do
+     components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
+     it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas
+     (see `references/registration-rules.md`).
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (registration throws without one); on Create it's ignored at runtime, so keep
      the primary column and never drop it.

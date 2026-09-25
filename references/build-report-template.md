@@ -32,6 +32,8 @@ filtering_attributes: [name]
 images: []
 reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
+solution: <uniquename>    # target unmanaged solution (must already exist in the org)
+publisher_prefix: <pfx>   # must equal the solution publisher's prefix AND the scaffold --prefix
 acceptance_cases:
   - "empty Description -> defaulted to 'Created via Vela plugin'"
   - "whitespace Description -> defaulted"

@@ -20,7 +20,10 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 1. `vela version`; confirm the exact flags with `vela init --help` / `vela add --help`.
 2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]`. The prefix cannot be
-   `Vela`. This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
+   `Vela`. **The `--prefix` must match the target Dataverse solution's publisher customization
+   prefix** (see `references/registration-rules.md`) — otherwise `vela apply --solution` rejects
+   the unique names later. The target solution + publisher must already exist in the org (Vela
+   does not create them). This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
    `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
    `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
    `--no-integrations` / `--no-tests`). **Generated models live in
