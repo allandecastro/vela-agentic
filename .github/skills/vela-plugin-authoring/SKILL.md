@@ -28,8 +28,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
    attribute, run `vela-models` first — do not fall back to a magic string. MODEL precedes
    IMPLEMENT for this reason. **No-org exception (evals/rehearsals only):** when `vela-models`
    genuinely cannot run, hand-add just the needed typed property with an explicit
-   `// STAND-IN for vela-models (no org)` comment; this is a documented rehearsal shim, never a
-   pattern for a real run (which has an org and regenerates the model properly).
+   `// STAND-IN for vela-models (no org)` comment. Because the generated model is `sealed` (no
+   partial extension), this **does** mean editing the generated model file in place — that is the
+   **one sanctioned exception** to "never hand-edit generated files", and only for a no-org
+   rehearsal. On a real run there is an org: regenerate with `vela-models` instead.
 3. Open the generated `OnExecute(I<Message>PostContext<Entity> ctx)` method (the handler is
    `OnExecute`, not `Handle<Message>`). Do not create a parallel class by hand.
 4. Read with the typed helpers: `ctx.GetTarget<Entity>()`, `ctx.GetPreImage<Entity>()`,

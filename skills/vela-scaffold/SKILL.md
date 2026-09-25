@@ -37,8 +37,12 @@ Announce: `Using vela-scaffold to <purpose>`.
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--bound|--global] [--function|--action]`
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-5. **Build** to prove it compiles: `dotnet build`. Report the exact output.
-6. Summarise what was generated and the next skill in the loop.
+5. **Fix the `FilterOn` placeholder before building.** `vela add plugin`/`add step` may emit a
+   placeholder `FilterOn(e => e.Id /* TODO: choose the attributes */)` or echo the casing you
+   passed (`--filtering-attributes name` → `e => e.name`, which won't compile). Replace it with the
+   real typed column (`e => e.Name`) — `e.Id` is the key, never a valid filtering attribute.
+6. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+7. Summarise what was generated and the next skill in the loop.
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -54,6 +58,8 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You are about to hand-edit a generated file.
 - Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
 - You guessed a flag instead of reading `--help`.
+- You left a generated `FilterOn(e => e.Id)` placeholder or an echoed lowercase attribute
+  (`e => e.name`) in place — it ships a wrong or non-compiling registration.
 
 ## Verification
 

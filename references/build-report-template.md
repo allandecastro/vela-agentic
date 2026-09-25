@@ -21,6 +21,10 @@ slug: account-default-description
 date: 2026-09-25
 status: proposed          # proposed | approved | superseded
 entity: account
+# One step: use the scalar fields below. A multi-step plugin uses a `steps:` list instead, e.g.
+#   steps:
+#     - {message: Create, stage: PostOperation, mode: Synchronous, filter: [name]}
+#     - {message: Update, stage: PreOperation,  mode: Synchronous, filter: [description]}
 message: Create
 stage: PostOperation
 mode: Synchronous
