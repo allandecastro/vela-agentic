@@ -41,6 +41,8 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   RetrieveMultiple; a Sync step does no slow or unreliable external I/O.
 - **Registration legality** (`registration-rules.md`): no post-image on Delete, no pre-image on
   Create, Async only at PostOperation; Create/Update has a `FilterOn`.
+- **Execution order:** rank-sharing with Microsoft/managed steps is NOT a finding (normal, harmless).
+  Only flag missing/ambiguous ordering among *our own* steps on the same table+message+stage.
 - **SOLID / DRY:** `OnExecute` is thin (SRP) with real logic in a service where it earns it; no
   logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
   service extracted for a trivial one-liner.

@@ -43,6 +43,16 @@ symptom → cause → fix.
 - **You compiled against a stale framework.** Purge the `vela.plugins` / `vela.testing`
   caches under `~/.nuget` before a smoke build, or you build against an old package.
 
+## Execution order / rank
+
+- **Rank "collisions" with Microsoft / managed steps are normal and harmless.** `vela plan` may
+  report that your step shares a rank with other steps on the same message/stage (e.g. MS managed
+  plugins like PredictiveScoring, OpportunityScoring). You do **not** control or truly conflict with
+  managed steps — **do not bump your rank just to dodge them.**
+- What actually matters is deterministic ordering among **your OWN** steps on the same
+  table + message + stage. Use `WithExecutionOrder(n)` only to sequence *your* steps relative to
+  each other when you register more than one; don't set it reactively to avoid managed steps.
+
 ## Analyzers
 
 - **VELA002** — every `RegisterStep()` chain must end with `.Handle(...)`.
