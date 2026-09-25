@@ -1,6 +1,6 @@
 ---
 name: diagnosing-vela
-description: Model-invoked. Use after an autonomous run to turn a transcript into concrete skill findings — where an agent deviated from a skill, with line-level evidence — feeding the loop-engineering cycle.
+description: Use after an autonomous or eval run when you need to turn what happened into concrete, line-level findings against the skills.
 ---
 
 # Diagnosing Vela runs

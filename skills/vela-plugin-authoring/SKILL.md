@@ -1,6 +1,6 @@
 ---
 name: vela-plugin-authoring
-description: Use when writing the actual logic of a Vela plugin — after scaffolding and model generation. Covers the real EntityPluginBase / RegisterStep / OnExecute surface, reading the target and images, writing via ctx.UserService, and the Dataverse pitfalls.
+description: Use when implementing the logic of a Vela plugin, after scaffolding, models, and the failing (RED) harness tests exist.
 ---
 
 # Author a Vela plugin

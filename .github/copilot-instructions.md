@@ -42,11 +42,11 @@ Local and reversible up to the apply gate; the org is only ever touched at `appl
 an advisory **plan gate** at the front and a blocking **apply gate** at the end.
 
 ```
-INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY ──🚧apply gate🚧── APPLY → REPORT
-                (self-grill  (advisory:  (init/add) (models) (write     (code to   (full suite  (human       (only if
-                 declare      flag +                          FAILING    green)     green +      approves)    authorized)
-                 acceptance   continue)                       harness               analyzers
-                 cases)                                       tests)                clean + plan)
+INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY → REVIEW ──🚧apply gate🚧── APPLY → REPORT
+                (self-grill  (advisory:  (init/add) (models) (write     (code to   (suite     (code       (human       (only if
+                 declare      flag +                          FAILING    green)     green +    review:     approves)    authorized)
+                 acceptance   continue)                       harness               analyzers  spec +
+                 cases)                                       tests)                clean)     standards)
 ```
 
 **Test-first is mandatory.** After MODEL, write the harness tests for the declared acceptance
@@ -56,6 +56,10 @@ the quality signal.
 
 - **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), emit a **Plan
   artifact**, flag assumptions, and **continue** — do not block. A human may interrupt.
+- **Review before the apply gate**: once tests are green and analyzers clean, review the diff
+  (`vela-code-review`) on two axes — **spec** (the Plan artifact's acceptance cases + the
+  `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell
+  baseline). Critical/Required findings block the gate.
 - **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.
 - Artifacts (see `references/build-report-template.md`) are committed in the target project
   under `docs/vela-builds/<slug>.md` and reused as the PR body.
@@ -73,15 +77,31 @@ the quality signal.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that
    proves it. `dotnet test` green, `vela plan` clean — paste the evidence.
 5. **Quality gate before the apply gate.** The apply gate is unreachable unless: the full
-   harness suite is **green** and covers every declared acceptance case, **and** the **authored
-   code** (your plugin + your tests) has **no analyzer (VELA00x) violations**. A happy-path-only
-   test, a red test, or an analyzer violation in authored code blocks the gate. The scaffold's
-   own demo files may carry cosmetic VELA013 — clean or remove demo files for a real project,
-   but never let a demo warning mask a real violation in your code. The Build Report records both.
+   harness suite is **green** and covers every declared acceptance case; the **authored code**
+   (your plugin + your tests) has **no analyzer (VELA00x) violations**; **and** the diff has
+   passed **code review** (`vela-code-review`) with no unresolved Critical/Required findings. A
+   happy-path-only test, a red test, an analyzer violation, or an unresolved Critical/Required
+   review finding blocks the gate. The scaffold's own demo files may carry cosmetic VELA013 —
+   clean or remove demo files for a real project, but never let a demo warning mask a real
+   violation in your code. The Build Report records all three.
 6. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
    `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
    `--auto-approve` unless the user explicitly authorized it for this run.
 7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
+
+## Evidence (claim → proof)
+
+"Evidence over claims" is a procedure, not a vibe. For each claim, the proof is mandatory before
+you may state it; skipping the proof is lying, not verifying. Ban "should / probably / seems" —
+confidence is not evidence, and a partial run proves nothing.
+
+| Claim | Required proof |
+| --- | --- |
+| "It builds" | `dotnet build` summary: 0 errors, and 0 analyzer (VELA00x) violations in authored code |
+| "Tests pass" | the test runner's summary line + the runner used, and the green cases equal the declared acceptance cases |
+| "Bug fixed" | the failing repro test (RED) now passes (GREEN) |
+| "Reviewed" | the `vela-code-review` findings list, with no unresolved Critical/Required |
+| "Deploy preview is clean" | the `vela plan` output (or "skipped — no org", with the exact command) |
 
 ## Environment (local, fleet, cloud)
 

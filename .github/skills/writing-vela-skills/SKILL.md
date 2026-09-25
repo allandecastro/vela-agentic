@@ -1,6 +1,6 @@
 ---
 name: writing-vela-skills
-description: Model-invoked. Use when adding or fixing a Vela skill. Applies TDD to the skill itself — no skill change without a failing pressure test first (RED), then fix the skill (GREEN), then close the loophole (REFACTOR). Keeps the pack accurate as it grows.
+description: Use when adding, fixing, or reviewing a Vela skill or its wording.
 ---
 
 # Writing Vela skills
@@ -10,8 +10,12 @@ following it literally reaches the right outcome without having to rediscover th
 
 ## House style (every skill)
 
-Frontmatter: `name` (kebab), `description` starting with the invocation kind and a `Use
-when…` trigger (Model-invoked = auto; User-invoked = `/command`). Body:
+Frontmatter: `name` (kebab), and a **trigger-only `description`**: state *when* the skill
+applies ("Use when…"), never a summary of what it does. A workflow summary in the description
+becomes a shortcut an agent follows instead of reading the skill body — this is an observed
+failure mode (an agent that reads "…then emit the artifact. Advisory gate…" skips the actual
+steps). User-invoked skills may name their command (e.g. `/vela-grill`); the model/user-invoked
+kind otherwise lives in the body and the README table, not the description. Body:
 `Overview → When to use → Process (announce "Using <skill> to <purpose>") → Rationalizations
 (excuse → rebuttal) → Red flags → Verification (the evidence required)`. Keep the body lean;
 push verbatim code and long reference into `references/` and point at it.

@@ -1,6 +1,6 @@
 ---
 name: vela-scaffold
-description: Use when you need to create a new Vela solution (vela init) or add a component to an existing project (vela add plugin/customapi/service/test/step). Local only, never touches Dataverse. Generated code must compile and apply unedited.
+description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
 ---
 
 # Scaffold Vela projects and components

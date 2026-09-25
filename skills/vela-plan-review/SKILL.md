@@ -1,6 +1,6 @@
 ---
 name: vela-plan-review
-description: Model-invoked. Use right after interpreting a user story, before scaffolding. Self-grill the plan against the Dataverse gotchas until every branch resolves, then emit the Plan artifact. Advisory gate — flag unresolved assumptions and continue.
+description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
 ---
 
 # Review the plan (self-grilling)

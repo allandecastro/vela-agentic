@@ -54,8 +54,10 @@ flowchart TD
     T --> IM["Implement<br/>code to green"]
     IM --> V["Verify<br/>suite green + analyzers clean + vela plan"]
     V -->|red / violations| IM
-    V -. emits .-> BR[/"📄 Build Report"/]
-    V -->|green &amp; clean| G2{{"🚧 Apply gate<br/>blocking — human approves"}}
+    V --> RV["Review<br/>spec + standards axes · severities"]
+    RV -->|Critical / Required| IM
+    RV -. emits .-> BR[/"📄 Build Report"/]
+    RV -->|PASS| G2{{"🚧 Apply gate<br/>blocking — human approves"}}
     G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
     AP --> R([Report / PR])
 
@@ -69,6 +71,7 @@ flowchart TD
         T
         IM
         V
+        RV
     end
 
     classDef gate fill:#fde68a,stroke:#b45309,color:#1f2937;
@@ -89,7 +92,7 @@ target project and reused as the PR body:
 
 | Area | Contents |
 | --- | --- |
-| `skills/` | 11 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
+| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
 | `agents/` | `vela-builder` - the gated end-to-end build loop |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates) |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
@@ -109,6 +112,7 @@ target project and reused as the PR body:
 | `vela-models` | model-invoked | Generate early-bound C# / TypeScript models, or verify drift |
 | `vela-test-harness` | model-invoked | Write failing (RED) tests with `Vela.Testing`, run them per the OS runner |
 | `vela-plugin-authoring` | model-invoked | Implement the handler to green (real `EntityPluginBase` / `OnExecute` surface) |
+| `vela-code-review` | model-invoked | Review the diff on the spec + standards axes before the apply gate (self-review or isolated subagent) |
 | `vela-apply` | model-invoked | Preview with `vela plan`, then stop at the human deploy gate |
 | `vela-debug-plugin` | model-invoked | Diagnose a misbehaving plugin (reproduce -> minimize -> hypothesize -> fix) |
 | `writing-vela-skills` | model-invoked | The meta-skill: how to add or fix a skill under test (RED -> GREEN -> REFACTOR) |

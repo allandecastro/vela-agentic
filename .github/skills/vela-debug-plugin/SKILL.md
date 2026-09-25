@@ -1,6 +1,6 @@
 ---
 name: vela-debug-plugin
-description: Use when a Vela plugin does not fire, fires on the wrong message/entity, throws, or produces unexpected results — by reconciling registered steps and images against the code and reproducing the fault in the harness.
+description: Use when a Vela plugin does not fire, fires on the wrong message or entity, throws, or produces unexpected results.
 ---
 
 # Debug a Vela plugin

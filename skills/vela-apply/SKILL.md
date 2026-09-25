@@ -1,6 +1,6 @@
 ---
 name: vela-apply
-description: Use to preview (vela plan) and deploy (vela apply) a Vela package to a Dataverse org. Outward-facing. Always run plan first; STOP before apply and let a human approve, unless explicitly authorized to auto-approve.
+description: Use when a built, reviewed, tested Vela package needs to be previewed against or deployed to a Dataverse environment.
 ---
 
 # Preview and apply to a Dataverse org

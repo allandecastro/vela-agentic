@@ -1,6 +1,6 @@
 ---
 name: vela-grill
-description: User-invoked (/vela-grill). Use when a user story is ambiguous or underspecified and you need to interview the HUMAN to resolve it before building. Relentless interview until every branch of the plan resolves.
+description: User-invoked (/vela-grill). Use when a user story is ambiguous or underspecified and only the human can resolve it before building.
 ---
 
 # Grill the story (interview the human)

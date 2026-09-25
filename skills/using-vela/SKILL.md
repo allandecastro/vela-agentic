@@ -1,6 +1,6 @@
 ---
 name: using-vela
-description: Read first when starting any Vela work. Explains how the Vela skills fit together, the build loop, and the non-negotiable rules (CLI is the contract, stop before apply, evidence over claims).
+description: Read first when starting any Vela work, or when unsure which Vela skill applies.
 ---
 
 # Using Vela
@@ -24,15 +24,17 @@ reversible until the gate; the org is only touched at `apply`.
 7. **Implement** — `vela-plugin-authoring`: write logic until the tests go **green**.
 8. **Verify** — full harness suite green **and** build clean of analyzer (VELA00x) violations,
    then `vela plan` (preview, never writes).
-9. **🚧 Apply gate** — emit the **Build Report**, stop. A human runs `vela apply`.
-10. **Report** — PR with the Build Report as its body; commit the artifact in the project.
+9. **Review** — `vela-code-review`: review the diff on the spec + standards axes; unresolved
+   Critical/Required findings block the gate (fix and re-verify).
+10. **🚧 Apply gate** — emit the **Build Report**, stop. A human runs `vela apply`.
+11. **Report** — PR with the Build Report as its body; commit the artifact in the project.
 
 If something misbehaves, switch to `vela-debug-plugin`.
 
 ## Skill kinds
 
 - **Model-invoked** (auto): `using-vela`, `vela-plugin-authoring`, `vela-test-harness`,
-  `vela-plan-review`, `writing-vela-skills`, `diagnosing-vela`.
+  `vela-plan-review`, `vela-code-review`, `writing-vela-skills`, `diagnosing-vela`.
 - **User-invoked** (`/command`): `/vela-build` (the whole loop), `/vela-grill` (interview the
   story), `/vela-apply` (gated deploy).
 

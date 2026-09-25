@@ -1,6 +1,6 @@
 ---
 name: vela-models
-description: Use when you need strongly-typed models generated from a Dataverse environment — early-bound C# tables, or TypeScript form/table models — or to verify generated models still match the org. Connects to Dataverse to read metadata.
+description: Use when a plugin needs typed models for an attribute or entity not yet in the generated model, or when checking whether committed models still match the org.
 ---
 
 # Generate typed models

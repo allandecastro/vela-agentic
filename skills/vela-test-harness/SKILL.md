@@ -1,6 +1,6 @@
 ---
 name: vela-test-harness
-description: Use to prove a Vela plugin works WITHOUT a real Dataverse org, using the Vela.Testing harness (PluginContext + InMemoryOrganizationService) run via the OS-correct runner. This is the verification gate before any deploy.
+description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
 ---
 
 # Verify with the Vela.Testing harness

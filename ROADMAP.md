@@ -22,7 +22,10 @@ independent of the framework/CLI NuGet releases.
 - [x] Front challenge gate: `vela-plan-review` (self-grill) + `/vela-grill` (interview human)
 - [x] Loop engineering: `evals/` + `writing-vela-skills` + `diagnosing-vela`
 - [x] Skill taxonomy: model-invoked vs user-invoked
-- [x] Agent: vela-builder (Intake→…→apply gate)
+- [x] Code-review gate before apply: `vela-code-review` (two-axis, severities; self-review now,
+      isolated review subagent as the phased upgrade)
+- [x] Trigger-only skill descriptions + claim->proof evidence table
+- [x] Agent: vela-builder (Intake→…→review→apply gate)
 
 ## Doing
 
@@ -35,4 +38,7 @@ independent of the framework/CLI NuGet releases.
 - [ ] More eval scenarios (one per gotcha: association, images, deep insert, custom-API naming)
 - [ ] A CI job that validates SKILL.md frontmatter and the generated Copilot surface
 - [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands
-- [ ] `vela-reviewer` persona (two-axis: standards + spec) once the loop is stable
+- [ ] Turn on the isolated review subagent in `vela-code-review` once the loop is stable
+- [ ] Sharpen `vela-debug-plugin` with the "no red repro, no hypothesis" + regression-test-before-fix discipline
+- [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness security plan, don't duplicate)
+- [ ] `vela-simplify` gate (behavior-preserving) if plugin diffs start accreting complexity

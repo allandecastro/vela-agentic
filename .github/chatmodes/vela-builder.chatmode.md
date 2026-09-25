@@ -30,9 +30,12 @@ an unattended apply for this run.
    models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
 8. **Verify** — full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations. Then `vela plan` to preview (never writes).
-9. **🚧 Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + cases checklist),
-   stop, hand off to a human.
-10. **Report.** Open a PR with the Build Report as its body and the artifact committed under
+9. **Review** — `vela-code-review`: review the diff on the spec + standards axes (self-review, or
+   dispatch an isolated read-only review subagent). Unresolved Critical/Required findings block
+   the gate; fix and re-verify.
+10. **🚧 Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
+    cases checklist), stop, hand off to a human.
+11. **Report.** Open a PR with the Build Report as its body and the artifact committed under
     `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
 
 Artifacts follow `references/build-report-template.md`. If anything misbehaves, switch to

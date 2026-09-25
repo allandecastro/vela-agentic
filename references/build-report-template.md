@@ -66,6 +66,7 @@ packages: [Zava.Plugins.1.0.0.nupkg]
 harness: pass             # pass | fail  (must be pass to reach the gate)
 analyzers: clean          # clean | violations  (authored code must be clean to reach the gate;
                           # scaffold demo files' cosmetic VELA013 excluded — clean them for real)
+review: pass              # pass | block  (vela-code-review: no unresolved Critical/Required)
 plan_preview: clean       # clean | changes | skipped(no-org)
 apply: pending
 ---
@@ -84,10 +85,11 @@ apply: pending
   - [x] empty Description -> defaulted
   - [x] non-empty Description -> left untouched
 - Harness: <test runner summary, e.g. "Total: 11, Failed: 0">  (state runner: dotnet test / Mono)
+- Code review: <PASS / BLOCK; findings most-severe first, e.g. "PASS — 1 Nit">
 - `vela plan`: <the diff apply WOULD make, or "skipped — no org">
 
-Quality gate: harness green over all declared cases **and** analyzers clean — both required
-before the apply gate.
+Quality gate: harness green over all declared cases **and** analyzers clean **and** code review
+PASS (no unresolved Critical/Required) — all three required before the apply gate.
 
 ## Gate — human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`
