@@ -2,7 +2,7 @@
   <img src="branding/vela-chevron.svg" alt="Vela" width="110" height="110" />
 </p>
 
-<h1 align="center">vela-agentic</h1>
+<h1 align="center">Vela Agentic</h1>
 
 <p align="center">
   <strong>The agentic layer for <a href="https://github.com/allandecastro/vela">Vela</a>: portable Agent Skills and two agents (a builder and a reviewer) that turn a user story into a built, tested, reviewed Dataverse plugin by driving the <code>vela</code> CLI - autonomous up to a human-approved deploy.</strong>
