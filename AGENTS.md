@@ -27,8 +27,10 @@ composing `vela` commands, never by reaching around the CLI into internal APIs.
 Exit codes: `0` ok, `2` invalid args, `3` file not found, `4` error, `5` drift
 (`models --verify`), `6` Dataverse connection failure. Read them; don't ignore them.
 
-See `references/cli-surface.md` for exact flags and `references/dataverse-gotchas.md`
-for the battle-tested pitfalls.
+References: `cli-surface.md` (exact flags), `plugin-authoring-api.md` + `harness-api.md`
+(verbatim code), `dataverse-gotchas.md` (pitfalls), `registration-rules.md` (legal matrix +
+Sync/Async + reuse/service decisions), `review-checklist.md` (the review axes),
+`build-report-template.md` (the Vela Canvas + Build Report).
 
 ## The build loop (user story → shipped)
 
@@ -48,8 +50,13 @@ cases and watch them **fail (RED)** before writing plugin logic; then implement 
 Tests are not optional and not written after the fact — they are the acceptance criteria and
 the quality signal.
 
-- **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), emit a **Plan
-  artifact**, flag assumptions, and **continue** — do not block. A human may interrupt.
+- **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), fill the **Vela
+  Canvas** (a REASONS-adapted spec: Requirements/Entities/Approach/Structure/Operations/Norms/
+  Safeguards — the home for the Sync-vs-Async, reuse-vs-new, service, naming and safeguard
+  decisions), flag assumptions, and **continue** — do not block. A human may interrupt.
+- **The Canvas is a living spec (fix-spec-first).** If the requirement changes mid-build, update
+  the Canvas **before** the code; if you refactor without changing behaviour, update the code then
+  **sync** it back into the Canvas. The Canvas stays an accurate record of the current plugin.
 - **Review before the apply gate**: once tests are green and analyzers clean, review the diff
   (`vela-code-review`) on two axes — **spec** (the Plan artifact's acceptance cases + the
   `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell

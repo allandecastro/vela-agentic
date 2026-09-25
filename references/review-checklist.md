@@ -10,14 +10,19 @@ apply gate.**
 - **Required** — a real defect or a violated repo standard; fix before the gate. Blocks.
 - **Nit** — optional polish / preference. Does not block.
 
-## Axis 1 — Spec fidelity
+## Axis 1 — Spec fidelity (against the Vela Canvas)
 
-Check the diff against the Plan artifact's **acceptance cases** and the interpreted spec:
+Check the diff against the **Vela Canvas** (Requirements/DoD, acceptance cases, and the Approach/
+Structure decisions):
 
 - Every declared acceptance case is actually implemented and has a passing test.
-- Message / stage / mode match the spec (Create vs Update vs *Multiple; Pre vs Post; Sync vs Async).
+- Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post).
+- The Canvas's **Approach** decisions were honoured: **Sync vs Async** is appropriate for the
+  business need (Async only for non-blocking/eventual work, never for validation); **reuse vs new**
+  was respected (`vela add step` on an existing plugin where it fit; no hand-created class).
 - Edge cases from the spec (empty / null / whitespace / boundary) are handled, not just the happy path.
-- No scope creep: nothing implemented that the spec/plan did not ask for.
+- No scope creep: nothing implemented that the Canvas did not ask for. If the diff diverged from the
+  Canvas, the Canvas should have been updated first (fix-spec-first) — flag if not.
 
 ## Axis 2 — Standards + Dataverse smell baseline
 
@@ -34,6 +39,11 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   `ctx.OrganizationService`); elevation used only when justified.
 - **Performance / safety:** no `new ColumnSet(true)` in real queries (VELA013); no unbounded
   RetrieveMultiple; a Sync step does no slow or unreliable external I/O.
+- **Registration legality** (`registration-rules.md`): no post-image on Delete, no pre-image on
+  Create, Async only at PostOperation; Create/Update has a `FilterOn`.
+- **SOLID / DRY:** `OnExecute` is thin (SRP) with real logic in a service where it earns it; no
+  logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
+  service extracted for a trivial one-liner.
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions.
 
 ## Output

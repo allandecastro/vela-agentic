@@ -14,9 +14,11 @@ reversible until the gate; the org is only touched at `apply`.
 
 1. **Intake** — turn the story into a concrete spec (entity, message, images, rules).
 2. **Plan** — list the tasks: scaffold or existing project? which models? what logic?
-3. **Challenge** — `vela-plan-review`: self-grill the plan, emit the **Plan artifact**, flag
-   assumptions. Advisory gate — continue (the user may interrupt). If only the human can
-   resolve an ambiguity, use `/vela-grill`.
+3. **Challenge** — `vela-plan-review`: self-grill the plan and fill the **Vela Canvas** (the
+   REASONS-adapted spec holding the Sync/Async, reuse-vs-new, service, naming and safeguard
+   decisions), flag assumptions. Advisory gate — continue (the user may interrupt). If only the
+   human can resolve an ambiguity, use `/vela-grill`. The Canvas is a **living spec**: if the
+   requirement changes later, update the Canvas before the code.
 4. **Scaffold** — `vela-scaffold`
 5. **Model** — `vela-models`
 6. **Test (RED)** — `vela-test-harness`: write the failing harness tests for the declared

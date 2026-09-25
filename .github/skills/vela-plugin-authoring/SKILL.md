@@ -21,7 +21,8 @@ the notes below are the workflow.
 
 Announce: `Using vela-plugin-authoring to <purpose>`.
 
-1. Re-read the spec: message, stage, mode; which attributes are read/written.
+1. Re-read the **Vela Canvas** (Operations, Approach, Structure, Norms): implement exactly those
+   Operations — no scope creep. Honour the Approach decisions (Sync/Async, reuse vs new) already made.
 2. **Model first for any non-demo attribute.** The scaffold's generated model only covers
    demo columns (and is `sealed` — no partial extension). If the story touches any other
    attribute, run `vela-models` first — do not fall back to a magic string. MODEL precedes
@@ -37,7 +38,14 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
    `ctx.SystemService` / `ctx.AsSystem()` only when elevation is required.
 6. Guard the trigger via the registered **filtering attributes** (`FilterOn(e => e.X)`) and
    the correct **image**, not loose re-checks in code. Add an image in `RegisterPluginSteps`
-   if the handler needs prior/final values.
+   if the handler needs prior/final values. Respect the legal matrix
+   (`references/registration-rules.md`): no post-image on Delete, no pre-image on Create,
+   Async only at PostOperation.
+7. **SOLID / DRY.** Keep `OnExecute` thin (SRP): orchestration in the handler, real logic in a
+   **service** when it is reusable or worth testing in isolation → `vela add service <Name>
+   --entity <E>`, injected via DI. Reuse an existing service or plugin before adding one; do not
+   duplicate logic. Do not extract a service for a trivial one-liner. Follow the generated
+   **naming** conventions (prefix, `OnExecute`, project layout); don't rename generated members.
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -49,6 +57,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
   plugin so registration stays in sync.
 - "Target is enough, images are overkill." → For Update/Delete you often need prior values;
   read the correct image (and register it).
+- "I'll copy the logic from the other plugin." → Duplication is a DRY violation; extract/reuse a
+  service instead.
+- "Everything in OnExecute is simpler." → A fat handler violates SRP and can't be unit-tested in
+  isolation; move real logic to a service.
 
 ## Red flags
 
@@ -56,6 +68,8 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 - `ctx.OrganizationService`, `.Handle<Message>`, or a hand-written plugin class.
 - Associate/Disassociate matched by primary entity only (won't fire — see gotchas).
 - A custom API parameter name containing a dot (uncallable on a real org).
+- Logic duplicated across plugins, or a fat `OnExecute` that should delegate to a service.
+- An illegal registration attempted (post-image on Delete, Async off PostOperation) — see registration-rules.
 
 ## Verification
 

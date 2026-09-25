@@ -22,8 +22,12 @@ independent of the framework/CLI NuGet releases.
 - [x] Front challenge gate: `vela-plan-review` (self-grill) + `/vela-grill` (interview human)
 - [x] Loop engineering: `evals/` + `writing-vela-skills` + `diagnosing-vela`
 - [x] Skill taxonomy: model-invoked vs user-invoked
-- [x] Code-review gate before apply: `vela-code-review` (two-axis, severities; self-review now,
-      isolated review subagent as the phased upgrade)
+- [x] Code-review gate before apply: `vela-code-review` (two-axis, severities)
+- [x] Two agents: `vela-builder` + isolated read-only `vela-reviewer`
+- [x] Vela Canvas (REASONS-adapted structured spec, after SPDD) as the plan artifact, with a
+      living-spec discipline (fix-spec-first, sync-back)
+- [x] Decision guidance in the skills: Sync-vs-Async, reuse-vs-new, service/DI, naming, SOLID/DRY,
+      registration legality (`references/registration-rules.md`)
 - [x] Trigger-only skill descriptions + claim->proof evidence table
 - [x] Agent: vela-builder (Intake→…→review→apply gate)
 

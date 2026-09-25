@@ -20,20 +20,29 @@ Announce: `Using vela-plan-review to grill the plan`.
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
 2. **Grill it** — answer each question; an unanswered one becomes an assumption or open question:
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Is the stage
-     right (PostOperation to see committed values; Pre to change the write)? Sync or Async?
+     right (PostOperation to see committed values; Pre to change the write)?
+   - **Approach — Sync vs Async:** Sync when the effect must be seen/validated in the same
+     transaction; Async only for non-blocking, slow, external, eventual work (PostOperation-only).
+     Default Sync; justify Async. (See `references/registration-rules.md`.)
+   - **Approach — reuse vs new:** New plugin (no class) → `vela add plugin` then code. Behaviour on
+     a table that already has a plugin → prefer `vela add step`. Reuse an existing plugin/service;
+     never duplicate; never hand-create a class.
+   - **Structure — service?** Keep the handler thin (SRP). Real/reusable logic → a service
+     (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
-     is **mandatory** (build throws without one); on Create it's ignored at runtime, so keep the
-     primary column and never drop it — even for a step that must fire on every create.
-   - **Images:** Do you need prior values (pre-image) or final values (post-image)? Registered?
-   - **Association:** If it's Associate/Disassociate, are you matching the message regardless of
-     primary entity? (Matching by entity alone never fires — see `references/dataverse-gotchas.md`.)
+     is **mandatory** (registration throws without one); on Create it's ignored at runtime, so keep
+     the primary column and never drop it.
+   - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
+     (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
+   - **Association:** Associate/Disassociate matched by **message**, not primary entity (else never fires).
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
-   - **Custom API:** Any parameter name with a dot? (Uncallable on a real org.)
-   - **Ambiguity:** Is "empty", "changed", "valid" defined? What are the edge cases?
-   - **Acceptance cases:** Turn the definition of done into a concrete list of test cases —
-     the primary behaviour, each edge, and each applicable gotcha. These become the RED tests.
-3. **Emit the Plan artifact** (`references/build-report-template.md`): spec, the grilling Q&A,
-   the **acceptance cases** (the test list), assumptions, open questions, proposed approach, risks.
+   - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
+   - **Acceptance cases:** Turn the DoD into concrete test cases — primary behaviour, each edge,
+     each applicable gotcha. These become the RED tests.
+3. **Fill the Vela Canvas** (`references/build-report-template.md`): the seven REASONS-adapted
+   sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
+   S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional —
+   one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold`.
 
 ## Rationalizations (excuse → rebuttal)
@@ -46,9 +55,10 @@ Announce: `Using vela-plan-review to grill the plan`.
 ## Red flags
 
 - Any grilling branch left unanswered and not recorded as an assumption or open question.
-- Proceeding without a Plan artifact.
+- Proceeding without a Vela Canvas, or a Canvas whose Approach/Structure leave Sync-vs-Async or
+  reuse-vs-new undecided.
 
 ## Verification
 
-- A Plan artifact exists with every grilling branch either resolved or logged as an
-  assumption/open question, and the assumptions were surfaced to the user.
+- A Vela Canvas exists with all seven sections filled (proportional), every grilling branch
+  resolved or logged, and the assumptions surfaced to the user.

@@ -26,13 +26,19 @@ Announce: `Using vela-scaffold to <purpose>`.
    `--no-integrations` / `--no-tests`). **Generated models live in
    `<Prefix>.Shared/Models/Generated`** — that is the `--project` target for `vela models`,
    not the Plugins project.
-3. **Existing project?** Find the `.csproj` first, then add the component:
+3. **Decide reuse vs new first** (see `references/registration-rules.md`):
+   - **New plugin, no class exists yet** → `vela add plugin` via the CLI, then code. **Never
+     hand-create the plugin class.**
+   - **Another behaviour on a table that already has a plugin** → prefer `vela add step` on the
+     existing plugin (coherent registration) unless the concern is genuinely separate.
+   - **Reuse** an existing plugin/step/service when the behaviour is already there — don't duplicate (DRY).
+4. **Existing project?** Find the `.csproj` first, then add the component:
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--bound|--global] [--function|--action]`
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-4. **Build** to prove it compiles: `dotnet build`. Report the exact output.
-5. Summarise what was generated and the next skill in the loop.
+5. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+6. Summarise what was generated and the next skill in the loop.
 
 ## Rationalizations (excuse → rebuttal)
 

@@ -1,7 +1,7 @@
 <h1 align="center">vela-agentic</h1>
 
 <p align="center">
-  <strong>The agentic layer for <a href="https://github.com/allandecastro/vela">Vela</a>: portable Agent Skills and an agent that turn a user story into a built, tested Dataverse plugin by driving the <code>vela</code> CLI - autonomous up to a human-approved deploy.</strong>
+  <strong>The agentic layer for <a href="https://github.com/allandecastro/vela">Vela</a>: portable Agent Skills and two agents (a builder and a reviewer) that turn a user story into a built, tested, reviewed Dataverse plugin by driving the <code>vela</code> CLI - autonomous up to a human-approved deploy.</strong>
 </p>
 
 <p align="center">
@@ -16,8 +16,9 @@
   <img src="https://img.shields.io/badge/Microsoft_Dataverse-107C10?style=for-the-badge&logo=microsoft&logoColor=white" alt="Microsoft Dataverse" />
 </p>
 
-`vela-agentic` is a pack of **Agent Skills** and one **agent** (`vela-builder`) that let an AI
-assistant build, model, test and deploy Microsoft Dataverse plugins by driving the `vela` CLI.
+`vela-agentic` is a pack of **Agent Skills** and two **agents** (`vela-builder` and
+`vela-reviewer`) that let an AI assistant build, model, test, review and deploy Microsoft
+Dataverse plugins by driving the `vela` CLI.
 It targets **Claude Code** and **GitHub Copilot** from a single source of truth, and it encodes a
 safe, **test-first, preview-before-deploy** workflow that stops before writing to a live org.
 
@@ -33,6 +34,11 @@ safe, **test-first, preview-before-deploy** workflow that stops before writing t
   authored code is analyzer-clean.
 - **Stop before apply.** The whole loop is autonomous and reversible up to `vela plan`; a human
   approves the `vela apply` that writes to the org.
+- **Structured, living spec.** The plan is a **Vela Canvas** (a REASONS-adapted structured spec,
+  after Thoughtworks' SPDD), not free text: it captures the design decisions and stays in sync
+  with the code (fix the spec first, then the code).
+- **Author / reviewer separation.** A second, isolated `vela-reviewer` agent reviews the diff with
+  fresh context, catching what the author is blind to - while a human keeps the final say.
 - **Loop engineering.** The skills themselves are held under test (`evals/`): a fresh agent runs
   a scenario, deviations become skill fixes, repeat until a clean pass.
 
@@ -85,15 +91,18 @@ flowchart TD
 It emits two artifacts (Markdown + YAML front-matter), committed under `docs/vela-builds/` in the
 target project and reused as the PR body:
 
-- a **Plan artifact** at the front gate (interpreted spec, grilling Q&A, acceptance cases, risks),
-- a **Build Report** at the deploy gate (what was built, evidence, the exact `vela apply` to run).
+- a **Vela Canvas** at the front gate - a REASONS-adapted spec (Requirements, Entities, Approach,
+  Structure, Operations, Norms, Safeguards) that captures the design decisions (Sync/Async,
+  reuse-vs-new, services, naming, safeguards) and the acceptance cases,
+- a **Build Report** at the deploy gate (what was built, evidence, the exact `vela apply` to run),
+  which the Canvas grows into. It is a **living spec**: requirement changes update the Canvas first.
 
 ## What's inside
 
 | Area | Contents |
 | --- | --- |
 | `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
-| `agents/` | `vela-builder` - the gated end-to-end build loop |
+| `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates) |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |

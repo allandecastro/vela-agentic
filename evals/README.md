@@ -26,7 +26,11 @@ against a skill — not a problem with the agent.
 ## Scenarios
 
 - `scenarios/account-default-description.md` — baseline: Account create → default Description.
-  Iteration 1 (2026-09-24) found 9 defects (3 blockers); see the repo history.
+  Iterations 1-4 (2026-09-24/25) drove the pack from 9 defects (3 blockers) to a clean pass with
+  the code-review gate; see the repo history.
+- `scenarios/account-second-behaviour.md` — decisions + review: a second behaviour on a table that
+  already has a plugin, exercising reuse-vs-new, DRY/service extraction, Sync-vs-Async, and the
+  review's SOLID/DRY axis (with a planted-violation check).
 
 ## Adding a scenario
 
