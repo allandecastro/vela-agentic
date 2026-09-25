@@ -106,6 +106,18 @@ apply: pending
 <any Canvas changes made during the build (requirement change → Canvas updated first; refactor →
 synced back), so the Canvas stays accurate>
 
+## Run trace
+Machine-readable audit of the run — one row per step, appended as you go. Makes the run
+auditable and replayable, and is the structured input for `diagnosing-vela`.
+
+| # | step | skill | command | exit | verdict | ms |
+|---|------|-------|---------|------|---------|----|
+| 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava` | 0 | ok | 1820 |
+| 2 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | RED 2 fail | 930 |
+| 3 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 | 910 |
+| 4 | review | vela-code-review | (self-review) | - | PASS 2 Nits | - |
+| 5 | plan | vela-apply | `vela plan --packages-dir artifacts -i` | - | skipped (no org) | - |
+
 ## Gate — human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`  — this will: <exact changes>
 

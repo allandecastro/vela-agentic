@@ -34,9 +34,13 @@ an unattended apply for this run.
    dispatch an isolated read-only review subagent). Unresolved Critical/Required findings block
    the gate; fix and re-verify.
 10. **🚧 Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
-    cases checklist), stop, hand off to a human.
+    cases checklist + the **Run trace** — one row per step: command, exit code, gate verdict,
+    timing), stop, hand off to a human.
 11. **Report.** Open a PR with the Build Report as its body and the artifact committed under
     `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
+
+Keep the **Run trace** current as you go (append a row per step); it makes the run auditable and
+replayable and is the structured input for `vela-debug-plugin` / `diagnosing-vela`.
 
 Artifacts follow `references/build-report-template.md`. If anything misbehaves, switch to
 `vela-debug-plugin` (reproduce in the harness first).
