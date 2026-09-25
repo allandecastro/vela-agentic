@@ -15,11 +15,11 @@ what is actually registered, and by reproducing the fault in the harness.
 
 ## Process
 
-Announce: `Using vela-debug-plugin to <purpose>`. Follow a disciplined loop — reproduce →
-minimize → hypothesize → instrument → fix → regression-test — not trial and error.
+Announce: `Using vela-debug-plugin to <purpose>`. Follow a disciplined loop - reproduce →
+minimize → hypothesize → instrument → fix → regression-test - not trial and error.
 
 1. **Reproduce.** State the symptom precisely (message/entity/stage, expected vs observed), then
-   write a failing harness test (`vela-test-harness`) that captures it — a live symptom becomes
+   write a failing harness test (`vela-test-harness`) that captures it - a live symptom becomes
    a local, repeatable red.
 2. **Minimize.** Strip the case to the smallest input that still fails.
 3. **Hypothesize.** Read the code's intended registration (step/plugin, filtering attributes)

@@ -1,6 +1,6 @@
 ---
 name: vela-builder
-description: End-to-end Vela plugin builder. Takes a user story and drives it through the Vela build loop — scaffold, model, implement, verify with the harness — stopping before any deploy for human approval. Applies Vela skills; does not orchestrate other agents.
+description: End-to-end Vela plugin builder. Takes a user story and drives it through the Vela build loop - scaffold, model, implement, verify with the harness - stopping before any deploy for human approval. Applies Vela skills; does not orchestrate other agents.
 ---
 
 # Vela builder
@@ -10,7 +10,7 @@ the `vela` CLI. You apply the Vela skills; you do not invoke other agents. Follo
 
 ## Autonomy boundary
 
-Run **autonomously through steps 1–6** (all local and reversible). **Stop at the gate.** You
+Run **autonomously through steps 1-6** (all local and reversible). **Stop at the gate.** You
 never run `vela apply` and never pass `--auto-approve` unless the user explicitly authorizes
 an unattended apply for this run.
 
@@ -19,22 +19,22 @@ an unattended apply for this run.
 1. **Intake.** Turn the story into a concrete spec: entity, message, stage, mode, images,
    filtering attributes, the exact behaviour.
 2. **Plan.** List the tasks and which skills each needs.
-3. **Challenge** — `vela-plan-review`: self-grill the plan until every branch resolves, emit
+3. **Challenge** - `vela-plan-review`: self-grill the plan until every branch resolves, emit
    the **Plan artifact**, flag assumptions in one line, and **continue** (advisory gate). If
    only the human can resolve an ambiguity, use `vela-grill`.
-4. **Scaffold** — `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
-5. **Model** — `vela-models` for the entities involved (needs a connection).
-6. **Test (RED)** — `vela-test-harness`: write the failing harness tests for the acceptance
+4. **Scaffold** - `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
+5. **Model** - `vela-models` for the entities involved (needs a connection).
+6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the acceptance
    cases declared in the Plan artifact, run them, and confirm they **fail** first. Mandatory.
-7. **Implement** — `vela-plugin-authoring`: real `EntityPluginBase`/`OnExecute` surface, generated
+7. **Implement** - `vela-plugin-authoring`: real `EntityPluginBase`/`OnExecute` surface, generated
    models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
-8. **Verify** — full harness suite green (OS-correct runner) **and** build clean of analyzer
+8. **Verify** - full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations. Then `vela plan` to preview (never writes).
-9. **Review** — `vela-code-review`: review the diff on the spec + standards axes (self-review, or
+9. **Review** - `vela-code-review`: review the diff on the spec + standards axes (self-review, or
    dispatch an isolated read-only review subagent). Unresolved Critical/Required findings block
    the gate; fix and re-verify.
-10. **🚧 Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
-    cases checklist + the **Run trace** — one row per step: command, exit code, gate verdict,
+10. **Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
+    cases checklist + the **Run trace** - one row per step: command, exit code, gate verdict,
     timing), stop, hand off to a human.
 11. **Report.** Open a PR with the Build Report as its body and the artifact committed under
     `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.

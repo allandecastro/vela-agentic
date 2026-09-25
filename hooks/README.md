@@ -1,8 +1,8 @@
-# Hook — apply-guard (optional, dual-target)
+# Hook - apply-guard (optional, dual-target)
 
 A skill *asks* the agent to behave; a **hook is executed by the host, not the model**, so it is a
-deterministic, non-bypassable guarantee. This is **optional hardening** — the pack works without
-it — with one job, wired for both **Claude Code** and **GitHub Copilot** from a single script.
+deterministic, non-bypassable guarantee. This is **optional hardening** - the pack works without
+it - with one job, wired for both **Claude Code** and **GitHub Copilot** from a single script.
 
 ## What it does
 
@@ -27,9 +27,9 @@ required.**
 
 ## Caveats
 
-- **Copilot pre-tool hooks fail *open* on timeout** — a slow guard would let `vela apply`
+- **Copilot pre-tool hooks fail *open* on timeout** - a slow guard would let `vela apply`
   through. The guard is trivial and uses a low `timeoutSec`. Claude Code has no such fail-open.
-- **VS Code Copilot Chat has no hooks** — only Copilot CLI and the cloud coding agent do. There,
+- **VS Code Copilot Chat has no hooks** - only Copilot CLI and the cloud coding agent do. There,
   fall back to custom-agent tool-permission deny-lists / confirmation.
 
 ## Enable / disable

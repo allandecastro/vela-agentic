@@ -21,7 +21,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
    `OnExecute` / `ctx.GetTarget` / `ctx.UserService` surface), no magic strings where a model exists.
 3. **Test-first:** the two acceptance-case tests are written and seen to **fail (RED)** before
-   the handler is implemented, then pass after — run with the OS-correct runner (Mono +
+   the handler is implemented, then pass after - run with the OS-correct runner (Mono +
    `-parallel none` on macOS), using the real harness API.
 4. `dotnet build` is green **and** has no analyzer (VELA00x) violations.
 5. Two behaviours proven: empty Description → defaulted; non-empty → untouched.
@@ -31,11 +31,11 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 ## No-org note
 `account.description` is not in the scaffold's sealed demo model. With no org, follow
 `vela-plugin-authoring`'s documented no-org exception (a labelled stand-in property); a real run
-regenerates via `vela-models`. Keep the scaffold's `FilterOn(e => e.Name)` — a Create step
+regenerates via `vela-models`. Keep the scaffold's `FilterOn(e => e.Name)` - a Create step
 requires a filter at build even though Create ignores it at runtime.
 
 ## Known findings closed
 - Iteration 1 blockers (harness API, macOS Mono runner, `EntityPluginBase`/`OnExecute` authoring
-  surface) must NOT recur — the skills give the correct path without rediscovery.
+  surface) must NOT recur - the skills give the correct path without rediscovery.
 - Iteration 2 (F1) mandatory Create/Update `FilterOn`, (F2) no-org non-demo-attribute path, (F3)
-  `target.Id` vs `ctx.PrimaryEntityId` in the harness — all now documented in the skills/references.
+  `target.Id` vs `ctx.PrimaryEntityId` in the harness - all now documented in the skills/references.

@@ -86,7 +86,7 @@ async function genInstructions() {
 async function genHooks() {
   // GitHub Copilot wiring for the shared hooks/bin scripts (the source of truth).
   const config = {
-    _generated: "by scripts/sync-copilot.mjs from hooks/ — do not edit by hand",
+    _generated: "by scripts/sync-copilot.mjs from hooks/ - do not edit by hand",
     version: 1,
     hooks: {
       preToolUse: [

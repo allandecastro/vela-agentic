@@ -6,7 +6,7 @@ description: Use right after interpreting a user story and before scaffolding, w
 # Review the plan (self-grilling)
 
 Before building anything, interrogate your own plan until every branch resolves. This is the
-front gate: it catches a mis-interpreted story before a wasted build. It is **advisory** — you
+front gate: it catches a mis-interpreted story before a wasted build. It is **advisory** - you
 flag unresolved assumptions and continue; you do not block.
 
 ## When to use
@@ -18,18 +18,18 @@ flag unresolved assumptions and continue; you do not block.
 Announce: `Using vela-plan-review to grill the plan`.
 
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
-2. **Grill it** — answer each question; an unanswered one becomes an assumption or open question:
+2. **Grill it** - answer each question; an unanswered one becomes an assumption or open question:
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Is the stage
      right (PostOperation to see committed values; Pre to change the write)?
-   - **Approach — Sync vs Async:** Sync when the effect must be seen/validated in the same
+   - **Approach - Sync vs Async:** Sync when the effect must be seen/validated in the same
      transaction; Async only for non-blocking, slow, external, eventual work (PostOperation-only).
      Default Sync; justify Async. (See `references/registration-rules.md`.)
-   - **Approach — reuse vs new:** New plugin (no class) → `vela add plugin` then code. Behaviour on
+   - **Approach - reuse vs new:** New plugin (no class) → `vela add plugin` then code. Behaviour on
      a table that already has a plugin → prefer `vela add step`. Reuse an existing plugin/service;
      never duplicate; never hand-create a class.
-   - **Structure — service?** Keep the handler thin (SRP). Real/reusable logic → a service
+   - **Structure - service?** Keep the handler thin (SRP). Real/reusable logic → a service
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
-   - **Structure — target solution & publisher:** which **unmanaged solution** (unique name) do
+   - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
      components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
      it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas
      (see `references/registration-rules.md`).
@@ -41,11 +41,11 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Association:** Associate/Disassociate matched by **message**, not primary entity (else never fires).
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
-   - **Acceptance cases:** Turn the DoD into concrete test cases — primary behaviour, each edge,
+   - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
      each applicable gotcha. These become the RED tests.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): the seven REASONS-adapted
    sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
-   S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional —
+   S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -
    one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold`.
 

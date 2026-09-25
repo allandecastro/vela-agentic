@@ -7,7 +7,7 @@ description: Use when a new Vela solution is needed, or a component (plugin, cus
 
 Drive `vela init` and `vela add` to create a solution or add components. These commands are
 **local only** and never connect to Dataverse. Generated code must compile and apply
-**without hand edits** — that is the contract.
+**without hand edits** - that is the contract.
 
 ## When to use
 
@@ -20,7 +20,7 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 1. `vela version`; confirm the exact flags with `vela init --help` / `vela add --help`.
 2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]`. The prefix cannot be
-   `Vela`. **Don't invent a prefix — use the target Dataverse solution's own publisher
+   `Vela`. **Don't invent a prefix - use the target Dataverse solution's own publisher
    customization prefix** (see `references/registration-rules.md`); it must match, otherwise
    `vela apply --solution` rejects
    the unique names later. The target solution + publisher must already exist in the org (Vela
@@ -28,14 +28,14 @@ Announce: `Using vela-scaffold to <purpose>`.
    `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
    `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
    `--no-integrations` / `--no-tests`). **Generated models live in
-   `<Prefix>.Shared/Models/Generated`** — that is the `--project` target for `vela models`,
+   `<Prefix>.Shared/Models/Generated`** - that is the `--project` target for `vela models`,
    not the Plugins project.
 3. **Decide reuse vs new first** (see `references/registration-rules.md`):
    - **New plugin, no class exists yet** → `vela add plugin` via the CLI, then code. **Never
      hand-create the plugin class.**
    - **Another behaviour on a table that already has a plugin** → prefer `vela add step` on the
      existing plugin (coherent registration) unless the concern is genuinely separate.
-   - **Reuse** an existing plugin/step/service when the behaviour is already there — don't duplicate (DRY).
+   - **Reuse** an existing plugin/step/service when the behaviour is already there - don't duplicate (DRY).
 4. **Existing project?** Find the `.csproj` first, then add the component:
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
@@ -73,5 +73,5 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 ## Verification
 
-- `dotnet build` succeeds — paste the output.
+- `dotnet build` succeeds - paste the output.
 - The generated component is present where the CLI reported it, unedited.

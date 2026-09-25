@@ -6,11 +6,11 @@ apply gate.**
 
 ## Severities
 
-- **Critical** — will fail or misbehave on a live org, or risks data loss / security. Blocks.
-- **Required** — a real defect or a violated repo standard; fix before the gate. Blocks.
-- **Nit** — optional polish / preference. Does not block.
+- **Critical** - will fail or misbehave on a live org, or risks data loss / security. Blocks.
+- **Required** - a real defect or a violated repo standard; fix before the gate. Blocks.
+- **Nit** - optional polish / preference. Does not block.
 
-## Axis 1 — Spec fidelity (against the Vela Canvas)
+## Axis 1 - Spec fidelity (against the Vela Canvas)
 
 Check the diff against the **Vela Canvas** (Requirements/DoD, acceptance cases, and the Approach/
 Structure decisions):
@@ -22,9 +22,9 @@ Structure decisions):
   was respected (`vela add step` on an existing plugin where it fit; no hand-created class).
 - Edge cases from the spec (empty / null / whitespace / boundary) are handled, not just the happy path.
 - No scope creep: nothing implemented that the Canvas did not ask for. If the diff diverged from the
-  Canvas, the Canvas should have been updated first (fix-spec-first) — flag if not.
+  Canvas, the Canvas should have been updated first (fix-spec-first) - flag if not.
 
-## Axis 2 — Standards + Dataverse smell baseline
+## Axis 2 - Standards + Dataverse smell baseline
 
 Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-gotchas.md`):
 
@@ -50,6 +50,6 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
 
 ## Output
 
-A findings list, most severe first, each: `severity — file:line — what — why — suggested fix`.
+A findings list, most severe first, each: `severity - file:line - what - why - suggested fix`.
 End with a verdict: **PASS** (no Critical/Required) or **BLOCK** (list the blockers). Record the
 list in the Build Report.

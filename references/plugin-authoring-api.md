@@ -52,11 +52,11 @@ namespace <Prefix>.Plugins.<Entity>.Plugins
   `OnMessage("name")`, `OnMessage<TMessage>()`, `On<TRequest>()`.
 - **Stage:** `PreValidation()`, `PreOperation()`, `PostOperation()`.
 - **Mode:** `Sync()`, `Async()`. **Async is PostOperation-only.**
-- **Config (terminal):** `FilterOn(e => e.Attr, ...)` — **REQUIRED on every Create/Update
+- **Config (terminal):** `FilterOn(e => e.Attr, ...)` - **REQUIRED on every Create/Update
   step**; if absent the step registration *throws when it is materialized* (harness `Execute`,
-  `vela plan` / `vela apply`) — **not** at `dotnet build` ("must declare at least one filtering
+  `vela plan` / `vela apply`) - **not** at `dotnet build` ("must declare at least one filtering
   attribute via FilterOn(...)"). On **Create**, Dataverse ignores filtering attributes at
-  runtime, so the filter is a registration requirement only — default it to the primary column
+  runtime, so the filter is a registration requirement only - default it to the primary column
   (e.g. `FilterOn(e => e.Name)`) and never drop it, even for a step that must fire on every
   create. On **Update**, the filter genuinely gates the trigger. Not valid on Delete/Retrieve.
   `WithPreImage(e => e.Attr, ...)` (Update/Delete), `WithPostImage(e => e.Attr, ...)`

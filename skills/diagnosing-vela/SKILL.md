@@ -18,7 +18,7 @@ becomes a numbered list of skill defects.
 Announce: `Using diagnosing-vela to analyse the run`.
 
 1. Reconstruct what the agent did, step by step, against the build loop. Start from the **Run
-   trace** in the Build Report (commands, exit codes, gate verdicts, timing) when present — it is
+   trace** in the Build Report (commands, exit codes, gate verdicts, timing) when present - it is
    the structured record; fall back to the host transcript otherwise.
 2. For each deviation, wrong command, or stuck point, record a **finding**:
    - which skill/reference file and what it said,
@@ -26,7 +26,7 @@ Announce: `Using diagnosing-vela to analyse the run`.
    - what the correct command/API is (grounded in source or `--help`),
    - severity: **blocker** (a literal reading fails) vs minor.
 3. Separate **skill defects** (fix the skill) from **environment issues** (e.g. no org, a Mono
-   segv) — the latter get a note in the relevant skill, not a logic change.
+   segv) - the latter get a note in the relevant skill, not a logic change.
 4. Output the numbered findings + a verdict (ready / not ready, top fixes), and hand them to
    `writing-vela-skills`.
 
@@ -42,5 +42,5 @@ Announce: `Using diagnosing-vela to analyse the run`.
 
 ## Verification
 
-- Every finding names a file, quotes what the skill said, and states the correct path — precise
+- Every finding names a file, quotes what the skill said, and states the correct path - precise
   enough to edit the skill directly.

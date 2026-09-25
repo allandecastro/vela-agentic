@@ -56,8 +56,8 @@ flowchart TD
     US([User story]) --> I[Intake]
     I --> P[Plan]
     P --> C["Challenge<br/>self-grill · declare acceptance cases"]
-    C -. emits .-> PA[/"📄 Plan artifact"/]
-    C --> G1{{"Plan gate<br/>advisory — flag &amp; continue"}}
+    C -. emits .-> PA[/"Plan artifact"/]
+    C --> G1{{"Plan gate<br/>advisory - flag &amp; continue"}}
     G1 --> S["Scaffold<br/>vela init / vela add"]
     S --> M["Model<br/>vela models"]
     M --> T["Test (RED)<br/>failing harness tests"]
@@ -66,12 +66,12 @@ flowchart TD
     V -->|red / violations| IM
     V --> RV["Review<br/>spec + standards axes · severities"]
     RV -->|Critical / Required| IM
-    RV -. emits .-> BR[/"📄 Build Report"/]
-    RV -->|PASS| G2{{"🚧 Apply gate<br/>blocking — human approves"}}
+    RV -. emits .-> BR[/"Build Report"/]
+    RV -->|PASS| G2{{"Apply gate<br/>blocking - human approves"}}
     G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
     AP --> R([Report / PR])
 
-    subgraph LOCAL ["Autonomous · local · reversible — org untouched"]
+    subgraph LOCAL ["Autonomous · local · reversible - org untouched"]
         I
         P
         C
@@ -200,7 +200,7 @@ verification-driven skills.
 ---
 
 <p align="center">
-  Crafted with ❤️ and AI by Allan De Castro
+  Crafted with care and AI by Allan De Castro
 </p>
 
 <p align="center">

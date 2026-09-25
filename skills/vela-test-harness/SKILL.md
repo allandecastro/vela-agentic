@@ -5,7 +5,7 @@ description: Use when a Vela plugin's behaviour needs proving without a real Dat
 
 # Verify with the Vela.Testing harness
 
-Prove plugin behaviour locally with **`Vela.Testing`** — no real org. This is the verification
+Prove plugin behaviour locally with **`Vela.Testing`** - no real org. This is the verification
 gate: nothing proceeds to deploy until the harness is green.
 
 **Read `references/harness-api.md` before writing a test.** It has the verbatim API; the notes
@@ -13,11 +13,11 @@ below are the workflow.
 
 ## When to use
 
-- **Before** authoring logic — test-first: write the failing tests for the acceptance cases,
+- **Before** authoring logic - test-first: write the failing tests for the acceptance cases,
   then implement to green (`vela-plugin-authoring`).
 - To reproduce a reported bug as a failing test before fixing it.
 
-## Coverage (mandatory — no happy-path-only)
+## Coverage (mandatory - no happy-path-only)
 
 Write a case for each, drawn from the Plan artifact's acceptance cases:
 - the **primary behaviour** from the story;
@@ -43,13 +43,13 @@ Announce: `Using vela-test-harness to <purpose>`.
    // assert by reading records back from crm
    ```
    Pass a **plugin instance** to `Execute(...)` (there is no `.Execute<T>()`). Do **not** chain
-   `.OnUpdate().Stage().Mode()` for a single-step plugin — it auto-derives.
+   `.OnUpdate().Stage().Mode()` for a single-step plugin - it auto-derives.
 3. Write the full **Coverage** set above (not just the happy path).
 4. **RED first (mandatory):** run the tests before implementing and confirm they **fail** for
    the right reason. Only then hand off to `vela-plugin-authoring` to implement to green.
 5. Run with the **OS-correct runner** (see `references/harness-api.md`):
    - Windows: `dotnet test <path>.Tests.csproj -c Release`.
-   - macOS/Linux: `dotnet test` cannot run net462 — build, then
+   - macOS/Linux: `dotnet test` cannot run net462 - build, then
      `mono .../xunit.console.exe <dll> -parallel none`.
 
 ## Rationalizations (excuse → rebuttal)
@@ -72,9 +72,9 @@ Announce: `Using vela-test-harness to <purpose>`.
 ## Verification
 
 - The tests were seen to **fail first** (RED), then pass after implementation.
-- The runner reports **all green** — paste the summary line and name the runner used — and the
+- The runner reports **all green** - paste the summary line and name the runner used - and the
   green cases match the declared acceptance cases.
 - The **authored code** (your plugin + your tests) is **clean of analyzer (VELA00x) violations**
-  (part of the quality gate). The scaffold's demo files may carry cosmetic VELA013 — clean or
+  (part of the quality gate). The scaffold's demo files may carry cosmetic VELA013 - clean or
   remove them for a real project; don't let a demo warning hide a real one in your code.
   Without all three, the loop does not proceed to `vela plan`/`apply`.

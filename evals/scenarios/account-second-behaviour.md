@@ -20,7 +20,7 @@ default 'Created via Vela plugin'."
 ## The decisions this scenario tests (must appear, resolved, in the Vela Canvas)
 - **Reuse vs new:** the Account already has a plugin → prefer `vela add step` (Update) on it, or a
   new plugin only if genuinely separate. **Not** a hand-created class.
-- **DRY / service:** the defaulting logic already exists (Create). It must be **shared** — extract
+- **DRY / service:** the defaulting logic already exists (Create). It must be **shared** - extract
   a service (`vela add service`) reused by both steps, **not** copy-pasted.
 - **Sync vs Async:** the default must be on the committed record → **Sync** (Async would be wrong).
 - **Filtering:** the Update step's `FilterOn(e => e.Description)` gates it to Description changes.
@@ -36,5 +36,5 @@ default 'Created via Vela plugin'."
 
 ## Planted-violation check (adversarial)
 Confirm the review would **BLOCK** each of: (a) the defaulting logic copy-pasted into a second
-class (DRY — Required); (b) a hand-created plugin class instead of `vela add step` (Required);
-(c) the step registered **Async** (spec/Approach mismatch — Required).
+class (DRY - Required); (b) a hand-created plugin class instead of `vela add step` (Required);
+(c) the step registered **Async** (spec/Approach mismatch - Required).

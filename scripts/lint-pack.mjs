@@ -46,7 +46,7 @@ async function lintSkills() {
     else if (!KEBAB.test(fm.name)) errors.push(`skills/${e.name}: name not kebab-case`);
     if (!fm.description) errors.push(`skills/${e.name}: frontmatter missing 'description'`);
     else if (/\bthen\b|; |\bemit\b/i.test(fm.description))
-      warnings.push(`skills/${e.name}: description looks like a workflow summary — keep it trigger-only ("Use when…")`);
+      warnings.push(`skills/${e.name}: description looks like a workflow summary - keep it trigger-only ("Use when…")`);
   }
 }
 

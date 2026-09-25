@@ -32,4 +32,4 @@ jobs:
         run: |
           node scripts/sync-copilot.mjs
           git diff --exit-code -- .github \
-            || (echo "::error::.github/ is out of sync — run 'node scripts/sync-copilot.mjs' and commit" && exit 1)
+            || (echo "::error::.github/ is out of sync - run 'node scripts/sync-copilot.mjs' and commit" && exit 1)

@@ -19,7 +19,7 @@ metadata, so it needs a resolved connection.
 Announce: `Using vela-models to <purpose>`.
 
 1. `vela version`; `vela models --help` to confirm flags.
-2. **Choose a scope — it is required.** One of `--solution <name>`, `--entities a,b`,
+2. **Choose a scope - it is required.** One of `--solution <name>`, `--entities a,b`,
    `--custom-apis`, `--messages`, `--roles`, `--solution-roles`. The command refuses to
    generate every table.
 3. Resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
@@ -28,7 +28,7 @@ Announce: `Using vela-models to <purpose>`.
    - C# early-bound (default): `vela models --entities account,contact -i`
    - TypeScript: add `--forms` and/or `--tables`.
    - Large orgs: pass `--timeout <minutes>`.
-5. **Verify mode** (no write): `vela models --verify ...` — exit `5` means drift.
+5. **Verify mode** (no write): `vela models --verify ...` - exit `5` means drift.
 6. **Detect an absent table/attribute** (to decide whether an AC is buildable): probe it with
    `vela models --entities <name>`. A missing entity prints `Could not find an entity` to stdout
    (exit can still be `0`), so **check the output text, not just the exit code**. An absent
@@ -45,7 +45,7 @@ Announce: `Using vela-models to <purpose>`.
 
 ## Red flags
 
-- A committed model file named `*.generated.cs` (gitignored — will be missing on CI).
+- A committed model file named `*.generated.cs` (gitignored - will be missing on CI).
 - You are about to combine `--verify` with `--forms`/`--tables` (not allowed).
 - Editing a generated model instead of regenerating.
 

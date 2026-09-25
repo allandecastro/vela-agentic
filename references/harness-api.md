@@ -38,10 +38,10 @@ public sealed class <Name>Tests
 Critical, easy-to-get-wrong facts:
 - `.Execute(...)` takes a **plugin instance**: `new <Plugin>(string.Empty, string.Empty)`.
   There is **no** `.Execute<TPlugin>()` generic.
-- The ctor is `(unsecureConfig, secureConfig)` — pass `string.Empty, string.Empty` when unused.
+- The ctor is `(unsecureConfig, secureConfig)` - pass `string.Empty, string.Empty` when unused.
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.
-- **Bulk (`*Multiple`) tests:** the builder has no `.OnCreateMultiple()` — use
+- **Bulk (`*Multiple`) tests:** the builder has no `.OnCreateMultiple()` - use
   `.OnMessage("CreateMultiple")` / `.OnMessage("UpdateMultiple")` with `.Stage(PluginStages.PostOperation).Async()`
   and seed the batch via `WithTargets(...)` (or `WithInputParameter("Targets", ...)`).
 - Assert by reading records back from `crm`, not by counting calls.
@@ -73,7 +73,7 @@ Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `With
 
 ## InMemoryOrganizationService
 
-`Vela.Testing.InMemoryOrganizationService` — a stateful in-memory `IOrganizationService`.
+`Vela.Testing.InMemoryOrganizationService` - a stateful in-memory `IOrganizationService`.
 - Seed: `.Seed(params Entity[])`; read all: `.GetAll(logicalName)`. A write-back `Update` needs the
   record to exist first: for a Create PostOperation plugin that updates the just-created record,
   `Seed` that record (with `target.Id`) before `Execute`, or the `Update` throws "does not exist".
@@ -89,7 +89,7 @@ Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `With
 Test projects target **net462**. The runner depends on the OS:
 
 - **Windows:** `dotnet test <path>.Tests.csproj -c Release`.
-- **macOS / Linux (arm64 or x64):** `dotnet test` **fails** — .NET has no net-framework test
+- **macOS / Linux (arm64 or x64):** `dotnet test` **fails** - .NET has no net-framework test
   host (`testhost.arm64.exe` missing). Run under **Mono + xunit console** instead:
   ```bash
   dotnet build <path>.Tests.csproj -c Release
@@ -97,6 +97,6 @@ Test projects target **net462**. The runner depends on the OS:
     <path>/bin/Release/net462/<Name>.Tests.dll -parallel none
   ```
   **Always pass `-parallel none` on Mono.** A native `mono-sgen` segv ("Got a segv") without it
-  is an environment crash from parallel assembly loading, **not** a test failure — the suite
+  is an environment crash from parallel assembly loading, **not** a test failure - the suite
   passes serially.
 - If you built against a stale package, purge `vela.testing` under `~/.nuget` and rebuild.

@@ -22,20 +22,20 @@ the notes below are the workflow.
 Announce: `Using vela-plugin-authoring to <purpose>`.
 
 1. Re-read the **Vela Canvas** (Operations, Approach, Structure, Norms): implement exactly those
-   Operations — no scope creep. Honour the Approach decisions (Sync/Async, reuse vs new) already made.
+   Operations - no scope creep. Honour the Approach decisions (Sync/Async, reuse vs new) already made.
 2. **Model first for any non-demo attribute.** The scaffold's generated model only covers
-   demo columns (and is `sealed` — no partial extension). If the story touches any other
-   attribute, run `vela-models` first — do not fall back to a magic string. MODEL precedes
+   demo columns (and is `sealed` - no partial extension). If the story touches any other
+   attribute, run `vela-models` first - do not fall back to a magic string. MODEL precedes
    IMPLEMENT for this reason. **No-org exception (evals/rehearsals only):** when `vela-models`
    genuinely cannot run, hand-add just the needed typed property with an explicit
    `// STAND-IN for vela-models (no org)` comment. Because the generated model is `sealed` (no
-   partial extension), this **does** mean editing the generated model file in place — that is the
+   partial extension), this **does** mean editing the generated model file in place - that is the
    **one sanctioned exception** to "never hand-edit generated files", and only for a no-org
    rehearsal. On a real run there is an org: regenerate with `vela-models` instead.
 3. Open the generated `OnExecute(I<Message>PostContext<Entity> ctx)` method (the handler is
    `OnExecute`, not `Handle<Message>`). Do not create a parallel class by hand.
 4. Read with the typed helpers: `ctx.GetTarget<Entity>()`, `ctx.GetPreImage<Entity>()`,
-   `ctx.GetPostImage<Entity>()` — never magic-string attribute names where a model exists.
+   `ctx.GetPostImage<Entity>()` - never magic-string attribute names where a model exists.
 5. Write through `ctx.UserService` (there is **no** `ctx.OrganizationService`); use
    `ctx.SystemService` / `ctx.AsSystem()` only when elevation is required.
 6. Guard the trigger via the registered **filtering attributes** (`FilterOn(e => e.X)`) and
@@ -53,7 +53,7 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 
 - "I'll use the attribute logical-name string." → Use the generated model property; a typo in
   a string is a runtime bug, a wrong property is a compile error. If the attribute isn't in the
-  model, run `vela-models` — don't reach for a string.
+  model, run `vela-models` - don't reach for a string.
 - "`ctx.OrganizationService` to write." → It doesn't exist. Use `ctx.UserService`.
 - "I'll add a second plugin class for another message." → Use `vela add step` on the existing
   plugin so registration stays in sync.
@@ -68,10 +68,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 
 - Magic-string attribute names where a generated model exists (or should, via `vela-models`).
 - `ctx.OrganizationService`, `.Handle<Message>`, or a hand-written plugin class.
-- Associate/Disassociate matched by primary entity only (won't fire — see gotchas).
+- Associate/Disassociate matched by primary entity only (won't fire - see gotchas).
 - A custom API parameter name containing a dot (uncallable on a real org).
 - Logic duplicated across plugins, or a fat `OnExecute` that should delegate to a service.
-- An illegal registration attempted (post-image on Delete, Async off PostOperation) — see registration-rules.
+- An illegal registration attempted (post-image on Delete, Async off PostOperation) - see registration-rules.
 
 ## Verification
 
