@@ -41,12 +41,42 @@ safe, **test-first, preview-before-deploy** workflow that stops before writing t
 `vela-builder` takes a user story and drives it through, with an advisory front gate and a
 blocking deploy gate:
 
-```
-INTAKE -> PLAN -> CHALLENGE ··plan gate·· SCAFFOLD -> MODEL -> TEST(RED) -> IMPLEMENT -> VERIFY ──🚧apply gate🚧── APPLY -> REPORT
-                  (self-grill  (advisory:  (init/add) (models) (failing    (code to    (suite green   (human        (only if
-                   declare      flag +                          harness     green)      + analyzers    approves)     authorized)
-                   acceptance   continue)                       tests)                  clean + plan)
-                   cases)
+```mermaid
+flowchart TD
+    US([User story]) --> I[Intake]
+    I --> P[Plan]
+    P --> C["Challenge<br/>self-grill · declare acceptance cases"]
+    C -. emits .-> PA[/"📄 Plan artifact"/]
+    C --> G1{{"Plan gate<br/>advisory — flag &amp; continue"}}
+    G1 --> S["Scaffold<br/>vela init / vela add"]
+    S --> M["Model<br/>vela models"]
+    M --> T["Test (RED)<br/>failing harness tests"]
+    T --> IM["Implement<br/>code to green"]
+    IM --> V["Verify<br/>suite green + analyzers clean + vela plan"]
+    V -->|red / violations| IM
+    V -. emits .-> BR[/"📄 Build Report"/]
+    V -->|green &amp; clean| G2{{"🚧 Apply gate<br/>blocking — human approves"}}
+    G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
+    AP --> R([Report / PR])
+
+    subgraph LOCAL ["Autonomous · local · reversible — org untouched"]
+        I
+        P
+        C
+        G1
+        S
+        M
+        T
+        IM
+        V
+    end
+
+    classDef gate fill:#fde68a,stroke:#b45309,color:#1f2937;
+    classDef org fill:#fecaca,stroke:#b91c1c,color:#1f2937;
+    classDef art fill:#e0e7ff,stroke:#4338ca,color:#1f2937;
+    class G1,G2 gate
+    class AP org
+    class PA,BR art
 ```
 
 It emits two artifacts (Markdown + YAML front-matter), committed under `docs/vela-builds/` in the
