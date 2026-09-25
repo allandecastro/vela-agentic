@@ -67,9 +67,10 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`), an
   echoed lowercase attribute (`e => e.name`), or an auto-picked non-primary column (`e => e.caseage`)
   ships a wrong registration even when it compiles.
-- The **baseline scaffold build fails right after `vela init`** (e.g. `CS0260` on framework
-  0.27.0): the auto-resolved latest framework is incompatible → re-init pinning a known-good core,
-  `vela init … --core-version 0.26.2` (see `references/cli-surface.md`).
+- The **baseline scaffold build fails right after `vela init`** (an incompatible auto-resolved
+  framework version): pin a known-good core with `vela init --core-version <v>` (see
+  `references/cli-surface.md`). This hit 0.27.0 (`CS0260`) and was fixed in 0.27.1, so current
+  releases build clean without a pin.
 
 ## Verification
 
