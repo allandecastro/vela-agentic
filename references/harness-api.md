@@ -41,6 +41,9 @@ Critical, easy-to-get-wrong facts:
 - The ctor is `(unsecureConfig, secureConfig)` — pass `string.Empty, string.Empty` when unused.
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.
+- **Bulk (`*Multiple`) tests:** the builder has no `.OnCreateMultiple()` — use
+  `.OnMessage("CreateMultiple")` / `.OnMessage("UpdateMultiple")` with `.Stage(PluginStages.PostOperation).Async()`
+  and seed the batch via `WithTargets(...)` (or `WithInputParameter("Targets", ...)`).
 - Assert by reading records back from `crm`, not by counting calls.
 - `ctx.PrimaryEntityId` in the harness is a random id, **not** `target.Id`. For a Create
   PostOperation, the new record's id is `target.Id` (set it, e.g. `new Account { Id = Guid.NewGuid() }`);

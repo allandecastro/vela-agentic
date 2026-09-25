@@ -46,4 +46,9 @@ Resolution order:
 
 ## Version
 `vela version` or `vela --version` → `vela <version>`. Run it first; skills assume the
-current release line (CLI 0.15.2 / framework `Vela.Plugins` 0.26.2 or newer).
+current release line (CLI 0.15.2 / framework `Vela.Plugins` 0.26.2).
+
+**Known scaffold break:** `vela init` resolves the *latest* `Vela.Plugins` by default, but
+**framework 0.27.0 breaks the generated demo build** (source generator emits a `partial` half while
+the demo plugin classes aren't `partial` → `CS0260` on `dotnet build`). Until fixed upstream, pin
+a known-good core: `vela init … --core-version 0.26.2`. (Reported as a Vela framework bug.)

@@ -64,6 +64,9 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You guessed a flag instead of reading `--help`.
 - You left a generated `FilterOn(e => e.Id)` placeholder or an echoed lowercase attribute
   (`e => e.name`) in place — it ships a wrong or non-compiling registration.
+- The **baseline scaffold build fails right after `vela init`** (e.g. `CS0260` on framework
+  0.27.0): the auto-resolved latest framework is incompatible → re-init pinning a known-good core,
+  `vela init … --core-version 0.26.2` (see `references/cli-surface.md`).
 
 ## Verification
 
