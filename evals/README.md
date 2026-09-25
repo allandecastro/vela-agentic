@@ -32,6 +32,14 @@ against a skill — not a problem with the agent.
   already has a plugin, exercising reuse-vs-new, DRY/service extraction, Sync-vs-Async, and the
   review's SOLID/DRY axis (with a planted-violation check).
 
+## Two tiers of checking
+
+- **Structural (CI, every PR):** `scripts/lint-pack.mjs` + the `.github/` sync check in
+  `.github/workflows/ci.yml` — frontmatter, trigger-only descriptions, reference links, and that
+  the generated Copilot surface matches the source. Cheap, runs on the free runner.
+- **Behavioural (agent runner):** the pressure scenarios above need an LLM agent + `vela` + `dotnet`
+  (+ Mono on Linux/macOS), so they run on demand / on a self-hosted agent runner, not the free CI.
+
 ## Adding a scenario
 
 Cover a real behaviour and at least one gotcha from `references/dataverse-gotchas.md`

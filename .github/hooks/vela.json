@@ -1,0 +1,22 @@
+{
+  "_generated": "by scripts/sync-copilot.mjs from hooks/ — do not edit by hand",
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash",
+        "bash": "./hooks/bin/guard.sh cp",
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash",
+        "bash": "./hooks/bin/trace.sh cp",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

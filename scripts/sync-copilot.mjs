@@ -83,9 +83,29 @@ async function genInstructions() {
   await fs.writeFile(dst, out);
 }
 
+async function genHooks() {
+  // GitHub Copilot wiring for the shared hooks/bin scripts (the source of truth).
+  const config = {
+    _generated: "by scripts/sync-copilot.mjs from hooks/ — do not edit by hand",
+    version: 1,
+    hooks: {
+      preToolUse: [
+        { type: "command", matcher: "bash", bash: "./hooks/bin/guard.sh cp", timeoutSec: 10 },
+      ],
+      postToolUse: [
+        { type: "command", matcher: "bash", bash: "./hooks/bin/trace.sh cp", timeoutSec: 10 },
+      ],
+    },
+  };
+  const dst = path.join(root, ".github", "hooks", "vela.json");
+  await fs.mkdir(path.dirname(dst), { recursive: true });
+  await fs.writeFile(dst, JSON.stringify(config, null, 2) + "\n");
+}
+
 const skills = await copySkills();
 const modes = await genChatModes();
 await genInstructions();
+await genHooks();
 console.log(
-  `Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file.`,
+  `Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 1 hooks file.`,
 );

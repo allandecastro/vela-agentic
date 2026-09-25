@@ -29,6 +29,10 @@ independent of the framework/CLI NuGet releases.
 - [x] Decision guidance in the skills: Sync-vs-Async, reuse-vs-new, service/DI, naming, SOLID/DRY,
       registration legality (`references/registration-rules.md`)
 - [x] Trigger-only skill descriptions + claim->proof evidence table
+- [x] Observability: machine-readable Run trace in the Build Report
+- [x] Dual-target enforcement hooks (Claude Code + Copilot): deny `vela apply` without approval,
+      auto-log the run trace
+- [x] CI: pack lint (frontmatter, references) + `.github/` sync check
 - [x] Agent: vela-builder (Intake→…→review→apply gate)
 
 ## Doing

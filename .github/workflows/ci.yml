@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pack:
+    name: Lint pack & check generated surface
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Lint the pack (frontmatter, references)
+        run: node scripts/lint-pack.mjs
+
+      - name: Validate JSON config files
+        run: |
+          for f in .claude-plugin/marketplace.json .claude-plugin/plugin.json hooks/hooks.json .github/hooks/vela.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok  $f"
+          done
+
+      - name: Shell scripts parse
+        run: for s in hooks/bin/*.sh; do sh -n "$s" && echo "ok  $s"; done
+
+      - name: Copilot surface is in sync with the source
+        run: |
+          node scripts/sync-copilot.mjs
+          git diff --exit-code -- .github \
+            || (echo "::error::.github/ is out of sync — run 'node scripts/sync-copilot.mjs' and commit" && exit 1)

@@ -105,6 +105,7 @@ target project and reused as the PR body:
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates) |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
+| `hooks/` | Optional dual-target enforcement: a pre-tool guard that hard-blocks `vela apply` without approval, and a post-tool run-trace logger (Claude Code + Copilot) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |
 | `.claude-plugin/` | Claude Code distribution: plugin marketplace + plugin manifest |
 | `.github/` | GitHub Copilot distribution (skills, chat mode, instructions) - **generated**, never hand-edited |
@@ -156,6 +157,16 @@ configuration.
 - The `vela` CLI (`dotnet tool install --global Vela.Cli`) and a matching `dotnet` SDK.
 - A Dataverse environment for the `models` / `plan` steps: interactive login locally, or a
   connection string / client secret for headless and cloud runs (see `AGENTS.md`).
+
+## Enforcement & observability
+
+Skills *ask* the agent to behave; **hooks** are executed by the host, so they are deterministic.
+An optional, dual-target hook layer (`hooks/`, wired for Claude Code and GitHub Copilot from one
+shared script) **denies `vela apply`** unless a human sets `VELA_APPLY_APPROVED=1`, and **logs
+every `vela`/`dotnet` command** to a run trace. The Build Report also carries a machine-readable
+**Run trace** (step, command, exit code, gate verdict, timing). See `hooks/README.md` for the
+per-host wiring and caveats (Copilot pre-tool hooks fail open on timeout; VS Code Copilot Chat has
+no hooks). A CI workflow lints the pack and checks the generated `.github/` surface stays in sync.
 
 ## Loop engineering
 
