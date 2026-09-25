@@ -50,9 +50,20 @@ Critical, easy-to-get-wrong facts:
   use `target.Id` for write-backs, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".
 
 Builder entry points (`Vela.Testing.PluginContext`): `PluginContext.For<TEntity>()` for entity
-plugins; `PluginContext.ForMessage("<uniquename>").Build()` for custom APIs / message-only,
-then `api.Execute(context.ServiceProvider)` and assert
-`context.PluginExecutionContext.OutputParameters[...]`.
+plugins; `PluginContext.ForMessage("<uniquename>")` for custom APIs / message-only.
+
+Custom API test recipe (complete - the parts that are easy to miss):
+```csharp
+var crm = new InMemoryOrganizationService();
+crm.Seed(new Account { Id = accId, Name = "Zava", Revenue = new Money(2_000_000m) });
+var context = PluginContext.ForMessage("adc_ScoreLead")
+    .WithOrganizationService(crm)                 // REQUIRED: wires the DI-resolved IOrganizationService the handler's service uses
+    .Build();
+context.PluginExecutionContext.InputParameters["email"] = "exec@fortune500.com";   // set inputs here
+api.Execute(context.ServiceProvider);             // run the Custom API instance
+Assert.Equal(55, context.PluginExecutionContext.OutputParameters["leadScore"]);    // assert outputs
+```
+Without `.WithOrganizationService(crm)` before `Build()`, the handler's `ctx.GetRequiredService<IOrganizationService>()` lookups (revenue / duplicate checks) have nothing to read.
 
 Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `WithPrimaryEntity`,
 `WithOrganizationService(crm)` (also `WithUserService`, `WithSystemService`),
@@ -63,7 +74,9 @@ Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `With
 ## InMemoryOrganizationService
 
 `Vela.Testing.InMemoryOrganizationService` — a stateful in-memory `IOrganizationService`.
-- Seed: `.Seed(params Entity[])`; read all: `.GetAll(logicalName)`.
+- Seed: `.Seed(params Entity[])`; read all: `.GetAll(logicalName)`. A write-back `Update` needs the
+  record to exist first: for a Create PostOperation plugin that updates the just-created record,
+  `Seed` that record (with `target.Id`) before `Execute`, or the `Update` throws "does not exist".
 - Full `IOrganizationService`: Create/Retrieve/Update/Delete/RetrieveMultiple/Execute/
   Associate/Disassociate. RetrieveMultiple supports QueryExpression, QueryByAttribute, FetchExpression.
 - Configure: `.WithCurrentUser(Guid)`, `.WithSecurity(...)`, `.WithClock(...)`,

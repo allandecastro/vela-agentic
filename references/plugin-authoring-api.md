@@ -80,3 +80,46 @@ Update/Delete. Custom `OnMessage` handlers get `ILocalPluginContext`.
   `ctx.UserService` (initiating user), `ctx.CallingUserService`, or `ctx.SystemService`
   / `ctx.AsSystem()`. `CreateOrganizationService(userId)` for a specific user.
 - **Trace / log:** `ctx.Trace(format, args)`, `ctx.Log(...)`, `ctx.TracingService`, `ctx.Logger`.
+
+## Dependency injection (service into a handler)
+
+Register services on the plugin, resolve them in the handler.
+
+```csharp
+using Vela.DI;                       // for the resolver type
+
+protected override void ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)
+    => services.AddScoped<IRevenueRollupService>(_ => new RevenueRollupService());
+
+private void OnExecute(ICreatePostContext<Account> ctx)
+    => ctx.GetRequiredService<IRevenueRollupService>().Do(ctx);   // ctx.GetRequiredService<T>() resolves it
+```
+
+- `ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)` is a `protected
+  virtual` override on the base; `services.AddScoped<TService>(Func<IPluginServiceResolver, TService> factory)`.
+- Resolve inside the handler with `ctx.GetRequiredService<T>()`. Keep the handler thin (SRP); put
+  real logic in the service (DRY, testable).
+
+## Custom API authoring (`vela add customapi`)
+
+Generated shape: a class deriving `CustomApiBase<TRequest, TResponse>(string unsecureConfig,
+string secureConfig)` (or the untyped `CustomApiBase`), overriding `RegisterCustomApi()`:
+
+```csharp
+protected override void RegisterCustomApi() =>
+    RegisterCustomApi("adc_ScoreLead")          // dot-free unique name, publisher prefix of the target solution
+        .AsAction()                              // or .AsFunction()
+        .RequestParameter<string>("email", optional: false, "Lead email")
+        .ResponseParameter<int>("leadScore", "0-100")
+        .Handle(OnExecute);                      // handler gets ILocalPluginContext
+```
+
+- **Signature asymmetry (easy to get wrong):**
+  `RequestParameter<T>(string name, bool optional = false, string? description = null)` has the
+  `optional` bool; `ResponseParameter<T>(string name, string? description = null)` does **not**.
+- `.AsAction()` (POST-style, side effects) vs `.AsFunction()` (GET-style, read-only). "POST" in a
+  story maps to an Action; a Custom API has **no HTTP status codes** - signal errors with
+  `throw new InvalidPluginExecutionException("...")`, and read inputs / write outputs via the
+  typed request/response or `ctx.GetInputParameter<T>(name)` / `ctx.SetOutputParameter(name, value)`.
+- Unique name and every parameter name must be **dot-free** and use the target solution's publisher
+  prefix, or `vela apply --solution` rejects them.

@@ -29,7 +29,11 @@ Announce: `Using vela-models to <purpose>`.
    - TypeScript: add `--forms` and/or `--tables`.
    - Large orgs: pass `--timeout <minutes>`.
 5. **Verify mode** (no write): `vela models --verify ...` — exit `5` means drift.
-6. Report what was written (or the drift) and where.
+6. **Detect an absent table/attribute** (to decide whether an AC is buildable): probe it with
+   `vela models --entities <name>`. A missing entity prints `Could not find an entity` to stdout
+   (exit can still be `0`), so **check the output text, not just the exit code**. An absent
+   dependency means the AC that needs it is excluded from v1 (record it in the Canvas), never invented.
+7. Report what was written (or the drift) and where.
 
 ## Rationalizations (excuse → rebuttal)
 

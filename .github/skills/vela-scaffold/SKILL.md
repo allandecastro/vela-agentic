@@ -41,10 +41,12 @@ Announce: `Using vela-scaffold to <purpose>`.
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--bound|--global] [--function|--action]`
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-5. **Fix the `FilterOn` placeholder before building.** `vela add plugin`/`add step` may emit a
-   placeholder `FilterOn(e => e.Id /* TODO: choose the attributes */)` or echo the casing you
-   passed (`--filtering-attributes name` → `e => e.name`, which won't compile). Replace it with the
-   real typed column (`e => e.Name`) — `e.Id` is the key, never a valid filtering attribute.
+5. **Verify the generated `FilterOn` before building** (it may be wrong yet compile). `vela add
+   plugin`/`add step` may emit a `FilterOn(e => e.Id /* TODO */)` placeholder, echo the casing you
+   passed (`--filtering-attributes name` -> `e => e.name`, won't compile), OR **auto-pick an
+   arbitrary non-primary column** (e.g. `--entity Incident` -> `e => e.caseage`) that compiles fine
+   and, on Create, is runtime-ignored so nothing errors. Replace it with the intended column
+   (`e => e.Name`): confirm it is the right filtering attribute, not merely that it builds.
 6. **Build** to prove it compiles: `dotnet build`. Report the exact output.
 7. Summarise what was generated and the next skill in the loop.
 
@@ -62,8 +64,9 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You are about to hand-edit a generated file.
 - Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
 - You guessed a flag instead of reading `--help`.
-- You left a generated `FilterOn(e => e.Id)` placeholder or an echoed lowercase attribute
-  (`e => e.name`) in place — it ships a wrong or non-compiling registration.
+- You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`), an
+  echoed lowercase attribute (`e => e.name`), or an auto-picked non-primary column (`e => e.caseage`)
+  ships a wrong registration even when it compiles.
 - The **baseline scaffold build fails right after `vela init`** (e.g. `CS0260` on framework
   0.27.0): the auto-resolved latest framework is incompatible → re-init pinning a known-good core,
   `vela init … --core-version 0.26.2` (see `references/cli-surface.md`).
