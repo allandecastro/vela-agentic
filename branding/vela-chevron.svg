@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Vela chevron">
+  <defs>
+    <linearGradient id="velaGrad2" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"></stop>
+      <stop offset="1" stop-color="#6366F1"></stop>
+    </linearGradient>
+  </defs>
+  
+  <path d="M32 50 L54 8 L40 8 L32 26 L24 8 L10 8 Z" fill="url(#velaGrad2)"></path>
+</svg>

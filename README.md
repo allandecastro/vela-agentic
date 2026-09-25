@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="branding/vela-chevron.svg" alt="Vela" width="110" height="110" />
+</p>
+
 <h1 align="center">vela-agentic</h1>
 
 <p align="center">
