@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Structural lint for the vela-agentic pack (runs in CI).
-// Fails on: missing/!kebab skill/agent frontmatter, name != dir, broken references/*.md links.
+// Fails on: missing/!kebab skill/agent frontmatter, name != dir, broken references/*.md links,
+//           missing skill `compatibility`, or a CLI floor above the version verified in cli-surface.md.
 // Warns on: descriptions that look like workflow summaries instead of trigger-only.
 //
 //   node scripts/lint-pack.mjs
@@ -27,6 +28,16 @@ function frontmatter(md) {
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+const semver = (v) => v.split(".").map(Number);
+const newer = (a, b) => {
+  const [x, y] = [semver(a), semver(b)];
+  for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0);
+  return false;
+};
+const cliSurface = await fs.readFile(path.join(root, "references", "cli-surface.md"), "utf8");
+const verifiedCli = cliSurface.match(/Verified against:\*\*\s*`vela (\d+\.\d+\.\d+)`/)?.[1];
+if (!verifiedCli) errors.push("references/cli-surface.md: missing '**Verified against:** `vela x.y.z`' line");
+
 async function lintSkills() {
   const base = path.join(root, "skills");
   for (const e of await fs.readdir(base, { withFileTypes: true })) {
@@ -47,6 +58,12 @@ async function lintSkills() {
     if (!fm.description) errors.push(`skills/${e.name}: frontmatter missing 'description'`);
     else if (/\bthen\b|; |\bemit\b/i.test(fm.description))
       warnings.push(`skills/${e.name}: description looks like a workflow summary - keep it trigger-only ("Use when…")`);
+    if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
+    else {
+      const floor = fm.compatibility.match(/vela CLI >= (\d+\.\d+\.\d+)/)?.[1];
+      if (floor && verifiedCli && newer(floor, verifiedCli))
+        errors.push(`skills/${e.name}: CLI floor ${floor} is above the verified ${verifiedCli} (references/cli-surface.md)`);
+    }
   }
 }
 
