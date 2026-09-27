@@ -1,5 +1,6 @@
 ---
 scenario: account-second-behaviour
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review]
 entity: account
 message: Update
 gotchas_exercised: [reuse-vs-new, dry-service, sync-vs-async, filtering-attributes]

@@ -34,8 +34,8 @@ jobs:
       - name: Generated surfaces are in sync with the source
         run: |
           node scripts/sync-copilot.mjs
-          if [ -n "$(git status --porcelain -- .github skills hooks.json)" ]; then
-            git status --porcelain -- .github skills hooks.json
-            echo "::error::generated files (.github/, skills/*/references/, hooks.json) are out of sync - run 'node scripts/sync-copilot.mjs' and commit"
+          if [ -n "$(git status --porcelain -- .github skills hooks.json evals/README.md)" ]; then
+            git status --porcelain -- .github skills hooks.json evals/README.md
+            echo "::error::generated files (.github/, skills/*/references/, hooks.json, evals coverage) are out of sync - run 'node scripts/sync-copilot.mjs' and commit"
             exit 1
           fi
