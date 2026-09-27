@@ -48,6 +48,11 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
 - **SOLID / DRY:** `OnExecute` is thin (SRP) with real logic in a service where it earns it; no
   logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
   service extracted for a trivial one-liner.
+- **Stage:** a PostOperation step that `Update`s its own primary record where a PreOperation edit of
+  `ctx.Request.Target` would do - **Required** (extra write + re-trigger risk), unless the Canvas
+  records why the committed state is needed.
+- **Recursion:** a write that can re-trigger the same step (its filtering attributes include what it
+  writes) without a guard - **Critical** (the framework's depth guard throws and the user's save fails).
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions.
 
 ## Output

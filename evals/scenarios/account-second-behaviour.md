@@ -22,7 +22,8 @@ default 'Created via Vela plugin'."
   new plugin only if genuinely separate. **Not** a hand-created class.
 - **DRY / service:** the defaulting logic already exists (Create). It must be **shared** - extract
   a service (`vela add service`) reused by both steps, **not** copy-pasted.
-- **Sync vs Async:** the default must be on the committed record → **Sync** (Async would be wrong).
+- **Sync vs Async / stage:** the default must be on the committed record → **Sync PreOperation**,
+  set on `ctx.Request.Target` (Async would be wrong; PostOperation + Update would re-trigger the step).
 - **Filtering:** the Update step's `FilterOn(e => e.Description)` gates it to Description changes.
 
 ## Success criteria (a clean pass)

@@ -24,7 +24,11 @@ Announce: `Using vela-plan-review to grill the plan`.
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
 2. **Grill it** - answer each question; an unanswered one becomes an assumption or open question:
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Is the stage
-     right (PostOperation to see committed values; Pre to change the write)?
+     right? Changing a column of the same record → **PreOperation**, set on `ctx.Request.Target` (no
+     extra write, nothing re-triggered). PostOperation only for the committed id, other records, or
+     the saved result. PostOperation + an `Update` of the same record needs a written reason.
+   - **Recursion:** does anything this plugin writes re-trigger it (its own filtering attributes, or
+     another plugin on the same table)? See the recursion gotcha in `references/dataverse-gotchas.md`.
    - **Approach - Sync vs Async:** Sync when the effect must be seen/validated in the same
      transaction; Async only for non-blocking, slow, external, eventual work (PostOperation-only).
      Default Sync; justify Async. (See `references/registration-rules.md`.)
