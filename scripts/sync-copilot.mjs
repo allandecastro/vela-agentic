@@ -14,6 +14,7 @@
 //   - .github/chatmodes/<name>.chatmode.md  a chat mode per agent
 //   - .github/copilot-instructions.md     pointer to AGENTS.md
 //   - hooks.json, .github/hooks/vela.json Copilot hook configs embedding hooks/bin/guard.sh
+//   - the coverage table in evals/README.md (from each scenario's skills_exercised)
 //
 // Run:  node scripts/sync-copilot.mjs
 
@@ -148,6 +149,29 @@ async function genHooks() {
   await write(path.join(".github", "hooks", "vela.json"), "repository hooks");
 }
 
+// Coverage matrix (skill x scenario) from each scenario's skills_exercised, into evals/README.md.
+async function genEvalCoverage() {
+  const skills = (await fs.readdir(path.join(root, "skills"), { withFileTypes: true }))
+    .filter((e) => e.isDirectory()).map((e) => e.name).sort();
+  const dir = path.join(root, "evals", "scenarios");
+  const scen = [];
+  for (const f of (await fs.readdir(dir)).filter((f) => f.endsWith(".md")).sort()) {
+    const { attrs } = frontmatter(await fs.readFile(path.join(dir, f), "utf8"));
+    const ex = (attrs.skills_exercised || "").replace(/^\[|\]$/g, "").split(",").map((x) => x.trim()).filter(Boolean);
+    scen.push({ name: path.basename(f, ".md"), ex: new Set(ex) });
+  }
+  const rows = skills.map((s) => {
+    const hits = scen.filter((c) => c.ex.has(s)).map((c) => c.name);
+    return `| \`${s}\` | ${hits.length ? hits.join(", ") : "**none**"} |`;
+  });
+  const table = ["| Skill | Exercised by |", "| --- | --- |", ...rows].join("\n");
+  const readme = path.join(root, "evals", "README.md");
+  const md = await fs.readFile(readme, "utf8");
+  const out = md.replace(/<!-- coverage:start -->[\s\S]*<!-- coverage:end -->/, `<!-- coverage:start -->\n${table}\n<!-- coverage:end -->`);
+  await fs.writeFile(readme, out);
+}
+
+await genEvalCoverage();
 const refs = await bundleReferences();
 const skills = await copySkills();
 const modes = await genChatModes();

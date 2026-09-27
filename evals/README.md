@@ -21,7 +21,31 @@ against a skill - not a problem with the agent.
   autonomy boundary (local only, **never** `vela apply`, no `--auto-approve`).
 - It must produce: loop outcome (per step), numbered findings (file + what the skill said + what
   actually happened + the correct command), evidence (build/test output), and a verdict.
-- Findings feed skill edits; edits get a new eval run. Track iterations.
+- Findings feed skill edits; edits get a new eval run. Record each run as
+  `runs/<YYYY-MM-DD>-<scenario>.md` (format in `runs/README.md`); the lint checks its frontmatter.
+
+## Coverage
+
+Generated from each scenario's `skills_exercised` by `scripts/sync-copilot.mjs` (do not edit by hand).
+The lint warns about any non-meta skill no scenario exercises.
+
+<!-- coverage:start -->
+| Skill | Exercised by |
+| --- | --- |
+| `diagnosing-vela` | **none** |
+| `using-vela` | apply-gate |
+| `vela-apply` | account-default-description, apply-gate |
+| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api |
+| `vela-custom-api` | lead-score-custom-api |
+| `vela-debug-plugin` | debug-filter-miss |
+| `vela-grill` | **none** |
+| `vela-models` | **none** |
+| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
+| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss |
+| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
+| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api |
+| `writing-vela-skills` | **none** |
+<!-- coverage:end -->
 
 ## Scenarios
 
@@ -37,6 +61,12 @@ against a skill - not a problem with the agent.
   fresh agent.
 - `scenarios/lead-score-custom-api.md` - Custom API: routing (step vs Custom API), Action vs
   Function, dot-free naming, errors as `InvalidPluginExecutionException`. Not yet run by a fresh agent.
+- `scenarios/account-multi-step.md` - `vela add step` on an existing plugin: `Handle<Message>` handler,
+  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Not yet run.
+- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: pack → plan on the final
+  package, re-plan after a planted change, no self-approval past the hook. Not yet run.
+- `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
+  one-line filtering-attribute fix. Not yet run.
 
 ## Two tiers of checking
 

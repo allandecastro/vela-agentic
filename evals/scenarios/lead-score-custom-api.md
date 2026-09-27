@@ -1,5 +1,6 @@
 ---
 scenario: lead-score-custom-api
+skills_exercised: [vela-plan-review, vela-custom-api, vela-scaffold, vela-test-harness, vela-code-review]
 entity: none (global)
 message: zava_ScoreLead (Custom API)
 gotchas_exercised: [step-vs-custom-api, custom-api-dot-free-naming, action-vs-function, ipe-errors]

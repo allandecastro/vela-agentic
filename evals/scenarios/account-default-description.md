@@ -1,5 +1,6 @@
 ---
 scenario: account-default-description
+skills_exercised: [vela-plan-review, vela-scaffold, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
 entity: account
 message: Create
 gotchas_exercised: [filtering-attributes, model-before-implement]
