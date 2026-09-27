@@ -23,7 +23,7 @@ below are the workflow.
 
 ## Coverage (mandatory - no happy-path-only)
 
-Write a case for each, drawn from the Plan artifact's acceptance cases:
+Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - the **primary behaviour** from the story;
 - each **edge** the spec implies (empty / null / invalid / boundary);
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering

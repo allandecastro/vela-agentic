@@ -25,7 +25,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
    `-parallel none` on macOS), using the real harness API.
 4. `dotnet build` is green **and** has no analyzer (VELA00x) violations.
 5. Two behaviours proven: empty Description → defaulted; non-empty → untouched.
-6. A Plan artifact (with the acceptance cases listed) and Build Report (harness pass + analyzers
+6. A Vela Canvas (with the acceptance cases listed) and Build Report (harness pass + analyzers
    clean + cases checklist) are produced per `references/build-report-template.md`.
 
 ## No-org note

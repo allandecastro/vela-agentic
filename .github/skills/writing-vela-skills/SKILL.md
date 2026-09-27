@@ -18,8 +18,9 @@ Frontmatter: `name` (kebab), and a **trigger-only `description`**: state *when* 
 applies ("Use when…"), never a summary of what it does. A workflow summary in the description
 becomes a shortcut an agent follows instead of reading the skill body - this is an observed
 failure mode (an agent that reads "…then emit the artifact. Advisory gate…" skips the actual
-steps). User-invoked skills may name their command (e.g. `/vela-grill`); the model/user-invoked
-kind otherwise lives in the body and the README table, not the description. A **`compatibility`**
+steps). Every skill is model-invoked; one meant for a human conversation may name its slash
+command in the description (e.g. `/vela-grill`). Never promise a command that does not exist - the
+end-to-end loop is the `vela-builder` agent, not a `/vela-build` command. A **`compatibility`**
 field states the CLI floor (`"vela CLI >= x.y.z ..."`, never above the version verified in
 `references/cli-surface.md`; meta skills say so instead). Body:
 `Overview → When to use → Process (announce "Using <skill> to <purpose>") → Rationalizations

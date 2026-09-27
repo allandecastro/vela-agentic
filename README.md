@@ -36,7 +36,8 @@ safe, **test-first, preview-before-deploy** workflow that stops before writing t
 - **Test-first quality gate.** Tests are written to fail (RED) before implementation, and the
   deploy gate is unreachable unless the suite is green over every acceptance case and the
   authored code is analyzer-clean.
-- **Stop before apply.** The whole loop is autonomous and reversible up to `vela plan`; a human
+- **Stop before apply.** The whole loop is autonomous and reversible up to `vela plan` (run on the
+  final, packed package); a human
   approves the `vela apply` that writes to the org.
 - **Structured, living spec.** The plan is a **Vela Canvas** (a REASONS-adapted structured spec,
   after Thoughtworks' SPDD), not free text: it captures the design decisions and stays in sync
@@ -56,22 +57,23 @@ flowchart TD
     US([User story]) --> I[Intake]
     I --> P[Plan]
     P --> C["Challenge<br/>self-grill · declare acceptance cases"]
-    C -. emits .-> PA[/"Plan artifact"/]
+    C -. emits .-> PA[/"Vela Canvas"/]
     C --> G1{{"Plan gate<br/>advisory - flag &amp; continue"}}
     G1 --> S["Scaffold<br/>vela init / vela add"]
     S --> M["Model<br/>vela models"]
     M --> T["Test (RED)<br/>failing harness tests"]
     T --> IM["Implement<br/>code to green"]
-    IM --> V["Verify<br/>suite green + analyzers clean + vela plan"]
+    IM --> V["Verify<br/>suite green + analyzers clean"]
     V -->|red / violations| IM
     V --> RV["Review<br/>spec + standards axes · severities"]
     RV -->|Critical / Required| IM
-    RV -. emits .-> BR[/"Build Report"/]
-    RV -->|PASS| G2{{"Apply gate<br/>blocking - human approves"}}
+    PV -. emits .-> BR[/"Build Report"/]
+    RV -->|PASS| PV["Package &amp; preview<br/>dotnet pack · vela sign · vela plan"]
+    PV --> G2{{"Apply gate<br/>blocking - human approves"}}
     G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
     AP --> R([Report / PR])
 
-    subgraph LOCAL ["Autonomous · local · reversible - org untouched"]
+    subgraph LOCAL ["Autonomous · local · reversible - org never written"]
         I
         P
         C
@@ -82,6 +84,7 @@ flowchart TD
         IM
         V
         RV
+        PV
     end
 
     classDef gate fill:#fde68a,stroke:#b45309,color:#1f2937;
@@ -105,7 +108,7 @@ target project and reused as the PR body:
 
 | Area | Contents |
 | --- | --- |
-| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
+| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
@@ -117,11 +120,11 @@ target project and reused as the PR body:
 
 ### Skills
 
-| Skill | Kind | What it does |
+| Skill | Invocation | What it does |
 | --- | --- | --- |
 | `using-vela` | model-invoked | Entry point: the build loop and the non-negotiable rules |
-| `vela-plan-review` | model-invoked | Self-grill the plan until every branch resolves; emit the Plan artifact |
-| `vela-grill` | user-invoked (`/vela-grill`) | Interview the human when a story is too ambiguous to build safely |
+| `vela-plan-review` | model-invoked | Self-grill the plan until every branch resolves; fill the Vela Canvas |
+| `vela-grill` | model-invoked · also `/vela-grill` | Interview the human when a story is too ambiguous to build safely |
 | `vela-scaffold` | model-invoked | `vela init` / `vela add` a solution or component (local only) |
 | `vela-models` | model-invoked | Generate early-bound C# / TypeScript models, or verify drift |
 | `vela-test-harness` | model-invoked | Write failing (RED) tests with `Vela.Testing`, run them per the OS runner |

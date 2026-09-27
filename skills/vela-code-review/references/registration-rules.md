@@ -43,7 +43,7 @@ prefix), or components fall into the org's default solution.
 - So the Canvas must record the **target solution unique name** and the **publisher prefix**, and
   confirm the solution exists before apply.
 
-## Judgment calls (NOT enforced - decide these in `vela-plan-review`, record in the Plan artifact)
+## Judgment calls (NOT enforced - decide these in `vela-plan-review`, record in the Vela Canvas)
 
 ### Sync vs Async
 - **Sync** when the caller must see the effect in the same transaction: validation/abort,

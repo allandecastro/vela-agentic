@@ -83,6 +83,8 @@ message: Create
 vela_cli: 0.19.4
 framework: 0.28.2
 packages: [Zava.Plugins.1.0.0.nupkg]
+package_sha256: <sha256 of the previewed package>
+signed: no                # yes | no (a human signs before apply) | n/a (org does not require it)
 harness: pass             # pass | fail  (must be pass to reach the gate)
 analyzers: clean          # clean | violations  (authored code; scaffold-demo VELA013 excluded)
 review: pass              # pass | block  (no unresolved Critical/Required)
@@ -102,7 +104,8 @@ apply: pending
 - Acceptance cases (RED→green): [x] empty→defaulted  [x] whitespace→defaulted  [x] non-empty→untouched
 - Harness: <runner summary + runner name>
 - Code review: <PASS / BLOCK; findings most-severe first>
-- `vela plan`: <the diff apply WOULD make, or "skipped - no org">
+- Package: <path> · sha256 <hash> · signed <yes/no/n/a>
+- `vela plan` (on that package, after review): <the diff apply WOULD make, or "skipped - no org">
 
 ## Sync log
 <any Canvas changes made during the build (requirement change → Canvas updated first; refactor →
@@ -118,7 +121,8 @@ auditable and replayable, and is the structured input for `diagnosing-vela`.
 | 2 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | RED 2 fail | 930 |
 | 3 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 | 910 |
 | 4 | review | vela-code-review | (self-review) | - | PASS 2 Nits | - |
-| 5 | plan | vela-apply | `vela plan --packages-dir artifacts -i` | - | skipped (no org) | - |
+| 5 | pack | vela-apply | `dotnet pack -c Release -o artifacts` | 0 | ok | 2400 |
+| 6 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) | - |
 
 ## Gate - human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes>
