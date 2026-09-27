@@ -4,14 +4,14 @@
 // Source of truth (edit these):
 //   - skills/<name>/SKILL.md   portable Agent Skills (consumed by Claude Code directly)
 //   - references/*.md          grounded reference docs the skills cite
-//   - agents/<name>.md         agent/persona definitions
+//   - agents/<name>.agent.md   agent definitions (Claude Code + Copilot CLI plugin)
 //   - AGENTS.md                durable rules
 //
 // Generated (do not edit by hand):
 //   - skills/<name>/references/*.md       the references each skill cites (transitively), copied
 //                                          into the skill so it is self-contained once installed
 //   - .github/skills/<name>/SKILL.md      copy of each skill for Copilot discovery
-//   - .github/chatmodes/<name>.chatmode.md  a chat mode per agent
+//   - .github/agents/<name>.agent.md      repository-level Copilot custom agents
 //   - .github/copilot-instructions.md     pointer to AGENTS.md
 //   - hooks.json, .github/hooks/vela.json Copilot hook configs embedding hooks/bin/guard.sh
 //   - the coverage table in evals/README.md (from each scenario's skills_exercised)
@@ -91,22 +91,26 @@ function frontmatter(md) {
   return { attrs, body: md.slice(m[0].length) };
 }
 
-async function genChatModes() {
+// Repository-level custom agents (.github/agents/*.agent.md) for Copilot (cloud agent, VS Code).
+// The source agents/*.agent.md are already loaded as-is by Claude Code and by a Copilot CLI plugin;
+// their Claude tool names (Bash, Read, Edit, Write, Grep, Glob) are documented Copilot aliases and
+// unknown names (Skill, Agent) are ignored by Copilot. The frontmatter must stay first in the file,
+// so the generated banner goes after it.
+async function genAgents() {
   const src = path.join(root, "agents");
-  const dst = path.join(root, ".github", "chatmodes");
+  const dst = path.join(root, ".github", "agents");
+  await rmrf(path.join(root, ".github", "chatmodes"));   // superseded by custom agents
   await rmrf(dst);
   await fs.mkdir(dst, { recursive: true });
-  const files = (await fs.readdir(src)).filter((f) => f.endsWith(".md"));
+  const files = (await fs.readdir(src)).filter((f) => f.endsWith(".agent.md"));
   for (const f of files) {
     const md = await fs.readFile(path.join(src, f), "utf8");
     const { attrs, body } = frontmatter(md);
-    const name = attrs.name || path.basename(f, ".md");
-    const description = attrs.description || "";
-    const out =
-      GENERATED_BANNER +
-      `---\ndescription: ${JSON.stringify(description)}\n---\n` +
-      body.trimStart();
-    await fs.writeFile(path.join(dst, `${name}.chatmode.md`), out);
+    const name = attrs.name || path.basename(f, ".agent.md");
+    const fm = [`name: ${name}`, `description: ${JSON.stringify(attrs.description || "")}`];
+    if (attrs.tools) fm.push(`tools: [${attrs.tools.split(",").map((t) => JSON.stringify(t.trim())).join(", ")}]`);
+    const out = `---\n${fm.join("\n")}\n---\n` + GENERATED_BANNER + body.trimStart();
+    await fs.writeFile(path.join(dst, `${name}.agent.md`), out);
   }
   return files.length;
 }
@@ -174,9 +178,9 @@ async function genEvalCoverage() {
 await genEvalCoverage();
 const refs = await bundleReferences();
 const skills = await copySkills();
-const modes = await genChatModes();
+const modes = await genAgents();
 await genInstructions();
 await genHooks();
 console.log(
-  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 2 hooks files.`,
+  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} custom agent(s), 1 instructions file, 2 hooks files.`,
 );
