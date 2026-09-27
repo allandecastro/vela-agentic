@@ -187,7 +187,8 @@ Then hand `vela-builder` a user story, the same way as on Claude Code.
 The Build Report carries a machine-readable **Run trace** (step, command, exit code, gate verdict,
 timing), so a run is auditable and replayable. On top of that, an **optional** dual-target hook
 (`hooks/`, one script wired for Claude Code and GitHub Copilot) makes the deploy gate deterministic:
-it **denies `vela apply`** unless a human sets `VELA_APPLY_APPROVED=1`. See `hooks/README.md` for
+it **denies `vela apply`** unless a human started the session with `VELA_APPLY_APPROVED=1` (the agent
+cannot approve itself with an inline prefix). See `hooks/README.md` for
 the per-host wiring and caveats. A CI workflow lints the pack and checks the generated `.github/`
 surface stays in sync.
 

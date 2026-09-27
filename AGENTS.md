@@ -90,7 +90,7 @@ the quality signal.
    `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
    `--auto-approve` unless the user explicitly authorized it for this run. An **optional hook**
    (`hooks/`, dual-target Claude Code + Copilot) can enforce this deterministically - it **denies**
-   `vela apply` unless `VELA_APPLY_APPROVED=1`. The rule holds whether or not the hook is installed.
+   `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1` (an inline prefix does not count). The rule holds whether or not the hook is installed.
 7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)

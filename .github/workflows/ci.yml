@@ -21,18 +21,21 @@ jobs:
 
       - name: Validate JSON config files
         run: |
-          for f in .claude-plugin/marketplace.json .claude-plugin/plugin.json hooks/hooks.json .github/hooks/vela.json; do
+          for f in .claude-plugin/marketplace.json .claude-plugin/plugin.json hooks/hooks.json hooks.json .github/hooks/vela.json; do
             node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok  $f"
           done
 
       - name: Shell scripts parse
-        run: for s in hooks/bin/*.sh; do sh -n "$s" && echo "ok  $s"; done
+        run: for s in hooks/bin/*.sh hooks/test/*.sh; do sh -n "$s" && echo "ok  $s"; done
+
+      - name: Apply-guard behaviour (table tests)
+        run: sh hooks/test/guard.test.sh
 
       - name: Generated surfaces are in sync with the source
         run: |
           node scripts/sync-copilot.mjs
-          if [ -n "$(git status --porcelain -- .github skills)" ]; then
-            git status --porcelain -- .github skills
-            echo "::error::generated files (.github/, skills/*/references/) are out of sync - run 'node scripts/sync-copilot.mjs' and commit"
+          if [ -n "$(git status --porcelain -- .github skills hooks.json)" ]; then
+            git status --porcelain -- .github skills hooks.json
+            echo "::error::generated files (.github/, skills/*/references/, hooks.json) are out of sync - run 'node scripts/sync-copilot.mjs' and commit"
             exit 1
           fi

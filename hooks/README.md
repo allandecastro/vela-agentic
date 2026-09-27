@@ -1,40 +1,74 @@
 # Hook - apply-guard (optional, dual-target)
 
 A skill *asks* the agent to behave; a **hook is executed by the host, not the model**, so it is a
-deterministic, non-bypassable guarantee. This is **optional hardening** - the pack works without
-it - with one job, wired for both **Claude Code** and **GitHub Copilot** from a single script.
+deterministic guardrail. This is **optional hardening** - the pack works without it - with one job,
+wired for both **Claude Code** and **GitHub Copilot** from a single script, `bin/guard.sh`.
 
 ## What it does
 
-`bin/guard.sh` is a **pre-tool** hook on the shell tool. It **denies** `vela apply`,
-`--auto-approve`, and `--yes` unless the human sets `VELA_APPLY_APPROVED=1`. This turns
-"stop before apply" from a soft rule into a hard gate. `vela plan` and everything else are
-untouched. Deny is host-agnostic: **exit code 2 denies on both hosts**. (Command tracing is
-already covered by the host transcript and the Build Report's Run trace, so there is no logging
-hook.)
+`bin/guard.sh` is a **pre-tool** hook on the shell tool. It **denies** (exit `2`, which denies on
+both hosts):
+
+- a `vela apply` command - `vela` as the command word (any path, after env assignments or
+  `env`/`command`/`exec`/`sudo`/`time`/`nohup`/`dotnet [tool run]`), in any segment of a compound
+  command (`;`, `&&`, `||`, `|`, `&`, newlines, subshells, backticks);
+- `--auto-approve` / `--yes` on a `vela` command;
+- the same inside `sh -c "..."` / `bash -c` / `eval` (checked conservatively on the raw text).
+
+It **allows** everything else, including:
+
+- `vela plan`, `vela inspect`, `vela apply --help`;
+- text that merely *mentions* `vela apply`: quoted strings (`git commit -m "..."`, `grep "vela apply"`)
+  and heredoc bodies (`gh pr create --body "$(cat <<'EOF' ... EOF)"`, which the builder uses to post
+  the Build Report);
+- `--yes` on other tools (`npm i --yes`).
+
+Behaviour is pinned by `test/guard.test.sh` (run in CI).
+
+## Approval
+
+Set `VELA_APPLY_APPROVED=1` **in the environment the host (Claude Code / Copilot CLI) was started
+from**, for a run a human has authorized. An inline prefix typed by the agent
+(`VELA_APPLY_APPROVED=1 vela apply ...`) does **not** open the gate - the agent cannot approve itself.
+
+## Limits (by design)
+
+- It is a guardrail, not a sandbox. Indirection (`v=vela; $v apply`), a script file that runs `vela
+  apply`, or a quoted command word (`"vela" apply`) are not caught. The real barriers stay: the CLI's
+  own typed-`yes` confirmation, refusing non-interactive apply without `--auto-approve`, and **not
+  giving the agent credentials that can write to the production org**.
+- `jq` parses the payload. Without `jq` the guard **fails closed** on any payload mentioning vela and
+  apply, and allows the rest.
+- POSIX `sh` only (macOS, Linux, WSL). Native Windows shells are not covered.
 
 ## Wiring (one script, two hosts)
 
 | | Claude Code | GitHub Copilot |
 |---|---|---|
-| Config | `hooks/hooks.json` (plugin root) | `.github/hooks/vela.json` (**generated** by `scripts/sync-copilot.mjs`) |
-| Event | `PreToolUse` | `preToolUse` |
-| Command field | `.tool_input.command` | `.toolArgs.command` |
-| Invocation | `guard.sh cc` | `guard.sh cp` |
+| Config | `hooks/hooks.json` (plugin) | `hooks.json` at the plugin root (Copilot CLI plugin) and `.github/hooks/vela.json` (repository hooks) - both **generated** by `scripts/sync-copilot.mjs` |
+| Event | `PreToolUse`, matcher `Bash` | `preToolUse` (all tools; non-shell payloads are allowed) |
+| Command field | `.tool_input.command` | `.toolArgs.command` (object, or a JSON string) |
+| Script | `${CLAUDE_PLUGIN_ROOT}/hooks/bin/guard.sh cc` | **embedded**: the config carries `guard.sh` base64-encoded and runs it with `sh -c` |
 
-`guard.sh` takes the host as `$1` and normalizes the payload difference internally. **`jq` is
-required.**
+Why embedded on Copilot: GitHub does not document how a hook's script path is resolved for a plugin
+(plugin directory or working directory), and on Copilot a hook that exits non-zero - e.g. "script not
+found" - **denies every tool call**. Embedding removes the path question entirely; CI checks the
+embedded copy matches `bin/guard.sh`. If it cannot decode (no `base64`), it denies loudly.
+
+Copilot CLI looks for plugin hooks in `hooks.json` **or** `hooks/hooks.json`; which one wins when
+both exist is not documented (`hooks/hooks.json` is the Claude Code file). After installing, check
+once: ask the agent to run `vela apply -p x.nupkg` and confirm it is blocked.
 
 ## Caveats
 
-- **Copilot pre-tool hooks fail *open* on timeout** - a slow guard would let `vela apply`
-  through. The guard is trivial and uses a low `timeoutSec`. Claude Code has no such fail-open.
+- **Copilot pre-tool hooks fail *open* on timeout** - a slow guard would let `vela apply` through.
+  The guard is fast and uses `timeoutSec: 10`. Claude Code has no such fail-open.
 - **VS Code Copilot Chat has no hooks** - only Copilot CLI and the cloud coding agent do. There,
-  fall back to custom-agent tool-permission deny-lists / confirmation.
+  fall back to custom-agent tool restrictions / confirmation.
 
 ## Enable / disable
 
 - Claude Code: active when the plugin is installed; remove `hooks/hooks.json` to disable.
-- Copilot: active when `.github/hooks/vela.json` is present; set `"disableAllHooks": true` or
-  remove it to disable.
-- To allow an unattended apply for one run, set `VELA_APPLY_APPROVED=1`.
+- Copilot: active when the plugin is installed (`hooks.json`) or `.github/hooks/vela.json` is present
+  in the repository; set `"disableAllHooks": true` or remove the file to disable.
+- Edit only `bin/guard.sh`, then run `node scripts/sync-copilot.mjs` and `sh hooks/test/guard.test.sh`.
