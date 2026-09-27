@@ -108,7 +108,7 @@ target project and reused as the PR body:
 
 | Area | Contents |
 | --- | --- |
-| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
+| `skills/` | 13 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
@@ -129,8 +129,9 @@ target project and reused as the PR body:
 | `vela-models` | model-invoked | Generate early-bound C# / TypeScript models, or verify drift |
 | `vela-test-harness` | model-invoked | Write failing (RED) tests with `Vela.Testing`, run them per the OS runner |
 | `vela-plugin-authoring` | model-invoked | Implement the handler to green (real `EntityPluginBase` / `OnExecute` surface) |
+| `vela-custom-api` | model-invoked | Design, test and implement a Custom API (global or bound, Action or Function, typed or light) |
 | `vela-code-review` | model-invoked | Review the diff on the spec + standards axes before the apply gate (self-review or isolated subagent) |
-| `vela-apply` | model-invoked | Preview with `vela plan`, then stop at the human deploy gate |
+| `vela-apply` | model-invoked | Package (`dotnet pack`, `vela sign`), preview with `vela plan`, stop at the human deploy gate; `vela inspect` after apply |
 | `vela-debug-plugin` | model-invoked | Diagnose a misbehaving plugin (reproduce -> minimize -> hypothesize -> fix) |
 | `writing-vela-skills` | model-invoked | The meta-skill: how to add or fix a skill under test (RED -> GREEN -> REFACTOR) |
 | `diagnosing-vela` | model-invoked | Turn a run transcript into concrete, line-level skill findings |

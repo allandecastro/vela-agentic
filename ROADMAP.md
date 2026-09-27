@@ -44,7 +44,8 @@ independent of the framework/CLI NuGet releases.
 
 ## Backlog
 
-- [ ] Skills for relationships / alternate keys, custom API round-trips, ribbon scripts
+- [x] `vela-custom-api` (global/bound, Action/Function, typed/light) + `sign`/`inspect` in `vela-apply`
+- [ ] Skills for relationships / alternate keys; web resources (`form-script`, `ribbon-script`) once supported
 - [ ] More eval scenarios (one per gotcha: association, images, deep insert, custom-API naming)
 - [ ] A CI job that validates SKILL.md frontmatter and the generated Copilot surface
 - [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands

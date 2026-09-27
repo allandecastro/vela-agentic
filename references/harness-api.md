@@ -75,6 +75,12 @@ Assert.Equal(55, context.PluginExecutionContext.OutputParameters["leadScore"]); 
 ```
 Without `.WithOrganizationService(crm)` before `Build()`, the handler's `ctx.GetRequiredService<IOrganizationService>()` lookups (revenue / duplicate checks) have nothing to read.
 
+- `vela add test <Name> --kind customapi` generates exactly this shape (`PluginContext.ForMessage("<prefix>_<Name>").Build()`).
+- **Typed / bound** Custom APIs are tested the same way, with the **plain parameter names**:
+  `InputParameters["Factor"] = 2m` → `OutputParameters["Total"]` (verified, 0.28.2).
+- A missing required input should throw `InvalidPluginExecutionException` - test it:
+  `Assert.Throws<InvalidPluginExecutionException>(() => api.Execute(context.ServiceProvider))`.
+
 Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `WithPrimaryEntity`,
 `WithOrganizationService(crm)` (also `WithUserService`, `WithSystemService`),
 `WithInputParameter`/`WithOutputParameter`, then `Execute(...)`. For cascades use

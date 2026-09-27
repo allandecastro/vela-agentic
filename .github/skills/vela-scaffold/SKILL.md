@@ -44,7 +44,8 @@ Announce: `Using vela-scaffold to <purpose>`.
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
-     (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`)
+     (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
+     `vela-custom-api` first
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
 5. **Verify the generated `FilterOn` before building** (it may be wrong yet compile):
    - `vela add step` emits a `FilterOn(e => e.Id /* TODO */)` placeholder that **fails the build with

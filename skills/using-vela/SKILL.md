@@ -37,6 +37,9 @@ reversible until the gate; the org is only touched at `apply`.
 11. **Apply gate** - emit the **Build Report**, stop. A human runs `vela apply`.
 12. **Report** - PR with the Build Report as its body; commit the artifact in the project.
 
+A story that asks for a callable operation (inputs → outputs) rather than a reaction to a table event
+follows the same loop with `vela-custom-api` driving the design, tests and implementation.
+
 If something misbehaves, switch to `vela-debug-plugin`.
 
 ## Skills, agents and how they run

@@ -32,7 +32,10 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   attribute for Update; Associate/Disassociate matched by **message**, not by primary entity.
 - **Images:** any image the handler reads is actually registered for that message/stage with the
   needed attributes.
-- **Custom API:** no parameter/unique name contains a dot (uncallable on a real org).
+- **Custom API:** no parameter/unique name contains a dot (uncallable on a real org); the unique name
+  carries the target solution's publisher prefix; a Function has no side effects; invalid input throws
+  `InvalidPluginExecutionException` (not an error code in an output); on the typed form every
+  request/response property is mapped in `.Request(...)` / `.Response(...)`.
 - **Models:** typed model properties, not magic-string attribute names; models regenerated, not
   hand-edited; no committed `*.generated.cs`.
 - **Service:** writes go through `ctx.UserService` / `ctx.SystemService` (there is no
