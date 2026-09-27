@@ -83,6 +83,17 @@ Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `With
 `PluginPipeline.FromAssemblyOf<T>()`, `Register<TPlugin>()`, `Seed(...)`, write through
 `pipeline.Service`, inspect `pipeline.ExecutionLog`.
 
+Recursion / cascade recipe - `PluginPipeline` runs every registered plugin on each write made through
+`pipeline.Service`, so a self-triggering plugin actually recurses (verified, 0.28.2):
+```csharp
+var id = Guid.NewGuid();
+var pipeline = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "x" });
+pipeline.Service.Update(new Account { Id = id, Name = "  Hello   world  " });   // a write-back loop throws "...prevent recursion"
+var row = pipeline.Service.Retrieve("account", id, new ColumnSet("name"));
+Assert.Equal("Hello world", row.GetAttributeValue<string>("name"));
+```
+Use it whenever a step writes a column that could re-trigger it: the test fails on recursion.
+
 ## InMemoryOrganizationService
 
 `Vela.Testing.InMemoryOrganizationService` - a stateful in-memory `IOrganizationService`.

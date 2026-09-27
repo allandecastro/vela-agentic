@@ -31,6 +31,10 @@ against a skill - not a problem with the agent.
 - `scenarios/account-second-behaviour.md` - decisions + review: a second behaviour on a table that
   already has a plugin, exercising reuse-vs-new, DRY/service extraction, Sync-vs-Async, and the
   review's SOLID/DRY axis (with a planted-violation check).
+- `scenarios/account-update-recursion.md` - stage + recursion: normalise a column on Update. The
+  PostOperation write-back trap recurses until the depth guard throws (reproduced with
+  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Not yet run by a
+  fresh agent.
 
 ## Two tiers of checking
 
