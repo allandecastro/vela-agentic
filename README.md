@@ -108,7 +108,7 @@ target project and reused as the PR body:
 
 | Area | Contents |
 | --- | --- |
-| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
+| `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
@@ -120,11 +120,11 @@ target project and reused as the PR body:
 
 ### Skills
 
-| Skill | Kind | What it does |
+| Skill | Invocation | What it does |
 | --- | --- | --- |
 | `using-vela` | model-invoked | Entry point: the build loop and the non-negotiable rules |
 | `vela-plan-review` | model-invoked | Self-grill the plan until every branch resolves; fill the Vela Canvas |
-| `vela-grill` | user-invoked (`/vela-grill`) | Interview the human when a story is too ambiguous to build safely |
+| `vela-grill` | model-invoked · also `/vela-grill` | Interview the human when a story is too ambiguous to build safely |
 | `vela-scaffold` | model-invoked | `vela init` / `vela add` a solution or component (local only) |
 | `vela-models` | model-invoked | Generate early-bound C# / TypeScript models, or verify drift |
 | `vela-test-harness` | model-invoked | Write failing (RED) tests with `Vela.Testing`, run them per the OS runner |

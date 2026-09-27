@@ -25,7 +25,7 @@ independent of the framework/CLI NuGet releases.
 - [x] Gated build loop with two artifacts (Vela Canvas + Build Report)
 - [x] Front challenge gate: `vela-plan-review` (self-grill) + `/vela-grill` (interview human)
 - [x] Loop engineering: `evals/` + `writing-vela-skills` + `diagnosing-vela`
-- [x] Skill taxonomy: model-invoked vs user-invoked
+- [x] Skill taxonomy: every skill model-invoked (runnable by name); the loop is the `vela-builder` agent
 - [x] Code-review gate before apply: `vela-code-review` (two-axis, severities)
 - [x] Two agents: `vela-builder` + isolated read-only `vela-reviewer`
 - [x] Vela Canvas (REASONS-adapted structured spec, after SPDD) as the plan artifact, with a
@@ -41,7 +41,6 @@ independent of the framework/CLI NuGet releases.
 ## Doing
 
 - [ ] Iterate the eval loop to a clean autonomous pass (no blocking finding) = "ready"
-- [ ] Thin command wrappers so `/vela-build`, `/vela-grill`, `/vela-apply` are real slash commands
 
 ## Backlog
 

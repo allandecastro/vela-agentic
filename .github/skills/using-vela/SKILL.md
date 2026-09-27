@@ -21,7 +21,7 @@ reversible until the gate; the org is only touched at `apply`.
 3. **Challenge** - `vela-plan-review`: self-grill the plan and fill the **Vela Canvas** (the
    REASONS-adapted spec holding the Sync/Async, reuse-vs-new, service, naming and safeguard
    decisions), flag assumptions. Advisory gate - continue (the user may interrupt). If only the
-   human can resolve an ambiguity, use `/vela-grill`. The Canvas is a **living spec**: if the
+   human can resolve an ambiguity, use `vela-grill`. The Canvas is a **living spec**: if the
    requirement changes later, update the Canvas before the code.
 4. **Scaffold** - `vela-scaffold`
 5. **Model** - `vela-models`
@@ -39,12 +39,15 @@ reversible until the gate; the org is only touched at `apply`.
 
 If something misbehaves, switch to `vela-debug-plugin`.
 
-## Skill kinds
+## Skills, agents and how they run
 
-- **Model-invoked** (auto): `using-vela`, `vela-plugin-authoring`, `vela-test-harness`,
-  `vela-plan-review`, `vela-code-review`, `writing-vela-skills`, `diagnosing-vela`.
-- **User-invoked** (`/command`): `/vela-build` (the whole loop), `/vela-grill` (interview the
-  story), `/vela-apply` (gated deploy).
+- **Every skill is model-invoked**: you load it when its description matches the situation. A human
+  can also run any skill by name as a slash command where the host supports it (`/vela-grill`).
+- **`vela-grill`** is the one meant for a conversation with the human. Invoke it yourself when only
+  the human can resolve an ambiguity; a human may also start it with `/vela-grill`.
+- **The end-to-end loop is the `vela-builder` agent** and the isolated review is the
+  **`vela-reviewer` agent** - agents, not skills. There is no `/vela-build` or `/vela-apply` command:
+  hand a story to `vela-builder`, and `vela-apply` is the skill it uses to preview.
 
 ## Non-negotiable rules
 

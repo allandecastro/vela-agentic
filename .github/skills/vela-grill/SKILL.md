@@ -1,6 +1,6 @@
 ---
 name: vela-grill
-description: User-invoked (/vela-grill). Use when a user story is ambiguous or underspecified and only the human can resolve it before building.
+description: Use when a user story is ambiguous or underspecified and only the human can resolve it before building (also run by a human as /vela-grill).
 compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 ---
 
@@ -9,7 +9,7 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 > Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
 > directory containing this `SKILL.md`), not to the project you are working in.
 
-User-invoked interview: when a story is too vague to build safely, grill the human until the
+Interview the human: when a story is too vague to build safely, grill the human until the
 plan has no unresolved branch. This is the interactive sibling of `vela-plan-review` (which
 grills the plan itself); use this one when only the human can resolve the ambiguity.
 
