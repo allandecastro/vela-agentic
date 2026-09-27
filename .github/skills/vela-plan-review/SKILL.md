@@ -23,6 +23,8 @@ Announce: `Using vela-plan-review to grill the plan`.
 
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
 2. **Grill it** - answer each question; an unanswered one becomes an assumption or open question:
+   - **Step or Custom API?** A reaction to a table event (create/update/delete...) is a plugin step. An
+     operation someone *calls* with inputs and outputs is a Custom API → `vela-custom-api`.
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Is the stage
      right? Changing a column of the same record → **PreOperation**, set on `ctx.Request.Target` (no
      extra write, nothing re-triggered). PostOperation only for the committed id, other records, or

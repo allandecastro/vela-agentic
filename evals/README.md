@@ -35,6 +35,8 @@ against a skill - not a problem with the agent.
   PostOperation write-back trap recurses until the depth guard throws (reproduced with
   `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Not yet run by a
   fresh agent.
+- `scenarios/lead-score-custom-api.md` - Custom API: routing (step vs Custom API), Action vs
+  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Not yet run by a fresh agent.
 
 ## Two tiers of checking
 
