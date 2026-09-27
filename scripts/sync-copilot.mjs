@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-// Generate the GitHub Copilot distribution surface from the shared source of truth.
+// Generate the distribution surfaces from the shared source of truth.
 //
 // Source of truth (edit these):
 //   - skills/<name>/SKILL.md   portable Agent Skills (consumed by Claude Code directly)
+//   - references/*.md          grounded reference docs the skills cite
 //   - agents/<name>.md         agent/persona definitions
 //   - AGENTS.md                durable rules
 //
 // Generated (do not edit by hand):
+//   - skills/<name>/references/*.md       the references each skill cites (transitively), copied
+//                                          into the skill so it is self-contained once installed
 //   - .github/skills/<name>/SKILL.md      copy of each skill for Copilot discovery
 //   - .github/chatmodes/<name>.chatmode.md  a chat mode per agent
 //   - .github/copilot-instructions.md     pointer to AGENTS.md
@@ -23,6 +26,42 @@ const GENERATED_BANNER =
 
 async function rmrf(p) {
   await fs.rm(p, { recursive: true, force: true });
+}
+
+const REF_BANNER = (f) =>
+  `<!-- GENERATED copy of references/${f} by scripts/sync-copilot.mjs. Edit the source file, not this copy. -->\n\n`;
+
+// Reference files a markdown text cites, as `references/x.md` or a bare `x.md` that exists in references/.
+function citedRefs(md, known) {
+  const found = new Set();
+  for (const m of md.matchAll(/(?:references\/)?([a-z0-9-]+\.md)/g)) if (known.has(m[1])) found.add(m[1]);
+  return found;
+}
+
+async function bundleReferences() {
+  const refDir = path.join(root, "references");
+  const known = new Set((await fs.readdir(refDir)).filter((f) => f.endsWith(".md")));
+  const refText = new Map();
+  for (const f of known) refText.set(f, await fs.readFile(path.join(refDir, f), "utf8"));
+
+  const skillsDir = path.join(root, "skills");
+  let copies = 0;
+  for (const e of await fs.readdir(skillsDir, { withFileTypes: true })) {
+    if (!e.isDirectory()) continue;
+    const skill = path.join(skillsDir, e.name);
+    const dst = path.join(skill, "references");
+    await rmrf(dst);
+    // Transitive closure: a cited reference may itself cite others.
+    const need = citedRefs(await fs.readFile(path.join(skill, "SKILL.md"), "utf8"), known);
+    for (const f of need) for (const g of citedRefs(refText.get(f), known)) need.add(g);
+    if (!need.size) continue;
+    await fs.mkdir(dst, { recursive: true });
+    for (const f of [...need].sort()) {
+      await fs.writeFile(path.join(dst, f), REF_BANNER(f) + refText.get(f));
+      copies++;
+    }
+  }
+  return copies;
 }
 
 async function copySkills() {
@@ -99,10 +138,11 @@ async function genHooks() {
   await fs.writeFile(dst, JSON.stringify(config, null, 2) + "\n");
 }
 
+const refs = await bundleReferences();
 const skills = await copySkills();
 const modes = await genChatModes();
 await genInstructions();
 await genHooks();
 console.log(
-  `Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 1 hooks file.`,
+  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 1 hooks file.`,
 );

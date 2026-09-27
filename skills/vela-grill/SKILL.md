@@ -25,7 +25,8 @@ Announce: `Using vela-grill to resolve the story`.
    - Data: what exact values are read and written; where do defaults/edge cases go?
    - Scope: single record or bulk (*Multiple)? which security context?
    - Definition of done: how will we know it worked?
-3. Keep going until every branch resolves. Record answers in the Plan artifact.
+3. Keep going until every branch resolves. Record answers in the Plan artifact
+   (`references/build-report-template.md`).
 4. Hand off to the build loop (`vela-plan-review` → `vela-scaffold`).
 
 ## Rationalizations (excuse → rebuttal)

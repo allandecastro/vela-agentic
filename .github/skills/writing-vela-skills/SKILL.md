@@ -21,7 +21,10 @@ field states the CLI floor (`"vela CLI >= x.y.z ..."`, never above the version v
 `references/cli-surface.md`; meta skills say so instead). Body:
 `Overview → When to use → Process (announce "Using <skill> to <purpose>") → Rationalizations
 (excuse → rebuttal) → Red flags → Verification (the evidence required)`. Keep the body lean;
-push verbatim code and long reference into `references/` and point at it.
+push verbatim code and long reference into the root `references/` and cite it as
+`references/<file>.md`. `node scripts/sync-copilot.mjs` copies every cited reference (and what it cites)
+into the skill's own `references/` folder, so the skill stays self-contained once installed. Never edit
+those copies.
 
 ## The loop (RED → GREEN → REFACTOR)
 

@@ -31,7 +31,7 @@ Announce: `Using vela-code-review to review the change`.
    **Critical**, **Required**, **Nit**.
 4. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix and re-verify
    (back to `vela-plugin-authoring` / `vela-test-harness`), then review again. Nits are optional.
-5. Record the findings list in the Build Report.
+5. Record the findings list in the Build Report (`references/build-report-template.md`).
 
 ## Self-review vs isolated reviewer (phased)
 
