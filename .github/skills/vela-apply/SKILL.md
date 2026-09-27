@@ -24,8 +24,15 @@ Announce: `Using vela-apply to <purpose>`.
 
 1. `vela version`; `vela plan --help` / `vela apply --help` / `vela sign --help` to confirm flags
    (`references/cli-surface.md`).
-2. **Package** the final code: `dotnet pack` as the project defines (e.g. `-c Release`). Record the
-   `.nupkg` path and its hash (`shasum -a 256 <pkg>`). This is the artifact everything below refers to.
+2. **Package** the final code: **`dotnet build <Solution>.sln -c Release`**. The scaffold's plugin
+   project builds the deployable plugin package on build (`GeneratePackageOnBuild`) into the solution's
+   `artifacts/` folder. **Not `dotnet pack`**: run cold it exits 0 with `NU5128` and emits a package with
+   **no assembly** (verified, scaffold 0.19.6). Then check the package really holds your plugin -
+   `unzip -l artifacts/<Prefix>.Plugins.<ver>.nupkg | grep '<Prefix>.Plugins.dll'` - and record its
+   path and hash (`shasum -a 256 <pkg>`). This is the artifact everything below refers to.
+   **Only what the Canvas asks for may be in it:** the scaffold's demo plugins and Custom APIs (e.g. an
+   Account create step, `Ping`) are registered too if they are still in the project - remove them
+   for a real project (`vela-scaffold`).
 3. **Sign - when the target org requires signed packages** (or the project already signs):
    `vela sign --package <pkg> --fingerprint <hex>` (certificate store), or `--pfx <file>
    --pfx-credential <target>`. Never put `--pfx-password` on the command line (it lands in shell
@@ -35,14 +42,15 @@ Announce: `Using vela-apply to <purpose>`.
 4. **Resolve the connection** (`references/cli-surface.md`): headless → `DATAVERSE_CONNECTION_STRING`,
    or `--url`/`--tenant-id`/`--client-id` + `DATAVERSE_CLIENT_SECRET`; `-i` only when a human is at a
    browser. Never echo a secret.
-5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json`. Output is JSON when piped;
+5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json` (or `--packages-dir artifacts`). Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
    any). `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.
 6. **Summarise** exactly what `apply` would change in the Build Report's **Gate** section
    (`references/build-report-template.md`): package path + hash, signed or not, the plan diff.
 7. **Stop here by default.** Do not run `apply`. Let the human run it, or wait for an explicit "go
-   ahead and apply" for this run.
+   ahead and apply" **for this run**. "Ship it", "looks good", "merge it" or a ready/merged PR are
+   not that: they are about the code, not a write to the org.
 8. If (and only if) authorized: `vela apply -p <pkg> --solution <uniquename> <connection>`.
    **`--solution` is required here** (apply-only): every component is tagged into that solution;
    without it they fall into the default solution. The solution + its publisher must already exist
@@ -61,7 +69,13 @@ Announce: `Using vela-apply to <purpose>`.
 - "I'll pass --auto-approve to avoid the prompt." → The prompt is the safety. Only bypass it
   when the user explicitly authorized unattended apply for this run.
 - "I ran `plan` earlier, before the review fixes." → The preview is of a package that no longer
-  exists. Re-pack, re-sign, re-plan.
+  exists. Any code change after the preview: re-run the tests, analyzers and review, rebuild the
+  package, re-sign, re-plan. The file name does not change between builds - "same package" means
+  **same sha256**.
+- "The user said ship it." → That approves the change, not a write to a live org. Hand over the
+  exact `vela apply` command.
+- "The guard hook blocks me; I'll set `VELA_APPLY_APPROVED=1`." → Only a human sets it, when starting
+  the session. Never set it, export it, or route around the hook.
 - "Signing is a deploy detail, I'll sign after the preview." → Signing produces a different
   package; preview the signed one.
 - "A failed chunk is probably transient, retry." → Read the reported failure first; do not
@@ -70,7 +84,9 @@ Announce: `Using vela-apply to <purpose>`.
 ## Red flags
 
 - Running `apply` without a preceding clean `vela plan` **on the same package** (same hash).
-- A code change, re-pack or re-sign after the `plan` without a new `plan`.
+- A code change, rebuild or re-sign after the `plan` without new tests, review and `plan`.
+- `dotnet pack` for the plugin package, or a package whose `unzip -l` has no `<Prefix>.Plugins.dll`.
+- Setting or exporting `VELA_APPLY_APPROVED` yourself, or retrying a denied `vela apply` another way.
 - `--pfx-password` or `--client-secret <value>` on a command line.
 - Passing `--auto-approve` without explicit authorization.
 - Reporting success on a partial/failed batch.

@@ -81,7 +81,7 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.19.4
+vela_cli: 0.19.6
 framework: 0.28.2
 packages: [Zava.Plugins.1.0.0.nupkg]
 package_sha256: <sha256 of the previewed package>
@@ -124,8 +124,8 @@ Never estimate or fill in a value you did not observe (no timings from memory).
 | 2 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
 | 3 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
 | 4 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
-| 5 | pack | vela-apply | `dotnet pack -c Release -o artifacts` | 0 | ok |
-| 6 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) |
+| 5 | package | vela-apply | `dotnet build Zava.sln -c Release` (→ `artifacts/zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
+| 6 | plan | vela-apply | `vela plan -p artifacts/zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) |
 
 ## Gate - human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes>

@@ -55,7 +55,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 | IMPLEMENT | code to green | tests pass |
 | VERIFY | full suite green + analyzers clean | runner summary, 0 VELA00x |
 | REVIEW | code review on spec + standards | no unresolved Critical/Required |
-| PREVIEW | `dotnet pack` → `vela sign` (if required) → `vela plan` on that package | plan output (or "skipped - no org") |
+| PREVIEW | `dotnet build -c Release` (writes `artifacts/*.nupkg`) → `vela sign` (if required) → `vela plan` on that package | plan output (or "skipped - no org") |
 | APPLY | `vela apply` | apply gate: a human approves; only if authorized |
 
 **Test-first is mandatory.** After MODEL, write the harness tests for the declared acceptance
@@ -74,7 +74,9 @@ the quality signal.
   (`vela-code-review`) on two axes - **spec** (the Vela Canvas's acceptance cases + the
   `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell
   baseline). Critical/Required findings block the gate.
-- **Preview on the final package**: after review, `dotnet pack` (and `vela sign` when the org
+- **Preview on the final package**: after review, `dotnet build -c Release` - the scaffold builds the
+  plugin package into `artifacts/` on build (`dotnet pack` would emit a package without the assembly) -
+  (and `vela sign` when the org
   requires signed packages), then `vela plan` on that exact package. `plan` never writes, so it always
   runs; a code change after it invalidates it.
 - **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.

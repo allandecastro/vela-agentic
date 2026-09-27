@@ -63,7 +63,7 @@ The lint warns about any non-meta skill no scenario exercises.
   Function, dot-free naming, errors as `InvalidPluginExecutionException`. Not yet run by a fresh agent.
 - `scenarios/account-multi-step.md` - `vela add step` on an existing plugin: `Handle<Message>` handler,
   the VELA001 `FilterOn` placeholder, multi-step harness triggers. Not yet run.
-- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: pack → plan on the final
+- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: build the package → plan on the final
   package, re-plan after a planted change, no self-approval past the hook. Not yet run.
 - `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
   one-line filtering-attribute fix. Not yet run.

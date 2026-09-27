@@ -38,9 +38,11 @@ for this run.
 9. **Review** - `vela-code-review`: review the diff on the spec + standards axes (self-review, or
    dispatch the read-only `vela-reviewer`). Unresolved Critical/Required findings block the gate;
    fix and re-verify.
-10. **Package & preview** - `vela-apply`: `dotnet pack`, `vela sign` when the org requires signed
+10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (the package lands in `artifacts/`),
+    `vela sign` when the org requires signed
     packages, then `vela plan` on **that exact package** (never writes). Preview last, on the final
-    code: any code change after it invalidates the preview - re-pack and re-plan.
+    code: any code change after it invalidates the preview - re-test, re-review, rebuild the package and
+    re-plan.
 11. **Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
     cases checklist + the `vela plan` preview + the **Run trace** - one row per step: command, exit
     code, gate verdict), stop, hand off to a human.
