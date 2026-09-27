@@ -85,6 +85,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 - Associate/Disassociate matched by primary entity only (won't fire - see gotchas).
 - A custom API parameter name containing a dot (uncallable on a real org).
 - Logic duplicated across plugins, or a fat `OnExecute` that should delegate to a service.
+- A PostOperation `ctx.UserService.Update` of the record the step fired on (use PreOperation +
+  `ctx.Request.Target`), or a written column that is also in the step's `FilterOn` (recursion).
+- A mutable field on the plugin class (VELA011), a secret in code or unsecure config, or
+  `if (ctx.Depth > 1) return;` without a recorded reason - see `references/dataverse-gotchas.md`.
 - An illegal registration attempted (post-image on Delete, Async off PostOperation) - see registration-rules.
 
 ## Verification
