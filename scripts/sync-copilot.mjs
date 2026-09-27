@@ -13,6 +13,7 @@
 //   - .github/skills/<name>/SKILL.md      copy of each skill for Copilot discovery
 //   - .github/chatmodes/<name>.chatmode.md  a chat mode per agent
 //   - .github/copilot-instructions.md     pointer to AGENTS.md
+//   - hooks.json, .github/hooks/vela.json Copilot hook configs embedding hooks/bin/guard.sh
 //
 // Run:  node scripts/sync-copilot.mjs
 
@@ -122,20 +123,29 @@ async function genInstructions() {
   await fs.writeFile(dst, out);
 }
 
+// Copilot does not document how a hook script path is resolved (plugin dir? cwd?), and a hook that
+// exits non-zero (e.g. script not found) DENIES every tool call. So the Copilot configs embed the
+// guard itself (base64 of hooks/bin/guard.sh) instead of pointing at a path. Fails closed and loud
+// if it cannot decode.
 async function genHooks() {
-  // GitHub Copilot wiring for the shared hooks/bin scripts (the source of truth).
-  const config = {
-    _generated: "by scripts/sync-copilot.mjs from hooks/ - do not edit by hand",
+  const guard = await fs.readFile(path.join(root, "hooks", "bin", "guard.sh"));
+  const b64 = guard.toString("base64");
+  const bash =
+    `g="$(printf %s '${b64}' | base64 -d 2>/dev/null || printf %s '${b64}' | base64 -D 2>/dev/null)"; ` +
+    `[ -n "$g" ] || { echo 'vela apply-guard: cannot decode the embedded guard (base64 missing?)' >&2; exit 2; }; ` +
+    `sh -c "$g" vela-guard cp`;
+  const config = (where) => ({
+    _generated: `by scripts/sync-copilot.mjs from hooks/bin/guard.sh (${where}) - do not edit by hand`,
     version: 1,
-    hooks: {
-      preToolUse: [
-        { type: "command", matcher: "bash", bash: "./hooks/bin/guard.sh cp", timeoutSec: 10 },
-      ],
-    },
+    hooks: { preToolUse: [{ type: "command", bash, timeoutSec: 10 }] },
+  });
+  const write = async (rel, where) => {
+    const dst = path.join(root, rel);
+    await fs.mkdir(path.dirname(dst), { recursive: true });
+    await fs.writeFile(dst, JSON.stringify(config(where), null, 2) + "\n");
   };
-  const dst = path.join(root, ".github", "hooks", "vela.json");
-  await fs.mkdir(path.dirname(dst), { recursive: true });
-  await fs.writeFile(dst, JSON.stringify(config, null, 2) + "\n");
+  await write("hooks.json", "Copilot CLI plugin");
+  await write(path.join(".github", "hooks", "vela.json"), "repository hooks");
 }
 
 const refs = await bundleReferences();
@@ -144,5 +154,5 @@ const modes = await genChatModes();
 await genInstructions();
 await genHooks();
 console.log(
-  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 1 hooks file.`,
+  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} chat mode(s), 1 instructions file, 2 hooks files.`,
 );
