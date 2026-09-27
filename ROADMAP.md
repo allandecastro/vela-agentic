@@ -35,22 +35,40 @@ independent of the framework/CLI NuGet releases.
 - [x] Trigger-only skill descriptions + claim->proof evidence table
 - [x] Observability: machine-readable Run trace in the Build Report
 - [x] Optional dual-target guard hook (Claude Code + Copilot): deny `vela apply` without approval
-- [x] CI: pack lint (frontmatter, references) + `.github/` sync check
+- [x] CI: pack lint (frontmatter, references) + generated-surface sync check
 - [x] Agent: vela-builder (Intake→…→review→apply gate)
+
+## v0.2 (audit follow-up, 2026-09)
+
+- [x] Verified against `vela` 0.19.6 / `Vela.Plugins` 0.28.2; `compatibility` floor per skill, capped by CI
+- [x] Skills self-contained once installed: cited references bundled into each skill
+- [x] Agents declare their tools; `vela-reviewer` read-only by construction; `<name>.agent.md` for
+      Claude Code + Copilot CLI, `.github/agents/` generated (chat modes dropped)
+- [x] Apply-guard parses commands (quoted text and heredocs are data), fails closed without `jq`,
+      pinned by 78 table tests; embedded in the generated Copilot hook configs
+- [x] Loop: preview (`dotnet pack` → `vela sign` → `vela plan`) after review, on the final package
+- [x] PreOperation on `ctx.Request.Target` as the default for same-record columns; runtime gotchas
+      (recursion guard, plugin state, sandbox, transactions, secrets)
+- [x] `vela-custom-api`; `sign` / `inspect` in `vela-apply`; `vela-debug-plugin` evidence discipline
+- [x] Lint catches phantom skills, renamed terms, README drift, eval metadata; tiered eval rule, run
+      records, generated coverage table
 
 ## Doing
 
-- [ ] Iterate the eval loop to a clean autonomous pass (no blocking finding) = "ready"
+- [ ] Run the new and changed scenarios with a fresh agent and record them under `evals/runs/`
+      (recursion, custom API, multi-step, apply gate, debug), then iterate to a clean pass = "ready"
 
 ## Backlog
 
-- [x] `vela-custom-api` (global/bound, Action/Function, typed/light) + `sign`/`inspect` in `vela-apply`
+- [ ] Scenarios for the uncovered skills: `vela-grill` (an ambiguous story), `vela-models` (needs a dev org)
+- [ ] More gotcha scenarios: association matching, images (typed `partial`), deep insert, bulk `*Multiple`
 - [ ] Skills for relationships / alternate keys; web resources (`form-script`, `ribbon-script`) once supported
-- [ ] More eval scenarios (one per gotcha: association, images, deep insert, custom-API naming)
-- [ ] A CI job that validates SKILL.md frontmatter and the generated Copilot surface
+- [ ] Make `vela-reviewer` the default review path (today: self-review first) once the eval loop is stable
+- [ ] Ask upstream (Vela CLI) for a read-only trace command (e.g. `vela logs`) so the agent can read the
+      Plug-in Trace Log through the CLI contract
+- [ ] Upstream nits seen while verifying: the scaffold's TODO comment still suggests `GetTarget`; after
+      `vela add step` the class comment still says "Single-step plugin"
 - [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands
-- [ ] Turn on the isolated review subagent in `vela-code-review` once the loop is stable
-- [x] Sharpen `vela-debug-plugin`: no red repro, no fix; no-org path; the human supplies the Plug-in Trace Log (named fields)
-- [ ] Ask upstream (Vela CLI) for a read-only trace command (e.g. `vela logs`) so the agent can read the Plug-in Trace Log through the CLI contract
-- [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness security plan, don't duplicate)
+- [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness
+      security plan, don't duplicate)
 - [ ] `vela-simplify` gate (behavior-preserving) if plugin diffs start accreting complexity
