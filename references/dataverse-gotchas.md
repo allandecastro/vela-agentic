@@ -20,6 +20,40 @@ symptom → cause → fix.
 - **Image is empty at runtime.** The image was not registered for that message/stage, or the
   requested attributes were not included. Verify the image registration, not just the code.
 
+## Runtime: recursion, state, sandbox, transactions, secrets
+
+- **Save fails with "Plugin execution stopped to prevent recursion."** Vela's depth guard
+  (`PluginBase.MaxDepth`, default **8**) throws `InvalidPluginExecutionException` when `ctx.Depth`
+  exceeds it (verified in the harness, 0.28.2) - the user's whole operation fails. Cause: the plugin
+  writes something that re-triggers the same step (its `FilterOn` includes the column it writes, or it
+  `Update`s its own record in PostOperation), or two plugins trigger each other. Fix the cause: edit
+  `ctx.Request.Target` in PreOperation instead of a write-back; keep written columns out of the
+  step's filtering attributes; write only when the value actually changes (compare with
+  `ctx.PreImage`). **Do not** paper over it with `if (ctx.Depth > 1) return;` - that also skips
+  legitimate calls made by other plugins, flows or child operations; only use a depth check with a
+  reason recorded in the Canvas. The guard is a backstop, not a design.
+- **Data leaks between executions / random failures under load.** Plugin instances are cached and
+  called concurrently by the sandbox; a writable field is shared across users and requests
+  (**VELA011**). Keep per-execution state in locals or the context; never cache org data in a static.
+- **Works locally, fails on the org: "sandbox" / security / timeout errors.** Plugins run in an
+  isolated sandbox: no file system, registry or local machine APIs; outbound calls over HTTP/HTTPS to
+  DNS names only (no raw IP addresses); and a plugin execution is cut off after **2 minutes**. Keep
+  Sync steps short; move slow or external work to an Async step or out of the plugin (the scaffold's
+  Integrations project).
+- **An error in a plugin undoes more (or less) than expected.** Sync PreOperation/PostOperation steps
+  run inside the database transaction: throwing rolls back the whole operation, including earlier
+  plugin writes. PreValidation runs before the main transaction. Async steps run after the commit:
+  their failure does not undo the save (it shows as a failed system job). Side effects on external
+  systems are never rolled back - don't make them from a Sync step that may still fail after them.
+- **The user sees "An unexpected error occurred" instead of your message.** Only
+  `InvalidPluginExecutionException` surfaces its message (**VELA012**). Throw it with a message the
+  user can act on; never swallow exceptions; `ctx.Trace(...)` the context you'll need to debug
+  (it lands in the Plugin Trace Log).
+- **A secret shows up in a solution export or the repo.** Unsecure configuration is exported with the
+  solution and readable; code is in git. Never put secrets in either. Use **secure configuration**
+  (not exported with the solution, set per environment, readable by admins only) or an external
+  secret store reached with a managed identity (see the scaffold's `--managed-identity` option).
+
 ## Custom APIs
 
 - **Custom API is uncallable on a real org** despite working locally. Parameter/unique names

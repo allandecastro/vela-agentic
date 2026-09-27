@@ -43,6 +43,19 @@ prefix), or components fall into the org's default solution.
 
 ## Judgment calls (NOT enforced - decide these in `vela-plan-review`, record in the Vela Canvas)
 
+### Stage: PreOperation vs PostOperation
+- **Change a column of the record being created/updated → PreOperation**, by setting it on
+  `ctx.Request.Target`. The platform writes it with the rest of the record: one write, no extra
+  Update event, nothing to re-trigger. This is the default for defaulting, normalising, deriving a
+  column from others on the same row.
+- **Validation / abort → PreValidation or PreOperation**, throwing `InvalidPluginExecutionException`.
+- **PostOperation** only when you need the committed result: the new record's id on Create, writes to
+  **other** records (children, parents, related tables), or work that must see what was actually saved.
+- **Anti-pattern: PostOperation + `ctx.UserService.Update(...)` of the same record.** It is a second
+  write, fires a second Update through every plugin on that table (including this one if its filter
+  matches - recursion), and costs a round trip. Use PreOperation unless a reason above applies, and
+  record that reason in the Canvas.
+
 ### Sync vs Async
 - **Sync** when the caller must see the effect in the same transaction: validation/abort,
   modifying the same record before commit (pre-stage), or a result the user relies on immediately.

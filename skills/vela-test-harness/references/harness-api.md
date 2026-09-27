@@ -29,7 +29,8 @@ public sealed class <Name>Tests
             .WithOrganizationService(crm)
             .Execute(new <Name>(string.Empty, string.Empty));   // instance, (unsecure, secure) ctor
 
-        // Assert: read the record(s) back from crm and check fields.
+        // Assert: PreOperation -> check `target` (the plugin edited ctx.Request.Target) and that crm got
+        // no extra write. Writes to OTHER records -> read them back from crm and check fields.
         // var rows = crm.RetrieveMultiple(new QueryExpression("account") { ColumnSet = new ColumnSet(true) });
         // var row = Assert.Single(rows.Entities);
         // Assert.Equal("expected", row.GetAttributeValue<string>("description"));
@@ -47,9 +48,18 @@ Critical, easy-to-get-wrong facts:
   `.OnMessage("CreateMultiple")` / `.OnMessage("UpdateMultiple")` with `.Stage(PluginStages.PostOperation).Async()`
   and seed the batch via `WithTargets(...)` (or `WithInputParameter("Targets", ...)`).
 - Assert by reading records back from `crm`, not by counting calls.
-- `ctx.PrimaryEntityId` in the harness is a random id, **not** `target.Id`. For a Create
-  PostOperation, the new record's id is `target.Id` (set it, e.g. `new Account { Id = Guid.NewGuid() }`);
-  use `target.Id` for write-backs, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".
+- **PreOperation (the usual case - a column of the same record):** assert on the `target` you passed -
+  the plugin's edit of `ctx.Request.Target` lands on it - and that `crm` received no extra write
+  (`Assert.Empty(crm.GetAll("account"))`): the platform, not the plugin, does the create.
+- **PostOperation writing to another record** - `ctx.PrimaryEntityId` in the harness is a random id,
+  **not** `target.Id`. The new record's id is `target.Id` (set it, e.g. `new Account { Id =
+  Guid.NewGuid() }`); use `target.Id`, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".
+
+- `.Execute(plugin)` auto-derives the trigger of a single-step plugin; **`.Build()` does not** (it
+  defaults to Update). When you `Build()` a context to inspect it (e.g. read
+  `context.PluginExecutionContext.InputParameters["Target"]`), state the trigger:
+  `.OnCreate().Stage(PluginStages.PreOperation)` (`using Vela.Constants;`).
+- Execution depth: `.Depth(n)` on the builder (the framework's recursion guard throws above 8).
 
 Builder entry points (`Vela.Testing.PluginContext`): `PluginContext.For<TEntity>()` for entity
 plugins; `PluginContext.ForMessage("<uniquename>")` for custom APIs / message-only.
@@ -73,12 +83,24 @@ Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `With
 `PluginPipeline.FromAssemblyOf<T>()`, `Register<TPlugin>()`, `Seed(...)`, write through
 `pipeline.Service`, inspect `pipeline.ExecutionLog`.
 
+Recursion / cascade recipe - `PluginPipeline` runs every registered plugin on each write made through
+`pipeline.Service`, so a self-triggering plugin actually recurses (verified, 0.28.2):
+```csharp
+var id = Guid.NewGuid();
+var pipeline = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "x" });
+pipeline.Service.Update(new Account { Id = id, Name = "  Hello   world  " });   // a write-back loop throws "...prevent recursion"
+var row = pipeline.Service.Retrieve("account", id, new ColumnSet("name"));
+Assert.Equal("Hello world", row.GetAttributeValue<string>("name"));
+```
+Use it whenever a step writes a column that could re-trigger it: the test fails on recursion.
+
 ## InMemoryOrganizationService
 
 `Vela.Testing.InMemoryOrganizationService` - a stateful in-memory `IOrganizationService`.
-- Seed: `.Seed(params Entity[])`; read all: `.GetAll(logicalName)`. A write-back `Update` needs the
-  record to exist first: for a Create PostOperation plugin that updates the just-created record,
-  `Seed` that record (with `target.Id`) before `Execute`, or the `Update` throws "does not exist".
+- Seed: `.Seed(params Entity[])`; read all: `.GetAll(logicalName)`. An `Update` needs the record to
+  exist first: `Seed` it (with its id) before `Execute`, or the `Update` throws "does not exist". (If
+  you find yourself seeding the record a Create plugin just created so it can update it, the step
+  should probably be PreOperation - see `registration-rules.md`.)
 - Full `IOrganizationService`: Create/Retrieve/Update/Delete/RetrieveMultiple/Execute/
   Associate/Disassociate. RetrieveMultiple supports QueryExpression, QueryByAttribute, FetchExpression.
 - Configure: `.WithCurrentUser(Guid)`, `.WithSecurity(...)`, `.WithClock(...)`,

@@ -26,7 +26,7 @@ entity: account
 #     - {message: Create, stage: PostOperation, mode: Synchronous, filter: [name]}
 #     - {message: Update, stage: PreOperation,  mode: Synchronous, filter: [description]}
 message: Create
-stage: PostOperation
+stage: PreOperation        # set the default on ctx.Request.Target before the write
 mode: Synchronous
 filtering_attributes: [name]
 images: []
@@ -51,8 +51,9 @@ skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, ve
 <Dataverse entities and the attributes read/written, e.g. account.description (read + write)>
 
 ## A - Approach
-<Sync vs Async and WHY (see registration-rules); reuse vs new and WHY. e.g. "Sync: the default
-must be visible on the committed record. New plugin: no Account plugin exists yet.">
+<Stage, Sync vs Async and WHY (see registration-rules); reuse vs new and WHY. e.g. "Sync
+PreOperation: the default is set on ctx.Request.Target before the platform writes the record - no
+extra write, no second Update event. New plugin: no Account plugin exists yet.">
 
 ## S - Structure
 <Where it fits: which project, `vela add plugin` vs `vela add step` on an existing plugin, and

@@ -1,7 +1,7 @@
 ---
 name: vela-plugin-authoring
 description: Use when implementing the logic of a Vela plugin, after scaffolding, models, and the failing (RED) harness tests exist.
-compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
 ---
 
 # Author a Vela plugin
@@ -41,8 +41,11 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
    - `vela add step` (adds a step, the plugin becomes multi-step) → `Handle<Message>` (e.g.
      `HandleUpdate(IUpdatePostContext<Entity> ctx)`), or the name passed with `--handler`.
    Keep the generated name; do not create a parallel class or handler by hand.
-4. Read with the typed helpers: `ctx.GetTarget<Entity>()`, `ctx.GetPreImage<Entity>()`,
-   `ctx.GetPostImage<Entity>()` - never magic-string attribute names where a model exists.
+4. Read through the typed context: **`ctx.Request.Target`** (the typed record over the live
+   InputParameters - in a PreOperation step, set properties on it to change what is written),
+   `ctx.PreImage` / `ctx.PostImage` for registered images - never magic-string attribute names where a
+   model exists. `ctx.GetTarget<Entity>()` is for untyped `ILocalPluginContext` handlers only (the
+   scaffold's TODO comment still mentions it).
 5. Write through `ctx.UserService` (there is **no** `ctx.OrganizationService`); use
    `ctx.SystemService` / `ctx.AsSystem()` only when elevation is required.
 6. Guard the trigger via the registered **filtering attributes** (`FilterOn(e => e.X)`) and
@@ -82,6 +85,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 - Associate/Disassociate matched by primary entity only (won't fire - see gotchas).
 - A custom API parameter name containing a dot (uncallable on a real org).
 - Logic duplicated across plugins, or a fat `OnExecute` that should delegate to a service.
+- A PostOperation `ctx.UserService.Update` of the record the step fired on (use PreOperation +
+  `ctx.Request.Target`), or a written column that is also in the step's `FilterOn` (recursion).
+- A mutable field on the plugin class (VELA011), a secret in code or unsecure config, or
+  `if (ctx.Depth > 1) return;` without a recorded reason - see `references/dataverse-gotchas.md`.
 - An illegal registration attempted (post-image on Delete, Async off PostOperation) - see registration-rules.
 
 ## Verification
