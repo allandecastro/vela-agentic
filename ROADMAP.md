@@ -7,8 +7,12 @@ independent of the framework/CLI NuGet releases.
 
 - Skills target the **public `vela` CLI command surface**, which is the stable,
   versioned contract.
-- Every skill declares a **minimum CLI version** in its `SKILL.md` frontmatter/body.
-  Agents must run `vela --version` and stop if the installed CLI is older.
+- Every skill declares a **minimum CLI version** in its `compatibility` frontmatter; the version the
+  references were verified against is recorded at the top of `references/cli-surface.md` (CI checks
+  that no skill claims a floor above it). Agents run `vela version`, ask for `vela update` if older,
+  and stop only if a named feature is genuinely missing (see `AGENTS.md`, golden rule 2).
+- On a CLI release: re-run each command's `--help`, update `references/cli-surface.md` + the
+  verified version, then bump the skills' floor.
 - Skills discover exact flags at runtime via `vela --help`, so additive CLI changes do
   not break them. Breaking CLI changes are matched by a skill update and a bumped
   minimum version.

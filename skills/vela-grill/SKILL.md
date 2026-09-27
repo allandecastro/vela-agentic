@@ -1,6 +1,7 @@
 ---
 name: vela-grill
 description: User-invoked (/vela-grill). Use when a user story is ambiguous or underspecified and only the human can resolve it before building.
+compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 ---
 
 # Grill the story (interview the human)

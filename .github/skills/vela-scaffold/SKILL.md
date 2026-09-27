@@ -1,6 +1,7 @@
 ---
 name: vela-scaffold
 description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
+compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 ---
 
 # Scaffold Vela projects and components
@@ -39,14 +40,19 @@ Announce: `Using vela-scaffold to <purpose>`.
 4. **Existing project?** Find the `.csproj` first, then add the component:
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
-   - Custom API: `vela add customapi <Name> [--bound|--global] [--function|--action]`
+   - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
+     (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`)
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-5. **Verify the generated `FilterOn` before building** (it may be wrong yet compile). `vela add
-   plugin`/`add step` may emit a `FilterOn(e => e.Id /* TODO */)` placeholder, echo the casing you
-   passed (`--filtering-attributes name` -> `e => e.name`, won't compile), OR **auto-pick an
-   arbitrary non-primary column** (e.g. `--entity Incident` -> `e => e.caseage`) that compiles fine
-   and, on Create, is runtime-ignored so nothing errors. Replace it with the intended column
-   (`e => e.Name`): confirm it is the right filtering attribute, not merely that it builds.
+5. **Verify the generated `FilterOn` before building** (it may be wrong yet compile):
+   - `vela add step` emits a `FilterOn(e => e.Id /* TODO */)` placeholder that **fails the build with
+     VELA001** ("'Id' is not a Dataverse column") - replace it with the column that gates the step.
+   - `vela add plugin` may echo the casing you passed (`--filtering-attributes name` -> `e => e.name`,
+     won't compile), OR **auto-pick a column** (marked `/* auto-selected */`, e.g. `--entity Incident`
+     -> `e => e.caseage`) that compiles fine and, on Create, is runtime-ignored so nothing errors.
+   Replace it with the intended column (`e => e.Name`): confirm it is the right filtering attribute,
+   not merely that it builds.
+   - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
+     harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
 6. **Build** to prove it compiles: `dotnet build`. Report the exact output.
 7. Summarise what was generated and the next skill in the loop.
 
@@ -64,13 +70,13 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You are about to hand-edit a generated file.
 - Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
 - You guessed a flag instead of reading `--help`.
-- You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`), an
+- You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`, VELA001), an
   echoed lowercase attribute (`e => e.name`), or an auto-picked non-primary column (`e => e.caseage`)
   ships a wrong registration even when it compiles.
+- You used `--interactive` on `vela init`/`vela add` (a TTY wizard - an agent must pass flags).
 - The **baseline scaffold build fails right after `vela init`** (an incompatible auto-resolved
   framework version): pin a known-good core with `vela init --core-version <v>` (see
-  `references/cli-surface.md`). This hit 0.27.0 (`CS0260`) and was fixed in 0.27.1, so current
-  releases build clean without a pin.
+  `references/cli-surface.md`) and report the regression.
 
 ## Verification
 

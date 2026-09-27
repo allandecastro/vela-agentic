@@ -1,6 +1,7 @@
 ---
 name: diagnosing-vela
 description: Use after an autonomous or eval run when you need to turn what happened into concrete, line-level findings against the skills.
+compatibility: "Meta skill - no vela CLI dependency."
 ---
 
 # Diagnosing Vela runs

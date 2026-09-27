@@ -1,6 +1,7 @@
 ---
 name: writing-vela-skills
 description: Use when adding, fixing, or reviewing a Vela skill or its wording.
+compatibility: "Meta skill - no vela CLI dependency."
 ---
 
 # Writing Vela skills
@@ -15,7 +16,9 @@ applies ("Use when…"), never a summary of what it does. A workflow summary in 
 becomes a shortcut an agent follows instead of reading the skill body - this is an observed
 failure mode (an agent that reads "…then emit the artifact. Advisory gate…" skips the actual
 steps). User-invoked skills may name their command (e.g. `/vela-grill`); the model/user-invoked
-kind otherwise lives in the body and the README table, not the description. Body:
+kind otherwise lives in the body and the README table, not the description. A **`compatibility`**
+field states the CLI floor (`"vela CLI >= x.y.z ..."`, never above the version verified in
+`references/cli-surface.md`; meta skills say so instead). Body:
 `Overview → When to use → Process (announce "Using <skill> to <purpose>") → Rationalizations
 (excuse → rebuttal) → Red flags → Verification (the evidence required)`. Keep the body lean;
 push verbatim code and long reference into `references/` and point at it.
