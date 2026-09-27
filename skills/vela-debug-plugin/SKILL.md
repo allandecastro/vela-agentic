@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Debug a Vela plugin
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Diagnose a plugin that misbehaves by reconciling what the code intends to register against
 what is actually registered, and by reproducing the fault in the harness.
 
@@ -20,11 +23,12 @@ Announce: `Using vela-debug-plugin to <purpose>`. Follow a disciplined loop - re
 minimize → hypothesize → instrument → fix → regression-test - not trial and error.
 
 1. **Reproduce.** State the symptom precisely (message/entity/stage, expected vs observed), then
-   write a failing harness test (`vela-test-harness`) that captures it - a live symptom becomes
+   write a failing harness test (`vela-test-harness`, `references/harness-api.md`) that captures it - a live symptom becomes
    a local, repeatable red.
 2. **Minimize.** Strip the case to the smallest input that still fails.
 3. **Hypothesize.** Read the code's intended registration (step/plugin, filtering attributes)
-   and compare with the live org via `vela inspect` (and `vela plan` for pending diffs). Check
+   and compare with the live org via `vela inspect` (and `vela plan` for pending diffs; flags in
+   `references/cli-surface.md`). Check
    the usual suspects in `references/dataverse-gotchas.md`:
    - Associate/Disassociate matched by primary entity only (won't fire),
    - filtering attribute excludes the changed attribute,

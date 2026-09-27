@@ -28,8 +28,11 @@ jobs:
       - name: Shell scripts parse
         run: for s in hooks/bin/*.sh; do sh -n "$s" && echo "ok  $s"; done
 
-      - name: Copilot surface is in sync with the source
+      - name: Generated surfaces are in sync with the source
         run: |
           node scripts/sync-copilot.mjs
-          git diff --exit-code -- .github \
-            || (echo "::error::.github/ is out of sync - run 'node scripts/sync-copilot.mjs' and commit" && exit 1)
+          if [ -n "$(git status --porcelain -- .github skills)" ]; then
+            git status --porcelain -- .github skills
+            echo "::error::generated files (.github/, skills/*/references/) are out of sync - run 'node scripts/sync-copilot.mjs' and commit"
+            exit 1
+          fi

@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Grill the story (interview the human)
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 User-invoked interview: when a story is too vague to build safely, cuisine the human until the
 plan has no unresolved branch. This is the interactive sibling of `vela-plan-review` (which
 grills the plan itself); use this one when only the human can resolve the ambiguity.
@@ -25,7 +28,8 @@ Announce: `Using vela-grill to resolve the story`.
    - Data: what exact values are read and written; where do defaults/edge cases go?
    - Scope: single record or bulk (*Multiple)? which security context?
    - Definition of done: how will we know it worked?
-3. Keep going until every branch resolves. Record answers in the Plan artifact.
+3. Keep going until every branch resolves. Record answers in the Plan artifact
+   (`references/build-report-template.md`).
 4. Hand off to the build loop (`vela-plan-review` → `vela-scaffold`).
 
 ## Rationalizations (excuse → rebuttal)

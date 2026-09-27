@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Verify with the Vela.Testing harness
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Prove plugin behaviour locally with **`Vela.Testing`** - no real org. This is the verification
 gate: nothing proceeds to deploy until the harness is green.
 

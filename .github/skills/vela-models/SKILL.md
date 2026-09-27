@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Generate typed models
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Drive `vela models` to generate early-bound C# models or TypeScript form/table models from
 a Dataverse environment, or to verify drift. This command **connects to Dataverse** to read
 metadata, so it needs a resolved connection.

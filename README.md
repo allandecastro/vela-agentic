@@ -107,13 +107,13 @@ target project and reused as the PR body:
 | --- | --- |
 | `skills/` | 12 portable Agent Skills (`SKILL.md`), read by Claude Code directly |
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
-| `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates) |
+| `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
 | `hooks/` | Optional dual-target guard: a pre-tool hook that hard-blocks `vela apply` without approval (Claude Code + Copilot) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |
 | `.claude-plugin/` | Claude Code distribution: plugin marketplace + plugin manifest |
 | `.github/` | GitHub Copilot distribution (skills, chat mode, instructions) - **generated**, never hand-edited |
-| `scripts/` | `sync-copilot.mjs` regenerates `.github/` from the source of truth |
+| `scripts/` | `sync-copilot.mjs` regenerates `.github/` and the per-skill reference copies; `lint-pack.mjs` checks the pack |
 
 ### Skills
 
@@ -133,8 +133,8 @@ target project and reused as the PR body:
 | `diagnosing-vela` | model-invoked | Turn a run transcript into concrete, line-level skill findings |
 
 > **Status** - Preview, review-first, not yet published. The distribution surfaces (`.claude-plugin/`,
-> `.github/`) are generated from `skills/`, `agents/`, `AGENTS.md` and `references/`. Edit the source,
-> then run `node scripts/sync-copilot.mjs`.
+> `.github/`) and the per-skill `skills/<name>/references/` copies are generated from `skills/`, `agents/`,
+> `AGENTS.md` and `references/`. Edit the source, then run `node scripts/sync-copilot.mjs`.
 
 ## Using it
 

@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Scaffold Vela projects and components
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Drive `vela init` and `vela add` to create a solution or add components. These commands are
 **local only** and never connect to Dataverse. Generated code must compile and apply
 **without hand edits** - that is the contract.

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Structural lint for the vela-agentic pack (runs in CI).
 // Fails on: missing/!kebab skill/agent frontmatter, name != dir, broken references/*.md links,
-//           missing skill `compatibility`, or a CLI floor above the version verified in cli-surface.md.
+//           missing skill `compatibility`, a CLI floor above the version verified in cli-surface.md,
+//           or a skill citing a reference that is not bundled in its own references/ folder.
 // Warns on: descriptions that look like workflow summaries instead of trigger-only.
 //
 //   node scripts/lint-pack.mjs
@@ -58,6 +59,14 @@ async function lintSkills() {
     if (!fm.description) errors.push(`skills/${e.name}: frontmatter missing 'description'`);
     else if (/\bthen\b|; |\bemit\b/i.test(fm.description))
       warnings.push(`skills/${e.name}: description looks like a workflow summary - keep it trigger-only ("Use when…")`);
+    // Hosts may resolve relative paths against the working directory: say they are skill-relative.
+    if (/references\/[a-z0-9-]+\.md/.test(md) && !md.includes("relative to **this skill's folder**"))
+      errors.push(`skills/${e.name}: cites references/ but lacks the skill-relative path note (see writing-vela-skills)`);
+    // Self-contained once installed: every cited reference must be bundled next to SKILL.md.
+    for (const m of md.matchAll(/references\/([a-z0-9-]+\.md)/g)) {
+      try { await fs.access(path.join(base, e.name, "references", m[1])); }
+      catch { errors.push(`skills/${e.name}: cites references/${m[1]} but it is not bundled - run node scripts/sync-copilot.mjs`); }
+    }
     if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
     else {
       const floor = fm.compatibility.match(/vela CLI >= (\d+\.\d+\.\d+)/)?.[1];

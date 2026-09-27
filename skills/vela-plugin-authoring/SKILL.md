@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Author a Vela plugin
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Write the logic of a plugin after `vela-scaffold` and `vela-models`. Keep generated files
 untouched; put logic in the `OnExecute` handler the scaffold created.
 

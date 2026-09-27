@@ -120,7 +120,9 @@ cloud agent. Prerequisites for a non-interactive or remote environment:
 
 - **The pack must be reachable.** Locally, point at this repo. On another machine or in the
   cloud, install it as a plugin marketplace (**requires the repo to be pushed**) or make sure
-  the workspace carries `skills/` + `agents/` + `AGENTS.md` + `references/`.
+  the workspace carries `skills/` + `agents/` + `AGENTS.md`. Each skill bundles the references it
+  cites under `skills/<name>/references/`, so skills installed alone (e.g. `gh skill install`) still
+  have them.
 - **Toolchain present.** Install the `vela` global tool (`dotnet tool install --global Vela.Cli`)
   and a matching `dotnet` SDK. If missing, stop and say so - do not improvise an alternative.
 - **Non-interactive auth (no browser).** `-i`/`--interactive` needs a screen and won't work
