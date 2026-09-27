@@ -19,7 +19,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 ## Success criteria (a clean pass)
 1. `vela init` + `vela add plugin` + `vela add test` all exit 0, following `vela-scaffold`.
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
-   `OnExecute` / `ctx.GetTarget` / `ctx.UserService` surface), no magic strings where a model exists.
+   `OnExecute` / `ctx.Request.Target` surface), no magic strings where a model exists.
 3. **Test-first:** the two acceptance-case tests are written and seen to **fail (RED)** before
    the handler is implemented, then pass after - run with the OS-correct runner (Mono +
    `-parallel none` on macOS), using the real harness API.

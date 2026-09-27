@@ -51,6 +51,12 @@ Critical, easy-to-get-wrong facts:
   PostOperation, the new record's id is `target.Id` (set it, e.g. `new Account { Id = Guid.NewGuid() }`);
   use `target.Id` for write-backs, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".
 
+- `.Execute(plugin)` auto-derives the trigger of a single-step plugin; **`.Build()` does not** (it
+  defaults to Update). When you `Build()` a context to inspect it (e.g. read
+  `context.PluginExecutionContext.InputParameters["Target"]`), state the trigger:
+  `.OnCreate().Stage(PluginStages.PreOperation)` (`using Vela.Constants;`).
+- Execution depth: `.Depth(n)` on the builder (the framework's recursion guard throws above 8).
+
 Builder entry points (`Vela.Testing.PluginContext`): `PluginContext.For<TEntity>()` for entity
 plugins; `PluginContext.ForMessage("<uniquename>")` for custom APIs / message-only.
 

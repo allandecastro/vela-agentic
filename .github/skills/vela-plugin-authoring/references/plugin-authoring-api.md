@@ -97,11 +97,19 @@ private void HandleUpdate(IUpdatePostContext<Account> ctx) { /* TODO */ }
 Context type per message: `ICreatePostContext<T>` / `ICreatePreContext<T>`, and the same for
 Update/Delete. Custom `OnMessage` handlers get `ILocalPluginContext`.
 
-- **Read the target:** `ctx.GetTarget<Account>()` (extension). Also `TryGetTarget`,
-  `GetTargetRef`, `GetTargets` (bulk).
-- **Images:** `ctx.GetPreImage<Account>()` / `ctx.GetPostImage<Account>()`; typed post/pre
-  contexts also expose `ctx.PostImage` / `ctx.PreImage` properties. Request/response:
-  `ctx.Request` / `ctx.Response`.
+- **Read (and change) the target: `ctx.Request.Target`** - the typed context's `Request` is the current
+  message as a typed request (`CreateRequest<Account>`, `UpdateRequest<Account>`) **over the live
+  InputParameters**, so `ctx.Request.Target` is an `Account` and setting a property on it in a
+  PreOperation step changes the record being written (verified in the harness, 0.28.2). Prefer it to
+  the untyped-context extensions `ctx.GetTarget<Account>()` / `TryGetTarget` / `GetTargetRef` /
+  `GetTargets` (bulk), which remain for `ILocalPluginContext` handlers (`OnMessage`, Custom APIs).
+  The scaffold's TODO comment still mentions `GetTarget` - follow this reference instead.
+- **Images:** typed contexts expose `ctx.PreImage` / `ctx.PostImage` (the registered image as the
+  early-bound entity, or `null` when none is registered): `IUpdatePreContext` has `ctx.PreImage`,
+  `IUpdatePostContext` has both, `ICreatePostContext` has `ctx.PostImage`. The extensions
+  `ctx.GetPreImage<Account>()` / `ctx.GetPostImage<Account>()` / `GetPreImageMerged` work by alias.
+  Response: `ctx.Response` on post contexts.
+- **Depth:** `ctx.Depth` (see the recursion gotcha in `dataverse-gotchas.md`).
 - **Write to the org:** there is **no `ctx.OrganizationService`**. Use
   `ctx.UserService` (initiating user), `ctx.CallingUserService`, or `ctx.SystemService`
   / `ctx.AsSystem()`. `CreateOrganizationService(userId)` for a specific user.

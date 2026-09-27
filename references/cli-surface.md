@@ -3,7 +3,7 @@
 Exact commands and flags, for skills to point at. Always reconfirm with
 `vela <command> --help`; this is a snapshot, the CLI is the contract.
 
-**Verified against:** `vela 0.19.4` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
+**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
