@@ -152,30 +152,29 @@ and it drives the loop, stopping at the deploy gate for your approval.
 
 ### With GitHub Copilot
 
-Install the skills with the official GitHub CLI command (requires `gh` 2.90.0 or later):
+Copilot CLI reads the same plugin manifest as Claude Code (it supports the `.claude-plugin/`
+location), so install this pack as a Copilot **plugin**, mirroring the Claude Code steps:
+
+```bash
+copilot plugin marketplace add allandecastro/vela-agentic
+copilot plugin install vela@vela-agentic
+# or directly, without the marketplace step:
+copilot plugin install allandecastro/vela-agentic
+```
+
+Verify what loaded with `copilot plugin list`. The **skills** load from `skills/` automatically.
+The agents and the optional apply-guard hook follow the Copilot plugin conventions; confirm they
+load on your Copilot CLI version and see `hooks/README.md` for the hook caveats.
+
+Portable alternative (skills only, any host, no plugin): install the skills with the official
+`gh skill` command (`gh` 2.90.0 or later):
 
 ```bash
 gh skill preview allandecastro/vela-agentic   # inspect first (skills are not verified by GitHub)
-gh skill install allandecastro/vela-agentic   # or: gh skill install allandecastro/vela-agentic <skill-name>
+gh skill install allandecastro/vela-agentic
 ```
 
-`gh skill` discovers this pack's `.github/skills` and installs into the target repo's
-`.github/skills` (project scope) or `~/.copilot/skills` (personal scope). Pin a version with
-`@<tag>` or a commit SHA.
-
-The chat modes (`vela-builder` / `vela-reviewer`), the durable `copilot-instructions.md`, and the
-optional apply-guard hook are separate customizations (not skills), so vendor them from this repo's
-`.github/` if you want them:
-
-```bash
-gh repo clone allandecastro/vela-agentic /tmp/vela-agentic -- --depth=1
-cp -r /tmp/vela-agentic/.github/chatmodes               .github/
-cp    /tmp/vela-agentic/.github/copilot-instructions.md .github/
-cp -r /tmp/vela-agentic/.github/hooks .github/ && cp -r /tmp/vela-agentic/hooks ./   # optional apply-guard, needs jq
-```
-
-Note: VS Code Copilot Chat reads skills, chat modes and instructions but not hooks (see
-`hooks/README.md`). Then hand `vela-builder` a user story, the same way as on Claude Code.
+Then hand `vela-builder` a user story, the same way as on Claude Code.
 
 ### Prerequisites
 
