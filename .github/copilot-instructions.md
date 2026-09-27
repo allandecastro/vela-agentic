@@ -44,12 +44,19 @@ Local and reversible up to the apply gate; the org is only ever touched at `appl
 an advisory **plan gate** at the front and a blocking **apply gate** at the end.
 
 ```
-INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY → REVIEW ──apply gate── APPLY → REPORT
-                (self-grill  (advisory:  (init/add) (models) (write     (code to   (suite     (code       (human       (only if
-                 declare      flag +                          FAILING    green)     green +    review:     approves)    authorized)
-                 acceptance   continue)                       harness               analyzers  spec +
-                 cases)                                       tests)                clean)     standards)
+INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY → REVIEW → PREVIEW ──apply gate── APPLY → REPORT
 ```
+
+| Step | What | Gate / evidence |
+| --- | --- | --- |
+| CHALLENGE | self-grill, fill the Vela Canvas, declare acceptance cases | plan gate: advisory - flag and continue |
+| SCAFFOLD / MODEL | `vela init` / `vela add`, `vela models` | build compiles |
+| TEST (RED) | write the failing harness tests | tests seen to fail |
+| IMPLEMENT | code to green | tests pass |
+| VERIFY | full suite green + analyzers clean | runner summary, 0 VELA00x |
+| REVIEW | code review on spec + standards | no unresolved Critical/Required |
+| PREVIEW | `dotnet pack` → `vela sign` (if required) → `vela plan` on that package | plan output (or "skipped - no org") |
+| APPLY | `vela apply` | apply gate: a human approves; only if authorized |
 
 **Test-first is mandatory.** After MODEL, write the harness tests for the declared acceptance
 cases and watch them **fail (RED)** before writing plugin logic; then implement to **green**.
@@ -67,6 +74,9 @@ the quality signal.
   (`vela-code-review`) on two axes - **spec** (the Vela Canvas's acceptance cases + the
   `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell
   baseline). Critical/Required findings block the gate.
+- **Preview on the final package**: after review, `dotnet pack` (and `vela sign` when the org
+  requires signed packages), then `vela plan` on that exact package. `plan` never writes, so it always
+  runs; a code change after it invalidates it.
 - **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.
 - Artifacts (see `references/build-report-template.md`) are committed in the target project
   under `docs/vela-builds/<slug>.md` and reused as the PR body.

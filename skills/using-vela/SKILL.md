@@ -28,12 +28,14 @@ reversible until the gate; the org is only touched at `apply`.
 6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the declared
    acceptance cases, and watch them fail. Test-first is mandatory.
 7. **Implement** - `vela-plugin-authoring`: write logic until the tests go **green**.
-8. **Verify** - full harness suite green **and** build clean of analyzer (VELA00x) violations,
-   then `vela plan` (preview, never writes).
+8. **Verify** - full harness suite green **and** build clean of analyzer (VELA00x) violations.
 9. **Review** - `vela-code-review`: review the diff on the spec + standards axes; unresolved
    Critical/Required findings block the gate (fix and re-verify).
-10. **Apply gate** - emit the **Build Report**, stop. A human runs `vela apply`.
-11. **Report** - PR with the Build Report as its body; commit the artifact in the project.
+10. **Package & preview** - `vela-apply`: `dotnet pack` → `vela sign` (when the org requires signed
+    packages) → `vela plan` on that exact package (preview, never writes). Always run the preview,
+    and run it last: a code change after it means re-pack and re-plan.
+11. **Apply gate** - emit the **Build Report**, stop. A human runs `vela apply`.
+12. **Report** - PR with the Build Report as its body; commit the artifact in the project.
 
 If something misbehaves, switch to `vela-debug-plugin`.
 

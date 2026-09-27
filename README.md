@@ -36,7 +36,8 @@ safe, **test-first, preview-before-deploy** workflow that stops before writing t
 - **Test-first quality gate.** Tests are written to fail (RED) before implementation, and the
   deploy gate is unreachable unless the suite is green over every acceptance case and the
   authored code is analyzer-clean.
-- **Stop before apply.** The whole loop is autonomous and reversible up to `vela plan`; a human
+- **Stop before apply.** The whole loop is autonomous and reversible up to `vela plan` (run on the
+  final, packed package); a human
   approves the `vela apply` that writes to the org.
 - **Structured, living spec.** The plan is a **Vela Canvas** (a REASONS-adapted structured spec,
   after Thoughtworks' SPDD), not free text: it captures the design decisions and stays in sync
@@ -62,16 +63,17 @@ flowchart TD
     S --> M["Model<br/>vela models"]
     M --> T["Test (RED)<br/>failing harness tests"]
     T --> IM["Implement<br/>code to green"]
-    IM --> V["Verify<br/>suite green + analyzers clean + vela plan"]
+    IM --> V["Verify<br/>suite green + analyzers clean"]
     V -->|red / violations| IM
     V --> RV["Review<br/>spec + standards axes · severities"]
     RV -->|Critical / Required| IM
-    RV -. emits .-> BR[/"Build Report"/]
-    RV -->|PASS| G2{{"Apply gate<br/>blocking - human approves"}}
+    PV -. emits .-> BR[/"Build Report"/]
+    RV -->|PASS| PV["Package &amp; preview<br/>dotnet pack · vela sign · vela plan"]
+    PV --> G2{{"Apply gate<br/>blocking - human approves"}}
     G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
     AP --> R([Report / PR])
 
-    subgraph LOCAL ["Autonomous · local · reversible - org untouched"]
+    subgraph LOCAL ["Autonomous · local · reversible - org never written"]
         I
         P
         C
@@ -82,6 +84,7 @@ flowchart TD
         IM
         V
         RV
+        PV
     end
 
     classDef gate fill:#fde68a,stroke:#b45309,color:#1f2937;
