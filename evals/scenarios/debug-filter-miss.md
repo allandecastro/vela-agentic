@@ -27,3 +27,5 @@ nothing happens."
 1. Failing repro test written and seen RED before any code change.
 2. One-line fix; the repro and the existing suite are green.
 3. The explanation names the gotcha and the evidence; no "it seems" without output.
+4. If the agent asks for the Plug-in Trace Log, it says where it is and which fields to paste; it does
+   not read the org around the CLI.
