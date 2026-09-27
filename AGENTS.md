@@ -24,7 +24,7 @@ composing `vela` commands, never by reaching around the CLI into internal APIs.
 - `vela inspect` - compare local packages against the live environment.
 - `vela sign` / `vela logout` / `vela update` / `vela version`.
 
-Exit codes: `0` ok, `2` invalid args, `3` file not found, `4` error, `5` drift
+Exit codes: `0` ok, `2` invalid args, `3` file not found, `4` parse/read error, `5` drift
 (`models --verify`), `6` Dataverse connection failure. Read them; don't ignore them.
 
 References: `cli-surface.md` (exact flags), `plugin-authoring-api.md` + `harness-api.md`
@@ -69,10 +69,11 @@ the quality signal.
 
 1. **The CLI is the contract.** Confirm flags with `vela <command> --help` before
    composing a command. Never invent a flag.
-2. **Check the version.** Run `vela version`. Each skill states a minimum as a real floor.
-   If the installed CLI is at or above it, proceed. Only **stop** if a *named* feature a skill
-   depends on is genuinely missing - then tell the user to `vela update`. Do not halt merely
-   because the patch version differs (e.g. 0.15.1 vs 0.15.2 is fine).
+2. **Check the version.** Run `vela version`. Each skill states its floor in the `compatibility`
+   frontmatter (the verified version is recorded in `references/cli-surface.md`). If the installed
+   CLI is at or above it, proceed. If it is older, tell the user to `vela update`; only **stop** if a
+   *named* feature the skill depends on is genuinely missing. Do not halt merely because the patch
+   version differs (e.g. 0.19.4 vs 0.19.5 is fine).
 3. **Announce the skill.** When you start a skill, say `Using <skill> to <purpose>` so the
    run is traceable.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that

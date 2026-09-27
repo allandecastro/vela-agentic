@@ -80,8 +80,8 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.15.1
-framework: 0.26.2
+vela_cli: 0.19.4
+framework: 0.28.2
 packages: [Zava.Plugins.1.0.0.nupkg]
 harness: pass             # pass | fail  (must be pass to reach the gate)
 analyzers: clean          # clean | violations  (authored code; scaffold-demo VELA013 excluded)

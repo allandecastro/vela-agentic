@@ -1,6 +1,7 @@
 ---
 name: vela-apply
 description: Use when a built, reviewed, tested Vela package needs to be previewed against or deployed to a Dataverse environment.
+compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 ---
 
 # Preview and apply to a Dataverse org

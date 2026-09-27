@@ -53,12 +53,29 @@ symptom → cause → fix.
   table + message + stage. Use `WithExecutionOrder(n)` only to sequence *your* steps relative to
   each other when you register more than one; don't set it reactively to avoid managed steps.
 
-## Analyzers
+## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.28.2)
 
+Treat every VELA diagnostic in authored code as a gate failure. The ones you will meet most:
+
+- **VELA001** - a column selector (`FilterOn`, images, typed `Select`) targets a member that is not a
+  Dataverse column (e.g. `e => e.Id`, the `add step` placeholder).
 - **VELA002** - every `RegisterStep()` chain must end with `.Handle(...)`.
-- **VELA013** - `new ColumnSet(true)` retrieves every column and is flagged. Prefer an explicit
-  `new ColumnSet("attr1", "attr2")`. (The scaffold's own demo tests use `ColumnSet(true)` and
-  trip this - cosmetic in generated demo code, but do not copy the pattern into real queries.)
+- **VELA003** - a step modifier set twice, or two steps for the same message/stage on one plugin
+  (merge them - combine the filtering attributes).
+- **VELA005** - the same column listed twice in one `FilterOn`/image/`Select`.
+- **VELA006** (warning) - `OnMessage("...")` used where a typed trigger (`OnCreate`, `OnUpdate`...) exists.
+- **VELA010** - a relationship used where a column is expected.
+- **VELA011** - mutable plugin state: plugin instances are reused and called concurrently by the
+  sandbox, so a writable field leaks data between executions. Keep state in locals / the context.
+- **VELA012** - throw `InvalidPluginExecutionException`; any other exception reaches the caller as a
+  generic error.
+- **VELA013** - `new ColumnSet(true)` retrieves every column. Prefer an explicit
+  `new ColumnSet("attr1", "attr2")`. (The scaffold's own demo tests use `ColumnSet(true)` and trip
+  this - cosmetic in generated demo code, but do not copy the pattern into real queries.)
+- **VELA014** - a plugin with typed images (`WithPreImage`/`WithPostImage`) must be `partial`; in
+  practice the build reports it as **`CS0260`** (missing partial modifier) on the plugin class.
+- Others (handler/context mismatch, a handler bound on two image steps, static handlers...) explain
+  themselves in the diagnostic text - read it, don't suppress it.
 
 ## Verification discipline
 

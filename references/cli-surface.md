@@ -3,6 +3,10 @@
 Exact commands and flags, for skills to point at. Always reconfirm with
 `vela <command> --help`; this is a snapshot, the CLI is the contract.
 
+**Verified against:** `vela 0.19.4` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
+resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
+moves, re-run the `--help` of each command below, update this file, then bump the floor.
+
 ## Scaffolding - local only, no Dataverse
 
 ### `vela init <Name>` (alias `vela new`)
@@ -10,46 +14,74 @@ Scaffold a solution on disk.
 - `--name <Name>` (or first positional, required) · `--prefix <pub>` (default derived; `Vela` rejected)
 - `--output`/`-o <dir>` (default `.`) · `--core-version <v>` (default resolves latest `Vela.Plugins`)
 - `--no-console` · `--no-integrations` · `--no-tests` (all three included by default)
-- `--web-resources` (+ `--web-resources-namespace`, `--web-resources-folder` default `dist`)
-- `--managed-identity`/`--mi` · `--force` · `--json`
+- `--web-resources` (+ `--web-resources-namespace`, `--web-resources-folder` default `dist`) - preview
+- `--managed-identity`/`--mi` · `--force` · `--json` · `--interactive` (guided wizard - needs a TTY,
+  never use it from an agent)
 
 ### `vela add <kind> <Name>`
-Kinds: `plugin | customapi | service | test | step | form-script | ribbon-script`.
+Kinds: `plugin | customapi | service | test | step | form-script | ribbon-script`. Generates a single
+file into an existing project, inferring namespaces from its `RootNamespace`. (`vela add --interactive`
+is a TTY wizard - not for agents.)
 - `add plugin <Name> --entity <ModelType> [--message Create|Update|Delete|...] [--filtering-attributes a,b] [--project <csproj>] [--force]`
-  - `--message` default `Create`; Create/Update/*Multiple require a filtering attribute (auto-picked if omitted).
-- `add step <PluginName> --entity <ModelType> [--message ...] [--handler <Method>]` - edits an existing plugin; `--handler` default `Handle<Message>`.
-- `add customapi <Name> [--entity] [--bound|--global] [--function|--action] [--prefix <pub>]` - default `--action`.
-- `add service <Name> --entity <ModelType>`
-- `add test <Name> [--kind plugin|customapi] [--entity]` - must run inside a `.Tests` project.
-- `add form-script <entity>` / `add ribbon-script <entity>` [`--project <web-resources dir>`] - TS web resources (preview).
+  - Generates a **single-step** plugin whose handler is `OnExecute`.
+  - `--message` default `Create`; Create/Update/*Multiple require a filtering attribute (auto-picked if
+    omitted, with an `/* auto-selected */` comment - check it).
+- `add step <PluginName> --entity <ModelType> [--message ...] [--handler <Method>] [--project <csproj>]` -
+  edits an existing plugin, adding a second `RegisterStep()` + a handler method (default name
+  `Handle<Message>`, e.g. `HandleUpdate`). The plugin becomes **multi-step**. The new step's `FilterOn` is a
+  placeholder `e => e.Id /* TODO */` that **fails the build with VELA001** until you pick a real column.
+- `add customapi <Name> [--entity <ModelType>] [--bound|--global] [--function|--action] [--prefix <pub>] [--project <csproj>] [--force]` -
+  default `--action`; omit `--entity` for a global (unbound) API. The unique name is `<prefix>_<Name>`,
+  prefix taken from the project unless `--prefix` is passed (accepted, though not listed in `--help`).
+- `add service <Name> --entity <ModelType> [--project <csproj>] [--force]` - table-scoped interface + implementation.
+- `add test <Name> [--kind plugin|customapi] [--entity <ModelType>] [--project <csproj>] [--force]` - run
+  inside the test project (RootNamespace ending in `.Tests`); `<Name>` is the class under test.
+- `add form-script <entity>` / `add ribbon-script <entity>` [`--project <web-resources dir>`] - TS web
+  resources (preview; **not covered by this pack yet**).
 
 ## `vela models` - connects to Dataverse (reads metadata)
-Scope is REQUIRED (one of): `--solution <name>` · `--entities a,b` · `--custom-apis[=all]` · `--messages[=all]` · `--roles` · `--solution-roles`.
-- C# (default): `--lang csharp`, writes to `<project>/Models/Generated`, `--namespace` inferred, `--no-annotations`, `--overwrite`.
-- TypeScript: `--forms` and/or `--tables` (default `--lang ts`), emit an `index.ts` barrel.
+Scope is REQUIRED (combinable): `--solution <name>` · `--entities a,b` · `--custom-apis [a,b]` (no value =
+every Custom API; add `--package <nupkg>`/`--packages-dir` to exclude the ones you authored) ·
+`--messages [a,b]` (no value = all consumable messages) · `--roles <a,b>` · `--solution-roles`.
+- C# (default): `--lang csharp`, namespace default `<prefix>.Shared.Models.Generated`, `--namespace`,
+  `--no-annotations`, `--overwrite`, `--out <dir>` (default: current dir) or `--project <csproj>`.
+- TypeScript (preview): `--forms` and/or `--tables` (emit an `index.ts` barrel).
 - `--verify` - no write; reports drift, **exit 5** on drift. Cannot combine with `--forms`/`--tables`.
-- `--out <dir>` · `--project <csproj>` · `--timeout <1-60 min, default 10>` · `--json` · `-v`.
+- `--timeout <1-60 min, default 10>` · `--json` (report of generated files, for agents) · `-v`.
 
-## Deploy - `plan` (safe) vs `apply` (writes)
-Shared inputs: `--package`/`-p <.nupkg>` (repeatable, required unless `--webresources`), `--packages-dir`, `--solution <uniquename>`, `--environment <label>`, connection options (below), `--strict` (fail on any diagnostic), `--json`, `-v`.
-- `vela plan` - preview only, never writes. Run this before every apply.
-- `vela apply` - writes. On a TTY prints the plan and requires a typed `yes`; non-interactive refuses unless `--auto-approve`/`--yes`. **Do not auto-approve unless explicitly told to.**
-- `vela inspect` - compare local packages vs live environment.
+## Package - `vela sign`
+`vela sign --package <path.nupkg> (--fingerprint <hex> | (--pfx <file> | --pfx-base64 <content>) (--pfx-password <pw> | --pfx-credential <target>)) [--timestamp <url>] [--json]`
+- Signs the built plugin package **before** `plan`/`apply`, so the previewed package is the applied one.
+- Prefer `--fingerprint` (cert store) or `--pfx-credential` (credential store) over `--pfx-password`,
+  which puts the secret in shell history and logs.
+
+## Deploy - `plan` (safe) vs `apply` (writes) vs `inspect` (read)
+Shared inputs: `--package`/`-p <.nupkg>` (repeatable) or `--packages-dir <folder>` · `--package-assembly <name.dll>` ·
+`--webresources <folder>` (preview) · connection options (below) · `--timeout` · `--environment <label>` ·
+`--out <file>` · `--strict` (fail on any diagnostic) · `--json` · `--verbose`.
+- `vela plan` - preview only, never writes. Run it on the exact package you will apply.
+- `vela apply` - writes; adds `--solution <uniquename>` (apply-only) and `--auto-approve`/`--yes`. On a
+  TTY prints the plan and requires a typed `yes`; non-interactive refuses unless `--auto-approve`.
+  **Do not auto-approve unless explicitly told to.**
+- `vela inspect` - compare local packages vs the live environment (read-only).
+- **Output format:** a styled summary on a terminal, **JSON when piped/redirected** (an agent's shell is
+  usually piped - expect JSON). Force it with `--json`, or write it with `--out <file>`.
+  `NO_COLOR` / `VELA_NO_COLOR` disable colors.
 
 ## Auth / connection (on models/plan/apply/inspect)
 Resolution order:
 1. `--connection-string` or env `DATAVERSE_CONNECTION_STRING`.
-2. Client secret: `--url` + `--tenant-id` + `--client-id` + (`--client-secret` | `--client-secret-stdin` | env `DATAVERSE_CLIENT_SECRET`).
-3. `--interactive`/`-i` - browser login; token cached under `~/.vela` (silent on repeat). `--fresh-login` forces re-prompt. `vela logout` clears it.
+2. Client secret: `--url` + `--tenant-id` + `--client-id` + (`--client-secret-stdin` | env
+   `DATAVERSE_CLIENT_SECRET` | `--client-secret <value>` - warned, leaks into history; avoid).
+3. `--interactive`/`-i` - browser login; token cached under `~/.vela` (silent on repeat). `--fresh-login`
+   forces re-prompt. `vela logout` clears it. Needs a browser - not for headless runs.
 4. `--url` alone → `DefaultAzureCredential` (env / managed identity / `az login`).
 - `--timeout <1-60>` connection timeout. `--authority` / `--auth-client-id` for sovereign clouds.
 
-## Version
-`vela version` or `vela --version` → `vela <version>`. Run it first; skills assume the
-current release line (CLI 0.16.1 / framework `Vela.Plugins` 0.27.1 or newer).
+## Exit codes
+`0` success · `2` invalid arguments · `3` file not found · `4` parse/read error · `5` drift
+(`models --verify`) · `6` Dataverse connection failure.
 
-**Scaffold build note:** `vela init` resolves the *latest* `Vela.Plugins` by default. A 0.27.0
-regression (the source generator emitted a `partial` half while the demo plugin classes were not
-`partial`, causing `CS0260` on `dotnet build`) was **fixed in 0.27.1**: the scaffold builds clean on
-current releases with no `--core-version` pin (verified). If a future framework version ever breaks
-the baseline build, pin a known-good core with `vela init --core-version <v>`.
+## Other
+`vela version` (or `--version`) → `vela <version>`; run it first. `vela update [--version <x.y.z>]`
+updates the global tool. `vela menu` (default with no args) is an interactive TTY menu - not for agents.
