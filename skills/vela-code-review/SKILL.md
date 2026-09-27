@@ -23,7 +23,10 @@ dotted custom-API param). This gate sits between VERIFY and the apply gate.
 
 Announce: `Using vela-code-review to review the change`.
 
-1. Pin the base and confirm a non-empty diff: `git diff <base>...HEAD` (base = the branch point).
+1. Pin the base and confirm a non-empty diff: commit your work first, then `git diff <base>...HEAD`
+   (base = the branch point; uncommitted changes are not in it). No repository (e.g. a fresh scratch
+   run)? `git init` + commit right after scaffolding and diff against that commit; if git is not
+   allowed, diff against a copy of the tree taken right after scaffolding (`diff -ruN`). Say which.
 2. Review on **two axes** using `references/review-checklist.md`:
    - **Spec axis** - the diff against the **Vela Canvas** (acceptance cases + the Approach/Structure
      decisions: Sync/Async appropriate, reuse-vs-new respected). If the code diverged from the
