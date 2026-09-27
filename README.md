@@ -109,13 +109,13 @@ target project and reused as the PR body:
 | Area | Contents |
 | --- | --- |
 | `skills/` | 13 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
-| `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer) |
+| `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer), as `<name>.agent.md` - loaded by Claude Code and by a Copilot CLI plugin as-is |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
 | `hooks/` | Optional dual-target guard: a pre-tool hook that hard-blocks `vela apply` without approval (Claude Code + Copilot) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |
 | `.claude-plugin/` | Claude Code distribution: plugin marketplace + plugin manifest |
-| `.github/` | GitHub Copilot distribution (skills, chat mode, instructions) - **generated**, never hand-edited |
+| `.github/` | GitHub Copilot repository surface (skills, custom agents `.github/agents/*.agent.md`, instructions, hooks) - **generated**, never hand-edited |
 | `scripts/` | `sync-copilot.mjs` regenerates `.github/` and the per-skill reference copies; `lint-pack.mjs` checks the pack |
 
 ### Skills
@@ -167,8 +167,8 @@ copilot plugin install allandecastro/vela-agentic
 ```
 
 Verify what loaded with `copilot plugin list`. The **skills** load from `skills/` automatically.
-The agents and the optional apply-guard hook follow the Copilot plugin conventions; confirm they
-load on your Copilot CLI version and see `hooks/README.md` for the hook caveats.
+The agents load from `agents/*.agent.md` (their Claude tool names are documented Copilot aliases) and
+the apply-guard from the generated root `hooks.json`; see `hooks/README.md` for the one-time check.
 
 Portable alternative (skills only, any host, no plugin): install the skills with the official
 `gh skill` command (`gh` 2.90.0 or later):

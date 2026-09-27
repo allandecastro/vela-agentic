@@ -8,7 +8,7 @@ These are generated from `AGENTS.md`. Edit `AGENTS.md`, then run `node scripts/s
 
 Durable rules for any AI agent (Claude Code, GitHub Copilot, or other) that drives
 **Vela** through its command-line interface. This is the shared source of truth;
-tool-specific surfaces (`.github/copilot-instructions.md`, chat modes) are generated
+tool-specific surfaces (`.github/copilot-instructions.md`, `.github/agents/`) are generated
 from it by `scripts/sync-copilot.mjs`.
 
 ## What Vela is

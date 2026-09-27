@@ -82,11 +82,13 @@ async function lintSkills() {
 
 async function lintAgents() {
   const base = path.join(root, "agents");
-  for (const f of (await fs.readdir(base)).filter((f) => f.endsWith(".md"))) {
+  for (const f of await fs.readdir(base)) {
+    if (!f.endsWith(".md")) continue;
+    if (!f.endsWith(".agent.md")) { errors.push(`agents/${f}: agent files must be named <name>.agent.md (Copilot loads only that)`); continue; }
     const fm = frontmatter(await fs.readFile(path.join(base, f), "utf8"));
     if (!fm) { errors.push(`agents/${f}: no frontmatter`); continue; }
     if (!fm.name) errors.push(`agents/${f}: frontmatter missing 'name'`);
-    else if (fm.name !== path.basename(f, ".md")) errors.push(`agents/${f}: name '${fm.name}' != file name`);
+    else if (fm.name !== path.basename(f, ".agent.md")) errors.push(`agents/${f}: name '${fm.name}' != file name`);
     if (!fm.description) errors.push(`agents/${f}: frontmatter missing 'description'`);
   }
 }
@@ -95,7 +97,7 @@ const list = (v) => (v || "").replace(/^\[|\]$/g, "").split(",").map((x) => x.tr
 const skillNames = async () =>
   (await fs.readdir(path.join(root, "skills"), { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name);
 const agentNames = async () =>
-  (await fs.readdir(path.join(root, "agents"))).filter((f) => f.endsWith(".md")).map((f) => path.basename(f, ".md"));
+  (await fs.readdir(path.join(root, "agents"))).filter((f) => f.endsWith(".agent.md")).map((f) => path.basename(f, ".agent.md"));
 const META_SKILLS = new Set(["writing-vela-skills", "diagnosing-vela"]);
 
 // Terms that must not come back (renamed or never real). [regex, hint]
@@ -108,7 +110,7 @@ const FORBIDDEN = [
 async function sourceDocs() {
   const out = ["AGENTS.md", "README.md", "hooks/README.md"];
   for (const s of await skillNames()) out.push(`skills/${s}/SKILL.md`);
-  for (const a of await agentNames()) out.push(`agents/${a}.md`);
+  for (const a of await agentNames()) out.push(`agents/${a}.agent.md`);
   for (const d of ["references", "evals", "evals/scenarios", "evals/runs"]) {
     try { for (const f of await fs.readdir(path.join(root, d))) if (f.endsWith(".md")) out.push(`${d}/${f}`); }
     catch { /* optional dir */ }
