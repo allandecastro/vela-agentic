@@ -50,6 +50,7 @@ independent of the framework/CLI NuGet releases.
 - [ ] A CI job that validates SKILL.md frontmatter and the generated Copilot surface
 - [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands
 - [ ] Turn on the isolated review subagent in `vela-code-review` once the loop is stable
-- [ ] Sharpen `vela-debug-plugin` with the "no red repro, no hypothesis" + regression-test-before-fix discipline
+- [x] Sharpen `vela-debug-plugin`: no red repro, no fix; no-org path; the human supplies the Plug-in Trace Log (named fields)
+- [ ] Ask upstream (Vela CLI) for a read-only trace command (e.g. `vela logs`) so the agent can read the Plug-in Trace Log through the CLI contract
 - [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness security plan, don't duplicate)
 - [ ] `vela-simplify` gate (behavior-preserving) if plugin diffs start accreting complexity
