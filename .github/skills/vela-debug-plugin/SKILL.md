@@ -45,11 +45,16 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    - what: type name, message, primary entity, stage/mode, **depth**, correlation id, the **exception
      details**, and the **message block** (your `ctx.Trace(...)` output).
    A Depth above 1 or a "prevent recursion" message points at recursion
-   (`references/dataverse-gotchas.md`).
+   (`references/dataverse-gotchas.md`). **No row at all** for the operation (with tracing on) is
+   evidence too: the step never fired - suspect the registration (filtering attribute, message,
+   entity), not the handler code.
 3. **Reproduce locally (mandatory):** write a failing harness test (`vela-test-harness`,
    `references/harness-api.md`) that captures the symptom - a live symptom becomes a local,
-   repeatable red. Cascades and recursion: use `PluginPipeline`. **No org at all?** Reproduce from the
-   symptom description alone; that is the normal path, not a degraded one.
+   repeatable red. **"Does not fire", filtering attributes, cascades and recursion: use
+   `PluginPipeline`** - `PluginContext...Execute` runs the handler regardless of `FilterOn`, so it
+   cannot reproduce a step that never fires. **No org at all?** Reproduce from the symptom
+   description alone; that is the normal path, not a degraded one. If the repro is unexpectedly
+   green, the test is not exercising the registration yet - switch to the pipeline before concluding.
 4. **Minimize.** Strip the case to the smallest input that still fails.
 5. **Hypothesize** from the registration and the evidence, against the usual suspects in
    `references/dataverse-gotchas.md`:
@@ -62,7 +67,9 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    Compare intent with the live registration via `vela inspect` when a connection is available (flags in
    `references/cli-surface.md`); otherwise record the exact `vela inspect` command for the human.
 6. **Instrument** if the cause is still unclear: add `ctx.Trace(...)` lines for the values you need,
-   reproduce, read the message block. Remove noise afterwards; keep traces that help operations.
+   reproduce, read the message block. A step that never fires writes no trace - read
+   `pipeline.ExecutionLog` instead (which steps ran, with message, stage, depth). Remove noise
+   afterwards; keep traces that help operations.
 7. **Fix** the single most-likely cause with evidence.
 8. **Regression-test.** The red test now passes and stays in the suite; the full suite is green;
    `vela inspect`/`vela plan` (or the recorded commands) confirm the registration matches intent.

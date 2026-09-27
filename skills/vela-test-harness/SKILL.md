@@ -27,8 +27,14 @@ Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - the **primary behaviour** from the story;
 - each **edge** the spec implies (empty / null / invalid / boundary);
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering
-  attribute, Associate/Disassociate matching, bulk `*Multiple`.
+  attribute, Associate/Disassociate matching, bulk `*Multiple`;
+- on **Update**: a column **not sent** vs a column **cleared** (sent as null) - they are different
+  (`ctx.Request.Target` only holds the columns that were sent).
 A single happy-path test does not satisfy the gate.
+
+**Pick the runner by what the case proves** (`references/harness-api.md`): `PluginContext...Execute`
+for what the handler does; **`PluginPipeline`** for whether the step fires at all - `Execute`
+ignores `FilterOn`, so a "does not fire" case written with it passes and proves nothing.
 
 ## Process
 
@@ -49,8 +55,10 @@ Announce: `Using vela-test-harness to <purpose>`.
    Pass a **plugin instance** to `Execute(...)` (there is no `.Execute<T>()`). Do **not** chain
    `.OnUpdate().Stage().Mode()` for a single-step plugin - it auto-derives.
 3. Write the full **Coverage** set above (not just the happy path).
-4. **RED first (mandatory):** run the tests before implementing and confirm they **fail** for
-   the right reason. Only then hand off to `vela-plugin-authoring` to implement to green.
+4. **RED first (mandatory):** run the tests before implementing and confirm the behaviour cases
+   **fail** for the right reason. Guard / no-op cases ("already normal", "null → untouched",
+   "does not fire") may pass before any code exists - that is expected; list which ones in the
+   report. Only then hand off to `vela-plugin-authoring` to implement to green.
 5. Run with the **OS-correct runner** (see `references/harness-api.md`):
    - Windows: `dotnet test <path>.Tests.csproj -c Release`.
    - macOS/Linux: `dotnet test` cannot run net462 - build, then
@@ -71,6 +79,7 @@ Announce: `Using vela-test-harness to <purpose>`.
 
 - Claiming success from `dotnet build` alone, or from a partial/crashed test run.
 - Using `.Execute<T>()`, or restating `.OnUpdate().Stage().Mode()` on a single-step plugin.
+- A "step does not fire" / filtering-attribute case written with `Execute` instead of `PluginPipeline`.
 - Reporting a Mono native segv (missing `-parallel none`) as a test failure.
 
 ## Verification

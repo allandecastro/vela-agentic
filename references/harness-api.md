@@ -2,6 +2,27 @@
 
 Ground truth for writing and running harness tests. Skills point here.
 
+## Two ways to run a plugin - pick by what the test must prove
+
+| Test must prove | Use | Why |
+| --- | --- | --- |
+| what the handler does with a given target/images | `PluginContext.For<T>()...Execute(plugin)` | fast, single step |
+| **whether the step fires at all** (filtering attributes, message/stage matching) | **`PluginPipeline`** | `Execute` runs the handler **regardless of `FilterOn`**; only the pipeline honours the registration |
+| cascades, recursion, one plugin's write triggering another | **`PluginPipeline`** | runs every registered plugin on each write |
+
+A "step does not fire when an unrelated column changes" test written with `Execute` passes **and
+proves nothing** (verified, Vela.Testing 0.28.2). Write it with the pipeline:
+```csharp
+var id = Guid.NewGuid();
+var p = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "orig" });
+p.Service.Update(new Account { Id = id, Revenue = new Money(2m) });   // filtered column (Name) not sent
+Assert.Empty(p.ExecutionLog);                                          // the step did not fire
+p.Service.Update(new Account { Id = id, Name = "changed" });
+var run = Assert.Single(p.ExecutionLog);                               // it fired once
+Assert.Equal("Update", run.Message);                                   // entries: PluginTypeName, Message, Stage,
+                                                                       // Mode, EntityLogicalName, Depth
+```
+
 ## Generated test shape (`vela add test <Name> --kind plugin --entity <Entity>`)
 
 ```csharp
@@ -21,14 +42,16 @@ public sealed class <Name>Tests
         Account target = new Account { Id = Guid.NewGuid() };
 
         // Act: a single-step plugin auto-derives message/stage/mode from its registration.
-        // For a MULTI-step plugin only, state it: .OnUpdate().Stage(...).Mode(...).
+        // For a MULTI-step plugin only, state it: .OnUpdate().Stage(...).Mode(...)
+        // (otherwise: "has no registered step matching message 'Update'").
         PluginContext.For<Account>()
             .WithTarget(target)
             .WithOrganizationService(crm)
             .Execute(new <Name>(string.Empty, string.Empty));   // instance, (unsecure, secure) ctor
 
-        // Assert: PreOperation -> check `target` (the plugin edited ctx.Request.Target) and that crm got
-        // no extra write. Writes to OTHER records -> read them back from crm and check fields.
+        // Assert (the generated comment shows a "task"/"subject" example; what to assert is below):
+        // PreOperation -> check `target` (the plugin edited ctx.Request.Target) and that crm got no extra
+        // write. Writes to OTHER records -> read them back from crm and check fields.
         // var rows = crm.RetrieveMultiple(new QueryExpression("account") { ColumnSet = new ColumnSet(true) });
         // var row = Assert.Single(rows.Entities);
         // Assert.Equal("expected", row.GetAttributeValue<string>("description"));
@@ -37,8 +60,11 @@ public sealed class <Name>Tests
 ```
 
 Critical, easy-to-get-wrong facts:
-- `.Execute(...)` takes a **plugin instance**: `new <Plugin>(string.Empty, string.Empty)`.
-  There is **no** `.Execute<TPlugin>()` generic.
+- `.Execute(...)` takes a **plugin instance**: `new <Plugin>(string.Empty, string.Empty)`. (A generic
+  `.Execute<TPlugin>()` exists but needs a public parameterless ctor, which generated plugins don't
+  have - `CS0310`. Pass an instance.)
+- `.Execute(...)` **ignores `FilterOn`**: it always runs the handler. Test "fires / does not fire" with
+  `PluginPipeline` (above).
 - The ctor is `(unsecureConfig, secureConfig)` - pass `string.Empty, string.Empty` when unused.
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.
@@ -67,15 +93,15 @@ Custom API test recipe (complete - the parts that are easy to miss):
 var crm = new InMemoryOrganizationService();
 crm.Seed(new Account { Id = accId, Name = "Zava", Revenue = new Money(2_000_000m) });
 var context = PluginContext.ForMessage("adc_ScoreLead")
-    .WithOrganizationService(crm)                 // REQUIRED: wires the DI-resolved IOrganizationService the handler's service uses
+    .WithOrganizationService(crm)                 // only when the handler reads/writes through an org service
     .Build();
 context.PluginExecutionContext.InputParameters["email"] = "exec@fortune500.com";   // set inputs here
 api.Execute(context.ServiceProvider);             // run the Custom API instance
 Assert.Equal(55, context.PluginExecutionContext.OutputParameters["leadScore"]);    // assert outputs
 ```
-Without `.WithOrganizationService(crm)` before `Build()`, the handler's `ctx.GetRequiredService<IOrganizationService>()` lookups (revenue / duplicate checks) have nothing to read.
+When the handler uses an org service (e.g. `ctx.GetRequiredService<IOrganizationService>()` for a revenue or duplicate check), pass `.WithOrganizationService(crm)` before `Build()`, or those lookups have nothing to read. A pure computation needs none.
 
-- `vela add test <Name> --kind customapi` generates exactly this shape (`PluginContext.ForMessage("<prefix>_<Name>").Build()`).
+- `vela add test <Name> --kind customapi` generates the minimal shape (`PluginContext.ForMessage("<prefix>_<Name>").Build()`, no org service); add `.WithOrganizationService(crm)` only if the handler needs it.
 - **Typed / bound** Custom APIs are tested the same way, with the **plain parameter names**:
   `InputParameters["Factor"] = 2m` → `OutputParameters["Total"]` (verified, 0.28.2).
 - A missing required input should throw `InvalidPluginExecutionException` - test it:
@@ -119,6 +145,10 @@ Test projects target **net462**. The runner depends on the OS:
 - **Windows:** `dotnet test <path>.Tests.csproj -c Release`.
 - **macOS / Linux (arm64 or x64):** `dotnet test` **fails** - .NET has no net-framework test
   host (`testhost.arm64.exe` missing). Run under **Mono + xunit console** instead:
+  The runner is not part of the scaffold. If `~/.nuget/packages/xunit.runner.console/2.9.2/` is
+  missing, restore it once by adding `<PackageReference Include="xunit.runner.console" Version="2.9.2"
+  PrivateAssets="all" />` to the test project (verified: a restore drops `tools/net462/xunit.console.exe`
+  there).
   ```bash
   dotnet build <path>.Tests.csproj -c Release
   mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net462/xunit.console.exe \
