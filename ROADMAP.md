@@ -55,8 +55,10 @@ independent of the framework/CLI NuGet releases.
 
 ## Doing
 
-- [ ] Run the new and changed scenarios with a fresh agent and record them under `evals/runs/`
-      (recursion, custom API, multi-step, apply gate, debug), then iterate to a clean pass = "ready"
+- [x] Iteration 1 (2026-09-28): the five new scenarios run by fresh agents, all **fail** - 6 distinct
+      blockers (Execute ignores FilterOn, dotnet pack emits no assembly, no sanctioned stage edit, the
+      review blocked the no-org stand-in, Function for a flow-called API) fixed; records in `evals/runs/`
+- [ ] Iteration 2: re-run the five scenarios against the fixed skills, iterate to a clean pass = "ready"
 
 ## Backlog
 
