@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Debug a Vela plugin
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Diagnose a plugin that misbehaves by reconciling what the code intends to register against
 what is actually registered, and by reproducing the fault in the harness.
 

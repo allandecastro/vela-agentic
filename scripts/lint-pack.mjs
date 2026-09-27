@@ -59,6 +59,9 @@ async function lintSkills() {
     if (!fm.description) errors.push(`skills/${e.name}: frontmatter missing 'description'`);
     else if (/\bthen\b|; |\bemit\b/i.test(fm.description))
       warnings.push(`skills/${e.name}: description looks like a workflow summary - keep it trigger-only ("Use when…")`);
+    // Hosts may resolve relative paths against the working directory: say they are skill-relative.
+    if (/references\/[a-z0-9-]+\.md/.test(md) && !md.includes("relative to **this skill's folder**"))
+      errors.push(`skills/${e.name}: cites references/ but lacks the skill-relative path note (see writing-vela-skills)`);
     // Self-contained once installed: every cited reference must be bundled next to SKILL.md.
     for (const m of md.matchAll(/references\/([a-z0-9-]+\.md)/g)) {
       try { await fs.access(path.join(base, e.name, "references", m[1])); }

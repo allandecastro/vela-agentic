@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Review the plan (self-grilling)
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Before building anything, interrogate your own plan until every branch resolves. This is the
 front gate: it catches a mis-interpreted story before a wasted build. It is **advisory** - you
 flag unresolved assumptions and continue; you do not block.

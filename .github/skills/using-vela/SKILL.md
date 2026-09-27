@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Using Vela
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Meta-skill: how to work with Vela through its CLI. Read this before the other Vela skills.
 
 ## The build loop

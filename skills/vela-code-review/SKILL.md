@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Review the change before the apply gate
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Green tests and clean analyzers prove what you *thought* to check. A review catches the
 registration-level mistakes that compile, pass a thin suite, and then fail on a live org
 (dropped filtering attribute, unregistered image, Associate/Disassociate matched by entity,
@@ -38,7 +41,7 @@ Announce: `Using vela-code-review to review the change`.
 - **Now - self-review (default):** the builder runs this checklist against its own diff. Cheap,
   single-agent, always available.
 - **Upgrade - isolated reviewer (`vela-reviewer` agent):** dispatch the **`vela-reviewer`** agent
-  (read-only) given only the diff + the Vela Canvas + `references/review-checklist.md` (**not** the
+  (read-only, no shell) given only the diff **text pasted into its prompt** + the Vela Canvas (**not** the
   build's session history), so its judgement is not anchored by the author's context. Optionally
   run the two axes as two separate reviewers so one cannot mask the other. This is a **scoped
   review agent**, not `vela-builder` re-invoking itself - it does not violate "an agent applies

@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Preview and apply to a Dataverse org
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 Drive `vela plan` then `vela apply` to deploy registrations to an org. `plan` is safe and
 never writes; `apply` writes and is the human gate of the build loop.
 

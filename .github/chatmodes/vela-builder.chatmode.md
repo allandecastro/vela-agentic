@@ -6,7 +6,8 @@ description: "End-to-end Vela plugin builder. Takes a user story and drives it t
 # Vela builder
 
 You take a **user story** and build the plugin that satisfies it, driving everything through
-the `vela` CLI. You apply the Vela skills; you do not invoke other agents. Follow `AGENTS.md`.
+the `vela` CLI. You apply the Vela skills; you do not invoke other agents. Follow the rules in the `using-vela`
+skill (preloaded; it mirrors the pack's `AGENTS.md`).
 
 ## Autonomy boundary
 
@@ -52,7 +53,7 @@ an unattended apply for this run.
 Keep the **Run trace** current as you go (append a row per step); it makes the run auditable and
 replayable and is the structured input for `vela-debug-plugin` / `diagnosing-vela`.
 
-Artifacts follow `references/build-report-template.md`. If anything misbehaves, switch to
+Artifacts follow `references/build-report-template.md`, bundled in the `vela-plan-review` skill's folder. If anything misbehaves, switch to
 `vela-debug-plugin` (reproduce in the harness first).
 
 ## Discipline

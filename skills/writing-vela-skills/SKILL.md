@@ -6,6 +6,9 @@ compatibility: "Meta skill - no vela CLI dependency."
 
 # Writing Vela skills
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 We treat skills as process documentation under test. A skill is only "done" when a fresh agent
 following it literally reaches the right outcome without having to rediscover the real API.
 
@@ -24,7 +27,8 @@ field states the CLI floor (`"vela CLI >= x.y.z ..."`, never above the version v
 push verbatim code and long reference into the root `references/` and cite it as
 `references/<file>.md`. `node scripts/sync-copilot.mjs` copies every cited reference (and what it cites)
 into the skill's own `references/` folder, so the skill stays self-contained once installed. Never edit
-those copies.
+those copies. A skill that cites a reference carries, under its title, the note that `references/`
+paths are relative to the skill's folder (some hosts resolve relative paths against the working directory).
 
 ## The loop (RED → GREEN → REFACTOR)
 

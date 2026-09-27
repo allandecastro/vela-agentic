@@ -6,6 +6,9 @@ compatibility: "vela CLI >= 0.19.4 (Vela.Plugins >= 0.28.2); dotnet SDK."
 
 # Grill the story (interview the human)
 
+> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
+> directory containing this `SKILL.md`), not to the project you are working in.
+
 User-invoked interview: when a story is too vague to build safely, cuisine the human until the
 plan has no unresolved branch. This is the interactive sibling of `vela-plan-review` (which
 grills the plan itself); use this one when only the human can resolve the ambiguity.
