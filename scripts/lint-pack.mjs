@@ -3,7 +3,11 @@
 // Fails on: missing/!kebab skill/agent frontmatter, name != dir, broken references/*.md links,
 //           missing skill `compatibility`, a CLI floor above the version verified in cli-surface.md,
 //           or a skill citing a reference that is not bundled in its own references/ folder.
-// Warns on: descriptions that look like workflow summaries instead of trigger-only.
+//           Also fails on: a cited `vela-*` skill/agent that does not exist, a forbidden term,
+//           an agent whose name != file name, a README skills table out of step with skills/,
+//           an eval scenario/run with bad frontmatter or unknown skills.
+// Warns on: descriptions that look like workflow summaries instead of trigger-only, and
+//           non-meta skills that no eval scenario exercises.
 //
 //   node scripts/lint-pack.mjs
 // Exit 0 = clean (warnings allowed), 1 = errors.
@@ -82,7 +86,87 @@ async function lintAgents() {
     const fm = frontmatter(await fs.readFile(path.join(base, f), "utf8"));
     if (!fm) { errors.push(`agents/${f}: no frontmatter`); continue; }
     if (!fm.name) errors.push(`agents/${f}: frontmatter missing 'name'`);
+    else if (fm.name !== path.basename(f, ".md")) errors.push(`agents/${f}: name '${fm.name}' != file name`);
     if (!fm.description) errors.push(`agents/${f}: frontmatter missing 'description'`);
+  }
+}
+
+const list = (v) => (v || "").replace(/^\[|\]$/g, "").split(",").map((x) => x.trim()).filter(Boolean);
+const skillNames = async () =>
+  (await fs.readdir(path.join(root, "skills"), { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name);
+const agentNames = async () =>
+  (await fs.readdir(path.join(root, "agents"))).filter((f) => f.endsWith(".md")).map((f) => path.basename(f, ".md"));
+const META_SKILLS = new Set(["writing-vela-skills", "diagnosing-vela"]);
+
+// Terms that must not come back (renamed or never real). [regex, hint]
+const FORBIDDEN = [
+  [/Plan artifact/i, 'the artifact is the "Vela Canvas"'],
+  [/`\/vela-(build|apply)`/, "no such slash command - the loop is the vela-builder agent"],
+];
+
+// Sources an agent reads (generated copies and the forward-looking ROADMAP excluded).
+async function sourceDocs() {
+  const out = ["AGENTS.md", "README.md", "hooks/README.md"];
+  for (const s of await skillNames()) out.push(`skills/${s}/SKILL.md`);
+  for (const a of await agentNames()) out.push(`agents/${a}.md`);
+  for (const d of ["references", "evals", "evals/scenarios", "evals/runs"]) {
+    try { for (const f of await fs.readdir(path.join(root, d))) if (f.endsWith(".md")) out.push(`${d}/${f}`); }
+    catch { /* optional dir */ }
+  }
+  return out;
+}
+
+async function lintNamesAndTerms() {
+  const known = new Set([...(await skillNames()), ...(await agentNames()), "vela-agentic"]);
+  for (const rel of await sourceDocs()) {
+    const md = await fs.readFile(path.join(root, rel), "utf8");
+    for (const m of md.matchAll(/`\/?(vela-[a-z-]+)`/g))
+      if (!known.has(m[1])) errors.push(`${rel}: cites \`${m[1]}\`, which is neither a skill nor an agent`);
+    for (const [re, hint] of FORBIDDEN) if (re.test(md)) errors.push(`${rel}: forbidden term ${re} - ${hint}`);
+  }
+}
+
+async function lintReadmeTable() {
+  const md = await fs.readFile(path.join(root, "README.md"), "utf8");
+  const table = md.split("### Skills")[1]?.split("\n\n>")[0] || "";
+  const listed = new Set([...table.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]));
+  const skills = new Set(await skillNames());
+  for (const s of skills) if (!listed.has(s)) errors.push(`README.md: skill '${s}' missing from the Skills table`);
+  for (const s of listed) if (!skills.has(s)) errors.push(`README.md: Skills table lists '${s}', which does not exist`);
+  const count = md.match(/\| `skills\/` \| (\d+) portable/)?.[1];
+  if (count && Number(count) !== skills.size) errors.push(`README.md: says ${count} skills, there are ${skills.size}`);
+}
+
+async function lintEvals() {
+  const skills = new Set(await skillNames());
+  const dir = path.join(root, "evals", "scenarios");
+  const covered = new Set();
+  const scenarios = new Set();
+  for (const f of (await fs.readdir(dir)).filter((f) => f.endsWith(".md"))) {
+    const rel = `evals/scenarios/${f}`;
+    const fm = frontmatter(await fs.readFile(path.join(dir, f), "utf8"));
+    if (!fm) { errors.push(`${rel}: no frontmatter`); continue; }
+    if (fm.scenario !== path.basename(f, ".md")) errors.push(`${rel}: scenario '${fm.scenario}' != file name`);
+    scenarios.add(fm.scenario);
+    for (const k of ["skills_exercised", "gotchas_exercised", "org_required"])
+      if (!fm[k]) errors.push(`${rel}: frontmatter missing '${k}'`);
+    for (const s of list(fm.skills_exercised)) {
+      if (!skills.has(s)) errors.push(`${rel}: skills_exercised names unknown skill '${s}'`);
+      covered.add(s);
+    }
+  }
+  for (const s of skills)
+    if (!covered.has(s) && !META_SKILLS.has(s)) warnings.push(`skills/${s}: no eval scenario exercises it (evals/README.md coverage)`);
+  let runs = [];
+  try { runs = (await fs.readdir(path.join(root, "evals", "runs"))).filter((f) => f.endsWith(".md") && f !== "README.md"); }
+  catch { /* no runs yet */ }
+  for (const f of runs) {
+    const rel = `evals/runs/${f}`;
+    const fm = frontmatter(await fs.readFile(path.join(root, "evals", "runs", f), "utf8"));
+    if (!fm) { errors.push(`${rel}: no frontmatter`); continue; }
+    if (!scenarios.has(fm.scenario)) errors.push(`${rel}: unknown scenario '${fm.scenario}'`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.date || "")) errors.push(`${rel}: 'date' must be YYYY-MM-DD`);
+    if (!["pass", "fail"].includes(fm.verdict)) errors.push(`${rel}: 'verdict' must be pass | fail`);
   }
 }
 
@@ -109,6 +193,9 @@ async function lintReferenceLinks() {
 await lintSkills();
 await lintAgents();
 await lintReferenceLinks();
+await lintNamesAndTerms();
+await lintReadmeTable();
+await lintEvals();
 
 for (const w of warnings) console.warn(`WARN  ${w}`);
 for (const e of errors) console.error(`ERROR ${e}`);

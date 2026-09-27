@@ -49,7 +49,7 @@ If something misbehaves, switch to `vela-debug-plugin`.
 - **`vela-grill`** is the one meant for a conversation with the human. Invoke it yourself when only
   the human can resolve an ambiguity; a human may also start it with `/vela-grill`.
 - **The end-to-end loop is the `vela-builder` agent** and the isolated review is the
-  **`vela-reviewer` agent** - agents, not skills. There is no `/vela-build` or `/vela-apply` command:
+  **`vela-reviewer` agent** - agents, not skills. There is no build or apply slash command:
   hand a story to `vela-builder`, and `vela-apply` is the skill it uses to preview.
 
 ## Non-negotiable rules
