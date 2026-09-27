@@ -36,8 +36,18 @@ an unattended apply for this run.
 10. **Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
     cases checklist + the **Run trace** - one row per step: command, exit code, gate verdict,
     timing), stop, hand off to a human.
-11. **Report.** Open a PR with the Build Report as its body and the artifact committed under
-    `docs/vela-builds/<slug>.md`. No AI attribution on the commit or PR.
+11. **Report.** The change ships as a PR, opened **draft first** and flipped to ready by the agents:
+    - **Isolate first:** create the feature branch before Scaffold, and open the PR as a **draft**
+      as soon as the Vela Canvas exists (right after Challenge, step 3), so the work is isolated
+      and the spec is visible from the start (`gh pr create --draft`). The PR body grows from the
+      Canvas into the Build Report.
+    - Mark it **ready for review** only once the agents are done: harness green, analyzers clean,
+      and the reviewer's Critical/Required findings all resolved (`gh pr ready`). Body = the Build
+      Report; the artifact is committed under `docs/vela-builds/<slug>.md`. No AI attribution on the
+      commit or PR.
+    - The org `vela apply` is a **separate human step**, independent of the PR state: a ready or
+      merged PR does not mean the org was written to. The apply gate (step 10) stays the only path
+      to a live-org write.
 
 Keep the **Run trace** current as you go (append a row per step); it makes the run auditable and
 replayable and is the structured input for `vela-debug-plugin` / `diagnosing-vela`.
