@@ -22,7 +22,7 @@ independent of the framework/CLI NuGet releases.
 - [x] Single source of truth: `skills/`, `agents/`, `AGENTS.md`, `references/`
 - [x] Dual-target distribution: Claude Code plugin marketplace + generated Copilot surface
 - [x] Skills grounded in the verified CLI + harness surface (references are verbatim)
-- [x] Gated build loop with two artifacts (Plan artifact + Build Report)
+- [x] Gated build loop with two artifacts (Vela Canvas + Build Report)
 - [x] Front challenge gate: `vela-plan-review` (self-grill) + `/vela-grill` (interview human)
 - [x] Loop engineering: `evals/` + `writing-vela-skills` + `diagnosing-vela`
 - [x] Skill taxonomy: model-invoked vs user-invoked

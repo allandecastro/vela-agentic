@@ -56,7 +56,7 @@ flowchart TD
     US([User story]) --> I[Intake]
     I --> P[Plan]
     P --> C["Challenge<br/>self-grill · declare acceptance cases"]
-    C -. emits .-> PA[/"Plan artifact"/]
+    C -. emits .-> PA[/"Vela Canvas"/]
     C --> G1{{"Plan gate<br/>advisory - flag &amp; continue"}}
     G1 --> S["Scaffold<br/>vela init / vela add"]
     S --> M["Model<br/>vela models"]
@@ -120,7 +120,7 @@ target project and reused as the PR body:
 | Skill | Kind | What it does |
 | --- | --- | --- |
 | `using-vela` | model-invoked | Entry point: the build loop and the non-negotiable rules |
-| `vela-plan-review` | model-invoked | Self-grill the plan until every branch resolves; emit the Plan artifact |
+| `vela-plan-review` | model-invoked | Self-grill the plan until every branch resolves; fill the Vela Canvas |
 | `vela-grill` | user-invoked (`/vela-grill`) | Interview the human when a story is too ambiguous to build safely |
 | `vela-scaffold` | model-invoked | `vela init` / `vela add` a solution or component (local only) |
 | `vela-models` | model-invoked | Generate early-bound C# / TypeScript models, or verify drift |

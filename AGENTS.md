@@ -58,7 +58,7 @@ the quality signal.
   the Canvas **before** the code; if you refactor without changing behaviour, update the code then
   **sync** it back into the Canvas. The Canvas stays an accurate record of the current plugin.
 - **Review before the apply gate**: once tests are green and analyzers clean, review the diff
-  (`vela-code-review`) on two axes - **spec** (the Plan artifact's acceptance cases + the
+  (`vela-code-review`) on two axes - **spec** (the Vela Canvas's acceptance cases + the
   `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell
   baseline). Critical/Required findings block the gate.
 - **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.
