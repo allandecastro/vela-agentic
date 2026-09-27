@@ -31,7 +31,7 @@ for this run.
 5. **Model** - `vela-models` for the entities involved (needs a connection).
 6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the acceptance
    cases declared in the Vela Canvas, run them, and confirm they **fail** first. Mandatory.
-7. **Implement** - `vela-plugin-authoring`: real `EntityPluginBase`/`OnExecute` surface, generated
+7. **Implement** - `vela-plugin-authoring` (a Custom API: `vela-custom-api`): real `EntityPluginBase`/`OnExecute` surface, generated
    models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
 8. **Verify** - full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations.

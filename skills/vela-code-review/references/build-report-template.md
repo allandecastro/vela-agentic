@@ -10,6 +10,11 @@ YAML front-matter, committed under `docs/vela-builds/<slug>.md` and reused as th
 
 Keep it **proportional**: for a simple story, sections can be one line each; do not pad.
 
+**One file per story:** `docs/vela-builds/<slug>.md` starts as the Canvas and is **the same file**
+that grows into the Build Report (front-matter `kind: vela-canvas` → `kind: vela-build`). A new story
+on an existing plugin gets its **own** slug and file; it references the plugin, it does not rewrite the
+earlier story's record.
+
 **Living spec (fix-spec-first):** when the requirement changes mid-build, update the Canvas
 **before** the code; when you refactor without changing behaviour, update the code then **sync**
 the change back into the Canvas. The Canvas stays an accurate record of the current plugin.
@@ -32,6 +37,9 @@ stage: PreOperation        # set the default on ctx.Request.Target before the wr
 mode: Synchronous
 filtering_attributes: [name]
 images: []
+# A Custom API replaces message/stage/mode/filtering_attributes/images with:
+#   custom_api: {unique_name: <pfx>_<Name>, binding: global | bound:<entity>, kind: action | function,
+#                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
 reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
 solution: <uniquename>    # target unmanaged solution (must already exist in the org)

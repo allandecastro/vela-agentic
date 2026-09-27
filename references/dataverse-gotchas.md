@@ -58,7 +58,8 @@ symptom → cause → fix.
 ## Custom APIs
 
 - **Custom API is uncallable on a real org** despite working locally. Parameter/unique names
-  contained a dot. Use dot-free unique names (the CLI self-heals, but verify).
+  contained a dot. Nothing local rejects it (build, harness and the definition reader all accept
+  `lead.email`), so the review is the guard: dot-free names only.
 
 ## Deep insert / relationships
 
