@@ -10,8 +10,15 @@ compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
 > directory containing this `SKILL.md`), not to the project you are working in.
 
 Drive `vela init` and `vela add` to create a solution or add components. These commands are
-**local only** and never connect to Dataverse. Generated code must compile and apply
-**without hand edits** - that is the contract.
+**local only** and never connect to Dataverse.
+
+Two kinds of files - don't confuse them:
+- **Generated** - `Models/Generated/*` (from `vela models`) and compiler-generated code. Never
+  hand-edit; regenerate. (One sanctioned no-org exception: `vela-plugin-authoring` step 2.)
+- **Scaffolded** - the plugin / step / Custom API / service / test files `vela add` writes once for
+  you. They are **yours**: you implement them, and you adjust their registration to the Canvas
+  (stage, `FilterOn`, images). The contract is that they compile as generated, not that they stay
+  untouched.
 
 ## When to use
 
@@ -22,8 +29,11 @@ Drive `vela init` and `vela add` to create a solution or add components. These c
 
 Announce: `Using vela-scaffold to <purpose>`.
 
-1. `vela version`; confirm the exact flags with `vela init --help` / `vela add --help`.
-2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]`. The prefix cannot be
+1. `vela version`; confirm the exact flags with `vela add --help` (command-specific) and `vela --help`
+   (the other commands' flags are listed there - `vela init --help` prints the same global page).
+2. **New solution?** `vela init <Name> [--prefix <pub>] [-o <dir>]` - it creates `<dir>/<Name>/` (the
+   solution folder is nested under `-o`), and the prefix's casing names the projects and namespaces
+   (`--prefix zava` → `zava.Plugins`). The prefix cannot be
    `Vela`. **Don't invent a prefix - use the target Dataverse solution's own publisher
    customization prefix** (see `references/registration-rules.md`); it must match, otherwise
    `vela apply --solution` rejects
@@ -32,7 +42,7 @@ Announce: `Using vela-scaffold to <purpose>`.
    `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
    `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
    `--no-integrations` / `--no-tests`). **Generated models live in
-   `<Prefix>.Shared/Models/Generated`** - that is the `--project` target for `vela models`,
+   `<Prefix>.Shared/Models/Generated`** - that is the `--out` (or `--project`) target for `vela models`,
    not the Plugins project.
 3. **Decide reuse vs new first** (see `references/registration-rules.md`):
    - **New plugin, no class exists yet** → `vela add plugin` via the CLI, then code. **Never
@@ -47,7 +57,12 @@ Announce: `Using vela-scaffold to <purpose>`.
      (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
      `vela-custom-api` first
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-5. **Verify the generated `FilterOn` before building** (it may be wrong yet compile):
+5. **Align the scaffolded registration with the Canvas.** `vela add plugin` / `add step` always
+   generate **`PostOperation` + `Sync`** (there is no stage flag). When the Canvas says PreOperation
+   (the default for a column of the same record - `references/registration-rules.md`), change both
+   the chain and the handler's context type - this is the expected edit of your scaffolded file:
+   `.PostOperation()` → `.PreOperation()` and `I<Message>PostContext<E>` → `I<Message>PreContext<E>`.
+   Then **verify the generated `FilterOn`** (it may be wrong yet compile):
    - `vela add step` emits a `FilterOn(e => e.Id /* TODO */)` placeholder that **fails the build with
      VELA001** ("'Id' is not a Dataverse column") - replace it with the column that gates the step.
    - `vela add plugin` may echo the casing you passed (`--filtering-attributes name` -> `e => e.name`,
@@ -57,13 +72,20 @@ Announce: `Using vela-scaffold to <purpose>`.
    not merely that it builds.
    - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
-6. **Build** to prove it compiles: `dotnet build`. Report the exact output.
-7. Summarise what was generated and the next skill in the loop.
+6. **Real project: remove the scaffold's demos.** `vela init` adds demo plugins and Custom APIs (an
+   Account create step that creates a task, `Ping`, ...) and their tests. They ship in the package and
+   `vela apply` would register them. Delete them (keep what the Canvas asks for). They also don't count
+   as "a table that already has a plugin" for the reuse rule.
+7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+8. Summarise what was generated and the next skill in the loop.
 
 ## Rationalizations (excuse → rebuttal)
 
-- "I'll just edit the generated file to make it compile." → If generated code doesn't
-  compile, that's a bug to report, not to patch. Re-run the command with correct inputs.
+- "I'll just edit the generated file to make it compile." → If *generated* code (models,
+  compiler output) doesn't compile, that's a bug to report, not to patch. Re-run the command with
+  correct inputs. (Adjusting the *scaffolded* plugin's stage or `FilterOn` is not that - it is expected.)
+- "The scaffold said PostOperation, so PostOperation it is." → The scaffold has no stage flag; the
+  Canvas decides the stage. Change the chain and the context type.
 - "I'll create the plugin file by hand, it's just a class." → A typed message touches
   several files that must stay in sync (see gotchas). Use `vela add`.
 - "`--message` doesn't matter, I'll set it in code." → It drives the registration and the
@@ -71,7 +93,9 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 ## Red flags
 
-- You are about to hand-edit a generated file.
+- You are about to hand-edit a generated file (`Models/Generated`, compiler output).
+- The Canvas says PreOperation but the scaffolded step still says `.PostOperation()`.
+- The scaffold's demo plugins / Custom APIs are still in a project headed for `vela apply`.
 - Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
 - You guessed a flag instead of reading `--help`.
 - You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`, VELA001), an
