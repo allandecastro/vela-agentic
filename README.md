@@ -152,9 +152,27 @@ and it drives the loop, stopping at the deploy gate for your approval.
 
 ### With GitHub Copilot
 
-The generated `.github/skills/`, `.github/chatmodes/` and `.github/copilot-instructions.md` are
-discovered by Copilot. Copy them into a consuming repository, or reference them from your Copilot
-configuration.
+Copilot discovers customizations from the consuming repository's own `.github/`, so you vendor this
+pack's generated Copilot surface into the repo you work in. There is no marketplace one-liner as on
+Claude Code: the surface lives in the target repo. From your target repo root:
+
+```bash
+gh repo clone allandecastro/vela-agentic /tmp/vela-agentic -- --depth=1
+mkdir -p .github
+cp -r /tmp/vela-agentic/.github/skills                  .github/
+cp -r /tmp/vela-agentic/.github/chatmodes               .github/
+cp    /tmp/vela-agentic/.github/copilot-instructions.md .github/
+# optional apply-guard (Copilot CLI + cloud agent; needs jq):
+cp -r /tmp/vela-agentic/.github/hooks                   .github/
+cp -r /tmp/vela-agentic/hooks                           ./        # guard.sh referenced by .github/hooks/vela.json
+```
+
+Copilot then picks up the skills, the chat modes (`vela-builder` / `vela-reviewer`), the durable
+instructions, and (Copilot CLI / cloud coding agent) the apply-guard hook. To keep them updatable,
+add the pack as a git subtree instead of a one-off copy. Note: VS Code Copilot Chat reads skills,
+chat modes and instructions but not hooks (see `hooks/README.md`).
+
+Then hand `vela-builder` a user story, the same way as on Claude Code.
 
 ### Prerequisites
 
