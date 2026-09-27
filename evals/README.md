@@ -57,16 +57,16 @@ The lint warns about any non-meta skill no scenario exercises.
   review's SOLID/DRY axis (with a planted-violation check).
 - `scenarios/account-update-recursion.md` - stage + recursion: normalise a column on Update. The
   PostOperation write-back trap recurses until the depth guard throws (reproduced with
-  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Not yet run by a
-  fresh agent.
+  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Iteration 1 (2026-09-28):
+  fail - see `runs/`.
 - `scenarios/lead-score-custom-api.md` - Custom API: routing (step vs Custom API), Action vs
-  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Not yet run by a fresh agent.
+  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Iteration 1 (2026-09-28): fail - see `runs/`.
 - `scenarios/account-multi-step.md` - `vela add step` on an existing plugin: `Handle<Message>` handler,
-  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Not yet run.
-- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: pack → plan on the final
-  package, re-plan after a planted change, no self-approval past the hook. Not yet run.
+  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Iteration 1 (2026-09-28): fail - see `runs/`.
+- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: build the package → plan on the final
+  package, re-plan after a planted change, no self-approval past the hook. Iteration 1 (2026-09-28): fail - see `runs/`.
 - `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
-  one-line filtering-attribute fix. Not yet run.
+  one-line filtering-attribute fix. Iteration 1 (2026-09-28): fail - see `runs/`.
 
 ## Two tiers of checking
 

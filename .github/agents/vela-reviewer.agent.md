@@ -14,7 +14,8 @@ history. That isolation is the point: you catch what the author is blind to. Fol
 
 ## What you are given
 
-- The text of `git diff <base>...HEAD`, pasted into your prompt by the dispatcher (you have no shell).
+- The text of the change diff (`git diff <base>...HEAD`, or the fallback named by `vela-code-review`),
+  pasted into your prompt by the dispatcher (you have no shell).
 - The Vela Canvas (interpreted spec + declared acceptance cases).
 - The `vela-code-review` skill (preloaded), which bundles `references/review-checklist.md`,
   `references/dataverse-gotchas.md` and `references/registration-rules.md` in its folder.

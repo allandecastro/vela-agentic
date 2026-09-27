@@ -27,8 +27,9 @@ symptom → cause → fix.
   exceeds it (verified in the harness, 0.28.2) - the user's whole operation fails. Cause: the plugin
   writes something that re-triggers the same step (its `FilterOn` includes the column it writes, or it
   `Update`s its own record in PostOperation), or two plugins trigger each other. Fix the cause: edit
-  `ctx.Request.Target` in PreOperation instead of a write-back; keep written columns out of the
-  step's filtering attributes; write only when the value actually changes (compare with
+  `ctx.Request.Target` in PreOperation instead of a write-back (that edit is part of the same write
+  and re-triggers nothing, so filtering on the column you normalise there is fine); when you must
+  write back, keep the written columns out of the step's filtering attributes; write only when the value actually changes (compare with
   `ctx.PreImage`). **Do not** paper over it with `if (ctx.Depth > 1) return;` - that also skips
   legitimate calls made by other plugins, flows or child operations; only use a depth check with a
   reason recorded in the Canvas. The guard is a backstop, not a design.
@@ -57,7 +58,8 @@ symptom → cause → fix.
 ## Custom APIs
 
 - **Custom API is uncallable on a real org** despite working locally. Parameter/unique names
-  contained a dot. Use dot-free unique names (the CLI self-heals, but verify).
+  contained a dot. Nothing local rejects it (build, harness and the definition reader all accept
+  `lead.email`), so the review is the guard: dot-free names only.
 
 ## Deep insert / relationships
 

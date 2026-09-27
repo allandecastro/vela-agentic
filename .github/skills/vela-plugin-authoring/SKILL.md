@@ -9,8 +9,9 @@ compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
 > Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
 > directory containing this `SKILL.md`), not to the project you are working in.
 
-Write the logic of a plugin after `vela-scaffold` and `vela-models`. Keep generated files
-untouched; put logic in the `OnExecute` handler the scaffold created.
+Write the logic of a plugin after `vela-scaffold` and `vela-models`. Keep *generated* files
+(`Models/Generated`) untouched; put logic in the handler the scaffold created (`OnExecute`, or
+`Handle<Message>` for a step added with `vela add step`), in the scaffolded plugin file, which is yours.
 
 **Read `references/plugin-authoring-api.md` before writing code.** It has the verbatim shape;
 the notes below are the workflow.
@@ -86,7 +87,10 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 - A custom API parameter name containing a dot (uncallable on a real org).
 - Logic duplicated across plugins, or a fat `OnExecute` that should delegate to a service.
 - A PostOperation `ctx.UserService.Update` of the record the step fired on (use PreOperation +
-  `ctx.Request.Target`), or a written column that is also in the step's `FilterOn` (recursion).
+  `ctx.Request.Target`), or a **write-back** (`ctx.UserService.Update`/`Create` of a record that
+  re-triggers this step) whose column is in the step's `FilterOn` (recursion). Editing
+  `ctx.Request.Target` in PreOperation is not a write-back: filtering on the column you normalise
+  there is correct.
 - A mutable field on the plugin class (VELA011), a secret in code or unsecure config, or
   `if (ctx.Depth > 1) return;` without a recorded reason - see `references/dataverse-gotchas.md`.
 - An illegal registration attempted (post-image on Delete, Async off PostOperation) - see registration-rules.

@@ -1,6 +1,7 @@
 # Code-review checklist (two axes + severities)
 
-Used by `vela-code-review`. Review the change diff (`git diff <base>...HEAD`) on two independent
+Used by `vela-code-review`. Review the change diff (`git diff <base>...HEAD`, or the fallback in that
+skill) on two independent
 axes so neither masks the other. Assign every finding a severity; **Critical/Required block the
 apply gate.**
 
@@ -16,7 +17,8 @@ Check the diff against the **Vela Canvas** (Requirements/DoD, acceptance cases, 
 Structure decisions):
 
 - Every declared acceptance case is actually implemented and has a passing test.
-- Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post).
+- Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post). For a Custom
+  API: global/bound, Action/Function, parameters and error cases match the Canvas.
 - The Canvas's **Approach** decisions were honoured: **Sync vs Async** is appropriate for the
   business need (Async only for non-blocking/eventual work, never for validation); **reuse vs new**
   was respected (`vela add step` on an existing plugin where it fit; no hand-created class).
@@ -32,12 +34,19 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   attribute for Update; Associate/Disassociate matched by **message**, not by primary entity.
 - **Images:** any image the handler reads is actually registered for that message/stage with the
   needed attributes.
-- **Custom API:** no parameter/unique name contains a dot (uncallable on a real org); the unique name
+- **Custom API** (severities): a dot in a parameter/unique name - **Critical** (uncallable on a real
+  org; nothing local rejects it); a Function called by Power Automate/flows - **Critical** (the
+  Dataverse connector only calls Actions, and the kind can't be changed once created); the rest below -
+  **Required**. No parameter/unique name contains a dot; the unique name
   carries the target solution's publisher prefix; a Function has no side effects; invalid input throws
   `InvalidPluginExecutionException` (not an error code in an output); on the typed form every
   request/response property is mapped in `.Request(...)` / `.Response(...)`.
 - **Models:** typed model properties, not magic-string attribute names; models regenerated, not
-  hand-edited; no committed `*.generated.cs`.
+  hand-edited; no committed `*.generated.cs` (**Required**). **Exception - not a finding:** a property
+  added to `Models/Generated` with a `// STAND-IN for vela-models (no org)` comment, when the run had
+  no org (`vela-plugin-authoring` step 2). Record it as a Nit ("regenerate with `vela models` before
+  apply") so it is not forgotten. `target.Contains("<column>")` to tell "not sent" from "cleared" on
+  an Update target is acceptable (no typed equivalent).
 - **Service:** writes go through `ctx.UserService` / `ctx.SystemService` (there is no
   `ctx.OrganizationService`); elevation used only when justified.
 - **Performance / safety:** no `new ColumnSet(true)` in real queries (VELA013); no unbounded
@@ -57,7 +66,8 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
 - **Runtime** (`dataverse-gotchas.md`): no mutable fields on the plugin class (VELA011); errors
   thrown as `InvalidPluginExecutionException` (VELA012), none swallowed; a Sync step does no slow or
   external work (2-minute sandbox limit) and no external side effect before a step that may still
-  fail; no `ctx.Depth` early return without a reason in the Canvas.
+  fail; no `ctx.Depth` early return without a reason in the Canvas (**Required**; the unguarded
+  self-trigger it hides is the **Critical** one).
 - **Secrets:** none in code or unsecure configuration - secure configuration or a secret store.
   A secret in code is **Critical**.
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions.

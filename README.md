@@ -68,7 +68,7 @@ flowchart TD
     V --> RV["Review<br/>spec + standards axes · severities"]
     RV -->|Critical / Required| IM
     PV -. emits .-> BR[/"Build Report"/]
-    RV -->|PASS| PV["Package &amp; preview<br/>dotnet pack · vela sign · vela plan"]
+    RV -->|PASS| PV["Package &amp; preview<br/>dotnet build -c Release · vela sign · vela plan"]
     PV --> G2{{"Apply gate<br/>blocking - human approves"}}
     G2 -->|authorized| AP["Apply<br/>vela apply · writes to org"]
     AP --> R([Report / PR])
@@ -131,7 +131,7 @@ target project and reused as the PR body:
 | `vela-plugin-authoring` | model-invoked | Implement the handler to green (real `EntityPluginBase` / `OnExecute` surface) |
 | `vela-custom-api` | model-invoked | Design, test and implement a Custom API (global or bound, Action or Function, typed or light) |
 | `vela-code-review` | model-invoked | Review the diff on the spec + standards axes before the apply gate (self-review or isolated subagent) |
-| `vela-apply` | model-invoked | Package (`dotnet pack`, `vela sign`), preview with `vela plan`, stop at the human deploy gate; `vela inspect` after apply |
+| `vela-apply` | model-invoked | Package (`dotnet build -c Release`, `vela sign`), preview with `vela plan`, stop at the human deploy gate; `vela inspect` after apply |
 | `vela-debug-plugin` | model-invoked | Diagnose a misbehaving plugin (reproduce -> minimize -> hypothesize -> fix) |
 | `writing-vela-skills` | model-invoked | The meta-skill: how to add or fix a skill under test (RED -> GREEN -> REFACTOR) |
 | `diagnosing-vela` | model-invoked | Turn a run transcript into concrete, line-level skill findings |

@@ -19,9 +19,9 @@ org_required: false
 
 ## Success criteria (a clean pass)
 1. `vela-plan-review` routes to **`vela-custom-api`** (a called operation, not a table step).
-2. The Canvas records: **global**, **Function or Action with a reason** (a pure computation → Function
-   is defensible; if the agent picks Action it must say why), parameters `email` (string, required) →
-   `leadScore` (int), and the error case.
+2. The Canvas records: **global**, **Action** because flows call it (the Dataverse connector only calls
+   Actions - a Function is a finding even though the operation is a pure computation), parameters
+   `email` (string, required) → `leadScore` (int), and the error case.
 3. Scaffolded with `vela add customapi ScoreLead [--function|--action] --prefix <pfx>`; the unique name
    is `<pfx>_ScoreLead`; no parameter name contains a dot.
 4. Test-first, RED then green, via `vela add test ScoreLead --kind customapi`: fortune500 → 55; other

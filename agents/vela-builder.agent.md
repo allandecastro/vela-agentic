@@ -31,16 +31,18 @@ for this run.
 5. **Model** - `vela-models` for the entities involved (needs a connection).
 6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the acceptance
    cases declared in the Vela Canvas, run them, and confirm they **fail** first. Mandatory.
-7. **Implement** - `vela-plugin-authoring`: real `EntityPluginBase`/`OnExecute` surface, generated
+7. **Implement** - `vela-plugin-authoring` (a Custom API: `vela-custom-api`): real `EntityPluginBase`/`OnExecute` surface, generated
    models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
 8. **Verify** - full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations.
-9. **Review** - `vela-code-review`: review the diff on the spec + standards axes (self-review, or
+9. **Review** - commit the work, then `vela-code-review`: review the diff on the spec + standards axes (self-review, or
    dispatch the read-only `vela-reviewer`). Unresolved Critical/Required findings block the gate;
    fix and re-verify.
-10. **Package & preview** - `vela-apply`: `dotnet pack`, `vela sign` when the org requires signed
+10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (the package lands in `artifacts/`),
+    `vela sign` when the org requires signed
     packages, then `vela plan` on **that exact package** (never writes). Preview last, on the final
-    code: any code change after it invalidates the preview - re-pack and re-plan.
+    code: any code change after it invalidates the preview - re-test, re-review, rebuild the package and
+    re-plan.
 11. **Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
     cases checklist + the `vela plan` preview + the **Run trace** - one row per step: command, exit
     code, gate verdict), stop, hand off to a human.

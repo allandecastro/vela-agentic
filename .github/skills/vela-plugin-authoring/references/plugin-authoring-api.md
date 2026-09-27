@@ -169,8 +169,9 @@ public sealed class ScoreLead(string unsecureConfig, string secureConfig)
 - **Signature asymmetry (easy to get wrong):**
   `RequestParameter<T>(string name, bool optional = false, string? description = null)` has the
   `optional` bool; `ResponseParameter<T>(string name, string? description = null)` does **not**.
-- `.AsAction()` (POST-style, side effects) vs `.AsFunction()` (GET-style, read-only). "POST" in a
-  story maps to an Action; a Custom API has **no HTTP status codes** - signal errors with
+- `.AsAction()` (POST-style, side effects, **and anything Power Automate / flows call** - the Dataverse
+  connector only calls Actions) vs `.AsFunction()` (GET-style, read-only, code/Web API callers). The
+  kind can't be changed after creation. "POST" in a story maps to an Action; a Custom API has **no HTTP status codes** - signal errors with
   `throw new InvalidPluginExecutionException("...")` (VELA012: other exceptions reach the caller as a
   generic error).
 - The global form above is what `vela add customapi <Name>` (no `--entity`) generates.
@@ -211,7 +212,10 @@ public sealed class RecalcAccountRequest : CustomApiRequest
 - Add a typed property (`Get<T>()` / `Set(value)`) **and** map it in `.Request(...)` / `.Response(...)`.
 - Registered parameter names are the property names, dot-free (`Factor`, `Total`). The
   `<uniquename>.<prop>` keys mentioned in the generated comments are internal - never use them as
-  parameter names. Verify with the definition the framework extracts (`CustomApiDefinitionReader`).
+  parameter names. Verify with the definition the framework extracts:
+  `Vela.CustomApi.CustomApiDefinitionReader.GetCustomApiDefinitions(Assembly)` → definitions with
+  `UniqueName`, `IsFunction`, `IsBound`, `BindingType`, `InputParameters`, `OutputParameters`; each
+  parameter (`CustomApiParameterDefinition`) has `Name`, `ParameterTypeName`, `IsOptional`.
 - Other builder options: `.Public()`/`.Private()`, `.ExecutePrivilege(...)`, `.BoundToCollection<T>()`,
   `.WorkflowSdkStep(...)`, `.AllowedCustomProcessingSteps(None | AsyncOnly | SyncAndAsync)`.
 - Unique name and every parameter name must be **dot-free** and use the target solution's publisher

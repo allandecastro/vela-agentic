@@ -8,6 +8,11 @@ YAML front-matter, committed under `docs/vela-builds/<slug>.md` and reused as th
 
 Keep it **proportional**: for a simple story, sections can be one line each; do not pad.
 
+**One file per story:** `docs/vela-builds/<slug>.md` starts as the Canvas and is **the same file**
+that grows into the Build Report (front-matter `kind: vela-canvas` → `kind: vela-build`). A new story
+on an existing plugin gets its **own** slug and file; it references the plugin, it does not rewrite the
+earlier story's record.
+
 **Living spec (fix-spec-first):** when the requirement changes mid-build, update the Canvas
 **before** the code; when you refactor without changing behaviour, update the code then **sync**
 the change back into the Canvas. The Canvas stays an accurate record of the current plugin.
@@ -30,6 +35,9 @@ stage: PreOperation        # set the default on ctx.Request.Target before the wr
 mode: Synchronous
 filtering_attributes: [name]
 images: []
+# A Custom API replaces message/stage/mode/filtering_attributes/images with:
+#   custom_api: {unique_name: <pfx>_<Name>, binding: global | bound:<entity>, kind: action | function,
+#                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
 reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
 solution: <uniquename>    # target unmanaged solution (must already exist in the org)
@@ -81,7 +89,7 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.19.4
+vela_cli: 0.19.6
 framework: 0.28.2
 packages: [Zava.Plugins.1.0.0.nupkg]
 package_sha256: <sha256 of the previewed package>
@@ -124,8 +132,8 @@ Never estimate or fill in a value you did not observe (no timings from memory).
 | 2 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
 | 3 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
 | 4 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
-| 5 | pack | vela-apply | `dotnet pack -c Release -o artifacts` | 0 | ok |
-| 6 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) |
+| 5 | package | vela-apply | `dotnet build Zava.sln -c Release` (→ `artifacts/zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
+| 6 | plan | vela-apply | `vela plan -p artifacts/zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) |
 
 ## Gate - human approval required
 Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes>

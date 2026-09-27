@@ -1,7 +1,9 @@
 # Vela CLI surface (reference)
 
-Exact commands and flags, for skills to point at. Always reconfirm with
-`vela <command> --help`; this is a snapshot, the CLI is the contract.
+Exact commands and flags, for skills to point at. Always reconfirm against the CLI; this is a
+snapshot, the CLI is the contract. Only `vela add --help` and `vela models --help` are
+command-specific; `vela <other> --help` prints the global usage page, which lists every command's
+flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
 **Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
@@ -10,7 +12,9 @@ moves, re-run the `--help` of each command below, update this file, then bump th
 ## Scaffolding - local only, no Dataverse
 
 ### `vela init <Name>` (alias `vela new`)
-Scaffold a solution on disk.
+Scaffold a solution on disk, into `<output>/<Name>/` (nested). The prefix's casing names the
+projects and namespaces (`--prefix zava` → `zava.Plugins`). Adds demo plugins, Custom APIs and tests
+- remove them for a real project.
 - `--name <Name>` (or first positional, required) · `--prefix <pub>` (default derived; `Vela` rejected)
 - `--output`/`-o <dir>` (default `.`) · `--core-version <v>` (default resolves latest `Vela.Plugins`)
 - `--no-console` · `--no-integrations` · `--no-tests` (all three included by default)
@@ -44,7 +48,8 @@ Scope is REQUIRED (combinable): `--solution <name>` · `--entities a,b` · `--cu
 every Custom API; add `--package <nupkg>`/`--packages-dir` to exclude the ones you authored) ·
 `--messages [a,b]` (no value = all consumable messages) · `--roles <a,b>` · `--solution-roles`.
 - C# (default): `--lang csharp`, namespace default `<prefix>.Shared.Models.Generated`, `--namespace`,
-  `--no-annotations`, `--overwrite`, `--out <dir>` (default: current dir) or `--project <csproj>`.
+  `--no-annotations`, `--overwrite`, `--out <dir>` (default: current dir; documented) or `--project <csproj>`
+  (accepted by the parser, not listed in `--help`).
 - TypeScript (preview): `--forms` and/or `--tables` (emit an `index.ts` barrel).
 - `--verify` - no write; reports drift, **exit 5** on drift. Cannot combine with `--forms`/`--tables`.
 - `--timeout <1-60 min, default 10>` · `--json` (report of generated files, for agents) · `-v`.
