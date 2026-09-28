@@ -35,15 +35,15 @@ The lint warns about any non-meta skill no scenario exercises.
 | `diagnosing-vela` | **none** |
 | `using-vela` | ambiguous-story-grill, apply-gate |
 | `vela-apply` | account-default-description, apply-gate, org-models-and-plan |
-| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api, org-models-and-plan |
+| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
 | `vela-custom-api` | lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
 | `vela-grill` | ambiguous-story-grill |
 | `vela-models` | org-models-and-plan |
-| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, ambiguous-story-grill, lead-score-custom-api |
-| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, org-models-and-plan |
-| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api, org-models-and-plan |
-| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
+| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, lead-score-custom-api |
+| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, org-models-and-plan |
+| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
@@ -71,6 +71,9 @@ The lint warns about any non-meta skill no scenario exercises.
 - `scenarios/org-models-and-plan.md` - the first scenario **with a dev org**: real `vela models`
   (no stand-in), a real `vela plan` whose operations must match the Canvas. Read-only use of the org. **2026-09-29: pass**
   against DYN-PREMIUM-DEV (see `runs/`).
+- `scenarios/contact-association.md` - Associate matched by message + relationship name. Not yet run.
+- `scenarios/account-typed-images.md` - typed pre-image (`partial`), "lowered" = the value differs. Not yet run.
+- `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Not yet run.
 
 ## Two tiers of checking
 
