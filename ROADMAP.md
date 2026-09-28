@@ -60,7 +60,8 @@ independent of the framework/CLI NuGet releases.
       review blocked the no-org stand-in, Function for a flow-called API) fixed; records in `evals/runs/`
 - [x] Iteration 2 (2026-09-28/29): the five scenarios **pass** blind (no blocking finding); their minor
       findings fixed; records in `evals/runs/*.iter2.md`
-- [ ] Run `ambiguous-story-grill` (new); re-run the older baseline scenarios against the current skills
+- [x] 2026-09-29: `ambiguous-story-grill` and the two baseline scenarios pass blind; their minors fixed
+      (all seven scenarios now pass)
 - [ ] A dev org for evals, to cover `vela-models` and a real `vela plan`
 
 ## Backlog
