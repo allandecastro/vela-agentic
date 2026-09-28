@@ -7,7 +7,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.21.0` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.29.1` (framework
+**Verified against:** `vela 0.21.0` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.29.1`, and `0.29.3` exercised by the gotcha evals (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
