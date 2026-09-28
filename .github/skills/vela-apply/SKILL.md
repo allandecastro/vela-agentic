@@ -72,8 +72,11 @@ Announce: `Using vela-apply to <purpose>`.
    (Vela doesn't create them), and the scaffold `--prefix` must match its publisher prefix
    (`references/registration-rules.md`). On a TTY it still requires a typed `yes`; non-interactive it
    refuses. Never pass `--auto-approve`/`--yes` unless the user asked for an unattended apply.
-9. **After an apply:** `vela inspect -p <pkg> <connection>` - the live registration must now match
-   the package. Surface any difference.
+9. **After an apply:** read what was executed from the apply output's `notes` ("Executed operations:
+   create=N, update=N, delete=N") - its `summary` is what *remains* afterwards, so `added: 0` is the
+   expected result of a successful create, not a no-op. Then `vela inspect -p <pkg> <connection>` - the
+   live registration must now match the package (`current` vs the package, no diagnostics). Surface
+   any difference.
 10. Read every exit code and surface non-zero ones verbatim (`3` package not found, `4` parse/read
     error, `6` connection failure).
 

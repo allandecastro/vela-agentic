@@ -61,6 +61,11 @@ symptom → cause → fix.
   the parent" can miss when two children are deactivated in parallel: each sees the other still
   active. Record it in the Canvas as an accepted limitation, or use an Async recheck.
 
+- **A "begins with" / "like" query matches far too many rows.** Dataverse translates `BeginsWith`,
+  `Like` (and the Web API's `startswith`/`contains`) to SQL `LIKE`, where `[`, `]`, `%` and `_` are
+  wildcards: `startswith(name,'[vela-eval]')` matched 517 unrelated accounts on a dev org (`[...]` is a
+  character class). Escape them (`[[]`, `[%]`, `[_]`) when the value comes from data or user input.
+
 ## Custom APIs
 
 - **Custom API is uncallable on a real org** despite working locally. Parameter/unique names

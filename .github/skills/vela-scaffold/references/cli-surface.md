@@ -80,6 +80,12 @@ Shared inputs: `--package`/`-p <.nupkg>` (repeatable) or `--packages-dir <folder
   operation - it appears as the diagnostic below - so `operations` lists the steps / Custom APIs. Read `operations` (what apply would do) and
   every `diagnostics` line. "Plugin assembly '<x>' not found in Dataverse" on a first deploy is
   expected; a rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) is not a finding.
+- **`vela apply --json` (verified on a dev org, 0.21.0):** same shape as `plan.json` with `mode:
+  "apply-execute"`. **`summary` is the diff remaining *after* execution** (e.g. `added: 0` after a
+  successful create) - what was done is in `notes`: "Dataverse changes were executed.", "Executed
+  operations: create=N, update=N, delete=N". Report from `notes` + the exit code, never from `summary`.
+- **`vela inspect --json`:** `{mode, environment, local, current: {assemblies, steps: [...]}, diagnostics}`
+  - compare `current` with the package; an empty `diagnostics` after an apply means they match.
 - **Output format:** a styled summary on a terminal, **JSON when piped/redirected** (an agent's shell is
   usually piped - expect JSON). Force it with `--json`, or write it with `--out <file>`.
   `NO_COLOR` / `VELA_NO_COLOR` disable colors.
