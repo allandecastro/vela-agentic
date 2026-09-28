@@ -70,7 +70,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
    S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -
    one line per section for a simple story.
-4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold`.
+4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
+   is a **business decision only the human can make** (what a story term means, which record drives
+   which, the rule itself): then use `vela-grill` first, and resume here with the answers.
 
 ## Rationalizations (excuse → rebuttal)
 

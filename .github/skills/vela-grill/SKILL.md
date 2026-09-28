@@ -22,15 +22,26 @@ grills the plan itself); use this one when only the human can resolve the ambigu
 Announce: `Using vela-grill to resolve the story`.
 
 1. Restate the story in your own words and name the entity/message you think it implies.
-2. Ask **one focused question at a time**, driven by what a correct registration needs:
-   - Trigger: on which message, and only when which attribute changes?
-   - Timing: before or after the write is committed? Sync (blocks the user) or Async?
+2. Ask **one focused question at a time** - preferably multiple choice, answerable in one line - in
+   roughly this order, skipping what the story already answers. Only **business decisions** go to the
+   human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions.
+   - Meaning: which column/table does each story term mean (a standard column or a custom one)?
+   - Direction and records: which record drives the change, which is written; how are they related
+     (which lookup / relationship)?
+   - Trigger: on which message, and only when which attribute changes? Do **other events** reach the
+     same outcome (delete, re-parent, bulk) - are they in scope?
+   - Timing: before or after the write is committed? Sync (blocks the user, rolls back together) or
+     Async (never blocks, fails on its own)? Explain the consequence of each in the question.
    - Data: what exact values are read and written; where do defaults/edge cases go?
-   - Scope: single record or bulk (*Multiple)? which security context?
-   - Definition of done: how will we know it worked?
-3. Keep going until every branch resolves. Record answers in the Vela Canvas
-   (`references/build-report-template.md`).
-4. Hand off to the build loop (`vela-plan-review` → `vela-scaffold`).
+   - Security context: as the calling user, or elevated? (Default: calling user.)
+   - Target solution and publisher prefix, if not known (never invented).
+   - Definition of done: ask only if it can't be derived from the answers; otherwise state it back.
+   Stop as soon as every branch that changes the registration or the acceptance cases is resolved.
+3. Record answers in the Vela Canvas (`references/build-report-template.md`), each marked as the
+   human's decision; platform facts you relied on go under `assumptions:`. Registration choices use
+   `references/registration-rules.md` and `references/dataverse-gotchas.md`.
+4. Hand back to `vela-plan-review` to finish the Canvas (grilling the plan with the answers), then
+   continue the loop (`vela-scaffold`).
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -46,5 +57,5 @@ Announce: `Using vela-grill to resolve the story`.
 
 ## Verification
 
-- The Vela Canvas has no unresolved branch, and every answer came from the human, not an
-  assumption.
+- The Vela Canvas has no unresolved branch; every **business decision** came from the human (marked
+  as such); only platform facts are listed as assumptions.

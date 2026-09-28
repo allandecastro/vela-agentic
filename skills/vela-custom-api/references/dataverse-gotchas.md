@@ -57,6 +57,10 @@ symptom → cause → fix.
   (not exported with the solution, set per environment, readable by admins only) or an external
   secret store reached with a managed identity (see the scaffold's `--managed-identity` option).
 
+- **"Last one" rollups race.** A rule like "when the last active child is deactivated, deactivate
+  the parent" can miss when two children are deactivated in parallel: each sees the other still
+  active. Record it in the Canvas as an accepted limitation, or use an Async recheck.
+
 ## Custom APIs
 
 - **Custom API is uncallable on a real org** despite working locally. Parameter/unique names
