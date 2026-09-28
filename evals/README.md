@@ -76,7 +76,7 @@ The lint warns about any non-meta skill no scenario exercises.
   to report the framework limit, not ship a workaround. **Iteration 2: pass** (blocked Canvas + hand-off).
 - `scenarios/account-typed-images.md` - typed pre-image (`partial`), "lowered" = the value differs. **2026-09-29: pass.**
 - `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Iteration 1 fail (wrong bulk
-  test recipe, bulk handler shape and bulk gotchas missing) - fixed; re-run pending.
+  test recipe, bulk handler shape and bulk gotchas missing) - fixed; **iteration 2: pass**.
 
 ## Two tiers of checking
 

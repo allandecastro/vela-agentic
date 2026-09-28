@@ -67,7 +67,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      for the human - ask it (`vela-grill`) or list it as an open question; the pack has no recipe for the
      marketing-list messages yet, so that path is blocked too.
    - **Bulk:** `*Multiple` vs single-record message - one of them, never both for the same logic
-     (merged pipelines); record why.
+     (merged pipelines); record why. A story scoped to "bulk updates" can't stay bulk-only: the step
+     also runs for single Updates - that is a scope point for the human to confirm, listed at the Gate.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,

@@ -77,6 +77,8 @@ Critical, easy-to-get-wrong facts:
   `WithTargets(params T[])` keeps your instances, so assert on them. To prove what is saved, use the
   pipeline: `p.Service.Execute(new UpdateMultipleRequest { Targets = ... })` fires the step once for
   the batch; a single `p.Service.Update(...)` fires an UpdateMultiple step too (merged pipeline).
+- The test `vela add test` generates for a `*Multiple` plugin uses `WithTarget(...)` - replace it with
+  `WithTargets(...)` (a bulk handler sees `ctx.Request.Targets`).
 - **Associate tests** (verified, 0.29.3): declare the relationship, then associate through the pipeline:
   `PluginPipeline.Empty().Register<P>().WithManyToMany("listcontact_association", "listmember", "list",
   "listid", "contact", "entityid")...; p.Service.Associate("contact", contactId, new

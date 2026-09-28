@@ -33,7 +33,8 @@ Announce: `Using vela-code-review to review the change`.
    `git diff --ignore-cr-at-eol`.
 2. Review on **two axes** using `references/review-checklist.md` (harness semantics - e.g. what
    `PluginContext...Execute` auto-derives, why "does not fire" needs `PluginPipeline` - are in
-   `references/harness-api.md`; CLI facts - e.g. `plan` takes no `--solution` - in `references/cli-surface.md`):
+   `references/harness-api.md`; CLI facts - e.g. `plan` takes no `--solution` - in `references/cli-surface.md`; handler shapes in
+   `references/plugin-authoring-api.md`):
    - **Spec axis** - the diff against the **Vela Canvas** (acceptance cases + the Approach/Structure
      decisions: Sync/Async appropriate, reuse-vs-new respected). If the code diverged from the
      Canvas without the Canvas being updated first, that itself is a finding (fix-spec-first).
