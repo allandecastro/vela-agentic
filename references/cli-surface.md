@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` and `0.29.1` (framework
+**Verified against:** `vela 0.21.0` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.29.1` (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
@@ -53,8 +53,8 @@ every Custom API; add `--package <nupkg>`/`--packages-dir` to exclude the ones y
 - TypeScript (preview): `--forms` and/or `--tables` (emit an `index.ts` barrel).
 - `--verify` - no write; reports drift, **exit 5** on drift. Cannot combine with `--forms`/`--tables`.
 - Outside a project, pass `--namespace <ns>` (or run it inside the scaffold, where it is inferred):
-  without it `vela models` prints "Could not infer a namespace" and generates nothing - **with exit
-  code 0** (verified). Check the "Generated N file(s)" line, not only the exit code.
+  without it `vela models` prints "Could not infer a namespace" and generates nothing (exit `2` since
+  0.21.0; 0.19.x exited `0`). Check the "Generated N file(s)" line as well as the exit code.
 - `--timeout <1-60 min, default 10>` · `--json` (report of generated files, for agents) · `-v`.
 
 ## Package - `vela sign`

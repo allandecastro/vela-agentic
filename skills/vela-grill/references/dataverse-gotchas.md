@@ -97,7 +97,7 @@ symptom → cause → fix.
   table + message + stage. Use `WithExecutionOrder(n)` only to sequence *your* steps relative to
   each other when you register more than one; don't set it reactively to avoid managed steps.
 
-## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.28.2)
+## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.28.2 and 0.29.1 - same set)
 
 Treat every VELA diagnostic in authored code as a gate failure. The ones you will meet most:
 

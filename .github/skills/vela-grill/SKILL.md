@@ -1,7 +1,7 @@
 ---
 name: vela-grill
 description: Use when a user story is ambiguous or underspecified and only the human can resolve it before building (also run by a human as /vela-grill).
-compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Grill the story (interview the human)

@@ -1,7 +1,7 @@
 ---
 name: using-vela
 description: Read first when starting any Vela work, or when unsure which Vela skill applies.
-compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Using Vela

@@ -1,7 +1,7 @@
 ---
 name: vela-test-harness
 description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
-compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Verify with the Vela.Testing harness

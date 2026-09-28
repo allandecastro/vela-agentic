@@ -1,7 +1,7 @@
 ---
 name: vela-scaffold
 description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
-compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Scaffold Vela projects and components
@@ -81,7 +81,7 @@ Announce: `Using vela-scaffold to <purpose>`.
      decides (`vela-plan-review`, "Structure - outbound integration?"): **no outbound flow detected →
      `--no-integrations`**; an outbound flow → keep it, remove its demos, and preview both packages.
      `--no-console` unless the Canvas needs the console app.
-   - Then delete the demos `vela init` adds (verified list, 0.19.6) and their tests:
+   - Then delete the demos `vela init` adds (verified list, 0.19.6 and 0.21.0) and their tests:
      `<Prefix>.Plugins/Account/{CustomApis/AccountEstimateValueCustomApi, Plugins/AccountMessageReference,
      Plugins/AccountPostCreatePlugin, Plugins/AccountRelatedContactsPlugin, Services/AccountFollowUpService}`,
      `<Prefix>.Plugins/Contact/{CustomApis/ContactValidateCustomApi, Plugins/ContactRouterPlugin,

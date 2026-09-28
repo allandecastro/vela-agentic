@@ -98,8 +98,8 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.19.6
-framework: 0.28.2
+vela_cli: 0.21.0
+framework: 0.29.1
 packages: [zava.Plugins.1.0.0.nupkg]   # the plugin package only (not an Integrations package)
 package_sha256: <sha256 of the previewed package>
 signed: no                # yes | no (a human signs before apply) | n/a (org does not require it)
