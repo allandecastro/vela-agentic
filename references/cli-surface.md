@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
+**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` and `0.29.1` (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
@@ -74,7 +74,8 @@ Shared inputs: `--package`/`-p <.nupkg>` (repeatable) or `--packages-dir <folder
 - `vela inspect` - compare local packages vs the live environment (read-only).
 - **`plan.json` (from `--out`, verified 0.19.6):** `{mode, environment, hasChanges, summary: {added,
   removed, changed}, operations: [{action: create|update|delete, kind: step|image|custom-api|...,
-  type, reason}], diff, diagnostics: [string], notes}`. Read `operations` (what apply would do) and
+  type, reason}], diff, diagnostics: [string], notes}`. On a first deploy the new assembly is not an
+  operation - it appears as the diagnostic below - so `operations` lists the steps / Custom APIs. Read `operations` (what apply would do) and
   every `diagnostics` line. "Plugin assembly '<x>' not found in Dataverse" on a first deploy is
   expected; a rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) is not a finding.
 - **Output format:** a styled summary on a terminal, **JSON when piped/redirected** (an agent's shell is

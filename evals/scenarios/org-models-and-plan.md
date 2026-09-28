@@ -27,7 +27,8 @@ org_required: true
 - **Stage:** PreOperation on `ctx.Request.Target`, `FilterOn(e => e.AccountNumber)`; only writes when
   the upper-cased value differs.
 - **Real preview:** `vela plan -p <plugin package> --url ... --out plan.json` on the final package; the
-  `operations` contain only this plugin's assembly/type/step (no demo operation); every diagnostic is
+  `operations` contain only this plugin's step (on a first deploy the assembly appears as the
+  "not found in Dataverse" diagnostic, not as an operation; no demo operation); every diagnostic is
   read - "assembly not found" on a first deploy and a rank collision with a Microsoft managed step are
   explained, not "fixed".
 - Optional: `vela models --verify` exits 0 right after generation (no drift).

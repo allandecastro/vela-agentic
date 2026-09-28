@@ -79,6 +79,9 @@ Critical, easy-to-get-wrong facts:
 - **PreOperation (the usual case - a column of the same record):** assert on the `target` you passed -
   the plugin's edit of `ctx.Request.Target` lands on it - and that `crm` received no extra write
   (`Assert.Empty(crm.GetAll("account"))`): the platform, not the plugin, does the create.
+- "Already correct → nothing re-set" in PreOperation is not observable from outside (the column was
+  sent, so it is on the target either way): don't assert on trace text; cover it by design review and
+  record it as a Canvas note.
 - **PostOperation writing to another record** - `ctx.PrimaryEntityId` in the harness is a random id,
   **not** `target.Id`. The new record's id is `target.Id` (set it, e.g. `new Account { Id =
   Guid.NewGuid() }`); use `target.Id`, not `ctx.PrimaryEntityId`, or a retrieve will "not exist".

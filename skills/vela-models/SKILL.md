@@ -28,7 +28,8 @@ Announce: `Using vela-models to <purpose>`.
    generate every table.
 3. **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
    run, and use the labelled no-org stand-in described in `vela-plugin-authoring` step 2 - never on a
-   real run. Otherwise resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
+   real run. Otherwise resolve the connection (see `references/cli-surface.md`): **`--url <org>` alone** when an
+   `az login` session (or managed identity) exists - headless and verified; interactive `-i` only with a human at a browser;
    or connection string / client secret for automation.
 4. Generate:
    - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
