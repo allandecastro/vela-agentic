@@ -39,6 +39,10 @@ Announce: `Using vela-plan-review to grill the plan`.
      never duplicate; never hand-create a class.
    - **Structure - service?** Keep the handler thin (SRP). Real/reusable logic → a service
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
+   - **Structure - outbound integration?** Does the behaviour call another system (HTTP API, queue,
+     Azure service, e-mail gateway...)? Yes → that code goes in the scaffold's **Integrations** project
+     (its own package; usually an Async step - see Sync vs Async). No outbound flow → the solution is
+     scaffolded with `--no-integrations`. Record the answer in the Canvas (Structure).
    - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
      components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
      it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas

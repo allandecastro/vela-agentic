@@ -46,8 +46,9 @@ Announce: `Using vela-apply to <purpose>`.
 4. **Resolve the connection** (`references/cli-surface.md`): headless → `DATAVERSE_CONNECTION_STRING`,
    or `--url`/`--tenant-id`/`--client-id` + `DATAVERSE_CLIENT_SECRET`; `-i` only when a human is at a
    browser. Never echo a secret.
-5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json` on **the plugin package only**
-   (`--packages-dir artifacts` would also pick up an Integrations package if the project has one). Output is JSON when piped;
+5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json` on **the packages the Canvas
+   ships** - the plugin package, plus the Integrations package only when the Canvas has an outbound
+   flow (`-p` repeated). Don't use `--packages-dir artifacts` blindly: it previews whatever is there. Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
    any). `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.

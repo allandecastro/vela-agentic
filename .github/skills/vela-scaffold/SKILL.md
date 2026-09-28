@@ -75,9 +75,11 @@ Announce: `Using vela-scaffold to <purpose>`.
    - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
 6. **Real project: no demos in what you ship.**
-   - Scaffold with **`--no-integrations --no-console`** unless the Canvas needs them: the Integrations
-     project builds a **second package** into `artifacts/` with its own demo plugins and Custom APIs
-     (still built, if emptied, until the project is removed from the solution).
+   - **Integrations project - keep it only for outbound flows.** It is where plugins that call
+     another system (HTTP API, queue, Azure...) live, and it builds its own package. The Canvas
+     decides (`vela-plan-review`, "Structure - outbound integration?"): **no outbound flow detected →
+     `--no-integrations`**; an outbound flow → keep it, remove its demos, and preview both packages.
+     `--no-console` unless the Canvas needs the console app.
    - Then delete the demos `vela init` adds (verified list, 0.19.6) and their tests:
      `<Prefix>.Plugins/Account/{CustomApis/AccountEstimateValueCustomApi, Plugins/AccountMessageReference,
      Plugins/AccountPostCreatePlugin, Plugins/AccountRelatedContactsPlugin, Services/AccountFollowUpService}`,
