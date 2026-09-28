@@ -29,7 +29,9 @@ Announce: `Using vela-models to <purpose>`.
 3. Resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
    or connection string / client secret for automation.
 4. Generate:
-   - C# early-bound (default): `vela models --entities account,contact -i`
+   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
+     (without `--out` the files land in the current directory; the scaffold keeps models in
+     `<Prefix>.Shared/Models/Generated`)
    - TypeScript: add `--forms` and/or `--tables`.
    - Large orgs: pass `--timeout <minutes>`.
 5. **Verify mode** (no write): `vela models --verify ...` - exit `5` means drift.

@@ -72,10 +72,20 @@ Announce: `Using vela-scaffold to <purpose>`.
    not merely that it builds.
    - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
-6. **Real project: remove the scaffold's demos.** `vela init` adds demo plugins and Custom APIs (an
-   Account create step that creates a task, `Ping`, ...) and their tests. They ship in the package and
-   `vela apply` would register them. Delete them (keep what the Canvas asks for). They also don't count
-   as "a table that already has a plugin" for the reuse rule.
+6. **Real project: no demos in what you ship.**
+   - Scaffold with **`--no-integrations --no-console`** unless the Canvas needs them: the Integrations
+     project builds a **second package** into `artifacts/` with its own demo plugins and Custom APIs.
+   - Then delete the demos `vela init` adds (verified list, 0.19.6) and their tests:
+     `<Prefix>.Plugins/Account/{CustomApis/AccountEstimateValueCustomApi, Plugins/AccountMessageReference,
+     Plugins/AccountPostCreatePlugin, Plugins/AccountRelatedContactsPlugin, Services/AccountFollowUpService}`,
+     `<Prefix>.Plugins/Contact/{CustomApis/ContactValidateCustomApi, Plugins/ContactRouterPlugin,
+     Services/ContactDuplicateService}`, `<Prefix>.Plugins/GlobalCustomApis/PingCustomApi`,
+     `<Prefix>.Shared/Services/{GreetingService, IGreetingService}`, the matching files under
+     `tests/<Prefix>.Plugins.Tests/` (including `Security/SecurityExampleTests`), and - if kept - the
+     Integrations demos (`AccountReconcileCustomApi`, `AccountSyncRouterPlugin`, `ContactExportCustomApi`,
+     `ContactSyncPlugin`, `IntegrationHeartbeatCustomApi`) and their tests. Keep the demo *models* until
+     `vela models` regenerates them if your code uses them.
+   - Demos never count as "a table that already has a plugin" for the reuse rule.
 7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
 8. Summarise what was generated and the next skill in the loop.
 
@@ -109,4 +119,5 @@ Announce: `Using vela-scaffold to <purpose>`.
 ## Verification
 
 - `dotnet build` succeeds - paste the output.
-- The generated component is present where the CLI reported it, unedited.
+- The component is present where the CLI reported it; its only edits are the ones step 5 calls for
+  (stage/context type, `FilterOn`) - the logic comes later, in `vela-plugin-authoring`.

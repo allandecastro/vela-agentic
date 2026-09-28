@@ -30,6 +30,10 @@ Announce: `Using vela-apply to <purpose>`.
    **no assembly** (verified, scaffold 0.19.6). Then check the package really holds your plugin -
    `unzip -l artifacts/<Prefix>.Plugins.<ver>.nupkg | grep '<Prefix>.Plugins.dll'` - and record its
    path and hash (`shasum -a 256 <pkg>`). This is the artifact everything below refers to.
+   **Build it last.** Every Release build that includes the plugin project - including building the
+   test project - repacks the package with a **new hash** even without a source change (verified). Run
+   the tests first, then this build, then nothing else before `plan`; the human applies that file
+   without rebuilding, after checking the hash.
    **Only what the Canvas asks for may be in it:** the scaffold's demo plugins and Custom APIs (e.g. an
    Account create step, `Ping`) are registered too if they are still in the project - remove them
    for a real project (`vela-scaffold`).
@@ -42,12 +46,16 @@ Announce: `Using vela-apply to <purpose>`.
 4. **Resolve the connection** (`references/cli-surface.md`): headless → `DATAVERSE_CONNECTION_STRING`,
    or `--url`/`--tenant-id`/`--client-id` + `DATAVERSE_CLIENT_SECRET`; `-i` only when a human is at a
    browser. Never echo a secret.
-5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json` (or `--packages-dir artifacts`). Output is JSON when piped;
+5. **Preview - always:** `vela plan -p <pkg> <connection> --out plan.json` on **the plugin package only**
+   (`--packages-dir artifacts` would also pick up an Integrations package if the project has one). Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
    any). `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.
 6. **Summarise** exactly what `apply` would change in the Build Report's **Gate** section
-   (`references/build-report-template.md`): package path + hash, signed or not, the plan diff.
+   (`references/build-report-template.md`): package path + hash, signed or not, the plan diff, and the
+   hash check the human runs first (`shasum -a 256 <pkg>`). If the build used a no-org model stand-in,
+   the Gate says so: regenerating the models with `vela models` is a code change - rebuild, re-test,
+   re-plan, and apply **that** package, not this one.
 7. **Stop here by default.** Do not run `apply`. Let the human run it, or wait for an explicit "go
    ahead and apply" **for this run**. "Ship it", "looks good", "merge it" or a ready/merged PR are
    not that: they are about the code, not a write to the org.
