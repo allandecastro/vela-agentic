@@ -29,8 +29,9 @@ reversible until the gate; the org is only touched at `apply`.
    acceptance cases, and watch them fail. Test-first is mandatory.
 7. **Implement** - `vela-plugin-authoring`: write logic until the tests go **green**.
 8. **Verify** - full harness suite green **and** build clean of analyzer (VELA00x) violations.
-9. **Review** - `vela-code-review`: review the diff on the spec + standards axes; unresolved
-   Critical/Required findings block the gate (fix and re-verify).
+9. **Review** - `vela-code-review`: the isolated `vela-reviewer` reviews the diff on the spec +
+   standards axes (self-review only when no subagent can be dispatched); unresolved Critical/Required
+   findings block the gate (fix, re-verify, re-review).
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (package in `artifacts/`) →
     `vela sign` (when the org requires signed
     packages) → `vela plan` on that exact package (preview, never writes). Always run the preview,

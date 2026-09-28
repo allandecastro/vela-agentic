@@ -35,9 +35,10 @@ for this run.
    models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
 8. **Verify** - full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations.
-9. **Review** - commit the work, then `vela-code-review`: review the diff on the spec + standards axes (self-review, or
-   dispatch the read-only `vela-reviewer`). Unresolved Critical/Required findings block the gate;
-   fix and re-verify.
+9. **Review** - commit the work, then `vela-code-review`: dispatch the read-only `vela-reviewer` on the
+   diff (spec + standards axes); self-review only when no subagent can be dispatched, labelled as such.
+   Unresolved Critical/Required findings block the gate; fix, re-verify, and re-review with a fresh
+   reviewer.
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (the package lands in `artifacts/`),
     `vela sign` when the org requires signed
     packages, then `vela plan` on **that exact package** (never writes). Preview last, on the final
