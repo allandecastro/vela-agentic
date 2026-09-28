@@ -67,7 +67,12 @@ def main():
         return finish(scenario, work)
     sln = slns[0]; sol = os.path.dirname(sln)
 
+    # The package as the actor delivered it: the rebuild below regenerates artifacts/, so keep the bytes
+    # (graded later) and put them back afterwards.
+    delivered = {pk: open(pk, "rb").read() for pk in glob.glob(os.path.join(sol, "artifacts", "*.nupkg"))}
     code, out = sh(f'dotnet build "{sln}" -c Release --no-incremental')
+    for pk, data in delivered.items():
+        open(pk, "wb").write(data)
     check("build succeeds", code == 0, out.strip().splitlines()[-1] if out.strip() else "")
     vela_diags = sorted(set(re.findall(r"(?:warning|error) VELA\d+[^\[\n]*", out)))
     check("no VELA diagnostics", not vela_diags, "; ".join(vela_diags[:5]))
@@ -85,7 +90,9 @@ def main():
           f"total={total} failed={failed} assemblies={len(dlls)}")
 
     # Registration really compiled.
-    plugin_dlls = [d for d in glob.glob(os.path.join(sol, "src", "*.Plugins", "bin", "Release", "net462", "*.Plugins.dll"))]
+    # The project's own assembly (<prefix>.Plugins.dll sits next to the framework's Vela.Plugins.dll).
+    plugin_dlls = [d for d in glob.glob(os.path.join(sol, "src", "*.Plugins", "bin", "Release", "net462", "*.Plugins.dll"))
+                   if os.path.basename(d) == os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(d))))) + ".dll"]
     reg = {"steps": [], "customApis": []}
     if check("plugin dll built", plugin_dlls, ", ".join(os.path.relpath(d, work) for d in plugin_dlls)):
         code, out = sh(f'mono "{PROBE}" "{plugin_dlls[0]}"')
@@ -100,7 +107,7 @@ def main():
 
     for want in exp.get("steps", []):
         match = [s for s in steps if s["Message"] == want["message"] and s["EntityLogicalName"] == want.get("entity", s["EntityLogicalName"])]
-        desc = f"{want['message']} {want.get('entity','*')} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter')}"
+        desc = f"{want['message']} {want.get('entity','*')} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}"
         ok = False
         for s in match:
             ok = (want.get("stage") in (None, s["Stage"]) and want.get("mode") in (None, s["Mode"]) and
@@ -113,18 +120,23 @@ def main():
     for msg in exp.get("forbid_step_messages", []):
         check(f"no step on {msg}", not [s for s in steps if s["Message"] == msg], "")
     for want in exp.get("custom_apis", []):
-        m = [a for a in apis if a["UniqueName"].endswith(want["suffix"])]
-        ok = bool(m) and all([
+        # Names are not in the story, so they are not graded: shape only (kind, binding, parameter types).
+        m = [a for a in apis if a["UniqueName"].endswith(want.get("suffix", ""))]
+        types = lambda ps: sorted(str(p.get("ParameterTypeName", "")).split(".")[-1] for p in ps)
+        ok = len(m) == 1 and all([
             m[0]["IsFunction"] == want["is_function"], m[0]["IsBound"] == want.get("is_bound", False),
-            sorted(p["Name"] for p in m[0]["InputParameters"]) == sorted(want["inputs"]),
-            sorted(p["Name"] for p in m[0]["OutputParameters"]) == sorted(want["outputs"])])
-        check(f"custom API {want['suffix']} (function={want['is_function']})", ok, json.dumps(m[0] if m else None)[:300])
+            want.get("input_types") is None or types(m[0]["InputParameters"]) == sorted(want["input_types"]),
+            want.get("output_types") is None or types(m[0]["OutputParameters"]) == sorted(want["output_types"]),
+            all(not p.get("IsOptional") for p in m[0]["InputParameters"]) if want.get("inputs_required") else True])
+        check(f"exactly one custom API: function={want['is_function']} bound={want.get('is_bound', False)} "
+              f"in={want.get('input_types')} out={want.get('output_types')}", ok,
+              json.dumps([{k: a[k] for k in ("UniqueName", "IsFunction", "IsBound")} for a in m])[:300])
     dotted = [a["UniqueName"] for a in apis if "." in a["UniqueName"]] + \
              [p["Name"] for a in apis for p in a["InputParameters"] + a["OutputParameters"] if "." in p["Name"]]
     check("no dotted Custom API names", not dotted, ", ".join(dotted))
 
     # Package.
-    pkgs = glob.glob(os.path.join(sol, "artifacts", "*.Plugins.*.nupkg"))
+    pkgs = [pk for pk in delivered if re.search(r"\.Plugins\.[^/]*\.nupkg$", pk)]
     if exp.get("package", True):
         ok = bool(pkgs) and any(n.endswith(".Plugins.dll") and n.startswith("lib/") for n in zipfile.ZipFile(pkgs[0]).namelist())
         check("plugin package holds the plugin dll", ok, ", ".join(os.path.relpath(p, work) for p in pkgs))

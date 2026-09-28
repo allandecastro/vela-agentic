@@ -2,15 +2,15 @@
  "min_tests": 3,
  "custom_apis": [
   {
-   "suffix": "_ScoreLead",
    "is_function": false,
    "is_bound": false,
-   "inputs": [
-    "email"
+   "input_types": [
+    "String"
    ],
-   "outputs": [
-    "leadScore"
-   ]
+   "output_types": [
+    "Int32"
+   ],
+   "inputs_required": true
   }
  ],
  "step_count": 0,

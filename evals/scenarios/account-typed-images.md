@@ -26,3 +26,8 @@ leaving it unchanged does nothing."
 1. The build error `CS0260` is avoided (or seen and fixed) by making the plugin `partial`.
 2. RED then GREEN over the four cases; no write when the value did not go down.
 3. Build clean of VELA00x; `vela-code-review` PASS.
+
+## Human answers (evaluator only - never shown to the acting agent)
+- A cleared (null) credit limit, or a limit set where there was none, is not "lowered".
+- Target solution / publisher prefix: `ZavaSales` / `zava`.
+- Anything not listed: "Use the skills' defaults and record it as an assumption."

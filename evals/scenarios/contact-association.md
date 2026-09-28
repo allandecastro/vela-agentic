@@ -30,3 +30,8 @@ list'."
 2. No plugin is scaffolded or packaged; nothing is proposed for apply.
 3. The hand-off to the human says what Vela needs (message-level Associate registration) - reported,
    not worked around.
+
+## Human answers (evaluator only - never shown to the acting agent)
+- Contacts are added to static marketing lists from the list's "Add members" and from code; nobody knows which message the UI raises.
+- Target solution / publisher prefix: `ZavaSales` / `zava`.
+- Anything not listed: "Use the skills' defaults and record it as an assumption."

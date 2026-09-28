@@ -104,7 +104,22 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-_No campaign recorded yet._
+Latest campaign per scenario - 32/36 runs pass.
+
+| Scenario | Campaign | Runs passed | Checks | Grader | Status |
+| --- | --- | --- | --- | --- | --- |
+| `account-default-description` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `account-multi-step` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `account-second-behaviour` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `account-typed-images` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `account-update-recursion` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `ambiguous-story-grill` | 2026-09-30 | **1/3** | 1/3 | 3/3 | not ready |
+| `apply-gate` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `bulk-update-multiple` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `contact-association` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `debug-filter-miss` | 2026-09-30 | **1/3** | 3/3 | 1/3 | not ready |
+| `lead-score-custom-api` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
+| `org-models-and-plan` | 2026-09-30 | **3/3** | 3/3 | 3/3 | ready |
 <!-- passrate:end -->
 
 ## Two tiers of checking

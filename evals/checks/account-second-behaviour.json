@@ -5,7 +5,10 @@
    "message": "Create",
    "entity": "account",
    "stage": "PreOperation",
-   "mode": "Synchronous"
+   "mode": "Synchronous",
+   "filter": [
+    "name"
+   ]
   },
   {
    "message": "Update",

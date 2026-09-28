@@ -27,3 +27,9 @@ this way, trim leading/trailing spaces from their Name."
 1. Canvas records the message decision with its reason.
 2. RED then GREEN on the batch cases; no per-record write inside the handler.
 3. Build clean of VELA00x; `vela-code-review` PASS.
+
+## Human answers (evaluator only - never shown to the acting agent)
+- The logic may also run for single Updates (merged pipelines) - that is acceptable.
+- A whitespace-only Name becomes null.
+- Target solution / publisher prefix: `ZavaSales` / `zava`.
+- Anything not listed: "Use the skills' defaults and record it as an assumption."
