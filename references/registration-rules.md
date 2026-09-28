@@ -75,4 +75,5 @@ prefix), or components fall into the org's default solution.
 - Keep the handler thin (SRP): orchestration in `OnExecute`, real logic in a service when it is
   reusable or worth testing in isolation → `vela add service <Name> --entity <E>`, inject via DI.
 - Reuse an existing service before adding one. Do not extract a service for a one-line, single-use
-  operation - that is ceremony, not design.
+  operation - that is ceremony, not design. Logic shared by the steps of **one** plugin → a private
+  helper (+ constant); logic shared **across plugins** → a service.

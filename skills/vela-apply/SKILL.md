@@ -45,7 +45,8 @@ Announce: `Using vela-apply to <purpose>`.
    --pfx-credential <target>`. Never put `--pfx-password` on the command line (it lands in shell
    history and logs). Sign **before** `plan`: signing changes the package, and the preview must be of
    the package that will be applied. If no certificate is available to you, do not sign; record
-   "unsigned - a human signs before apply" in the Build Report.
+   "unsigned - a human signs before apply" in the Build Report. When you do not know whether the org
+   requires signing, say so (`signed: unknown`) and list it as an open question at the gate.
 4. **Resolve the connection** (`references/cli-surface.md`): headless → `DATAVERSE_CONNECTION_STRING`,
    or `--url`/`--tenant-id`/`--client-id` + `DATAVERSE_CLIENT_SECRET`; `-i` only when a human is at a
    browser. Never echo a secret.
@@ -54,7 +55,9 @@ Announce: `Using vela-apply to <purpose>`.
    flow (`-p` repeated). Don't use `--packages-dir artifacts` blindly: it previews whatever is there. Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
    any). The JSON's `operations` list is what `apply` would do - it must contain **only** what the
-   Canvas ships (a scaffold demo left in shows up as extra `create` operations). Shape in
+   Canvas ships (a scaffold demo left in shows up as extra `create` operations). An `update` or `delete`
+   on a registration the Canvas does not own (e.g. a step another build deployed in the same assembly)
+   is never waved through: record it and make it an open question that blocks the gate. Shape in
    `references/cli-surface.md`. There is no read-only command that confirms the target solution exists
    (`plan` takes no `--solution`): the Gate asks the human to confirm it. `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.

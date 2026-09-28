@@ -72,7 +72,10 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    reproduce, read the message block. A step that never fires writes no trace - read
    `pipeline.ExecutionLog` instead (which steps ran, with message, stage, depth). Remove noise
    afterwards; keep traces that help operations.
-7. **Fix** the single most-likely cause with evidence.
+7. **Fix** the single most-likely cause with evidence - and **only** that cause. The diff is the cause
+   plus the repro tests: no incidental edit to another step's registration, description, filter,
+   image or code "while you are there" (each is a second change `vela plan` will show and the human
+   must re-verify). Anything else you notice goes in the report as a follow-up, not in this fix.
 8. **Regression-test.** The red test now passes and stays in the suite; the full suite is green;
    `vela inspect`/`vela plan` (or the recorded commands) confirm the registration matches intent.
 
@@ -86,10 +89,13 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
 - "I'll read the trace log through the Web API myself." → Not through the CLI contract. Ask the human
   for the row; name the fields you need.
 - "Obvious fix, the test can come later." → No red repro, no fix. A fix without a red test is a guess.
+- "I'll tidy this other registration while I'm in here." → A debug fix is minimal. Record it as a
+  follow-up; an extra change widens what the human must re-verify and masks what fixed the fault.
 
 ## Red flags
 
 - A code change before a failing repro test exists.
+- A fix diff that touches anything beyond the cause and its repro tests.
 - Mutating the org while diagnosing (investigation is read-only by default).
 - Reporting the intended state instead of the observed state.
 - Guarding with `if (ctx.Depth > 1) return;` to make a recursion symptom disappear.

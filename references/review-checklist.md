@@ -25,6 +25,9 @@ Structure decisions):
   Run trace (the commands it names were the ones run) - Nit, or Required if a decision is contradicted.
 - **Unconfirmed solution / publisher prefix** (a flagged assumption): not a code finding - it must be
   listed as an open question that blocks the apply gate; Required if it is not.
+- **Debug fix scope:** a fix for a reported fault (`vela-debug-plugin`) whose diff touches anything
+  beyond the cause and its repro tests (another step's registration, description, filter) - **Required**:
+  split it out as a follow-up.
 - **Drift from the Canvas** - behaviour, a write, or a decision the Canvas does not record - is
   **Required** (fix the Canvas first, then the code); an unplanned write to the org is **Critical**.
   When a finding is both drift and "will misbehave on a live org", the higher one wins: **Critical**.
@@ -82,6 +85,8 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   writes, e.g. a PostOperation `Update` of its own record) - **Critical**, **even when a `ctx.Depth`
   check stops it early**: it still writes twice and fires twice. A `ctx.Depth` early return is not a
   guard; on its own (no self-trigger) it is **Required** (it also skips legitimate nested calls).
+  With both present, raise **one** finding: the self-triggering write, Critical - the Depth line is
+  part of it, not a second finding.
 - **Runtime** (`dataverse-gotchas.md`): no mutable fields on the plugin class (VELA011 - **Required**); errors
   thrown as `InvalidPluginExecutionException` (VELA012), none swallowed; a Sync step does no slow or
   external work (2-minute sandbox limit) and no external side effect before a step that may still
