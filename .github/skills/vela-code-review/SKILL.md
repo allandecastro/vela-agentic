@@ -45,16 +45,19 @@ Announce: `Using vela-code-review to review the change`.
    (back to `vela-plugin-authoring` / `vela-test-harness`), then review again. Nits are optional.
 5. Record the findings list in the Build Report (`references/build-report-template.md`).
 
-## Self-review vs isolated reviewer (phased)
+## Who reviews: the isolated reviewer by default
 
-- **Now - self-review (default):** the builder runs this checklist against its own diff. Cheap,
-  single-agent, always available.
-- **Upgrade - isolated reviewer (`vela-reviewer` agent):** dispatch the **`vela-reviewer`** agent
-  (read-only, no shell) given only the diff **text pasted into its prompt** + the Vela Canvas + the
-  test runner's RED/GREEN summary lines + the Run trace (**not** the build's session history), so its judgement is not anchored by the author's context. Optionally
-  run the two axes as two separate reviewers so one cannot mask the other. This is a **scoped
-  review agent**, not `vela-builder` re-invoking itself - it does not violate "an agent applies
-  skills, it does not orchestrate other personas."
+- **Default - isolated reviewer (`vela-reviewer` agent):** dispatch the **`vela-reviewer`** agent
+  (read-only, no shell) with only: the diff **text pasted into its prompt**, the Vela Canvas, the test
+  runner's verbatim RED/GREEN lines and the Run trace - **not** the build's session history, so its
+  judgement is not anchored by the author's context. After a fix, dispatch a **fresh** reviewer on the
+  new diff. Optionally run the two axes as two separate reviewers so one cannot mask the other. This is
+  a **scoped review agent**, not `vela-builder` re-invoking itself - it does not violate "an agent
+  applies skills, it does not orchestrate other personas."
+  Why the default: in the eval runs the isolated reviewer caught what self-review passed (a Function
+  called by flows; an unplanned write) and blocked every planted violation.
+- **Fallback - self-review:** only when the host cannot dispatch a subagent. Run this checklist
+  against your own diff and **say so in the Build Report** ("self-review: no subagent available").
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -67,6 +70,8 @@ Announce: `Using vela-code-review to review the change`.
 ## Red flags
 
 - Reaching the apply gate with no review findings list in the Build Report.
+- A self-review where a subagent could have been dispatched, or a self-review not labelled as such in
+  the Build Report.
 - A self-review that finds nothing on a diff that touches registration or images (look harder).
 - Marking a Critical/Required finding resolved without re-running tests.
 

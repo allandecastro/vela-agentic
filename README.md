@@ -130,7 +130,7 @@ target project and reused as the PR body:
 | `vela-test-harness` | model-invoked | Write failing (RED) tests with `Vela.Testing`, run them per the OS runner |
 | `vela-plugin-authoring` | model-invoked | Implement the handler to green (real `EntityPluginBase` / `OnExecute` surface) |
 | `vela-custom-api` | model-invoked | Design, test and implement a Custom API (global or bound, Action or Function, typed or light) |
-| `vela-code-review` | model-invoked | Review the diff on the spec + standards axes before the apply gate (self-review or isolated subagent) |
+| `vela-code-review` | model-invoked | Review the diff on the spec + standards axes before the apply gate - by the isolated `vela-reviewer` by default, self-review as a labelled fallback |
 | `vela-apply` | model-invoked | Package (`dotnet build -c Release`, `vela sign`), preview with `vela plan`, stop at the human deploy gate; `vela inspect` after apply |
 | `vela-debug-plugin` | model-invoked | Diagnose a misbehaving plugin (reproduce -> minimize -> hypothesize -> fix) |
 | `writing-vela-skills` | model-invoked | The meta-skill: how to add or fix a skill under test (RED -> GREEN -> REFACTOR) |

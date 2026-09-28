@@ -67,16 +67,21 @@ independent of the framework/CLI NuGet releases.
 - [x] Re-verified against vela CLI 0.21.0 / Vela.Plugins 0.29.1 (help surface unchanged; `models`
       without `--namespace` now exits 2)
 
+## v0.3 (2026-09-29)
+
+- [x] Every skill has a passing blind scenario (8 scenarios, one against a dev org); a real `vela apply`
+      to the dev org verified end to end
+- [x] The isolated `vela-reviewer` is the default review path; self-review is a labelled fallback
+- [x] `scripts/check.sh` = the CI, run locally by a pre-push hook (`git config core.hooksPath .githooks`)
+
 ## Backlog
 
-- [ ] Scenarios for the uncovered skills: `vela-grill` (an ambiguous story), `vela-models` (needs a dev org)
 - [ ] More gotcha scenarios: association matching, images (typed `partial`), deep insert, bulk `*Multiple`
 - [ ] Skills for relationships / alternate keys; web resources (`form-script`, `ribbon-script`) once supported
-- [ ] Make `vela-reviewer` the default review path (today: self-review first) once the eval loop is stable
-- [ ] Ask upstream (Vela CLI) for a read-only trace command (e.g. `vela logs`) so the agent can read the
-      Plug-in Trace Log through the CLI contract
-- [ ] Upstream nits seen while verifying: the scaffold's TODO comment still suggests `GetTarget`; after
-      `vela add step` the class comment still says "Single-step plugin"
+- [ ] When Vela ships the reported fixes (stage flag on `vela add`, `add step` filtering attributes,
+      `Execute` honouring the registration, apply's `summary`, a `vela logs` command, ...): re-verify,
+      drop the workarounds in the skills, re-run the eight scenarios. (Reported upstream by the owner,
+      2026-09-29; this repo does not file upstream issues.)
 - [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands
 - [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness
       security plan, don't duplicate)
