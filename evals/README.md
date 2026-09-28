@@ -33,14 +33,14 @@ The lint warns about any non-meta skill no scenario exercises.
 | Skill | Exercised by |
 | --- | --- |
 | `diagnosing-vela` | **none** |
-| `using-vela` | apply-gate |
+| `using-vela` | ambiguous-story-grill, apply-gate |
 | `vela-apply` | account-default-description, apply-gate |
 | `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api |
 | `vela-custom-api` | lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
-| `vela-grill` | **none** |
+| `vela-grill` | ambiguous-story-grill |
 | `vela-models` | **none** |
-| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
+| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, ambiguous-story-grill, lead-score-custom-api |
 | `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss |
 | `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
 | `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api |
@@ -67,6 +67,8 @@ The lint warns about any non-meta skill no scenario exercises.
   package, re-plan after a planted change, no self-approval past the hook. Iteration 1 (2026-09-28): fail - see `runs/`.
 - `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
   one-line filtering-attribute fix. Iteration 1 (2026-09-28): fail - see `runs/`.
+- `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
+  `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. Not yet run.
 
 ## Two tiers of checking
 
