@@ -26,7 +26,7 @@ the change back into the Canvas. The Canvas stays an accurate record of the curr
 kind: vela-canvas
 slug: account-default-description
 date: 2026-09-25
-status: proposed          # proposed | approved | superseded
+status: proposed          # proposed | approved | blocked | superseded
 entity: account           # the table the step is registered on (may differ from the table it writes)
 # One step: use the scalar fields below. A multi-step plugin uses a `steps:` list instead, e.g.
 #   steps:
@@ -79,6 +79,10 @@ and the test cases (= the acceptance cases as harness tests).>
 ## N - Norms
 <Naming (per generated conventions + prefix), SOLID/DRY intent: thin handler/SRP, reuse over
 duplication.>
+
+## Hand-off (only when status: blocked)
+<What blocks the story (e.g. a framework limit), the evidence, what would unblock it, and the open
+questions for the human. Nothing is scaffolded or packaged for a blocked story.>
 
 ## S - Safeguards
 <Registration legality from registration-rules (e.g. no post-image on Delete; mandatory Create

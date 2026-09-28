@@ -62,8 +62,10 @@ Announce: `Using vela-plan-review to grill the plan`.
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
    - **Association:** Associate/Disassociate need a message-level registration (primary entity `none`),
      which Vela 0.29.3 cannot express - record the story as **blocked (framework limit)** and stop; see
-     `references/dataverse-gotchas.md`. Also confirm the story really means Associate (marketing-list
-     members may come through `AddMember` / `AddListMembers`).
+     `references/dataverse-gotchas.md`. Which message the story really means (Associate, or
+     marketing-list `AddMember` / `AddListMembers`, or dynamic lists that raise no event) is a question
+     for the human - ask it (`vela-grill`) or list it as an open question; the pack has no recipe for the
+     marketing-list messages yet, so that path is blocked too.
    - **Bulk:** `*Multiple` vs single-record message - one of them, never both for the same logic
      (merged pipelines); record why.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
@@ -81,7 +83,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    is a **business decision only the human can make** (what a story term means, which record drives
    which, the rule itself): then use `vela-grill` first, and resume here with the answers. No human
    reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
-   that blocks the apply gate.
+   that blocks the apply gate. A **blocked** outcome (framework limit, story not deliverable) always
+   wins over "continue": set the Canvas `status: blocked` and stop (see the builder's "Blocked stories").
 
 ## Rationalizations (excuse → rebuttal)
 

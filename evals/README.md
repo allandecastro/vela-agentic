@@ -73,7 +73,7 @@ The lint warns about any non-meta skill no scenario exercises.
   against DYN-PREMIUM-DEV (see `runs/`).
 - `scenarios/contact-association.md` - Associate: iteration 1 fail - Vela 0.29.3 cannot register Associate at
   message level (Dataverse's only filter is primary `none`, verified); the scenario now expects the agent
-  to report the framework limit, not ship a workaround. Re-run pending.
+  to report the framework limit, not ship a workaround. **Iteration 2: pass** (blocked Canvas + hand-off).
 - `scenarios/account-typed-images.md` - typed pre-image (`partial`), "lowered" = the value differs. **2026-09-29: pass.**
 - `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Iteration 1 fail (wrong bulk
   test recipe, bulk handler shape and bulk gotchas missing) - fixed; re-run pending.

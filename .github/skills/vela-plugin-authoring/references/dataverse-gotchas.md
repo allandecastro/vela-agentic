@@ -13,6 +13,8 @@ symptom → cause → fix.
   primary entity never runs. **Vela 0.29.3 limit:** `RegisterStep().OnAssociate()` on
   `EntityPluginBase<T>` binds the step to `T`'s table (`GetStepDefinitions()` → `EntityLogicalName =
   contact`), there is no message-only registration, and `vela plan` accepts it without a diagnostic.
+  (Re-check on each framework release: scaffold an `OnAssociate()` step and look at
+  `GetStepDefinitions()` / `vela plan` - if the entity is `none`, the limit is gone.)
   Until Vela supports it, **an Associate/Disassociate story cannot be delivered safely with Vela**:
   record it in the Canvas as blocked (framework limit) and stop before scaffolding - don't ship a
   per-table workaround. (Marketing lists: adding members from the UI may raise `AddMember` /
