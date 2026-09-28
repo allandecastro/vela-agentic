@@ -69,7 +69,8 @@ The lint warns about any non-meta skill no scenario exercises.
 - `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
   `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. **2026-09-29: pass** (see `runs/`).
 - `scenarios/org-models-and-plan.md` - the first scenario **with a dev org**: real `vela models`
-  (no stand-in), a real `vela plan` whose operations must match the Canvas. Read-only use of the org.
+  (no stand-in), a real `vela plan` whose operations must match the Canvas. Read-only use of the org. **2026-09-29: pass**
+  against DYN-PREMIUM-DEV (see `runs/`).
 
 ## Two tiers of checking
 

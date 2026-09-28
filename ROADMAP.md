@@ -62,7 +62,9 @@ independent of the framework/CLI NuGet releases.
       findings fixed; records in `evals/runs/*.iter2.md`
 - [x] 2026-09-29: `ambiguous-story-grill` and the two baseline scenarios pass blind; their minors fixed
       (all seven scenarios now pass)
-- [ ] A dev org for evals, to cover `vela-models` and a real `vela plan`
+- [x] Dev org for evals (DYN-PREMIUM-DEV, solution `VelaEvals`, prefix `veval`, read-only use):
+      `org-models-and-plan` passes - every skill now has a passing scenario
+- [ ] Re-verify the pack against vela CLI 0.21.0 (released since 0.19.6)
 
 ## Backlog
 
