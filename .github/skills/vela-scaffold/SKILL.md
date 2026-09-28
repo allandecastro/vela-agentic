@@ -89,11 +89,13 @@ Announce: `Using vela-scaffold to <purpose>`.
      `<Prefix>.Shared/Services/{GreetingService, IGreetingService}`, the matching files under
      `tests/<Prefix>.Plugins.Tests/` (including `Security/SecurityExampleTests`), and - if kept - the
      Integrations demos (`AccountReconcileCustomApi`, `AccountSyncRouterPlugin`, `ContactExportCustomApi`,
-     `ContactSyncPlugin`, `IntegrationHeartbeatCustomApi`) and their tests. Keep the demo *models* until
+     `ContactSyncPlugin`, `IntegrationHeartbeatCustomApi`) and their tests. Delete demo models your code does not use (e.g. `Contact.cs`) once `vela models` has generated the
+     ones it does; with no org, keep the demo *models* until
      `vela models` regenerates them if your code uses them.
    - Demos never count as "a table that already has a plugin" for the reuse rule.
 7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
-   Line endings: the scaffold writes **CRLF** files. Keep CRLF when you edit them (or configure your
+   Line endings: scaffolded files are mostly **CRLF** (some `vela add` output mixes in LF lines;
+   `vela models` writes LF). Keep each file's existing endings when you edit it (or configure your
    editor/git), or every edited file shows up as a whole-file diff in review.
 8. Summarise what was generated and the next skill in the loop.
 

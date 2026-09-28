@@ -24,7 +24,8 @@ Announce: `Using vela-apply to <purpose>`.
 
 1. `vela version`; `vela plan --help` / `vela apply --help` / `vela sign --help` to confirm flags
    (`references/cli-surface.md`).
-2. **Package** the final code: **`dotnet build <Solution>.sln -c Release`**. The scaffold's plugin
+2. **Package** the final code: clear `artifacts/` first (an earlier build - e.g. the scaffold's first
+   one, with the demos - leaves a package under the same name), then **`dotnet build <Solution>.sln -c Release`**. The scaffold's plugin
    project builds the deployable plugin package on build (`GeneratePackageOnBuild`) into the solution's
    `artifacts/` folder. **Not `dotnet pack`**: run cold it exits 0 with `NU5128` and emits a package with
    **no assembly** (verified, scaffold 0.19.6). Then check the package really holds your plugin -
@@ -52,7 +53,10 @@ Announce: `Using vela-apply to <purpose>`.
    ships** - the plugin package, plus the Integrations package only when the Canvas has an outbound
    flow (`-p` repeated). Don't use `--packages-dir artifacts` blindly: it previews whatever is there. Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
-   any). `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
+   any). The JSON's `operations` list is what `apply` would do - it must contain **only** what the
+   Canvas ships (a scaffold demo left in shows up as extra `create` operations). Shape in
+   `references/cli-surface.md`. There is no read-only command that confirms the target solution exists
+   (`plan` takes no `--solution`): the Gate asks the human to confirm it. `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.
 6. **Summarise** exactly what `apply` would change in the Build Report's **Gate** section
    (`references/build-report-template.md`): package path + hash, signed or not, the plan diff, and the

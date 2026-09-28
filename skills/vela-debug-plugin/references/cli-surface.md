@@ -7,7 +7,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` (framework
+**Verified against:** `vela 0.19.6` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.28.2` and `0.29.1` (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
@@ -54,6 +54,9 @@ every Custom API; add `--package <nupkg>`/`--packages-dir` to exclude the ones y
   (accepted by the parser, not listed in `--help`).
 - TypeScript (preview): `--forms` and/or `--tables` (emit an `index.ts` barrel).
 - `--verify` - no write; reports drift, **exit 5** on drift. Cannot combine with `--forms`/`--tables`.
+- Outside a project, pass `--namespace <ns>` (or run it inside the scaffold, where it is inferred):
+  without it `vela models` prints "Could not infer a namespace" and generates nothing - **with exit
+  code 0** (verified). Check the "Generated N file(s)" line, not only the exit code.
 - `--timeout <1-60 min, default 10>` · `--json` (report of generated files, for agents) · `-v`.
 
 ## Package - `vela sign`
@@ -71,6 +74,12 @@ Shared inputs: `--package`/`-p <.nupkg>` (repeatable) or `--packages-dir <folder
   TTY prints the plan and requires a typed `yes`; non-interactive refuses unless `--auto-approve`.
   **Do not auto-approve unless explicitly told to.**
 - `vela inspect` - compare local packages vs the live environment (read-only).
+- **`plan.json` (from `--out`, verified 0.19.6):** `{mode, environment, hasChanges, summary: {added,
+  removed, changed}, operations: [{action: create|update|delete, kind: step|image|custom-api|...,
+  type, reason}], diff, diagnostics: [string], notes}`. On a first deploy the new assembly is not an
+  operation - it appears as the diagnostic below - so `operations` lists the steps / Custom APIs. Read `operations` (what apply would do) and
+  every `diagnostics` line. "Plugin assembly '<x>' not found in Dataverse" on a first deploy is
+  expected; a rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) is not a finding.
 - **Output format:** a styled summary on a terminal, **JSON when piped/redirected** (an agent's shell is
   usually piped - expect JSON). Force it with `--json`, or write it with `--out <file>`.
   `NO_COLOR` / `VELA_NO_COLOR` disable colors.
@@ -82,7 +91,8 @@ Resolution order:
    `DATAVERSE_CLIENT_SECRET` | `--client-secret <value>` - warned, leaks into history; avoid).
 3. `--interactive`/`-i` - browser login; token cached under `~/.vela` (silent on repeat). `--fresh-login`
    forces re-prompt. `vela logout` clears it. Needs a browser - not for headless runs.
-4. `--url` alone → `DefaultAzureCredential` (env / managed identity / `az login`).
+4. `--url` alone → `DefaultAzureCredential` (env / managed identity / `az login`) - verified: an `az login`
+   session is enough for `vela models` and `vela plan`.
 - `--timeout <1-60>` connection timeout. `--authority` / `--auth-client-id` for sovereign clouds.
 
 ## Exit codes

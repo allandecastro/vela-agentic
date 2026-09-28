@@ -28,7 +28,8 @@ Announce: `Using vela-models to <purpose>`.
    generate every table.
 3. **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
    run, and use the labelled no-org stand-in described in `vela-plugin-authoring` step 2 - never on a
-   real run. Otherwise resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
+   real run. Otherwise resolve the connection (see `references/cli-surface.md`): **`--url <org>` alone** when an
+   `az login` session (or managed identity) exists - headless and verified; interactive `-i` only with a human at a browser;
    or connection string / client secret for automation.
 4. Generate:
    - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
@@ -41,7 +42,9 @@ Announce: `Using vela-models to <purpose>`.
    `vela models --entities <name>`. A missing entity prints `Could not find an entity` to stdout
    (exit can still be `0`), so **check the output text, not just the exit code**. An absent
    dependency means the AC that needs it is excluded from v1 (record it in the Canvas), never invented.
-7. Report what was written (or the drift) and where.
+7. Report what was written (or the drift) and where. **Check the output text**: a run that
+   generates nothing (e.g. "Could not infer a namespace" when run outside the project without
+   `--namespace`) still exits `0`. Success is the "Generated N file(s) into <dir>" line.
 
 ## Rationalizations (excuse → rebuttal)
 
