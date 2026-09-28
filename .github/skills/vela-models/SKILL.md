@@ -41,7 +41,9 @@ Announce: `Using vela-models to <purpose>`.
    `vela models --entities <name>`. A missing entity prints `Could not find an entity` to stdout
    (exit can still be `0`), so **check the output text, not just the exit code**. An absent
    dependency means the AC that needs it is excluded from v1 (record it in the Canvas), never invented.
-7. Report what was written (or the drift) and where.
+7. Report what was written (or the drift) and where. **Check the output text**: a run that
+   generates nothing (e.g. "Could not infer a namespace" when run outside the project without
+   `--namespace`) still exits `0`. Success is the "Generated N file(s) into <dir>" line.
 
 ## Rationalizations (excuse → rebuttal)
 

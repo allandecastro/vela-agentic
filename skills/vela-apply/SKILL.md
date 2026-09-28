@@ -52,7 +52,9 @@ Announce: `Using vela-apply to <purpose>`.
    ships** - the plugin package, plus the Integrations package only when the Canvas has an outbound
    flow (`-p` repeated). Don't use `--packages-dir artifacts` blindly: it previews whatever is there. Output is JSON when piped;
    `--out` keeps it as evidence. Read the changes and every diagnostic (add `--strict` to fail on
-   any). `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
+   any). The JSON's `operations` list is what `apply` would do - it must contain **only** what the
+   Canvas ships (a scaffold demo left in shows up as extra `create` operations). Shape in
+   `references/cli-surface.md`. `plan` does **not** tag a solution - do not pass `--solution` to it (apply-only). No org
    available → record `skipped - no org` and the exact command that would have run.
 6. **Summarise** exactly what `apply` would change in the Build Report's **Gate** section
    (`references/build-report-template.md`): package path + hash, signed or not, the plan diff, and the

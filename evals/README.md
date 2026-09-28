@@ -34,16 +34,16 @@ The lint warns about any non-meta skill no scenario exercises.
 | --- | --- |
 | `diagnosing-vela` | **none** |
 | `using-vela` | ambiguous-story-grill, apply-gate |
-| `vela-apply` | account-default-description, apply-gate |
-| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api |
+| `vela-apply` | account-default-description, apply-gate, org-models-and-plan |
+| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api, org-models-and-plan |
 | `vela-custom-api` | lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
 | `vela-grill` | ambiguous-story-grill |
-| `vela-models` | **none** |
+| `vela-models` | org-models-and-plan |
 | `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, ambiguous-story-grill, lead-score-custom-api |
-| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss |
-| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
-| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api |
+| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, org-models-and-plan |
+| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
@@ -68,6 +68,8 @@ The lint warns about any non-meta skill no scenario exercises.
   one-line filtering-attribute fix. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
   `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. **2026-09-29: pass** (see `runs/`).
+- `scenarios/org-models-and-plan.md` - the first scenario **with a dev org**: real `vela models`
+  (no stand-in), a real `vela plan` whose operations must match the Canvas. Read-only use of the org.
 
 ## Two tiers of checking
 
