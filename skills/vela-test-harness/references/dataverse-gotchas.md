@@ -74,8 +74,10 @@ symptom → cause → fix.
 
 ## Codegen & project layout
 
-- **Compiles locally, missing on CI.** A committed source file was named `*.generated.cs`,
-  which is gitignored. Never name a committed file `*.generated.cs`; let the CLI name output.
+- **Compiles locally, missing on CI.** A committed source file was named `*.generated.cs`, and the
+  repository's `.gitignore` ignores that pattern (common in .NET templates and in the Vela repo; the
+  0.19.6 scaffold's own `.gitignore` does not - check yours). Never name a committed file
+  `*.generated.cs`; let the CLI name output.
 - **Adding a typed message silently misbehaves.** A modelled plugin message touches several
   files that must stay in sync (including the CLI's known-messages list). Use `vela add`
   rather than hand-wiring; regenerate rather than editing generated output.

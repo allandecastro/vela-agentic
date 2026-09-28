@@ -114,7 +114,7 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You are about to hand-edit a generated file (`Models/Generated`, compiler output).
 - The Canvas says PreOperation but the scaffolded step still says `.PostOperation()`.
 - The scaffold's demo plugins / Custom APIs are still in a project headed for `vela apply`.
-- Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
+- Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (often gitignored).
 - You guessed a flag instead of reading `--help`.
 - You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`, VELA001), an
   echoed lowercase attribute (`e => e.name`), or an auto-picked non-primary column (`e => e.caseage`)

@@ -36,7 +36,7 @@ entity: account           # the table the step is registered on (may differ from
 message: Create
 stage: PreOperation        # set the default on ctx.Request.Target before the write
 mode: Synchronous
-filtering_attributes: [name]
+filtering_attributes: [Name]   # model property names (as FilterOn / --filtering-attributes take them)
 images: []                # e.g. [{pre: [statecode]}, {post: [statecode, parentcustomerid]}]
 # A Custom API replaces message/stage/mode/filtering_attributes/images with:
 #   custom_api: {unique_name: <pfx>_<Name>, binding: global | bound:<entity>, kind: action | function,

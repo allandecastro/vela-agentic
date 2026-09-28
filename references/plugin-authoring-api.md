@@ -127,6 +127,23 @@ private void OnExecute(ICreatePostContext<Account> ctx)
     => ctx.GetRequiredService<IRevenueRollupService>().Do(ctx);   // ctx.GetRequiredService<T>() resolves it
 ```
 
+`vela add service AccountDescriptionDefault --entity Account` generates (verified, 0.19.6) an interface +
+class next to the table's plugins, and prints the registration line to add:
+
+```csharp
+public interface IAccountDescriptionDefault { void Execute(Account target); }
+
+public sealed class AccountDescriptionDefault(IOrganizationService service) : IAccountDescriptionDefault
+{
+    private readonly IOrganizationService _service = service;
+    public void Execute(Account target) { /* TODO: domain logic using _service */ }
+}
+// Register (printed by the CLI):
+// services.AddScoped<IAccountDescriptionDefault>(r => new AccountDescriptionDefault(r.GetRequiredService<IOrganizationService>()));
+```
+Rename/reshape `Execute` to what the Canvas needs; a pure rule that never calls the org may drop the
+`IOrganizationService` parameter (then register it with `new AccountDescriptionDefault()`).
+
 - `ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)` is a `protected
   virtual` override on the base; `services.AddScoped<TService>(Func<IPluginServiceResolver, TService> factory)`.
 - Resolve inside the handler with `ctx.GetRequiredService<T>()`. Keep the handler thin (SRP); put
