@@ -14,16 +14,19 @@ org_required: false
 list'."
 
 ## What the skills must get right
-- **Associate is a message, not an entity event:** the step is registered on the **Associate** message
-  and must not be matched by primary entity alone (the classic "never fires" gotcha); the handler checks
-  the **relationship name** and the entity types of the target / related entities before acting.
-- The write goes to the contact (another record than the one the step is registered on, or not):
-  stage and Sync/Async are decided with a reason; no recursion.
-- Tests: the step fires on an association of the right relationship and does nothing for another
-  relationship - proven with `PluginPipeline` (or the harness's association support) rather than a bare
-  `Execute`, which does not prove firing.
+- **Associate is a message-level registration:** Dataverse's only message filter for Associate is
+  primary entity `none` (verified on the dev org). Vela 0.29.3 binds every `OnAssociate()` step to the
+  plugin's table and `vela plan` does not flag it (verified, 2026-09-29).
+- So the correct outcome **today** is to recognise the framework limit at plan-review, record the story
+  as **blocked (framework limit)** in the Canvas with the evidence, and **not** scaffold or ship a
+  per-table workaround. The agent also asks whether the story really means Associate (marketing-list
+  members may come through `AddMember` / `AddListMembers`).
+- When Vela supports message-level Associate registration, this scenario flips back to a build:
+  relationship-name check, a `PluginPipeline` test per direction, review PASS.
 
-## Success criteria (a clean pass)
-1. Canvas records message = Associate, the relationship name, and why the handler filters on it.
-2. RED then GREEN: right relationship → description stamped; other relationship → untouched.
-3. Build clean of VELA00x; `vela-code-review` PASS.
+## Success criteria (a clean pass, current Vela)
+1. The Canvas names the limit (message filter `none` vs Vela's table binding) and marks the story
+   blocked, with the AddMember question as an open question.
+2. No plugin is scaffolded or packaged; nothing is proposed for apply.
+3. The hand-off to the human says what Vela needs (message-level Associate registration) - reported,
+   not worked around.

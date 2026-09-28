@@ -93,7 +93,8 @@ Announce: `Using vela-scaffold to <purpose>`.
      ones it does; with no org, keep the demo *models* until
      `vela models` regenerates them if your code uses them.
    - Demos never count as "a table that already has a plugin" for the reuse rule.
-7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+7. **Build** to prove it compiles: `dotnet build`. Report the exact output. (A `FilterOn` on a column
+   that is not in the model yet fails with `CS1061` until `vela-models` runs - build after MODEL then.)
    Line endings: scaffolded files are mostly **CRLF** (some `vela add` output mixes in LF lines;
    `vela models` writes LF). Keep each file's existing endings when you edit it (or configure your
    editor/git), or every edited file shows up as a whole-file diff in review.

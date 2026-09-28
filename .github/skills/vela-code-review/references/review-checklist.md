@@ -46,7 +46,9 @@ Structure decisions):
 Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-gotchas.md`):
 
 - **Registration:** Create/Update step has a `FilterOn(...)` (mandatory) and it names the right
-  attribute for Update; Associate/Disassociate matched by **message**, not by primary entity.
+  attribute for Update; an Associate/Disassociate step bound to a table (all Vela 0.29.3 Associate
+  steps are) - **Critical** (never fires; see gotchas); bulk: the same logic on both Update and
+  UpdateMultiple, or a per-record write inside a bulk handler - **Required**. Associate/Disassociate matched by **message**, not by primary entity.
 - **Images:** any image the handler reads is actually registered for that message/stage with the
   needed attributes.
 - **Custom API** (severities): a dot in a parameter/unique name - **Critical** (uncallable on a real

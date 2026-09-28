@@ -20,7 +20,8 @@ it is usually an illegal registration, not a framework bug.
 | Create | PreValidation / PreOperation / PostOperation | no (record doesn't exist yet) | yes at PostOperation | Sync (Async at PostOp) | **required** (ignored at runtime) |
 | Update | PreValidation / PreOperation / PostOperation | yes | yes at PostOperation | Sync (Async at PostOp) | **required** (gates the trigger) |
 | Delete | PreValidation / PreOperation / PostOperation | yes | **no (record is gone)** | Sync (Async at PostOp) | n/a |
-| Associate / Disassociate | Pre / Post | n/a | n/a | Sync / Async | n/a - match by **message**, not primary entity |
+| Associate / Disassociate | Pre / Post | n/a | n/a | Sync / Async | n/a - message filter is primary entity **`none`** only; **not expressible in Vela 0.29.3** (see gotchas) |
+| CreateMultiple / UpdateMultiple | PreValidation / PreOperation / PostOperation (Pre = Sync only) | n/a | n/a | Sync (Async at PostOp) | `FilterOn` as for Create/Update; pipelines merged with Create/Update - register one, not both |
 
 - **Async is PostOperation-only** for every message.
 - **No post-image on Delete** and **no pre-image on Create** - the record doesn't exist on the

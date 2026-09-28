@@ -60,7 +60,12 @@ Announce: `Using vela-plan-review to grill the plan`.
      the primary column and never drop it.
    - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
-   - **Association:** Associate/Disassociate matched by **message**, not primary entity (else never fires).
+   - **Association:** Associate/Disassociate need a message-level registration (primary entity `none`),
+     which Vela 0.29.3 cannot express - record the story as **blocked (framework limit)** and stop; see
+     `references/dataverse-gotchas.md`. Also confirm the story really means Associate (marketing-list
+     members may come through `AddMember` / `AddListMembers`).
+   - **Bulk:** `*Multiple` vs single-record message - one of them, never both for the same logic
+     (merged pipelines); record why.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
@@ -74,7 +79,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
    is a **business decision only the human can make** (what a story term means, which record drives
-   which, the rule itself): then use `vela-grill` first, and resume here with the answers.
+   which, the rule itself): then use `vela-grill` first, and resume here with the answers. No human
+   reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
+   that blocks the apply gate.
 
 ## Rationalizations (excuse → rebuttal)
 
