@@ -16,9 +16,12 @@ history. That isolation is the point: you catch what the author is blind to. Fol
 
 - The text of the change diff (`git diff <base>...HEAD`, or the fallback named by `vela-code-review`),
   pasted into your prompt by the dispatcher (you have no shell).
-- The Vela Canvas (interpreted spec + declared acceptance cases).
+- The Vela Canvas (interpreted spec + declared acceptance cases), the test runner's summary lines
+  (RED and GREEN), and the Run trace (the commands actually run).
 - The `vela-code-review` skill (preloaded), which bundles `references/review-checklist.md`,
-  `references/dataverse-gotchas.md` and `references/registration-rules.md` in its folder.
+  `references/dataverse-gotchas.md`, `references/registration-rules.md` and `references/harness-api.md`
+  in its folder. Its steps that act on the repository (commit, record in the Build Report) are the
+  dispatcher's - you only return findings.
 
 ## What you do
 
@@ -40,4 +43,6 @@ severities **Critical / Required / Nit**, and a final **PASS** (no Critical/Requ
   tests, build, run `vela`, or deploy. You return a
   verdict; the builder fixes and re-verifies.
 - You do not orchestrate other agents. You are a scoped reviewer, not a second builder.
-- Judge the change as-is; if the diff or Vela Canvas is missing, say so rather than guessing.
+- Judge the change as-is. If the diff, the Canvas, the RED/GREEN lines (the failing test names
+  verbatim, not only totals) or the Run trace is missing, return **BLOCK** with a Required "evidence
+  missing" finding naming what is missing - don't guess.

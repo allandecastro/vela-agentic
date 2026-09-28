@@ -51,10 +51,10 @@ The lint warns about any non-meta skill no scenario exercises.
 
 - `scenarios/account-default-description.md` - baseline: Account create → default Description.
   Iterations 1-4 (2026-09-24/25) drove the pack from 9 defects (3 blockers) to a clean pass with
-  the code-review gate; see the repo history.
+  the code-review gate; see the repo history. Re-run 2026-09-29 against the current skills: **pass** (see `runs/`).
 - `scenarios/account-second-behaviour.md` - decisions + review: a second behaviour on a table that
   already has a plugin, exercising reuse-vs-new, DRY/service extraction, Sync-vs-Async, and the
-  review's SOLID/DRY axis (with a planted-violation check).
+  review's SOLID/DRY axis (with a planted-violation check). Re-run 2026-09-29 against the current skills: **pass** (see `runs/`).
 - `scenarios/account-update-recursion.md` - stage + recursion: normalise a column on Update. The
   PostOperation write-back trap recurses until the depth guard throws (reproduced with
   `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
@@ -67,7 +67,7 @@ The lint warns about any non-meta skill no scenario exercises.
 - `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
   one-line filtering-attribute fix. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
-  `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. Not yet run.
+  `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. **2026-09-29: pass** (see `runs/`).
 
 ## Two tiers of checking
 

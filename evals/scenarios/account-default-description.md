@@ -21,14 +21,14 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 1. `vela init` + `vela add plugin` + `vela add test` all exit 0, following `vela-scaffold`.
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
    `OnExecute` / `ctx.Request.Target` surface), no magic strings where a model exists.
-3. **Test-first:** the two acceptance-case tests are written and seen to **fail (RED)** before
+3. **Test-first:** the acceptance-case tests are written and seen to **fail (RED)** before
    the handler is implemented, then pass after - run with the OS-correct runner (Mono +
    `-parallel none` on macOS), using the real harness API.
 4. `dotnet build` is green **and** has no analyzer (VELA00x) violations.
-5. Two behaviours proven: empty Description → defaulted; non-empty → untouched.
-7. **Stage:** the step is **PreOperation** and sets the default on `ctx.Request.Target`; no
+5. Behaviours proven: empty (null / whitespace) Description → defaulted; non-empty → untouched.
+6. **Stage:** the step is **PreOperation** and sets the default on `ctx.Request.Target`; no
    `ctx.UserService.Update` of the account (a PostOperation write-back is a finding).
-6. A Vela Canvas (with the acceptance cases listed) and Build Report (harness pass + analyzers
+7. A Vela Canvas (with the acceptance cases listed) and Build Report (harness pass + analyzers
    clean + cases checklist) are produced per `references/build-report-template.md`.
 
 ## No-org note

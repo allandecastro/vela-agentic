@@ -53,7 +53,7 @@ Announce: `Using vela-models to <purpose>`.
 
 ## Red flags
 
-- A committed model file named `*.generated.cs` (gitignored - will be missing on CI).
+- A committed model file named `*.generated.cs` (often gitignored - it can be missing on CI).
 - You are about to combine `--verify` with `--forms`/`--tables` (not allowed).
 - Editing a generated model instead of regenerating.
 

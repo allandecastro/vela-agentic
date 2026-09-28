@@ -20,8 +20,18 @@ Structure decisions):
 
 - Every declared acceptance case is actually implemented and has a passing test. (An isolated
   reviewer has no shell: the dispatcher includes the test runner's summary lines with the diff.)
+- **RED evidence:** the Run trace shows the tests failing before the implementation for the right
+  reason, then passing; every acceptance case has a test that would fail if the behaviour broke (not
+  a test that passes whatever the code does - e.g. a "does not fire" case run with `Execute`).
+- **Canvas consistency:** the Canvas agrees with itself (DoD vs acceptance cases, status) and with the
+  Run trace (the commands it names were the ones run) - Nit, or Required if a decision is contradicted.
+- **Unconfirmed solution / publisher prefix** (a flagged assumption): not a code finding - it must be
+  listed as an open question that blocks the apply gate; Required if it is not.
 - **Drift from the Canvas** - behaviour, a write, or a decision the Canvas does not record - is
   **Required** (fix the Canvas first, then the code); an unplanned write to the org is **Critical**.
+  When a finding is both drift and "will misbehave on a live org", the higher one wins: **Critical**.
+- **Target edits that are lost:** editing `ctx.Request.Target` in a **PostOperation or Async** step
+  changes nothing that is saved - **Critical** (the behaviour silently does not happen).
 - Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post). For a Custom
   API: global/bound, Action/Function, parameters and error cases match the Canvas.
 - The Canvas's **Approach** decisions were honoured: **Sync vs Async** is appropriate for the
@@ -60,7 +70,8 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   Create, Async only at PostOperation; Create/Update has a `FilterOn`.
 - **Execution order:** rank-sharing with Microsoft/managed steps is NOT a finding (normal, harmless).
   Only flag missing/ambiguous ordering among *our own* steps on the same table+message+stage.
-- **SOLID / DRY:** every handler (`OnExecute`, `Handle<Message>`) is thin (SRP) with real logic in a service where it earns it; no
+- **SOLID / DRY** (duplicated logic - across plugins or between the steps of one plugin - is
+  **Required**): every handler (`OnExecute`, `Handle<Message>`) is thin (SRP) with real logic in a service where it earns it; no
   logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
   service extracted for a trivial one-liner.
 - **Stage:** a PostOperation step that `Update`s its own primary record where a PreOperation edit of

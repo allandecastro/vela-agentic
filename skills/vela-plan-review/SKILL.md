@@ -48,7 +48,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas
      (see `references/registration-rules.md`). **Not in the story and no org to read it from?** It
      names the projects, so ask the human once before scaffolding if one is available (`vela-grill`);
-     otherwise scaffold with a flagged assumption, list it as an open question, and state in the Gate
+     otherwise scaffold with a flagged assumption - a placeholder that can't pass for real, e.g.
+     `--prefix tbd` - list it as an open question, and state in the Gate
      that apply is blocked until the prefix and solution are confirmed.
    - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
      with the same value. Record whether the behaviour needs the value to actually differ (compare with
@@ -70,7 +71,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
    S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -
    one line per section for a simple story.
-4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold`.
+4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
+   is a **business decision only the human can make** (what a story term means, which record drives
+   which, the rule itself): then use `vela-grill` first, and resume here with the answers.
 
 ## Rationalizations (excuse → rebuttal)
 

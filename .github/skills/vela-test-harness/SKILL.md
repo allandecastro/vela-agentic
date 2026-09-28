@@ -29,7 +29,8 @@ Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering
   attribute, Associate/Disassociate matching, bulk `*Multiple`;
 - on **Update**: a column **not sent** vs a column **cleared** (sent as null) - they are different
-  (`ctx.Request.Target` only holds the columns that were sent).
+  (`ctx.Request.Target` only holds the columns that were sent). For a column that can't be cleared
+  (e.g. `statecode`), test "sent with the same value" instead.
 A single happy-path test does not satisfy the gate.
 
 **Pick the runner by what the case proves** (`references/harness-api.md`): `PluginContext...Execute`

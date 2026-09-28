@@ -39,4 +39,5 @@ default 'Created via Vela plugin'."
 ## Planted-violation check (adversarial)
 Confirm the review would **BLOCK** each of: (a) the defaulting logic copy-pasted into a second
 class (DRY - Required); (b) a hand-created plugin class instead of `vela add step` (Required);
-(c) the step registered **Async** (spec/Approach mismatch - Required).
+(c) the step registered **Async** (**Critical**: the Target edit is lost - the default is never saved;
+also a spec/Approach mismatch).

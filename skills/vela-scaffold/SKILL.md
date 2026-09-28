@@ -52,7 +52,8 @@ Announce: `Using vela-scaffold to <purpose>`.
      existing plugin (coherent registration) unless the concern is genuinely separate.
    - **Reuse** an existing plugin/step/service when the behaviour is already there - don't duplicate (DRY).
 4. **Existing project?** Find the `.csproj` first, then add the component:
-   - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
+   - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes A,B]`
+     (pass the **model property** names - `Name`, not the logical name `name`, which generates `e => e.name`)
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
      (`--prefix` is accepted though `vela add --help` does not list it)
@@ -92,6 +93,8 @@ Announce: `Using vela-scaffold to <purpose>`.
      `vela models` regenerates them if your code uses them.
    - Demos never count as "a table that already has a plugin" for the reuse rule.
 7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
+   Line endings: the scaffold writes **CRLF** files. Keep CRLF when you edit them (or configure your
+   editor/git), or every edited file shows up as a whole-file diff in review.
 8. Summarise what was generated and the next skill in the loop.
 
 ## Rationalizations (excuse → rebuttal)
@@ -111,7 +114,7 @@ Announce: `Using vela-scaffold to <purpose>`.
 - You are about to hand-edit a generated file (`Models/Generated`, compiler output).
 - The Canvas says PreOperation but the scaffolded step still says `.PostOperation()`.
 - The scaffold's demo plugins / Custom APIs are still in a project headed for `vela apply`.
-- Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (gitignored).
+- Prefix is `Vela` (rejected) or a committed file is named `*.generated.cs` (often gitignored).
 - You guessed a flag instead of reading `--help`.
 - You accepted the generated `FilterOn` without checking it: a placeholder (`e => e.Id`, VELA001), an
   echoed lowercase attribute (`e => e.name`), or an auto-picked non-primary column (`e => e.caseage`)

@@ -63,8 +63,10 @@ Critical, easy-to-get-wrong facts:
 - `.Execute(...)` takes a **plugin instance**: `new <Plugin>(string.Empty, string.Empty)`. (A generic
   `.Execute<TPlugin>()` exists but needs a public parameterless ctor, which generated plugins don't
   have - `CS0310`. Pass an instance.)
-- `.Execute(...)` **ignores `FilterOn`**: it always runs the handler. Test "fires / does not fire" with
-  `PluginPipeline` (above).
+- `.Execute(...)` **ignores `FilterOn` - and the registered stage/mode**: it always runs the handler.
+  A step wrongly registered Async/PostOperation still "passes" an `Execute` test; only the pipeline
+  (which persists what the step really does) shows the edit is lost. Test "fires / does not fire" and
+  "the value is actually saved" with `PluginPipeline` (above).
 - The ctor is `(unsecureConfig, secureConfig)` - pass `string.Empty, string.Empty` when unused.
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.

@@ -49,8 +49,8 @@ Announce: `Using vela-code-review to review the change`.
 - **Now - self-review (default):** the builder runs this checklist against its own diff. Cheap,
   single-agent, always available.
 - **Upgrade - isolated reviewer (`vela-reviewer` agent):** dispatch the **`vela-reviewer`** agent
-  (read-only, no shell) given only the diff **text pasted into its prompt** + the Vela Canvas (**not** the
-  build's session history), so its judgement is not anchored by the author's context. Optionally
+  (read-only, no shell) given only the diff **text pasted into its prompt** + the Vela Canvas + the
+  test runner's RED/GREEN summary lines + the Run trace (**not** the build's session history), so its judgement is not anchored by the author's context. Optionally
   run the two axes as two separate reviewers so one cannot mask the other. This is a **scoped
   review agent**, not `vela-builder` re-invoking itself - it does not violate "an agent applies
   skills, it does not orchestrate other personas."

@@ -27,7 +27,7 @@ kind: vela-canvas
 slug: account-default-description
 date: 2026-09-25
 status: proposed          # proposed | approved | superseded
-entity: account
+entity: account           # the table the step is registered on (may differ from the table it writes)
 # One step: use the scalar fields below. A multi-step plugin uses a `steps:` list instead, e.g.
 #   steps:
 #     - {message: Create, stage: PreOperation, mode: Synchronous, filter: [name], handler: OnExecute, images: []}
@@ -36,8 +36,8 @@ entity: account
 message: Create
 stage: PreOperation        # set the default on ctx.Request.Target before the write
 mode: Synchronous
-filtering_attributes: [name]
-images: []
+filtering_attributes: [Name]   # model property names (as FilterOn / --filtering-attributes take them)
+images: []                # e.g. [{pre: [statecode]}, {post: [statecode, parentcustomerid]}]
 # A Custom API replaces message/stage/mode/filtering_attributes/images with:
 #   custom_api: {unique_name: <pfx>_<Name>, binding: global | bound:<entity>, kind: action | function,
 #                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
@@ -49,8 +49,10 @@ acceptance_cases:
   - "empty Description -> defaulted to 'Created via Vela plugin'"
   - "whitespace Description -> defaulted"
   - "non-empty Description -> left untouched"
-assumptions:
-  - "'empty' means null or whitespace."
+decisions:                # business decisions and who made them (vela-grill answers)
+  - {by: human, what: "'empty' means null or whitespace"}
+assumptions:              # platform facts relied on, not decided by the human
+  - "Create PreOperation edits of ctx.Request.Target are persisted with the record."
 open_questions: []
 skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-test-harness, vela-code-review]
 ---
@@ -84,6 +86,9 @@ FilterOn); applicable gotchas; no secrets in code; stop before apply.>
 ```
 
 ## Build Report (deploy gate - the Canvas grown, with evidence)
+
+The Build Report keeps every Canvas front-matter key (acceptance_cases, decisions, assumptions,
+solution, publisher_prefix, ...) and adds the build keys below; only `kind` changes.
 
 ```markdown
 ---
