@@ -16,7 +16,10 @@ apply gate.**
 Check the diff against the **Vela Canvas** (Requirements/DoD, acceptance cases, and the Approach/
 Structure decisions):
 
-- Every declared acceptance case is actually implemented and has a passing test.
+- Every declared acceptance case is actually implemented and has a passing test. (An isolated
+  reviewer has no shell: the dispatcher includes the test runner's summary lines with the diff.)
+- **Drift from the Canvas** - behaviour, a write, or a decision the Canvas does not record - is
+  **Required** (fix the Canvas first, then the code); an unplanned write to the org is **Critical**.
 - Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post). For a Custom
   API: global/bound, Action/Function, parameters and error cases match the Canvas.
 - The Canvas's **Approach** decisions were honoured: **Sync vs Async** is appropriate for the
@@ -55,7 +58,7 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   Create, Async only at PostOperation; Create/Update has a `FilterOn`.
 - **Execution order:** rank-sharing with Microsoft/managed steps is NOT a finding (normal, harmless).
   Only flag missing/ambiguous ordering among *our own* steps on the same table+message+stage.
-- **SOLID / DRY:** `OnExecute` is thin (SRP) with real logic in a service where it earns it; no
+- **SOLID / DRY:** every handler (`OnExecute`, `Handle<Message>`) is thin (SRP) with real logic in a service where it earns it; no
   logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
   service extracted for a trivial one-liner.
 - **Stage:** a PostOperation step that `Update`s its own primary record where a PreOperation edit of
@@ -70,7 +73,11 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
   self-trigger it hides is the **Critical** one).
 - **Secrets:** none in code or unsecure configuration - secure configuration or a secret store.
   A secret in code is **Critical**.
-- **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions.
+- **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions. A
+  PreOperation edit that writes a column only when its value actually changes (writing an unchanged
+  value adds it to the save and can fire other steps) - Nit unless the Canvas requires otherwise.
+- **Reused plugin whose name no longer fits** (e.g. `AccountDefaultDescription` now also uppercases the
+  number): a Nit - renaming the class re-registers the plugin type; record the decision in the Canvas.
 
 ## Output
 

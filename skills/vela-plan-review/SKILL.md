@@ -42,7 +42,13 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
      components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
      it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas
-     (see `references/registration-rules.md`).
+     (see `references/registration-rules.md`). **Not in the story and no org to read it from?** It
+     names the projects, so ask the human once before scaffolding if one is available (`vela-grill`);
+     otherwise scaffold with a flagged assumption, list it as an open question, and state in the Gate
+     that apply is blocked until the prefix and solution are confirmed.
+   - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
+     with the same value. Record whether the behaviour needs the value to actually differ (compare with
+     `ctx.PreImage`) and write only when it changes.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (registration throws without one); on Create it's ignored at runtime, so keep
      the primary column and never drop it.

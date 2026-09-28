@@ -51,6 +51,10 @@ for this run.
       as soon as the Vela Canvas exists (right after Challenge, step 3), so the work is isolated
       and the spec is visible from the start (`gh pr create --draft`). The PR body grows from the
       Canvas into the Build Report.
+    - **New solution (no repository yet):** draft the Canvas outside the project, then `vela init` →
+      `git init` → commit the untouched scaffold (the review base) → create the branch → remove the
+      demos and move the Canvas into `docs/vela-builds/<slug>.md` as the first commits on the branch,
+      so both are in the reviewed diff.
     - Mark it **ready for review** only once the agents are done: harness green, analyzers clean,
       and the reviewer's Critical/Required findings all resolved (`gh pr ready`). Body = the Build
       Report; the artifact is committed under `docs/vela-builds/<slug>.md`. No AI attribution on the
