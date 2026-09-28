@@ -58,7 +58,10 @@ independent of the framework/CLI NuGet releases.
 - [x] Iteration 1 (2026-09-28): the five new scenarios run by fresh agents, all **fail** - 6 distinct
       blockers (Execute ignores FilterOn, dotnet pack emits no assembly, no sanctioned stage edit, the
       review blocked the no-org stand-in, Function for a flow-called API) fixed; records in `evals/runs/`
-- [ ] Iteration 2: re-run the five scenarios against the fixed skills, iterate to a clean pass = "ready"
+- [x] Iteration 2 (2026-09-28/29): the five scenarios **pass** blind (no blocking finding); their minor
+      findings fixed; records in `evals/runs/*.iter2.md`
+- [ ] Run `ambiguous-story-grill` (new); re-run the older baseline scenarios against the current skills
+- [ ] A dev org for evals, to cover `vela-models` and a real `vela plan`
 
 ## Backlog
 
