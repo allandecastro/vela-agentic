@@ -74,7 +74,18 @@ independent of the framework/CLI NuGet releases.
 - [x] The isolated `vela-reviewer` is the default review path; self-review is a labelled fallback
 - [x] `scripts/check.sh` = the CI, run locally by a pre-push hook (`git config core.hooksPath .githooks`)
 
-## Backlog
+## Next - from "passes" to "guaranteed"
+
+- [ ] **Hidden criteria:** the acting agent gets only the story + setup; the scenario's expected outcome
+      and planted violations stay with the evaluator
+- [ ] **Separate grader:** a second agent judges the produced artifacts against the scenario, citing
+      evidence - the actor no longer writes its own verdict
+- [ ] **Deterministic checks** per scenario (`evals/checks/<scenario>.sh`), re-run by the evaluator on the
+      produced project: build, the test suite, the registration (stage, filter, images), forbidden
+      patterns, `plan.json` operations - objective and repeatable
+- [ ] **Repeated runs:** N runs per scenario, a recorded pass rate; "ready" = every run passes
+- [ ] Run records pin the vela CLI, framework and model versions
+
 
 - [x] Gotcha scenarios (association, typed images, bulk UpdateMultiple) pass blind (association = the
       agent reports the Vela limit and stops); deep insert is a caller-side gotcha, not a plugin scenario
