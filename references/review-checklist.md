@@ -18,6 +18,13 @@ Structure decisions):
 
 - Every declared acceptance case is actually implemented and has a passing test. (An isolated
   reviewer has no shell: the dispatcher includes the test runner's summary lines with the diff.)
+- **RED evidence:** the Run trace shows the tests failing before the implementation for the right
+  reason, then passing; every acceptance case has a test that would fail if the behaviour broke (not
+  a test that passes whatever the code does - e.g. a "does not fire" case run with `Execute`).
+- **Canvas consistency:** the Canvas agrees with itself (DoD vs acceptance cases, status) and with the
+  Run trace (the commands it names were the ones run) - Nit, or Required if a decision is contradicted.
+- **Unconfirmed solution / publisher prefix** (a flagged assumption): not a code finding - it must be
+  listed as an open question that blocks the apply gate; Required if it is not.
 - **Drift from the Canvas** - behaviour, a write, or a decision the Canvas does not record - is
   **Required** (fix the Canvas first, then the code); an unplanned write to the org is **Critical**.
 - Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post). For a Custom

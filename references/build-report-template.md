@@ -85,6 +85,9 @@ FilterOn); applicable gotchas; no secrets in code; stop before apply.>
 
 ## Build Report (deploy gate - the Canvas grown, with evidence)
 
+The Build Report keeps every Canvas front-matter key (acceptance_cases, decisions, assumptions,
+solution, publisher_prefix, ...) and adds the build keys below; only `kind` changes.
+
 ```markdown
 ---
 kind: vela-build

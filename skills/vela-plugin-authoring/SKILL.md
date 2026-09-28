@@ -31,7 +31,8 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 2. **Model first for any non-demo attribute.** The scaffold's generated model only covers
    demo columns (and is `sealed` - no partial extension). If the story touches any other
    attribute, run `vela-models` first - do not fall back to a magic string. MODEL precedes
-   IMPLEMENT for this reason. **No-org exception (evals/rehearsals only):** when `vela-models`
+   IMPLEMENT for this reason. **No-org exception (evals/rehearsals only) - done at MODEL, before the
+   RED tests** (they must compile against the property): when `vela-models`
    genuinely cannot run, hand-add just the needed typed property with an explicit
    `// STAND-IN for vela-models (no org)` comment. Because the generated model is `sealed` (no
    partial extension), this **does** mean editing the generated model file in place - that is the

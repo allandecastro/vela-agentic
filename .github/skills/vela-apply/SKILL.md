@@ -33,7 +33,9 @@ Announce: `Using vela-apply to <purpose>`.
    **Build it last.** Every Release build that includes the plugin project - including building the
    test project - repacks the package with a **new hash** even without a source change (verified). Run
    the tests first, then this build, then nothing else before `plan`; the human applies that file
-   without rebuilding, after checking the hash.
+   without rebuilding, after checking the hash. (Committing the Build Report afterwards is expected:
+   it changes docs only, and the package - which stamps the commit it was built from - stays the one
+   recorded by its hash.)
    **Only what the Canvas asks for may be in it:** the scaffold's demo plugins and Custom APIs (e.g. an
    Account create step, `Ping`) are registered too if they are still in the project - remove them
    for a real project (`vela-scaffold`).
