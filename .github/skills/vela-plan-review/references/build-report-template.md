@@ -30,8 +30,9 @@ status: proposed          # proposed | approved | superseded
 entity: account
 # One step: use the scalar fields below. A multi-step plugin uses a `steps:` list instead, e.g.
 #   steps:
-#     - {message: Create, stage: PostOperation, mode: Synchronous, filter: [name]}
-#     - {message: Update, stage: PreOperation,  mode: Synchronous, filter: [description]}
+#     - {message: Create, stage: PreOperation, mode: Synchronous, filter: [name], handler: OnExecute, images: []}
+#     - {message: Update, stage: PreOperation, mode: Synchronous, filter: [description], handler: HandleUpdate,
+#        images: [{pre: [accountnumber]}]}
 message: Create
 stage: PreOperation        # set the default on ctx.Request.Target before the write
 mode: Synchronous
@@ -87,13 +88,14 @@ FilterOn); applicable gotchas; no secrets in code; stop before apply.>
 ```markdown
 ---
 kind: vela-build
+date: 2026-09-25
 slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
 vela_cli: 0.19.6
 framework: 0.28.2
-packages: [Zava.Plugins.1.0.0.nupkg]
+packages: [zava.Plugins.1.0.0.nupkg]   # the plugin package only (not an Integrations package)
 package_sha256: <sha256 of the previewed package>
 signed: no                # yes | no (a human signs before apply) | n/a (org does not require it)
 harness: pass             # pass | fail  (must be pass to reach the gate)

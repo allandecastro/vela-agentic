@@ -35,8 +35,9 @@ Ask the human for the trace instead (step 2).
 Announce: `Using vela-debug-plugin to <purpose>`. Follow a disciplined loop - reproduce →
 minimize → hypothesize → instrument → fix → regression-test - not trial and error.
 
-1. **State the symptom precisely:** message, entity, stage, mode, what the user did, expected vs
-   observed. Missing a piece? Ask for it in one question.
+1. **State the symptom precisely:** message, entity, stage and mode come from the code
+   (`RegisterPluginSteps()`); from the human only what they did, expected vs observed. Missing a
+   piece? Ask for it in one question.
 2. **Get the runtime evidence when the fault is on a live org.** Ask the human for the Plug-in Trace
    Log row(s) of the failing operation, and say exactly what to paste:
    - where: Power Apps → *Advanced settings* → *Settings* → *Plug-in Trace Log* (or the Plugin
@@ -55,7 +56,8 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    cannot reproduce a step that never fires. **No org at all?** Reproduce from the symptom
    description alone; that is the normal path, not a degraded one. If the repro is unexpectedly
    green, the test is not exercising the registration yet - switch to the pipeline before concluding.
-4. **Minimize.** Strip the case to the smallest input that still fails.
+4. **Minimize.** Strip the case to the smallest input that still fails. A debug run adds the repro
+   plus any directly related regression case - not the full coverage set of a new build.
 5. **Hypothesize** from the registration and the evidence, against the usual suspects in
    `references/dataverse-gotchas.md`:
    - filtering attribute excludes the changed attribute (step never fires),

@@ -38,7 +38,8 @@ Announce: `Using vela-scaffold to <purpose>`.
    customization prefix** (see `references/registration-rules.md`); it must match, otherwise
    `vela apply --solution` rejects
    the unique names later. The target solution + publisher must already exist in the org (Vela
-   does not create them). This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
+   does not create them). Prefix unknown and no org to read it from? Follow `vela-plan-review`
+   (ask once, or a flagged assumption that blocks the apply gate). This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
    `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
    `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
    `--no-integrations` / `--no-tests`). **Generated models live in
@@ -54,6 +55,7 @@ Announce: `Using vela-scaffold to <purpose>`.
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
+     (`--prefix` is accepted though `vela add --help` does not list it)
      (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
      `vela-custom-api` first
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
@@ -72,10 +74,23 @@ Announce: `Using vela-scaffold to <purpose>`.
    not merely that it builds.
    - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
-6. **Real project: remove the scaffold's demos.** `vela init` adds demo plugins and Custom APIs (an
-   Account create step that creates a task, `Ping`, ...) and their tests. They ship in the package and
-   `vela apply` would register them. Delete them (keep what the Canvas asks for). They also don't count
-   as "a table that already has a plugin" for the reuse rule.
+6. **Real project: no demos in what you ship.**
+   - **Integrations project - keep it only for outbound flows.** It is where plugins that call
+     another system (HTTP API, queue, Azure...) live, and it builds its own package. The Canvas
+     decides (`vela-plan-review`, "Structure - outbound integration?"): **no outbound flow detected →
+     `--no-integrations`**; an outbound flow → keep it, remove its demos, and preview both packages.
+     `--no-console` unless the Canvas needs the console app.
+   - Then delete the demos `vela init` adds (verified list, 0.19.6) and their tests:
+     `<Prefix>.Plugins/Account/{CustomApis/AccountEstimateValueCustomApi, Plugins/AccountMessageReference,
+     Plugins/AccountPostCreatePlugin, Plugins/AccountRelatedContactsPlugin, Services/AccountFollowUpService}`,
+     `<Prefix>.Plugins/Contact/{CustomApis/ContactValidateCustomApi, Plugins/ContactRouterPlugin,
+     Services/ContactDuplicateService}`, `<Prefix>.Plugins/GlobalCustomApis/PingCustomApi`,
+     `<Prefix>.Shared/Services/{GreetingService, IGreetingService}`, the matching files under
+     `tests/<Prefix>.Plugins.Tests/` (including `Security/SecurityExampleTests`), and - if kept - the
+     Integrations demos (`AccountReconcileCustomApi`, `AccountSyncRouterPlugin`, `ContactExportCustomApi`,
+     `ContactSyncPlugin`, `IntegrationHeartbeatCustomApi`) and their tests. Keep the demo *models* until
+     `vela models` regenerates them if your code uses them.
+   - Demos never count as "a table that already has a plugin" for the reuse rule.
 7. **Build** to prove it compiles: `dotnet build`. Report the exact output.
 8. Summarise what was generated and the next skill in the loop.
 
@@ -109,4 +124,5 @@ Announce: `Using vela-scaffold to <purpose>`.
 ## Verification
 
 - `dotnet build` succeeds - paste the output.
-- The generated component is present where the CLI reported it, unedited.
+- The component is present where the CLI reported it; its only edits are the ones step 5 calls for
+  (stage/context type, `FilterOn`) - the logic comes later, in `vela-plugin-authoring`.

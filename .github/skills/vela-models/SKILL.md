@@ -26,10 +26,14 @@ Announce: `Using vela-models to <purpose>`.
 2. **Choose a scope - it is required.** One of `--solution <name>`, `--entities a,b`,
    `--custom-apis`, `--messages`, `--roles`, `--solution-roles`. The command refuses to
    generate every table.
-3. Resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
+3. **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
+   run, and use the labelled no-org stand-in described in `vela-plugin-authoring` step 2 - never on a
+   real run. Otherwise resolve the connection (see `references/cli-surface.md`): interactive `-i` for a dev org,
    or connection string / client secret for automation.
 4. Generate:
-   - C# early-bound (default): `vela models --entities account,contact -i`
+   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
+     (without `--out` the files land in the current directory; the scaffold keeps models in
+     `<Prefix>.Shared/Models/Generated`)
    - TypeScript: add `--forms` and/or `--tables`.
    - Large orgs: pass `--timeout <minutes>`.
 5. **Verify mode** (no write): `vela models --verify ...` - exit `5` means drift.

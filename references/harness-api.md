@@ -104,8 +104,19 @@ When the handler uses an org service (e.g. `ctx.GetRequiredService<IOrganization
 - `vela add test <Name> --kind customapi` generates the minimal shape (`PluginContext.ForMessage("<prefix>_<Name>").Build()`, no org service); add `.WithOrganizationService(crm)` only if the handler needs it.
 - **Typed / bound** Custom APIs are tested the same way, with the **plain parameter names**:
   `InputParameters["Factor"] = 2m` → `OutputParameters["Total"]` (verified, 0.28.2).
-- A missing required input should throw `InvalidPluginExecutionException` - test it:
+- The harness does **not** enforce `optional: false`: the handler must check the input and throw
+  itself. A missing required input should throw `InvalidPluginExecutionException` - test it:
   `Assert.Throws<InvalidPluginExecutionException>(() => api.Execute(context.ServiceProvider))`.
+
+Trigger and image signatures (`PluginContextBuilder<T>`): `.OnCreate()` / `.OnUpdate()` / ...,
+`.Stage(PluginStages x)` (`Vela.Constants`), `.Mode(ExecutionMode x)` (`Vela.Steps`) or `.Sync()` /
+`.Async()` - the stage alone is usually enough to match the step - and `.WithPreImage(entity, alias)` /
+`.WithPostImage(entity, alias)`.
+
+Reading traces and the execution log: `ctx.Trace(...)` lines land in `builder.TraceCapture.Traces` (a
+`RecordingTracingService`) and, for a pipeline, `pipeline.Trace` (whole cascade). Assert on them or on
+`pipeline.ExecutionLog` (`Assert.Single` / `Assert.Empty`), or print with `Console.WriteLine` -
+`ITestOutputHelper` output is not shown by the Mono console runner for passing tests.
 
 Builder methods you'll use: `WithTarget`, `WithPreImage`, `WithPostImage`, `WithPrimaryEntity`,
 `WithOrganizationService(crm)` (also `WithUserService`, `WithSystemService`),

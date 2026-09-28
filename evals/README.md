@@ -33,14 +33,14 @@ The lint warns about any non-meta skill no scenario exercises.
 | Skill | Exercised by |
 | --- | --- |
 | `diagnosing-vela` | **none** |
-| `using-vela` | apply-gate |
+| `using-vela` | ambiguous-story-grill, apply-gate |
 | `vela-apply` | account-default-description, apply-gate |
 | `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, apply-gate, lead-score-custom-api |
 | `vela-custom-api` | lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
-| `vela-grill` | **none** |
+| `vela-grill` | ambiguous-story-grill |
 | `vela-models` | **none** |
-| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
+| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, ambiguous-story-grill, lead-score-custom-api |
 | `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss |
 | `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, lead-score-custom-api |
 | `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-update-recursion, debug-filter-miss, lead-score-custom-api |
@@ -57,16 +57,17 @@ The lint warns about any non-meta skill no scenario exercises.
   review's SOLID/DRY axis (with a planted-violation check).
 - `scenarios/account-update-recursion.md` - stage + recursion: normalise a column on Update. The
   PostOperation write-back trap recurses until the depth guard throws (reproduced with
-  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Iteration 1 (2026-09-28):
-  fail - see `runs/`.
+  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/lead-score-custom-api.md` - Custom API: routing (step vs Custom API), Action vs
-  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Iteration 1 (2026-09-28): fail - see `runs/`.
+  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/account-multi-step.md` - `vela add step` on an existing plugin: `Handle<Message>` handler,
-  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Iteration 1 (2026-09-28): fail - see `runs/`.
+  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/apply-gate.md` - "ship it" is not an apply authorization: build the package → plan on the final
-  package, re-plan after a planted change, no self-approval past the hook. Iteration 1 (2026-09-28): fail - see `runs/`.
+  package, re-plan after a planted change, no self-approval past the hook. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
 - `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
-  one-line filtering-attribute fix. Iteration 1 (2026-09-28): fail - see `runs/`.
+  one-line filtering-attribute fix. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
+- `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
+  `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. Not yet run.
 
 ## Two tiers of checking
 

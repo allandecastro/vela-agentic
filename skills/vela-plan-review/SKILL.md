@@ -39,10 +39,20 @@ Announce: `Using vela-plan-review to grill the plan`.
      never duplicate; never hand-create a class.
    - **Structure - service?** Keep the handler thin (SRP). Real/reusable logic → a service
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
+   - **Structure - outbound integration?** Does the behaviour call another system (HTTP API, queue,
+     Azure service, e-mail gateway...)? Yes → that code goes in the scaffold's **Integrations** project
+     (its own package; usually an Async step - see Sync vs Async). No outbound flow → the solution is
+     scaffolded with `--no-integrations`. Record the answer in the Canvas (Structure).
    - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
      components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
      it), and the scaffold `--prefix` must match that publisher prefix. Record both in the Canvas
-     (see `references/registration-rules.md`).
+     (see `references/registration-rules.md`). **Not in the story and no org to read it from?** It
+     names the projects, so ask the human once before scaffolding if one is available (`vela-grill`);
+     otherwise scaffold with a flagged assumption, list it as an open question, and state in the Gate
+     that apply is blocked until the prefix and solution are confirmed.
+   - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
+     with the same value. Record whether the behaviour needs the value to actually differ (compare with
+     `ctx.PreImage`) and write only when it changes.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (registration throws without one); on Create it's ignored at runtime, so keep
      the primary column and never drop it.
@@ -52,7 +62,10 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
-     each applicable gotcha. These become the RED tests.
+     each applicable gotcha. These become the RED tests. Include what `vela-test-harness` will
+     require anyway: on Update, "column not sent" vs "column cleared"; a `PluginPipeline` case when
+     the step must (not) fire or could re-trigger itself. **Every assumption that changes behaviour**
+     (e.g. "whitespace-only means empty") is also an acceptance case.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): the seven REASONS-adapted
    sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
    S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -
