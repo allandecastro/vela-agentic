@@ -7,9 +7,23 @@ symptom → cause → fix.
 
 ## Registration & steps
 
-- **Associate / Disassociate steps not firing.** These messages are not tied to a single
-  primary entity; a step matched by primary entity alone silently never runs. Match the
-  message regardless of primary entity.
+- **Associate / Disassociate steps not firing.** In Dataverse these messages have a **single message
+  filter: primary entity `none`** (verified on a dev org: `sdkmessagefilters` for Associate = 1,
+  primary `none`). A step must be registered on the message with no primary entity; one matched by a
+  primary entity never runs. **Vela 0.29.3 limit:** `RegisterStep().OnAssociate()` on
+  `EntityPluginBase<T>` binds the step to `T`'s table (`GetStepDefinitions()` → `EntityLogicalName =
+  contact`), there is no message-only registration, and `vela plan` accepts it without a diagnostic.
+  (Re-check on each framework release: scaffold an `OnAssociate()` step and look at
+  `GetStepDefinitions()` / `vela plan` - if the entity is `none`, the limit is gone.)
+  Until Vela supports it, **an Associate/Disassociate story cannot be delivered safely with Vela**:
+  record it in the Canvas as blocked (framework limit) and stop before scaffolding - don't ship a
+  per-table workaround. (Marketing lists: adding members from the UI may raise `AddMember` /
+  `AddListMembers` rather than Associate - confirm which message the story really needs.)
+- **Bulk messages (`CreateMultiple` / `UpdateMultiple`) and single-record steps.** The pipelines are
+  merged: for an UpdateMultiple request Dataverse also runs the Update steps per row (framework doc),
+  and in the harness a single Update fired an UpdateMultiple step. Register the logic on **one** of
+  them (UpdateMultiple for one execution per batch; Update when per-row context is needed) - not both,
+  or it runs twice. A bulk handler iterates `ctx.Request.Targets` and never writes per record.
 - **Create/Update step never triggers on the change you expect.** A filtering attribute
   excludes the attribute that actually changed. Check the filtering attributes against the
   attribute being written.

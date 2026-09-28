@@ -95,7 +95,19 @@ private void HandleUpdate(IUpdatePostContext<Account> ctx) { /* TODO */ }
 ## Handler context
 
 Context type per message: `ICreatePostContext<T>` / `ICreatePreContext<T>`, and the same for
-Update/Delete. Custom `OnMessage` handlers get `ILocalPluginContext`.
+Update/Delete. Custom `OnMessage` handlers get `ILocalPluginContext`. (Generated plugin files don't
+import `Microsoft.Xrm.Sdk` - add `using Microsoft.Xrm.Sdk;` when you use `Money`, `EntityReference`...)
+
+- **Bulk (`IUpdateMultiplePreContext<T>` / `ICreateMultiple...`, verified 0.29.3):** `ctx.Request` is the
+  plain SDK `UpdateMultipleRequest` - there is **no** `.Target`; the batch is `ctx.Request.Targets.Entities`
+  (untyped `Entity`, also `ctx.BulkTargets`). `e.ToEntity<Account>()` shares the attribute collection,
+  so editing the typed copy in PreOperation edits the target:
+  `foreach (var e in ctx.Request.Targets.Entities) { var a = e.ToEntity<Account>(); a.Name = a.Name?.Trim(); }`
+  Never call `Update` per record inside the loop.
+- **Associate / Disassociate (`IAssociatePostContext<T>`...):** `ctx.Request.Target` (an
+  `EntityReference`), `ctx.Request.Relationship.SchemaName`, `ctx.Request.RelatedEntities`. Check the
+  relationship name and the entity types before acting. See the registration limit in
+  `dataverse-gotchas.md` first.
 
 - **Read (and change) the target: `ctx.Request.Target`** - the typed context's `Request` is the current
   message as a typed request (`CreateRequest<Account>`, `UpdateRequest<Account>`) **over the live

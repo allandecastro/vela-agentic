@@ -19,6 +19,13 @@ Run **autonomously from Intake up to and including the preview** (steps 1-10: lo
 `vela apply` and never pass `--auto-approve` unless the user explicitly authorizes an unattended apply
 for this run.
 
+## Blocked stories
+
+If plan-review (or a gotcha) says a story **cannot be delivered safely** - e.g. a framework limit -
+stop there: set the Canvas `status: blocked`, fill its **Hand-off** section (what blocks, the evidence,
+what would unblock it, open questions for the human), and hand it over. No scaffold, no draft PR, no
+package. A blocked story is a correct outcome, not a failure to work around.
+
 ## Operating loop
 
 1. **Intake.** Turn the story into a concrete spec: entity, message, stage, mode, images,

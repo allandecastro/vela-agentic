@@ -30,7 +30,7 @@ Structure decisions):
 - **Drift from the Canvas** - behaviour, a write, or a decision the Canvas does not record - is
   **Required** (fix the Canvas first, then the code); an unplanned write to the org is **Critical**.
   When a finding is both drift and "will misbehave on a live org", the higher one wins: **Critical**.
-- **Target edits that are lost:** editing `ctx.Request.Target` in a **PostOperation or Async** step
+- **Target edits that are lost:** editing `ctx.Request.Target` (or the bulk `ctx.Request.Targets`) in a **PostOperation or Async** step
   changes nothing that is saved - **Critical** (the behaviour silently does not happen).
 - Message / stage / mode match the Canvas (Create vs Update vs *Multiple; Pre vs Post). For a Custom
   API: global/bound, Action/Function, parameters and error cases match the Canvas.
@@ -46,7 +46,10 @@ Structure decisions):
 Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-gotchas.md`):
 
 - **Registration:** Create/Update step has a `FilterOn(...)` (mandatory) and it names the right
-  attribute for Update; Associate/Disassociate matched by **message**, not by primary entity.
+  attribute for Update; an Associate/Disassociate step bound to a table (all Vela 0.29.3 Associate
+  steps are) - **Critical** (never fires; see gotchas); bulk: the same logic on both Update and
+  UpdateMultiple - **Required**; a per-record write inside a bulk handler - **Required**, **Critical** if
+  it re-triggers the step (see Recursion). Associate/Disassociate matched by **message**, not by primary entity.
 - **Images:** any image the handler reads is actually registered for that message/stage with the
   needed attributes.
 - **Custom API** (severities): a dot in a parameter/unique name - **Critical** (uncallable on a real

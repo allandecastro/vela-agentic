@@ -70,9 +70,26 @@ Critical, easy-to-get-wrong facts:
 - The ctor is `(unsecureConfig, secureConfig)` - pass `string.Empty, string.Empty` when unused.
 - Do **not** chain `.OnUpdate().Stage().Mode()` for a single-step plugin; it auto-derives.
   Only restate the trigger for multi-step plugins.
-- **Bulk (`*Multiple`) tests:** the builder has no `.OnCreateMultiple()` - use
-  `.OnMessage("CreateMultiple")` / `.OnMessage("UpdateMultiple")` with `.Stage(PluginStages.PostOperation).Async()`
-  and seed the batch via `WithTargets(...)` (or `WithInputParameter("Targets", ...)`).
+- **Bulk (`*Multiple`) tests** (verified, 0.29.3): seed the batch with `WithTargets(...)` - for a
+  single-step plugin that alone is enough (the trigger is derived); otherwise state it with the stage
+  **the step is registered at**, e.g. `.OnMessage("UpdateMultiple").Stage(PluginStages.PreOperation)`
+  (a stage that doesn't match gives "has no registered step matching message 'UpdateMultiple'").
+  `WithTargets(params T[])` keeps your instances, so assert on them. To prove what is saved, use the
+  pipeline: `p.Service.Execute(new UpdateMultipleRequest { Targets = ... })` fires the step once for
+  the batch; a single `p.Service.Update(...)` fires an UpdateMultiple step too (merged pipeline).
+- The test `vela add test` generates for a `*Multiple` plugin uses `WithTarget(...)` - replace it with
+  `WithTargets(...)` (a bulk handler sees `ctx.Request.Targets`).
+- **Associate tests** (verified, 0.29.3): declare the relationship, then associate through the pipeline:
+  `PluginPipeline.Empty().Register<P>().WithManyToMany("listcontact_association", "listmember", "list",
+  "listid", "contact", "entityid")...; p.Service.Associate("contact", contactId, new
+  Relationship("listcontact_association"), refs)`. The pipeline fires an Associate step **only when the
+  association's target table is the plugin's table** - test both directions. (A bare `Execute` proves
+  nothing about firing.) The test `vela add test` generates for an Associate plugin (`WithTarget(new
+  Contact ...)`) is meaningless for Associate - replace it with a pipeline test.
+- **Images:** `.WithPreImage(preImage)` - the alias is optional and defaults to the one `ctx.PreImage`
+  reads. `Execute` ignores the image *registration* too (a test passes even if `WithPreImage` was
+  removed from the step); the pipeline builds the pre-image from the seeded row, so an image-dependent
+  case also needs a `PluginPipeline` test.
 - Assert by reading records back from `crm`, not by counting calls.
 - **PreOperation (the usual case - a column of the same record):** assert on the `target` you passed -
   the plugin's edit of `ctx.Request.Target` lands on it - and that `crm` received no extra write

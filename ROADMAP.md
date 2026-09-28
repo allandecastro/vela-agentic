@@ -76,7 +76,8 @@ independent of the framework/CLI NuGet releases.
 
 ## Backlog
 
-- [ ] More gotcha scenarios: association matching, images (typed `partial`), deep insert, bulk `*Multiple`
+- [x] Gotcha scenarios (association, typed images, bulk UpdateMultiple) pass blind (association = the
+      agent reports the Vela limit and stops); deep insert is a caller-side gotcha, not a plugin scenario
 - [ ] Skills for relationships / alternate keys; web resources (`form-script`, `ribbon-script`) once supported
 - [ ] When Vela ships the reported fixes (stage flag on `vela add`, `add step` filtering attributes,
       `Execute` honouring the registration, apply's `summary`, a `vela logs` command, ...): re-verify,

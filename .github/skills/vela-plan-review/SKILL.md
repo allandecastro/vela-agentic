@@ -60,7 +60,15 @@ Announce: `Using vela-plan-review to grill the plan`.
      the primary column and never drop it.
    - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
-   - **Association:** Associate/Disassociate matched by **message**, not primary entity (else never fires).
+   - **Association:** Associate/Disassociate need a message-level registration (primary entity `none`),
+     which Vela 0.29.3 cannot express - record the story as **blocked (framework limit)** and stop; see
+     `references/dataverse-gotchas.md`. Which message the story really means (Associate, or
+     marketing-list `AddMember` / `AddListMembers`, or dynamic lists that raise no event) is a question
+     for the human - ask it (`vela-grill`) or list it as an open question; the pack has no recipe for the
+     marketing-list messages yet, so that path is blocked too.
+   - **Bulk:** `*Multiple` vs single-record message - one of them, never both for the same logic
+     (merged pipelines); record why. A story scoped to "bulk updates" can't stay bulk-only: the step
+     also runs for single Updates - that is a scope point for the human to confirm, listed at the Gate.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
@@ -74,7 +82,10 @@ Announce: `Using vela-plan-review to grill the plan`.
    one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
    is a **business decision only the human can make** (what a story term means, which record drives
-   which, the rule itself): then use `vela-grill` first, and resume here with the answers.
+   which, the rule itself): then use `vela-grill` first, and resume here with the answers. No human
+   reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
+   that blocks the apply gate. A **blocked** outcome (framework limit, story not deliverable) always
+   wins over "continue": set the Canvas `status: blocked` and stop (see the builder's "Blocked stories").
 
 ## Rationalizations (excuse → rebuttal)
 

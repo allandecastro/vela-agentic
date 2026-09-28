@@ -31,6 +31,14 @@ into the skill's own `references/` folder, so the skill stays self-contained onc
 those copies. A skill that cites a reference carries, under its title, the note that `references/`
 paths are relative to the skill's folder (some hosts resolve relative paths against the working directory).
 
+## Framework gaps: report them, don't compensate
+
+The pack is the agent layer on top of Vela; Vela and its CLI are owned upstream. When a capability is
+missing or misbehaves (e.g. Associate can't be registered at message level), don't invent a workaround
+pattern in a skill. State the gap in one or two factual lines (observed behaviour + version), make the
+agent stop or mark the story **blocked** where it matters, and list the gap for the owner, who fixes it
+in Vela / the CLI. When the fix ships, delete the gap note - no compatibility layers.
+
 ## The loop (RED → GREEN → REFACTOR)
 
 1. **RED** - write or pick an eval scenario (`evals/`) and run a fresh subagent against it
