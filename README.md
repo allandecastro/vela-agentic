@@ -46,6 +46,9 @@ safe, **test-first, preview-before-deploy** workflow that stops before writing t
   fresh context, catching what the author is blind to - while a human keeps the final say.
 - **Loop engineering.** The skills themselves are held under test (`evals/`): a fresh agent runs
   a scenario, deviations become skill fixes, repeat until a clean pass.
+- **Agent layer, not a framework patch.** Vela and its CLI are the contract. When a capability is
+  missing, the skills say so and the agent stops (the story is marked **blocked**) - the gap is fixed
+  in Vela, not worked around here.
 
 ## The build loop
 
@@ -183,8 +186,10 @@ Then hand `vela-builder` a user story, the same way as on Claude Code.
 ### Prerequisites
 
 - The `vela` CLI (`dotnet tool install --global Vela.Cli`) and a matching `dotnet` SDK.
-- A Dataverse environment for the `models` / `plan` steps: interactive login locally, or a
-  connection string / client secret for headless and cloud runs (see `AGENTS.md`).
+- A Dataverse environment for the `models` / `plan` steps: `--interactive` with a human at a browser,
+  or headless via `--url` alone with an `az login` session / managed identity (verified), or a
+  connection string / client secret (see `AGENTS.md`).
+- Tests run on Windows with `dotnet test`; on macOS/Linux with Mono + the xunit console runner.
 
 ## Enforcement & observability
 
@@ -193,22 +198,35 @@ all copied from tool output, never estimated), so a run is auditable and replaya
 (`hooks/`, one script wired for Claude Code and GitHub Copilot) makes the deploy gate deterministic:
 it **denies `vela apply`** unless a human started the session with `VELA_APPLY_APPROVED=1` (the agent
 cannot approve itself with an inline prefix). See `hooks/README.md` for
-the per-host wiring and caveats. A CI workflow lints the pack and checks the generated `.github/`
-surface stays in sync.
+the per-host wiring and caveats. `scripts/check.sh` lints the pack, runs the guard's 78 table tests and
+checks every generated surface is in sync; it runs as a local pre-push hook and in CI (same script).
 
 ## Loop engineering
 
-The pack is not written once and trusted. Every skill change is validated against an `evals/`
+The pack is not written once and trusted. Every behaviour change is validated against an `evals/`
 scenario: a fresh agent runs it following the skills to the letter, and each deviation, wrong
 command or missing guardrail is a **skill defect** to fix, then a loophole to close. A scenario is
-"ready" only when it passes with no blocking finding - not on a hunch. See `evals/README.md`.
+"ready" only when it passes with no blocking finding. See `evals/README.md` (scenarios, coverage table)
+and `evals/runs/` (every run, failures included).
+
+**Current state (2026-09-29):** 11 scenarios, every skill covered, all passing - one against a real
+Dataverse dev org (real `vela models` and `vela plan`), plus one real `vela apply` verified end to end.
+
+**What that does and doesn't prove** - today a pass means: one run of a fresh agent, which did not read
+earlier run records, reached the expected outcome and recorded its evidence (build and test output,
+plan JSON). It is **not** yet a guarantee: most scenarios hand the agent their own success criteria,
+the verdict is written by the agent that did the work, and each scenario was run once. The roadmap
+tracks the next step: hidden criteria, a separate grader, deterministic checks re-run on the produced
+project, and repeated runs with a pass rate.
 
 ## Compatibility
 
 Skills target the public `vela` CLI command surface and discover exact flags at runtime, so
-additive CLI changes do not break them. Each skill states a minimum CLI version as a real floor;
-breaking CLI changes are matched by a skill update. See [`ROADMAP.md`](ROADMAP.md) for the policy
-and what is planned.
+additive CLI changes do not break them. Each skill states its floor in `compatibility`
+(currently **vela 0.21.0 / Vela.Plugins 0.29.1**, also exercised on 0.29.3); the verified version is in
+`references/cli-surface.md` and CI refuses a floor above it. Known framework limits are documented
+where they matter (e.g. Associate/Disassociate can't be registered at message level yet, so such
+stories are reported as blocked). See [`ROADMAP.md`](ROADMAP.md) for the policy and what is planned.
 
 ## Contributing
 
