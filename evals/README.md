@@ -78,6 +78,35 @@ The lint warns about any non-meta skill no scenario exercises.
 - `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Iteration 1 fail (wrong bulk
   test recipe, bulk handler shape and bulk gotchas missing) - fixed; **iteration 2: pass**.
 
+## Guaranteed runs (hidden criteria, separate grader, deterministic checks, N runs)
+
+A single self-graded run is not evidence. A **campaign** runs every scenario **N = 3 times**, and each
+run has four independent parts:
+
+1. **Setup (deterministic):** where a scenario starts from a project, `evals/setup/<name>.sh <work>`
+   builds it (e.g. `baseline.sh` = the reviewed account-default-description; `debug-filter-miss.sh` =
+   the project with the planted bug).
+2. **Actor (hidden criteria):** a fresh agent receives only `python3 evals/tools/brief.py <scenario>`
+   (the Context / User story / Setup sections) and the work dir - never the expected outcome, the
+   planted violations, the scripted human answers or earlier run records. Human questions and scripted
+   user messages are delivered by the evaluator during the run.
+3. **Deterministic checks:** `python3 evals/checks/check.py <scenario> <work> [--org <url>]` re-verifies
+   the result against `evals/checks/<scenario>.json`: rebuild, **the evaluator's own test run**, the
+   registration read from the compiled dll (`evals/tools/probe`), the package, forbidden / required
+   source patterns, the Canvas, and (org scenarios) a read-only `vela plan`.
+4. **Grader (separate agent):** reads the full scenario (hidden sections included), the artifacts and
+   the check report; judges the non-deterministic criteria with cited evidence and runs the planted
+   violations (mutated copy → fresh `vela-reviewer` → expected severity). The actor never grades itself.
+
+A run **passes** only if the checks pass **and** the grader passes. Its record
+(`runs/<date>-<scenario>.r<k>.md`) pins `campaign`, `run`, `checks`, `grader`, `vela_cli`, `framework`
+and `model`. The pass-rate table below is generated from the records of the latest campaign;
+"ready" = every run of the campaign passes.
+
+<!-- passrate:start -->
+_No campaign recorded yet._
+<!-- passrate:end -->
+
 ## Two tiers of checking
 
 - **Structural (CI, every PR):** `scripts/lint-pack.mjs` + the `.github/` sync check in

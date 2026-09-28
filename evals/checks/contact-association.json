@@ -1,0 +1,9 @@
+{
+ "expect_no_solution": true,
+ "canvas_contains": [
+  "status:\\s*blocked",
+  "Hand-off",
+  "none",
+  "AddMember|AddListMembers"
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "min_tests": 3,
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous"
+  }
+ ],
+ "step_count": 1,
+ "report_hash_matches": true,
+ "canvas_contains": [
+  "vela apply",
+  "sha256"
+ ],
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  }
+ ]
+}

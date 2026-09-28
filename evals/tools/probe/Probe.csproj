@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Registration probe for evals: prints the steps / Custom APIs a built plugin assembly really
+       registers, read by reflection with the Vela.Plugins that ships next to it (no compile-time
+       Vela reference, so it follows the version the scaffold resolved). Run with mono on macOS/Linux. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net462</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+</Project>

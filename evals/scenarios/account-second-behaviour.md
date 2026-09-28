@@ -10,9 +10,10 @@ depends_on: account-default-description   # a Create plugin already defaults Des
 
 # Scenario: second behaviour on a table that already has a plugin
 
-## Context
-The project already has `AccountDefaultDescription` (a Create plugin that defaults an empty
-`Description`). Now a new behaviour is requested on the **same table**.
+## Setup for the run
+- The evaluator provides the reviewed `account-default-description` baseline, which already has the
+  `AccountDefaultDescription` Create plugin (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`,
+  a git repo). No org; never `vela apply`.
 
 ## User story
 "When an Account is updated and its Description is cleared (set to empty), re-apply the same

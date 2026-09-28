@@ -1,0 +1,27 @@
+{
+ "min_tests": 3,
+ "custom_apis": [
+  {
+   "suffix": "_ScoreLead",
+   "is_function": false,
+   "is_bound": false,
+   "inputs": [
+    "email"
+   ],
+   "outputs": [
+    "leadScore"
+   ]
+  }
+ ],
+ "step_count": 0,
+ "require_src": [
+  {
+   "pattern": "InvalidPluginExecutionException",
+   "why": "invalid input throws"
+  }
+ ],
+ "canvas_contains": [
+  "Action",
+  "flow"
+ ]
+}

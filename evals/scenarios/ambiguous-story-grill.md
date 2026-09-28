@@ -13,14 +13,16 @@ org_required: false
 "Accounts should keep their status in sync with their contacts."
 
 ## Setup for the run
-- The evaluator plays the human and answers only what is asked, one answer per question:
-  - "sync" means: when a Contact's `statecode` becomes Inactive, and **all** the account's contacts are
-    then inactive, set the parent Account inactive too;
-  - only then, never the other way round; it must be visible immediately (same transaction);
-  - target solution `ZavaSales`, publisher prefix `zava`;
-  - done = the account becomes inactive when its last active contact is deactivated, and stays active
-    otherwise.
-- No org, no `vela apply`. Stop after the Vela Canvas (this scenario tests the front of the loop).
+- A human is reachable only through the evaluator (ask one question per turn).
+- No org, no `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
+
+## Human answers (evaluator only - never shown to the acting agent)
+- "sync" means: when a Contact's `statecode` becomes Inactive and **all** the account's contacts are then
+  inactive, set the parent Account inactive too; never the other way round; never reactivate.
+- Contacts count through `parentcustomerid` (Company Name); only deactivation triggers the check.
+- Visible immediately (same transaction); as the calling user; default Inactive status reason.
+- Target solution `ZavaSales`, publisher prefix `zava`.
+- Anything else: "Use your judgement and record it as an assumption."
 
 ## What the skills must get right
 - `vela-plan-review` finds branches it cannot resolve by assumption (which entity triggers, direction,

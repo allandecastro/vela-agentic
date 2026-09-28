@@ -1,0 +1,46 @@
+{
+ "min_tests": 5,
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "name"
+   ]
+  },
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "name"
+   ]
+  }
+ ],
+ "step_count": 2,
+ "require_src": [
+  {
+   "pattern": "HandleUpdate",
+   "why": "add step handler kept"
+  },
+  {
+   "pattern": "OnExecute",
+   "why": "first handler kept"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "PluginPipeline",
+   "why": "'does not fire' proven through the pipeline"
+  }
+ ],
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  }
+ ]
+}

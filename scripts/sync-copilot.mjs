@@ -175,7 +175,37 @@ async function genEvalCoverage() {
   await fs.writeFile(readme, out);
 }
 
+// Pass rate of the latest campaign (runs with campaign: + run: k/N), into evals/README.md.
+async function genPassRate() {
+  const dir = path.join(root, "evals", "runs");
+  const runs = [];
+  for (const f of (await fs.readdir(dir)).filter((f) => f.endsWith(".md") && f !== "README.md")) {
+    const { attrs } = frontmatter(await fs.readFile(path.join(dir, f), "utf8"));
+    if (attrs.campaign) runs.push(attrs);
+  }
+  let table = "_No campaign recorded yet._";
+  if (runs.length) {
+    const latest = runs.map((r) => r.campaign).sort().at(-1);
+    const by = new Map();
+    for (const r of runs.filter((r) => r.campaign === latest)) {
+      const k = r.scenario;
+      if (!by.has(k)) by.set(k, { n: 0, pass: 0, checks: 0, grader: 0 });
+      const e = by.get(k);
+      e.n++; if (r.verdict === "pass") e.pass++; if (r.checks === "pass") e.checks++; if (r.grader === "pass") e.grader++;
+    }
+    const rows = [...by.entries()].sort().map(([k, e]) =>
+      `| \`${k}\` | **${e.pass}/${e.n}** | ${e.checks}/${e.n} | ${e.grader}/${e.n} | ${e.pass === e.n ? "ready" : "not ready"} |`);
+    const tot = [...by.values()].reduce((a, e) => [a[0] + e.pass, a[1] + e.n], [0, 0]);
+    table = [`Campaign **${latest}** - ${tot[0]}/${tot[1]} runs pass.`, "",
+      "| Scenario | Runs passed | Checks | Grader | Status |", "| --- | --- | --- | --- | --- |", ...rows].join("\n");
+  }
+  const readme = path.join(root, "evals", "README.md");
+  const md = await fs.readFile(readme, "utf8");
+  await fs.writeFile(readme, md.replace(/<!-- passrate:start -->[\s\S]*<!-- passrate:end -->/, `<!-- passrate:start -->\n${table}\n<!-- passrate:end -->`));
+}
+
 await genEvalCoverage();
+await genPassRate();
 const refs = await bundleReferences();
 const skills = await copySkills();
 const modes = await genAgents();

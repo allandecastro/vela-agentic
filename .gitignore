@@ -9,3 +9,9 @@ Thumbs.db
 # Editor
 .idea/
 *.swp
+
+# eval tooling build output
+evals/tools/probe/bin/
+evals/tools/probe/obj/
+__pycache__/
+*.results.xml

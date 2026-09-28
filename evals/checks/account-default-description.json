@@ -1,0 +1,28 @@
+{
+ "min_tests": 3,
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "name"
+   ]
+  }
+ ],
+ "step_count": 1,
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  },
+  {
+   "pattern": "ColumnSet\\(true\\)",
+   "why": "VELA013"
+  }
+ ],
+ "canvas_contains": [
+  "PreOperation"
+ ]
+}

@@ -10,8 +10,10 @@ depends_on: account-default-description
 
 # Scenario: add a second step to an existing plugin
 
-## Context
-`AccountDefaultDescription` exists (single-step Create, PreOperation, handler `OnExecute`).
+## Setup for the run
+- The evaluator provides the reviewed `account-default-description` baseline, which already has the
+  `AccountDefaultDescription` Create plugin (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`,
+  a git repo). No org; never `vela apply`.
 
 ## User story
 "Also on update: when an Account's Name changes, uppercase its account number."

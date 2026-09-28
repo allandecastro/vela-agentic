@@ -1,0 +1,24 @@
+{
+ "min_tests": 2,
+ "steps": [
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "description"
+   ]
+  }
+ ],
+ "step_count": 1,
+ "require_tests": [
+  {
+   "pattern": "PluginPipeline",
+   "why": "the repro exercises the registration"
+  }
+ ],
+ "package": false,
+ "no_demos": false,
+ "canvas": false
+}
