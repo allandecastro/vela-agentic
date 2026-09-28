@@ -58,7 +58,10 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Models:** Does every attribute exist in the generated model, or must you run `vela-models`?
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
-     each applicable gotcha. These become the RED tests.
+     each applicable gotcha. These become the RED tests. Include what `vela-test-harness` will
+     require anyway: on Update, "column not sent" vs "column cleared"; a `PluginPipeline` case when
+     the step must (not) fire or could re-trigger itself. **Every assumption that changes behaviour**
+     (e.g. "whitespace-only means empty") is also an acceptance case.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): the seven REASONS-adapted
    sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
    S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -

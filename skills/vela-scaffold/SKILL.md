@@ -38,7 +38,8 @@ Announce: `Using vela-scaffold to <purpose>`.
    customization prefix** (see `references/registration-rules.md`); it must match, otherwise
    `vela apply --solution` rejects
    the unique names later. The target solution + publisher must already exist in the org (Vela
-   does not create them). This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
+   does not create them). Prefix unknown and no org to read it from? Follow `vela-plan-review`
+   (ask once, or a flagged assumption that blocks the apply gate). This emits **6 projects** under `src/` + `tests/`: `<Prefix>.Shared`,
    `<Prefix>.Plugins`, `<Prefix>.Integrations`, `<Prefix>.Plugins.Tests`,
    `<Prefix>.Integrations.Tests`, `<Prefix>.ConsoleApp` (trim with `--no-console` /
    `--no-integrations` / `--no-tests`). **Generated models live in
@@ -54,6 +55,7 @@ Announce: `Using vela-scaffold to <purpose>`.
    - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes a,b]`
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
+     (`--prefix` is accepted though `vela add --help` does not list it)
      (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
      `vela-custom-api` first
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
@@ -74,7 +76,8 @@ Announce: `Using vela-scaffold to <purpose>`.
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
 6. **Real project: no demos in what you ship.**
    - Scaffold with **`--no-integrations --no-console`** unless the Canvas needs them: the Integrations
-     project builds a **second package** into `artifacts/` with its own demo plugins and Custom APIs.
+     project builds a **second package** into `artifacts/` with its own demo plugins and Custom APIs
+     (still built, if emptied, until the project is removed from the solution).
    - Then delete the demos `vela init` adds (verified list, 0.19.6) and their tests:
      `<Prefix>.Plugins/Account/{CustomApis/AccountEstimateValueCustomApi, Plugins/AccountMessageReference,
      Plugins/AccountPostCreatePlugin, Plugins/AccountRelatedContactsPlugin, Services/AccountFollowUpService}`,

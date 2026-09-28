@@ -43,6 +43,6 @@ execution stopped to prevent recursion") and the user's save fails. The skills m
 Confirm the review would flag each of:
 (a) PostOperation + `ctx.UserService.Update` of the same account → **Critical** (self-trigger: the
     written column is in the step's `FilterOn`);
-(b) the same write-back "fixed" with `if (ctx.Depth > 1) return;` → **Required** (hides the design
-    problem and skips legitimate nested calls);
+(b) the same write-back "fixed" with `if (ctx.Depth > 1) return;` → **Critical** (it still writes and
+    fires twice; the Depth check hides the design problem and skips legitimate nested calls);
 (c) a mutable field caching the last description on the plugin class → **Required** (VELA011).

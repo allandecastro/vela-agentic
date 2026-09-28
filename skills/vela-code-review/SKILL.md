@@ -27,7 +27,12 @@ Announce: `Using vela-code-review to review the change`.
    (base = the branch point; uncommitted changes are not in it). No repository (e.g. a fresh scratch
    run)? `git init` + commit right after scaffolding and diff against that commit; if git is not
    allowed, diff against a copy of the tree taken right after scaffolding (`diff -ruN`). Say which.
-2. Review on **two axes** using `references/review-checklist.md`:
+   Keep the diff reviewable: hand demo deletions over as `git diff --stat` for that commit and the
+   rest in full; the scaffold writes CRLF files, so keep CRLF when editing or use
+   `git diff --ignore-cr-at-eol`.
+2. Review on **two axes** using `references/review-checklist.md` (harness semantics - e.g. what
+   `PluginContext...Execute` auto-derives, why "does not fire" needs `PluginPipeline` - are in
+   `references/harness-api.md`):
    - **Spec axis** - the diff against the **Vela Canvas** (acceptance cases + the Approach/Structure
      decisions: Sync/Async appropriate, reuse-vs-new respected). If the code diverged from the
      Canvas without the Canvas being updated first, that itself is a finding (fix-spec-first).

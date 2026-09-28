@@ -64,13 +64,14 @@ Analyzer intent (VELA00x) plus these recurring Dataverse smells (see `dataverse-
 - **Stage:** a PostOperation step that `Update`s its own primary record where a PreOperation edit of
   `ctx.Request.Target` would do - **Required** (extra write + re-trigger risk), unless the Canvas
   records why the committed state is needed.
-- **Recursion:** a write that can re-trigger the same step (its filtering attributes include what it
-  writes) without a guard - **Critical** (the framework's depth guard throws and the user's save fails).
-- **Runtime** (`dataverse-gotchas.md`): no mutable fields on the plugin class (VELA011); errors
+- **Recursion:** a write that re-triggers the same step (its filtering attributes include what it
+  writes, e.g. a PostOperation `Update` of its own record) - **Critical**, **even when a `ctx.Depth`
+  check stops it early**: it still writes twice and fires twice. A `ctx.Depth` early return is not a
+  guard; on its own (no self-trigger) it is **Required** (it also skips legitimate nested calls).
+- **Runtime** (`dataverse-gotchas.md`): no mutable fields on the plugin class (VELA011 - **Required**); errors
   thrown as `InvalidPluginExecutionException` (VELA012), none swallowed; a Sync step does no slow or
   external work (2-minute sandbox limit) and no external side effect before a step that may still
-  fail; no `ctx.Depth` early return without a reason in the Canvas (**Required**; the unguarded
-  self-trigger it hides is the **Critical** one).
+  fail; no `ctx.Depth` early return without a reason in the Canvas (see Recursion for severities).
 - **Secrets:** none in code or unsecure configuration - secure configuration or a secret store.
   A secret in code is **Critical**.
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions. A
