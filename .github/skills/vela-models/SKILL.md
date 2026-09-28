@@ -1,7 +1,7 @@
 ---
 name: vela-models
 description: Use when a plugin needs typed models for an attribute or entity not yet in the generated model, or when checking whether committed models still match the org.
-compatibility: "vela CLI >= 0.19.6 (Vela.Plugins >= 0.28.2); dotnet SDK."
+compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Generate typed models
@@ -44,7 +44,8 @@ Announce: `Using vela-models to <purpose>`.
    dependency means the AC that needs it is excluded from v1 (record it in the Canvas), never invented.
 7. Report what was written (or the drift) and where. **Check the output text**: a run that
    generates nothing (e.g. "Could not infer a namespace" when run outside the project without
-   `--namespace`) still exits `0`. Success is the "Generated N file(s) into <dir>" line.
+   `--namespace`) exited `0` on CLI 0.19.x (`2` since 0.21.0). Success is the "Generated N file(s) into
+   <dir>" line.
 
 ## Rationalizations (excuse → rebuttal)
 

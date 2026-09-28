@@ -64,7 +64,8 @@ independent of the framework/CLI NuGet releases.
       (all seven scenarios now pass)
 - [x] Dev org for evals (DYN-PREMIUM-DEV, solution `VelaEvals`, prefix `veval`, read-only use):
       `org-models-and-plan` passes - every skill now has a passing scenario
-- [ ] Re-verify the pack against vela CLI 0.21.0 (released since 0.19.6)
+- [x] Re-verified against vela CLI 0.21.0 / Vela.Plugins 0.29.1 (help surface unchanged; `models`
+      without `--namespace` now exits 2)
 
 ## Backlog
 
