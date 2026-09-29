@@ -39,7 +39,8 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    (`RegisterPluginSteps()`); from the human only what they did, expected vs observed. Missing a
    piece? Ask for it in one question.
 2. **Get the runtime evidence when the fault is on a live org.** Ask the human for the Plug-in Trace
-   Log row(s) of the failing operation, and say exactly what to paste:
+   Log row(s) of the failing operation - **every** such request, even an optional "to confirm" one in a
+   report or open question, carries the where / how to enable / what to paste below:
    - where: Power Apps → *Advanced settings* → *Settings* → *Plug-in Trace Log* (or the Plugin
      Registration Tool); tracing must be on (*System Settings* → *Customization* → *Enable logging to
      plug-in trace log*: *Exception* or *All*) - if it is off, ask them to enable it and reproduce once;
@@ -85,7 +86,7 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
   against a live org is slow and side-effecting.
 - "It must be a platform issue." → Reconcile registration and images before blaming Dataverse.
 - "I can't reproduce without the org." → The harness can: the registration, images and target
-  are all yours to set. Reproduce from the description; ask for the trace to confirm, not to start.
+  are all yours to set. Reproduce from the description; ask for the trace to confirm (with the where/what of step 2), not to start.
 - "I'll read the trace log through the Web API myself." → Not through the CLI contract. Ask the human
   for the row; name the fields you need.
 - "Obvious fix, the test can come later." → No red repro, no fix. A fix without a red test is a guess.
