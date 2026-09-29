@@ -51,7 +51,7 @@ the existing class (verified on CLI 0.19.4):
 RegisterStep().OnUpdate()
     .PostOperation()
     .Sync()
-    .FilterOn(e => e.Id /* TODO: choose the attributes that should trigger this step */)  // VELA001 until replaced
+    .FilterOn(e => e.Name)   // from --filtering-attributes Name (0.21.4+)
     .Handle(HandleUpdate);
 
 private void HandleUpdate(IUpdatePostContext<Account> ctx) { /* TODO */ }
@@ -59,7 +59,7 @@ private void HandleUpdate(IUpdatePostContext<Account> ctx) { /* TODO */ }
 
 - The handler is **`Handle<Message>`** (or the `--handler <Method>` name). `OnExecute` stays the
   handler of the first step. Both names are legitimate; don't rename generated handlers.
-- The placeholder `FilterOn(e => e.Id ...)` does not compile (VELA001) - pick the gating column.
+- Without `--filtering-attributes` older CLIs emitted `FilterOn(e => e.Id ...)`, which fails VELA001 - pass the flag.
 - The plugin is now multi-step: harness tests must state the trigger (`.OnUpdate()` ...).
 
 ## RegisterStep() fluent surface

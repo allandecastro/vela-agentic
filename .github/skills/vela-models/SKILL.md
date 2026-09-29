@@ -1,7 +1,7 @@
 ---
 name: vela-models
 description: Use when a plugin needs typed models for an attribute or entity not yet in the generated model, or when checking whether committed models still match the org.
-compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Generate typed models
@@ -26,7 +26,10 @@ Announce: `Using vela-models to <purpose>`.
 2. **Choose a scope - it is required.** One of `--solution <name>`, `--entities a,b`,
    `--custom-apis`, `--messages`, `--roles`, `--solution-roles`. The command refuses to
    generate every table.
-3. **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
+3. **No org, but an exported unmanaged solution zip?** `vela models --from-solution <zip> --namespace <ns>`
+   (0.21.4+) generates offline - but only for the tables/columns **the solution contains** (an out-of-box
+   table not in the solution yields nothing, and the command still exits `0` with "No table metadata ... was
+   found": read that line). **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
    run, and use the labelled no-org stand-in described in `vela-plugin-authoring` step 2 - never on a
    real run. Otherwise resolve the connection (see `references/cli-surface.md`): **`--url <org>` alone** when an
    `az login` session (or managed identity) exists - headless and verified; interactive `-i` only with a human at a browser;

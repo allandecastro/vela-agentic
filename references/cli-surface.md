@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.21.0` (CLI) · `Vela.Plugins` / `Vela.Testing` `0.29.1`, and `0.29.3` exercised by the gotcha evals (framework
+**Verified against:** `vela 0.21.4` (CLI; flags re-diffed from 0.21.0) · `Vela.Plugins` / `Vela.Testing` `0.29.11` (scaffold default), `0.29.1`, and `0.29.3` exercised by the gotcha evals (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
@@ -26,14 +26,17 @@ projects and namespaces (`--prefix zava` → `zava.Plugins`). Adds demo plugins,
 Kinds: `plugin | customapi | service | test | step | form-script | ribbon-script`. Generates a single
 file into an existing project, inferring namespaces from its `RootNamespace`. (`vela add --interactive`
 is a TTY wizard - not for agents.)
-- `add plugin <Name> --entity <ModelType> [--message Create|Update|Delete|...] [--filtering-attributes a,b] [--project <csproj>] [--force]`
+- `add plugin <Name> --entity <ModelType> [--message Create|Update|Delete|...] [--stage <PreValidation|PreOperation|PostOperation>] [--mode <Sync|Async>] [--filtering-attributes a,b] [--project <csproj>] [--force]`
+  - `--stage` / `--mode` (0.21.4+) generate the matching chain and context type; pass them from the Canvas.
   - Generates a **single-step** plugin whose handler is `OnExecute`.
   - `--message` default `Create`; Create/Update/*Multiple require a filtering attribute (auto-picked if
     omitted, with an `/* auto-selected */` comment - check it).
-- `add step <PluginName> --entity <ModelType> [--message ...] [--handler <Method>] [--project <csproj>]` -
+- `add step <PluginName> --entity <ModelType> [--message ...] [--handler <Method>] [--stage ...] [--mode ...] [--filtering-attributes a,b] [--project <csproj>]` -
   edits an existing plugin, adding a second `RegisterStep()` + a handler method (default name
-  `Handle<Message>`, e.g. `HandleUpdate`). The plugin becomes **multi-step**. The new step's `FilterOn` is a
-  placeholder `e => e.Id /* TODO */` that **fails the build with VELA001** until you pick a real column.
+  `Handle<Message>`, e.g. `HandleUpdate`). The plugin becomes **multi-step**. Pass `--filtering-attributes`
+  (0.21.4+) so the new step's `FilterOn` is the gating column.
+- **`vela add` exit code (0.21.4):** outside a project folder without `--project` it prints "No .csproj found" and
+  still exits `0` - pass `--project` and check the "Created"/"Added" line.
 - `add customapi <Name> [--entity <ModelType>] [--bound|--global] [--function|--action] [--prefix <pub>] [--project <csproj>] [--force]` -
   default `--action`; omit `--entity` for a global (unbound) API. The unique name is `<prefix>_<Name>`,
   prefix taken from the project unless `--prefix` is passed (accepted, though not listed in `--help`).

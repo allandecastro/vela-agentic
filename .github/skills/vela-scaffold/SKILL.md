@@ -1,7 +1,7 @@
 ---
 name: vela-scaffold
 description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
-compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Scaffold Vela projects and components
@@ -52,27 +52,22 @@ Announce: `Using vela-scaffold to <purpose>`.
      existing plugin (coherent registration) unless the concern is genuinely separate.
    - **Reuse** an existing plugin/step/service when the behaviour is already there - don't duplicate (DRY).
 4. **Existing project?** Find the `.csproj` first, then add the component:
-   - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] [--filtering-attributes A,B]`
+   - Plugin: `vela add plugin <Name> --entity <ModelType> [--message Create|Update|...] --stage <PreValidation|PreOperation|PostOperation> --mode <Sync|Async> [--filtering-attributes A,B]`
      (pass the **model property** names - `Name`, not the logical name `name`, which generates `e => e.name`)
-   - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg>`
+   - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg> --stage <Stage> --mode <Mode> --filtering-attributes <A,B>`
+   - Always pass `--project <path>.csproj` (or run inside the project folder): without a project, `vela add`
+     prints "No .csproj found" and still **exits 0** (0.21.4) - read the "Created"/"Added" line, not only the code.
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
      (`--prefix` is accepted though `vela add --help` does not list it)
      (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
      `vela-custom-api` first
    - Test: `vela add test <Name> --kind plugin|customapi` (must be inside a `.Tests` project)
-5. **Align the scaffolded registration with the Canvas.** `vela add plugin` / `add step` always
-   generate **`PostOperation` + `Sync`** (there is no stage flag). When the Canvas says PreOperation
-   (the default for a column of the same record - `references/registration-rules.md`), change both
-   the chain and the handler's context type - this is the expected edit of your scaffolded file:
-   `.PostOperation()` → `.PreOperation()` and `I<Message>PostContext<E>` → `I<Message>PreContext<E>`.
-   Then **verify the generated `FilterOn`** (it may be wrong yet compile):
-   - `vela add step` emits a `FilterOn(e => e.Id /* TODO */)` placeholder that **fails the build with
-     VELA001** ("'Id' is not a Dataverse column") - replace it with the column that gates the step.
-   - `vela add plugin` may echo the casing you passed (`--filtering-attributes name` -> `e => e.name`,
-     won't compile), OR **auto-pick a column** (marked `/* auto-selected */`, e.g. `--entity Incident`
-     -> `e => e.caseage`) that compiles fine and, on Create, is runtime-ignored so nothing errors.
-   Replace it with the intended column (`e => e.Name`): confirm it is the right filtering attribute,
-   not merely that it builds.
+5. **Scaffold the registration the Canvas decided** - pass `--stage`, `--mode` and `--filtering-attributes`
+   (model property names) to `add plugin` / `add step` (0.21.4+); the chain, the handler's context type and
+   the `FilterOn` are generated to match. Then **read the generated chain** against the Canvas: stage, mode
+   and filter must be what you asked for - confirm it is the right filtering attribute, not merely that it
+   builds. Omitting `--filtering-attributes` on Create/Update lets the CLI auto-pick a column (marked
+   `/* auto-selected */`) - replace it.
    - After `vela add step` the plugin is **multi-step**: its new handler is `Handle<Message>`, and its
      harness tests must now state the trigger (`.OnCreate()` / `.OnUpdate()`, see `references/harness-api.md`).
 6. **Real project: no demos in what you ship.**
@@ -105,8 +100,8 @@ Announce: `Using vela-scaffold to <purpose>`.
 - "I'll just edit the generated file to make it compile." → If *generated* code (models,
   compiler output) doesn't compile, that's a bug to report, not to patch. Re-run the command with
   correct inputs. (Adjusting the *scaffolded* plugin's stage or `FilterOn` is not that - it is expected.)
-- "The scaffold said PostOperation, so PostOperation it is." → The scaffold has no stage flag; the
-  Canvas decides the stage. Change the chain and the context type.
+- "I'll let `vela add` pick the stage." → Its default is PostOperation + Sync; the Canvas decides the stage -
+  pass `--stage` / `--mode`.
 - "I'll create the plugin file by hand, it's just a class." → A typed message touches
   several files that must stay in sync (see gotchas). Use `vela add`.
 - "`--message` doesn't matter, I'll set it in code." → It drives the registration and the
