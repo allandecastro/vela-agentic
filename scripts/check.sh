@@ -12,7 +12,9 @@ for f in .claude-plugin/marketplace.json .claude-plugin/plugin.json hooks/hooks.
   node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || { echo "invalid JSON: $f"; exit 1; }
 done
 
-for s in hooks/bin/*.sh hooks/test/*.sh scripts/*.sh; do sh -n "$s"; done
+for s in hooks/bin/*.sh hooks/test/*.sh scripts/*.sh evals/setup/*.sh; do sh -n "$s"; done
+for p in evals/checks/check.py evals/tools/brief.py; do python3 -m py_compile "$p"; done
+for j in evals/checks/*.json; do node -e "JSON.parse(require('fs').readFileSync('$j','utf8'))" || { echo "invalid JSON: $j"; exit 1; }; done
 
 sh hooks/test/guard.test.sh
 

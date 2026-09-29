@@ -52,7 +52,10 @@ Announce: `Using vela-code-review to review the change`.
   (read-only, no shell) with only: the diff **text pasted into its prompt**, the Vela Canvas, the test
   runner's verbatim RED/GREEN lines and the Run trace - **not** the build's session history, so its
   judgement is not anchored by the author's context. After a fix, dispatch a **fresh** reviewer on the
-  new diff. Optionally run the two axes as two separate reviewers so one cannot mask the other. This is
+  new diff. Hand over the real material, never a placeholder ("<diff here>"): write the diff, Canvas and
+  RED/GREEN output to files first and paste their contents. A reviewer that blocks for missing evidence
+  is answered by fixing the evidence and dispatching a **fresh** reviewer, not by re-asking the same one.
+  Save the reviewer's verbatim output next to the Build Report. Optionally run the two axes as two separate reviewers so one cannot mask the other. This is
   a **scoped review agent**, not `vela-builder` re-invoking itself - it does not violate "an agent
   applies skills, it does not orchestrate other personas."
   Why the default: in the eval runs the isolated reviewer caught what self-review passed (a Function

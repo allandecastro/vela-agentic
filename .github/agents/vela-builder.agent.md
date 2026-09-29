@@ -59,10 +59,12 @@ package. A blocked story is a correct outcome, not a failure to work around.
       as soon as the Vela Canvas exists (right after Challenge, step 3), so the work is isolated
       and the spec is visible from the start (`gh pr create --draft`). The PR body grows from the
       Canvas into the Build Report.
-    - **New solution (no repository yet):** draft the Canvas outside the project, then `vela init` →
-      `git init` → commit the untouched scaffold (the review base) → create the branch → remove the
-      demos and move the Canvas into `docs/vela-builds/<slug>.md` as the first commits on the branch,
-      so both are in the reviewed diff.
+    - **New solution (no repository yet):** the Canvas is always `docs/vela-builds/<slug>.md` - before
+      a project exists, under the working directory (so a run that stops at the plan gate still leaves
+      it at that path). Then `vela init` → `git init` → commit the untouched scaffold (the review base)
+      → create the branch → remove the demos and move the Canvas to the same relative path inside the
+      project (`<Solution>/docs/vela-builds/<slug>.md`) as the first commits on the branch, so both are
+      in the reviewed diff.
     - Mark it **ready for review** only once the agents are done: harness green, analyzers clean,
       and the reviewer's Critical/Required findings all resolved (`gh pr ready`). Body = the Build
       Report; the artifact is committed under `docs/vela-builds/<slug>.md`. No AI attribution on the

@@ -25,12 +25,15 @@ below are the workflow.
 
 Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - the **primary behaviour** from the story;
-- each **edge** the spec implies (empty / null / invalid / boundary);
+- each **edge** the spec implies (empty / null / invalid / boundary) - for text, `""`, `null` and
+  whitespace-only are three cases;
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering
   attribute, Associate/Disassociate matching, bulk `*Multiple`;
 - on **Update**: a column **not sent** vs a column **cleared** (sent as null) - they are different
   (`ctx.Request.Target` only holds the columns that were sent). For a column that can't be cleared
   (e.g. `statecode`), test "sent with the same value" instead.
+- a negative pipeline case (same value, cleared) asserts the step **ran** (`ExecutionLog`) and left
+  the value alone - otherwise it also passes with a broken trigger.
 A single happy-path test does not satisfy the gate.
 
 **Pick the runner by what the case proves** (`references/harness-api.md`): `PluginContext...Execute`
@@ -59,7 +62,8 @@ Announce: `Using vela-test-harness to <purpose>`.
 4. **RED first (mandatory):** run the tests before implementing and confirm the behaviour cases
    **fail** for the right reason. Guard / no-op cases ("already normal", "null → untouched",
    "does not fire") may pass before any code exists - that is expected; list which ones in the
-   report. Only then hand off to `vela-plugin-authoring` to implement to green.
+   report. **Commit the RED tests on their own** (before any logic) so RED is provable from the git
+   history. Only then hand off to `vela-plugin-authoring` to implement to green.
 5. Run with the **OS-correct runner** (see `references/harness-api.md`):
    - Windows: `dotnet test <path>.Tests.csproj -c Release`.
    - macOS/Linux: `dotnet test` cannot run net462 - build, then

@@ -1,0 +1,27 @@
+{
+ "min_tests": 3,
+ "custom_apis": [
+  {
+   "is_function": false,
+   "is_bound": false,
+   "input_types": [
+    "String"
+   ],
+   "output_types": [
+    "Int32"
+   ],
+   "inputs_required": true
+  }
+ ],
+ "step_count": 0,
+ "require_src": [
+  {
+   "pattern": "InvalidPluginExecutionException",
+   "why": "invalid input throws"
+  }
+ ],
+ "canvas_contains": [
+  "Action",
+  "flow"
+ ]
+}

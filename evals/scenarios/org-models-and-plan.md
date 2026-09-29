@@ -24,8 +24,8 @@ org_required: true
   available the agent runs `vela models` (into `<Prefix>.Shared/Models/Generated`, namespace inferred
   inside the project), confirms the "Generated N file(s)" line, and never hand-edits the model.
 - **Scaffold for the org:** `--prefix veval`, `--no-integrations` (no outbound flow), demos removed.
-- **Stage:** PreOperation on `ctx.Request.Target`, `FilterOn(e => e.AccountNumber)`; only writes when
-  the upper-cased value differs.
+- **Stage:** PreOperation on `ctx.Request.Target`, `FilterOn(e => e.AccountNumber)`. (Rubric note, campaign 2026-09-30: "only writes when the
+  upper-cased value differs" dropped - a PreOperation target edit is not a write; the pack says so.)
 - **Real preview:** `vela plan -p <plugin package> --url ... --out plan.json` on the final package; the
   `operations` contain only this plugin's step (on a first deploy the assembly appears as the
   "not found in Dataverse" diagnostic, not as an operation; no demo operation); every diagnostic is
@@ -41,3 +41,9 @@ org_required: true
 4. `plan.json` recorded in the Build Report with its operations and diagnostics interpreted; the Gate
    hands the human `vela apply -p <pkg> --solution VelaEvals --url ...` and a hash check.
 5. No write to the org.
+
+## Human answers (evaluator only - never shown to the acting agent)
+- Update only (asked). If not asked, a flagged "Create + Update" reading of "set or changed" is
+  accepted - the story allows it and the plan gate is advisory (rubric note, campaign 2026-09-30).
+- Target solution / publisher prefix: `VelaEvals` / `veval` (they exist in the dev org).
+- Anything not listed: "Use the skills' defaults and record it as an assumption."

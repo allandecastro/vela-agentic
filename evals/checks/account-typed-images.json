@@ -1,0 +1,30 @@
+{
+ "min_tests": 4,
+ "steps": [
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "creditlimit"
+   ],
+   "pre_image": [
+    "creditlimit"
+   ]
+  }
+ ],
+ "step_count": 1,
+ "require_src": [
+  {
+   "pattern": "partial\\s+class",
+   "why": "typed images need a partial plugin"
+  }
+ ],
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  }
+ ]
+}

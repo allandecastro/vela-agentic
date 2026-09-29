@@ -1,0 +1,11 @@
+{
+ "expect_no_solution": true,
+ "canvas_contains": [
+  "contact",
+  "statecode",
+  "Update",
+  "Sync",
+  "PostOperation",
+  "parentcustomerid|Company Name"
+ ]
+}

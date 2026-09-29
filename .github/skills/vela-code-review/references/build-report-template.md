@@ -11,7 +11,9 @@ YAML front-matter, committed under `docs/vela-builds/<slug>.md` and reused as th
 Keep it **proportional**: for a simple story, sections can be one line each; do not pad.
 
 **One file per story:** `docs/vela-builds/<slug>.md` starts as the Canvas and is **the same file**
-that grows into the Build Report (front-matter `kind: vela-canvas` → `kind: vela-build`). A new story
+that grows into the Build Report (front-matter `kind: vela-canvas` → `kind: vela-build`). Before a project
+exists (plan gate, grill), write it at `docs/vela-builds/<slug>.md` under the working directory;
+after `vela init` it moves to the same relative path inside the project. Never another path or name. A new story
 on an existing plugin gets its **own** slug and file; it references the plugin, it does not rewrite the
 earlier story's record.
 
@@ -106,7 +108,7 @@ vela_cli: 0.21.0
 framework: 0.29.1
 packages: [zava.Plugins.1.0.0.nupkg]   # the plugin package only (not an Integrations package)
 package_sha256: <sha256 of the previewed package>
-signed: no                # yes | no (a human signs before apply) | n/a (org does not require it)
+signed: no                # yes | no (a human signs before apply) | n/a (org does not require it) | unknown (asked at the gate)
 harness: pass             # pass | fail  (must be pass to reach the gate)
 analyzers: clean          # clean | violations  (authored code; scaffold-demo VELA013 excluded)
 review: pass              # pass | block  (no unresolved Critical/Required)
@@ -126,7 +128,7 @@ apply: pending
 - Acceptance cases (RED→green): [x] empty→defaulted  [x] whitespace→defaulted  [x] non-empty→untouched
 - Harness: <runner summary + runner name>
 - Code review: <PASS / BLOCK; findings most-severe first>
-- Package: <path> · sha256 <hash> · signed <yes/no/n/a>
+- Package: <path> · sha256 <hash> · signed <yes/no/n/a/unknown>
 - `vela plan` (on that package, after review): <the diff apply WOULD make, or "skipped - no org">
 
 ## Sync log

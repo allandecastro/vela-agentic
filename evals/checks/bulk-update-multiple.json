@@ -1,0 +1,30 @@
+{
+ "min_tests": 3,
+ "steps": [
+  {
+   "message": "UpdateMultiple",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "name"
+   ]
+  }
+ ],
+ "step_count": 1,
+ "forbid_step_messages": [
+  "Update"
+ ],
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "WithTargets",
+   "why": "the batch is supplied as Targets"
+  }
+ ]
+}

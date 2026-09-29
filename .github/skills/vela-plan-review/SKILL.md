@@ -40,6 +40,7 @@ Announce: `Using vela-plan-review to grill the plan`.
      never duplicate; never hand-create a class.
    - **Structure - service?** Keep the handler thin (SRP). Real/reusable logic → a service
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
+     Shared by the steps of one plugin → private helper; across plugins → service.
    - **Structure - outbound integration?** Does the behaviour call another system (HTTP API, queue,
      Azure service, e-mail gateway...)? Yes → that code goes in the scaffold's **Integrations** project
      (its own package; usually an Async step - see Sync vs Async). No outbound flow → the solution is
@@ -54,10 +55,11 @@ Announce: `Using vela-plan-review to grill the plan`.
      that apply is blocked until the prefix and solution are confirmed.
    - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
      with the same value. Record whether the behaviour needs the value to actually differ (compare with
-     `ctx.PreImage`) and write only when it changes.
+     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not a
+     write: re-assigning the same value there costs nothing, so no compare is needed.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
-     is **mandatory** (registration throws without one); on Create it's ignored at runtime, so keep
-     the primary column and never drop it.
+     is **mandatory** (registration throws without one); on Create it's ignored at runtime, so it
+     can never be dropped; default it to the primary column (another column is harmless there - Nit).
    - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
    - **Association:** Associate/Disassociate need a message-level registration (primary entity `none`),

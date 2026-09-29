@@ -13,7 +13,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 "When an Account is created, if its Description is empty, set it to 'Created via Vela plugin'."
 
 ## Setup for the run
-- Fresh scratch dir (e.g. `/tmp/vela-rehearsal`). Nothing outside it.
+- The evaluator gives you a work dir; nothing outside it.
 - `vela` and `dotnet` on PATH. No Dataverse org: SKIP `vela models` and `vela plan`/`apply`,
   recording the exact command that would have run. Never run `vela apply`.
 
@@ -42,3 +42,8 @@ requires a filter at build even though Create ignores it at runtime.
   surface) must NOT recur - the skills give the correct path without rediscovery.
 - Iteration 2 (F1) mandatory Create/Update `FilterOn`, (F2) no-org non-demo-attribute path, (F3)
   `target.Id` vs `ctx.PrimaryEntityId` in the harness - all now documented in the skills/references.
+
+## Human answers (evaluator only - never shown to the acting agent)
+- "Empty" = null, "" or whitespace-only.
+- Target solution / publisher prefix: `ZavaSales` / `zava`.
+- Anything not listed: "Use the skills' defaults and record it as an assumption."

@@ -1,0 +1,31 @@
+{
+ "min_tests": 4,
+ "steps": [
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "description"
+   ]
+  }
+ ],
+ "step_count": 1,
+ "forbid_src": [
+  {
+   "pattern": "UserService\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  },
+  {
+   "pattern": "ctx\\.Depth\\s*>",
+   "why": "no Depth early return"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "PluginPipeline",
+   "why": "firing / no recursion proven through the pipeline"
+  }
+ ]
+}

@@ -170,6 +170,15 @@ async function lintEvals() {
     if (!scenarios.has(fm.scenario)) errors.push(`${rel}: unknown scenario '${fm.scenario}'`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.date || "")) errors.push(`${rel}: 'date' must be YYYY-MM-DD`);
     if (!["pass", "fail"].includes(fm.verdict)) errors.push(`${rel}: 'verdict' must be pass | fail`);
+    if (fm.campaign !== undefined) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.campaign)) errors.push(`${rel}: 'campaign' must be YYYY-MM-DD`);
+      if (!/^\d+\/\d+$/.test(fm.run || "")) errors.push(`${rel}: campaign run needs 'run: k/N'`);
+      for (const k of ["checks", "grader"])
+        if (!["pass", "fail"].includes(fm[k])) errors.push(`${rel}: campaign run needs '${k}: pass | fail'`);
+      if (!fm.model) errors.push(`${rel}: campaign run needs 'model'`);
+      if (fm.verdict === "pass" && (fm.checks !== "pass" || fm.grader !== "pass"))
+        errors.push(`${rel}: verdict pass requires checks: pass and grader: pass`);
+    }
   }
 }
 

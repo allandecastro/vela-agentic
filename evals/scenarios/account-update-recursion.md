@@ -21,7 +21,7 @@ execution stopped to prevent recursion") and the user's save fails. The skills m
 **Sync PreOperation, editing `ctx.Request.Target`**, which changes the value inside the same write.
 
 ## Setup for the run
-- Fresh scratch dir. `vela` and `dotnet` on PATH. No Dataverse org: skip `vela models` / `vela plan`,
+- The evaluator gives you a work dir. `vela` and `dotnet` on PATH. No Dataverse org: skip `vela models` / `vela plan`,
   recording the exact commands. Never run `vela apply`.
 - `account.description` is not in the scaffold's demo model: follow `vela-plugin-authoring`'s no-org
   stand-in rule.
@@ -46,3 +46,9 @@ Confirm the review would flag each of:
 (b) the same write-back "fixed" with `if (ctx.Depth > 1) return;` → **Critical** (it still writes and
     fires twice; the Depth check hides the design problem and skips legitimate nested calls);
 (c) a mutable field caching the last description on the plugin class → **Required** (VELA011).
+
+## Human answers (evaluator only - never shown to the acting agent)
+- Update only (not Create).
+- "Repeated spaces" = runs of the space character only; a whitespace-only Description is stored as null.
+- Target solution / publisher prefix: `ZavaSales` / `zava`.
+- Anything not listed: "Use the skills' defaults and record it as an assumption."
