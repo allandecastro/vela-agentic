@@ -1,7 +1,7 @@
 ---
 name: vela-code-review
 description: Use once a plugin change's tests are green and analyzers are clean, before the apply gate, to review the diff for correctness, spec-fidelity, and Dataverse pitfalls.
-compatibility: "vela CLI >= 0.21.0 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
 ---
 
 # Review the change before the apply gate
