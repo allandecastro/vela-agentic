@@ -9,6 +9,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 scenario, work = sys.argv[1], sys.argv[2]
 org = sys.argv[sys.argv.index("--org") + 1] if "--org" in sys.argv else None
 shim = sys.argv[sys.argv.index("--shim") + 1] if "--shim" in sys.argv else None
+cli = subprocess.run([os.path.expanduser("~/.dotnet/tools/vela"), "version"], capture_output=True, text=True).stdout.split()[-1]
 brief = subprocess.run([sys.executable, os.path.join(ROOT, "evals/tools/brief.py"), scenario], capture_output=True, text=True).stdout
 
 path = f'export PATH="{shim}:$HOME/.dotnet/tools:$PATH"' if shim else 'export PATH="$HOME/.dotnet/tools:$PATH"'
@@ -23,9 +24,9 @@ print(f"""You are the `vela-builder` agent (`{ROOT}/agents/vela-builder.agent.md
   `skills/using-vela/SKILL.md` and follow the skills as written; read each skill (`skills/<name>/SKILL.md`,
   its `references/`) when you use it.
 - **Never open anything under `{ROOT}/evals/`** - it is evaluation material, not for you.
-- Work only in `{work}` (create files there; a local `git init` there is fine; no pushes, no PRs - skip the
+- Work only in `{work}` - every file, temp and log included, goes under it (other runs share the parent folder) (create files there; a local `git init` there is fine; no pushes, no PRs - skip the
   draft-PR step).
-- In every shell command that uses vela: `{path}`. vela 0.21.0, dotnet, mono, jq, python3 are installed
+- In every shell command that uses vela: `{path}`. vela {cli}, dotnet, mono, jq, python3 are installed
   (macOS arm64, zsh; no `timeout` - use `perl -e 'alarm N; exec @ARGV' ...`). Keep commands bounded.
 {org_rule}
 - For the review step, dispatch a fresh subagent told to act as `{ROOT}/agents/vela-reviewer.agent.md`
