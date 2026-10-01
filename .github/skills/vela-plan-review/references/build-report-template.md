@@ -28,7 +28,9 @@ the change back into the Canvas. The Canvas stays an accurate record of the curr
 kind: vela-canvas
 slug: account-default-description
 date: 2026-09-25
-status: proposed          # proposed | approved | blocked | superseded
+status: proposed          # proposed | approved | blocked | superseded - stays `proposed` until a HUMAN
+                          # approves; past the advisory plan gate the agent never writes `approved` itself.
+                          # The Build Report (kind: vela-build) then carries the run status (awaiting-apply).
 entity: account           # the table the step is registered on (may differ from the table it writes)
 # One step: use the scalar fields below. A multi-step plugin uses a `steps:` list instead, e.g.
 #   steps:

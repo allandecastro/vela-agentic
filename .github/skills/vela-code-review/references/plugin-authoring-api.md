@@ -115,12 +115,16 @@ import `Microsoft.Xrm.Sdk` - add `using Microsoft.Xrm.Sdk;` when you use `Money`
   PreOperation step changes the record being written (verified in the harness, 0.28.2). Prefer it to
   the untyped-context extensions `ctx.GetTarget<Account>()` / `TryGetTarget` / `GetTargetRef` /
   `GetTargets` (bulk), which remain for `ILocalPluginContext` handlers (`OnMessage`, Custom APIs).
-  The scaffold's TODO comment still mentions `GetTarget` - follow this reference instead.
 - **Images:** typed contexts expose `ctx.PreImage` / `ctx.PostImage` (the registered image as the
   early-bound entity, or `null` when none is registered): `IUpdatePreContext` has `ctx.PreImage`,
   `IUpdatePostContext` has both, `ICreatePostContext` has `ctx.PostImage`. The extensions
   `ctx.GetPreImage<Account>()` / `ctx.GetPostImage<Account>()` / `GetPreImageMerged` work by alias.
   Response: `ctx.Response` on post contexts.
+- **Was a column sent? Did it change?** (verified, Vela.Plugins 0.29.11) - use the typed helpers, not
+  logical-name strings: `target.Contains(e => e.AccountNumber)` (also `Contains(a, b)` = all,
+  `ContainsAny(a, b)` = any) tests presence in the payload; `ctx.HasChanged<Account>(e => e.Name)` is true
+  when the column is in the Target **and** differs from the registered pre-image (needs a pre-image with
+  that column; a column absent from the Target counts as unchanged; Delete/Assign/SetState throw).
 - **Depth:** `ctx.Depth` (see the recursion gotcha in `dataverse-gotchas.md`).
 - **Write to the org:** there is **no `ctx.OrganizationService`**. Use
   `ctx.UserService` (initiating user), `ctx.CallingUserService`, or `ctx.SystemService`

@@ -57,6 +57,8 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    cannot reproduce a step that never fires. **No org at all?** Reproduce from the symptom
    description alone; that is the normal path, not a degraded one. If the repro is unexpectedly
    green, the test is not exercising the registration yet - switch to the pipeline before concluding.
+   Write the (light) Canvas **before** the fix - symptom, cause hypothesis, repro cases, the one-line
+   change - with the repro tests; it grows into the Build Report.
 4. **Minimize.** Strip the case to the smallest input that still fails. A debug run adds the repro
    plus any directly related regression case - not the full coverage set of a new build.
 5. **Hypothesize** from the registration and the evidence, against the usual suspects in
