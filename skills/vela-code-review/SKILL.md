@@ -74,6 +74,8 @@ Announce: `Using vela-code-review to review the change`.
 ## Red flags
 
 - Reaching the apply gate with no review findings list in the Build Report.
+- A reviewer prompt that contains a placeholder (`<diff>`, `<paste here>`, "see above") instead of the
+  material itself - check the prompt before dispatching; a verdict on a placeholder is void.
 - A self-review where a subagent could have been dispatched, or a self-review not labelled as such in
   the Build Report.
 - A self-review that finds nothing on a diff that touches registration or images (look harder).

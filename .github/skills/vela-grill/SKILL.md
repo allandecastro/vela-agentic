@@ -24,7 +24,10 @@ Announce: `Using vela-grill to resolve the story`.
 1. Restate the story in your own words and name the entity/message you think it implies.
 2. Ask **one focused question at a time** - preferably multiple choice, answerable in one line - in
    roughly this order, skipping what the story already answers. Only **business decisions** go to the
-   human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions.
+   human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions. A business
+   value nobody raised (e.g. which Inactive status reason) may take the platform default - record it as an
+   assumption, don't spend a question on it. A one-line edge-case follow-up may ride along with its
+   question when the answer stays one line; never bundle two independent decisions.
    - Meaning: which column/table does each story term mean (a standard column or a custom one)?
    - Direction and records: which record drives the change, which is written; how are they related
      (which lookup / relationship)?

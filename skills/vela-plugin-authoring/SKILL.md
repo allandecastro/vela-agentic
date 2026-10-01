@@ -46,8 +46,7 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 4. Read through the typed context: **`ctx.Request.Target`** (the typed record over the live
    InputParameters - in a PreOperation step, set properties on it to change what is written),
    `ctx.PreImage` / `ctx.PostImage` for registered images - never magic-string attribute names where a
-   model exists. `ctx.GetTarget<Entity>()` is for untyped `ILocalPluginContext` handlers only (the
-   scaffold's TODO comment still mentions it).
+   model exists. `ctx.GetTarget<Entity>()` is for untyped `ILocalPluginContext` handlers only.
 5. Write through `ctx.UserService` (there is **no** `ctx.OrganizationService`); use
    `ctx.SystemService` / `ctx.AsSystem()` only when elevation is required.
 6. Guard the trigger via the registered **filtering attributes** (`FilterOn(e => e.X)`) and

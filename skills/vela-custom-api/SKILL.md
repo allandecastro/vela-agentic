@@ -40,8 +40,8 @@ Announce: `Using vela-custom-api to <purpose>`.
    - **Exposure:** `.Private()` if only your own code calls it; `.ExecutePrivilege(...)` if callers need
      a specific privilege; `.AllowedCustomProcessingSteps(CustomApiAllowedCustomProcessingStepType.None)`
      unless others must hook plugins on it (`AsyncOnly` / `SyncAndAsync`).
-3. **Scaffold** with `vela-scaffold`: `vela add customapi <Name> [--entity <E>] [--action|--function]
-   [--prefix <publisher prefix>]`. Global → a lightweight untyped class (handler passed to
+3. **Scaffold** with `vela-scaffold`: `vela add customapi <Name> [--entity <E> | --global] [--action|--function]
+   [--prefix <publisher prefix>]` (`--global` is the explicit form of "no `--entity`"). Global → a lightweight untyped class (handler passed to
    `RegisterCustomApi(name, handler)`); `--entity` → a **typed** class
    (`CustomApiBase<TRequest, TResponse>`, `Execute(ctx, request)`) with request/response classes. Both
    shapes are in `references/plugin-authoring-api.md` - don't convert one into the other by hand.
