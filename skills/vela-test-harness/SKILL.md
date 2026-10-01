@@ -25,6 +25,8 @@ below are the workflow.
 
 Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - the **primary behaviour** from the story;
+- for a **transformation** (upper-case, trim, normalise...), one case per input class: already in the
+  target form, fully not, and **mixed** (e.g. `abc` / `ABC` / `aBc-1`);
 - each **edge** the spec implies (empty / null / invalid / boundary) - for text, `""`, `null` and
   whitespace-only are three cases;
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image present, filtering
@@ -32,7 +34,7 @@ Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - on **Update**: a column **not sent** vs a column **cleared** (sent as null) - they are different
   (`ctx.Request.Target` only holds the columns that were sent). For a column that can't be cleared
   (e.g. `statecode`), test "sent with the same value" instead.
-- a negative pipeline case (same value, cleared) asserts the step **ran** (`ExecutionLog`) and left
+- negative pipeline cases - **both** "sent with the same value" and "cleared" - each assert the step **ran** (`ExecutionLog`) and left
   the value alone - otherwise it also passes with a broken trigger.
 A single happy-path test does not satisfy the gate.
 
