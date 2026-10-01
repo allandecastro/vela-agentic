@@ -18,7 +18,9 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
   recording the exact command that would have run. Never run `vela apply`.
 
 ## Success criteria (a clean pass)
-1. `vela init` + `vela add plugin` + `vela add test` all exit 0, following `vela-scaffold`.
+1. `vela init` + `vela add plugin` exit 0, following `vela-scaffold`; tests live in the scaffold's `.Tests`
+   project (`vela add test` only when none exists - `vela-test-harness` step 1). (Rubric note, campaign
+   2026-10-02: `vela add test` was required here but the pack never asks for it when the scaffold has a test project.)
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
    `OnExecute` / `ctx.Request.Target` surface), no magic strings where a model exists.
 3. **Test-first:** the acceptance-case tests are written and seen to **fail (RED)** before
