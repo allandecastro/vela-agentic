@@ -28,14 +28,15 @@ Announce: `Using vela-models to <purpose>`.
    generate every table.
 3. **No org, but an exported unmanaged solution zip?** `vela models --from-solution <zip> --namespace <ns>`
    (0.21.4+) generates offline - but only for the tables/columns **the solution contains** (an out-of-box
-   table not in the solution yields nothing, and the command still exits `0` with "No table metadata ... was
-   found": read that line). **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
+   table not in the solution yields nothing: "No table metadata ... was found", exit `2` since 0.22.0 - `0` on
+   0.21.4, so read that line). **No org at all** (a rehearsal/eval)? Skip this skill, record the exact command that would have
    run, and use the labelled no-org stand-in described in `vela-plugin-authoring` step 2 - never on a
    real run. Otherwise resolve the connection (see `references/cli-surface.md`): **`--url <org>` alone** when an
    `az login` session (or managed identity) exists - headless and verified; interactive `-i` only with a human at a browser;
    or connection string / client secret for automation.
 4. Generate:
-   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
+   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite <connection>`
+     (`<connection>` from step 3, e.g. `--url <org>`)
      (without `--out` the files land in the current directory; the scaffold keeps models in
      `<Prefix>.Shared/Models/Generated`)
    - TypeScript: add `--forms` and/or `--tables`.

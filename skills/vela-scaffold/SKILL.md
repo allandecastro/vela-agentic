@@ -56,7 +56,7 @@ Announce: `Using vela-scaffold to <purpose>`.
      (pass the **model property** names - `Name`, not the logical name `name`, which generates `e => e.name`)
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg> --stage <Stage> --mode <Mode> --filtering-attributes <A,B>`
    - Always pass `--project <path>.csproj` (or run inside the project folder): without a project, `vela add`
-     prints "No .csproj found" and still **exits 0** (0.21.4) - read the "Created"/"Added" line, not only the code.
+     prints "No .csproj found" and exits `2` (0.22.0; it exited `0` on 0.21.4) - read the "Created"/"Added" line too.
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--prefix <pub>]`
      (`--prefix` is accepted though `vela add --help` does not list it)
      (omit `--entity` for a global API; the unique name is `<prefix>_<Name>`) - design it with
