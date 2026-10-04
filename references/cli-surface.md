@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Only `vela add --help` and `vela models --hel
 command-specific; `vela <other> --help` prints the global usage page, which lists every command's
 flags. `-p` is accepted as the short form of `--package` (not shown in the help).
 
-**Verified against:** `vela 0.21.4` (CLI; flags re-diffed from 0.21.0) · `Vela.Plugins` / `Vela.Testing` `0.29.11` (scaffold default), `0.29.1`, and `0.29.3` exercised by the gotcha evals (framework
+**Verified against:** `vela 0.22.0` (CLI; flags re-diffed from 0.21.4) · `Vela.Plugins` / `Vela.Testing` `0.30.0` (scaffold default), `0.29.11`, `0.29.1`, and `0.29.3` exercised by the gotcha evals (framework
 resolved by `vela init`). Skills declare this floor in their `compatibility` frontmatter; when the CLI
 moves, re-run the `--help` of each command below, update this file, then bump the floor.
 
@@ -35,13 +35,14 @@ is a TTY wizard - not for agents.)
   edits an existing plugin, adding a second `RegisterStep()` + a handler method (default name
   `Handle<Message>`, e.g. `HandleUpdate`). The plugin becomes **multi-step**. Pass `--filtering-attributes`
   (0.21.4+) so the new step's `FilterOn` is the gating column.
-- **`vela add` exit code (0.21.4):** outside a project folder without `--project` it prints "No .csproj found" and
-  still exits `0` - pass `--project` and check the "Created"/"Added" line.
+- **`vela add` exit code:** outside a project folder without `--project` it prints "No .csproj found" and exits
+  `2` (0.22.0; `0` on 0.21.4) - pass `--project` and check the "Created"/"Added" line.
 - `add customapi <Name> [--entity <ModelType>] [--bound|--global] [--function|--action] [--prefix <pub>] [--project <csproj>] [--force]` -
   default `--action`; omit `--entity` for a global (unbound) API. The unique name is `<prefix>_<Name>`,
   prefix taken from the project unless `--prefix` is passed (accepted, though not listed in `--help`).
 - `add service <Name> --entity <ModelType> [--project <csproj>] [--force]` - table-scoped interface + implementation.
-- `add test <Name> [--kind plugin|customapi] [--entity <ModelType>] [--project <csproj>] [--force]` - run
+- `add test <PluginName> [--kind plugin|customapi] [--entity <ModelType>] [--message <Message>] [--project <csproj>] [--force]`
+  (`<PluginName>` is the plugin under test - the file is `<PluginName>Tests.cs`; `--message` since 0.22.0) - run
   inside the test project (RootNamespace ending in `.Tests`); `<Name>` is the class under test.
 - `add form-script <entity>` / `add ribbon-script <entity>` [`--project <web-resources dir>`] - TS web
   resources (preview; **not covered by this pack yet**).
