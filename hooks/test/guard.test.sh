@@ -83,7 +83,7 @@ printf '%s' '{"toolName":"bash","toolArgs":"{\"command\":\"vela apply -p x\"}"}'
 rc=$?; total=$((total + 1)); [ $rc = 2 ] || { fail=$((fail + 1)); echo "FAIL cp string toolArgs should deny"; }
 
 # --- the generated Copilot configs embed the same guard: smoke-test them end to end
-for cfg in hooks.json .github/hooks/vela.json; do
+for cfg in hooks.json .github/hooks/vela.json .github/copilot/settings.json; do
   gen="$(jq -r '.hooks.preToolUse[0].bash' "$cfg")"
   jq -n '{toolName:"bash",toolArgs:{command:"vela apply -p x"}}' | env -u VELA_APPLY_APPROVED bash -c "$gen" 2>/dev/null
   rc=$?; total=$((total + 1)); [ $rc = 2 ] || { fail=$((fail + 1)); echo "FAIL $cfg should deny vela apply"; }

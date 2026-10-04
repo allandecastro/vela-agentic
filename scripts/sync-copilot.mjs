@@ -151,6 +151,15 @@ async function genHooks() {
   };
   await write("hooks.json", "Copilot CLI plugin");
   await write(path.join(".github", "hooks", "vela.json"), "repository hooks");
+  // Copilot CLI 1.0.91 (verified live) does not load .github/hooks/*.json; it loads repo hooks from the
+  // `hooks` key of .github/copilot/settings.json - and only in a trusted folder.
+  const settings = {
+    _generated: "by scripts/sync-copilot.mjs from hooks/bin/guard.sh (Copilot CLI repo settings) - do not edit by hand",
+    hooks: config("").hooks,
+  };
+  const dst = path.join(root, ".github", "copilot", "settings.json");
+  await fs.mkdir(path.dirname(dst), { recursive: true });
+  await fs.writeFile(dst, JSON.stringify(settings, null, 2) + "\n");
 }
 
 // Coverage matrix (skill x scenario) from each scenario's skills_exercised, into evals/README.md.

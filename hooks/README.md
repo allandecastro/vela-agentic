@@ -43,7 +43,18 @@ command verbatim (a non-existent package, no connection - nothing could reach an
 | `VELA_APPLY_APPROVED=1 vela apply -p ...` (inline) | not approved | **denied** - the agent cannot approve itself |
 | `vela apply -p /nonexistent/x.nupkg` | started with `VELA_APPLY_APPROVED=1` | passed the hook; the CLI stopped at "Package not found" (exit 3) |
 
-GitHub Copilot wiring is covered by `test/guard.test.sh` and the embedded-copy check, not yet by a live run.
+GitHub Copilot CLI 1.0.91 (`copilot -p ... --allow-all-tools`), same commands:
+
+| Wiring | Result |
+| --- | --- |
+| plugin (`--plugin-dir`, root `hooks.json`) | `vela apply` **denied** ("Denied by preToolUse hook"); inline approval **denied**; `vela plan --help` allowed; host started with `VELA_APPLY_APPROVED=1` passes the hook (CLI: "Package not found") |
+| repo, `.github/hooks/vela.json` | **not loaded** - even a deny-all canary hook there is ignored, trusted folder or not |
+| repo, `.github/copilot/settings.json` (`hooks` key) | `vela apply` **denied**, `vela version` allowed - **only in a trusted folder** (untrusted: not loaded) |
+
+So on Copilot, install the **plugin** (robust), or rely on `.github/copilot/settings.json` in a folder you
+have trusted. `.github/hooks/vela.json` is kept for hosts that read that location. When testing, keep
+paths inside the working directory: Copilot denies an out-of-tree path (`/nonexistent/...`) on its own
+unless `--allow-all-paths`, which looks like a hook denial but is not.
 
 ## Limits (by design)
 
@@ -59,7 +70,7 @@ GitHub Copilot wiring is covered by `test/guard.test.sh` and the embedded-copy c
 
 | | Claude Code | GitHub Copilot |
 |---|---|---|
-| Config | `hooks/hooks.json` (plugin) | `hooks.json` at the plugin root (Copilot CLI plugin) and `.github/hooks/vela.json` (repository hooks) - both **generated** by `scripts/sync-copilot.mjs` |
+| Config | `hooks/hooks.json` (plugin) | `hooks.json` at the plugin root (Copilot CLI plugin), `.github/copilot/settings.json` (repo hooks the CLI loads, trusted folder) and `.github/hooks/vela.json` - all **generated** by `scripts/sync-copilot.mjs` |
 | Event | `PreToolUse`, matcher `Bash` | `preToolUse` (all tools; non-shell payloads are allowed) |
 | Command field | `.tool_input.command` | `.toolArgs.command` (object, or a JSON string) |
 | Script | `${CLAUDE_PLUGIN_ROOT}/hooks/bin/guard.sh cc` | **embedded**: the config carries `guard.sh` base64-encoded and runs it with `sh -c` |
