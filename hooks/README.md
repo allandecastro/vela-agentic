@@ -31,6 +31,20 @@ Set `VELA_APPLY_APPROVED=1` **in the environment the host (Claude Code / Copilot
 from**, for a run a human has authorized. An inline prefix typed by the agent
 (`VELA_APPLY_APPROVED=1 vela apply ...`) does **not** open the gate - the agent cannot approve itself.
 
+## Verified live (2026-10-04)
+
+Claude Code 2.1.287 headless (`claude -p --plugin-dir <this repo>`), vela 0.22.0, the agent asked to run the
+command verbatim (a non-existent package, no connection - nothing could reach an org):
+
+| Case | Host env | Result |
+| --- | --- | --- |
+| `vela apply -p /nonexistent/x.nupkg` | not approved | **denied** by the hook ("Blocked by vela-agentic ... stop-before-apply") |
+| `vela plan --help` | not approved | allowed (help printed) |
+| `VELA_APPLY_APPROVED=1 vela apply -p ...` (inline) | not approved | **denied** - the agent cannot approve itself |
+| `vela apply -p /nonexistent/x.nupkg` | started with `VELA_APPLY_APPROVED=1` | passed the hook; the CLI stopped at "Package not found" (exit 3) |
+
+GitHub Copilot wiring is covered by `test/guard.test.sh` and the embedded-copy check, not yet by a live run.
+
 ## Limits (by design)
 
 - It is a guardrail, not a sandbox. Indirection (`v=vela; $v apply`), a script file that runs `vela
