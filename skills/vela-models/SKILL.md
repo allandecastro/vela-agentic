@@ -35,7 +35,8 @@ Announce: `Using vela-models to <purpose>`.
    `az login` session (or managed identity) exists - headless and verified; interactive `-i` only with a human at a browser;
    or connection string / client secret for automation.
 4. Generate:
-   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite -i`
+   - C# early-bound (default): `vela models --entities account,contact --out src/<Prefix>.Shared/Models/Generated --overwrite <connection>`
+     (`<connection>` from step 3, e.g. `--url <org>`)
      (without `--out` the files land in the current directory; the scaffold keeps models in
      `<Prefix>.Shared/Models/Generated`)
    - TypeScript: add `--forms` and/or `--tables`.
