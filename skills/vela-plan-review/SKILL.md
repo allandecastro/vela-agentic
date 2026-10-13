@@ -94,7 +94,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
    is a **business decision only the human can make** (what a story term means, which record drives
-   which, the rule itself): then use `vela-grill` first, and resume here with the answers. No human
+   which, the rule itself - including **edge values that change an acceptance case**, e.g. "is an email
+   without `@` invalid?", "does a single Update count?"): then use `vela-grill` first, and resume here with
+   the answers. With a human reachable, such a rule is **asked**, never left as an assumption. No human
    reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
    that blocks the apply gate. A **blocked** outcome (framework limit, story not deliverable) always
    wins over "continue": set the Canvas `status: blocked` and stop (see the builder's "Blocked stories").

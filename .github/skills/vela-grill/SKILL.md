@@ -26,7 +26,8 @@ Announce: `Using vela-grill to resolve the story`.
    roughly this order, skipping what the story already answers. Only **business decisions** go to the
    human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions. A business
    value nobody raised (e.g. which Inactive status reason) may take the platform default - record it as an
-   assumption, don't spend a question on it. A one-line edge-case follow-up may ride along with its
+   assumption, don't spend a question on it. Ask every edge value that changes an acceptance case (scope, empty/malformed
+   input) before ending the interview - not as a gate question. A one-line edge-case follow-up may ride along with its
    question when the answer stays one line; never bundle two independent decisions.
    - Meaning: which column/table does each story term mean (a standard column or a custom one)?
    - Direction and records: which record drives the change, which is written; how are they related
