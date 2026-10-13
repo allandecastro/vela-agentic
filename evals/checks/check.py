@@ -15,7 +15,9 @@ import glob, json, os, re, subprocess, sys, hashlib, zipfile, xml.etree.ElementT
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROBE = os.path.join(ROOT, "evals", "tools", "probe", "bin", "Release", "net462", "Probe.exe")
-RUNNER = os.path.expanduser("~/.nuget/packages/xunit.runner.console/2.9.2/tools/net462/xunit.console.exe")
+# net48 projects (Vela >= 0.33) run on the net472 console; older net462 ones on net462.
+RUNNER = next((p for p in (os.path.expanduser(f"~/.nuget/packages/xunit.runner.console/2.9.2/tools/{t}/xunit.console.exe")
+                         for t in ("net472", "net462")) if os.path.exists(p)), "xunit.console.exe")
 DEMO_TYPES = {"AccountPostCreatePlugin", "AccountRelatedContactsPlugin", "AccountMessageReference",
               "ContactRouterPlugin", "PingCustomApi", "AccountEstimateValueCustomApi", "ContactValidateCustomApi",
               "AccountSyncRouterPlugin", "ContactSyncPlugin", "AccountReconcileCustomApi",
@@ -79,7 +81,7 @@ def main():
 
     # Tests: the evaluator's own run.
     total = failed = 0
-    dlls = [d for d in glob.glob(os.path.join(sol, "tests", "**", "bin", "Release", "net462", "*.Tests.dll"), recursive=True)]
+    dlls = [d for d in glob.glob(os.path.join(sol, "tests", "**", "bin", "Release", "net4*", "*.Tests.dll"), recursive=True)]
     for dll in dlls:
         xml = dll + ".results.xml"
         sh(f'mono "{RUNNER}" "{dll}" -parallel none -xml "{xml}"')
@@ -91,7 +93,7 @@ def main():
 
     # Registration really compiled.
     # The project's own assembly (<prefix>.Plugins.dll sits next to the framework's Vela.Plugins.dll).
-    plugin_dlls = [d for d in glob.glob(os.path.join(sol, "src", "*.Plugins", "bin", "Release", "net462", "*.Plugins.dll"))
+    plugin_dlls = [d for d in glob.glob(os.path.join(sol, "src", "*.Plugins", "bin", "Release", "net4*", "*.Plugins.dll"))
                    if os.path.basename(d) == os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(d))))) + ".dll"]
     reg = {"steps": [], "customApis": []}
     if check("plugin dll built", plugin_dlls, ", ".join(os.path.relpath(d, work) for d in plugin_dlls)):
@@ -165,14 +167,18 @@ def main():
               any(re.search(exp["real_models"], t) for t in g.values()), f"{len(gen)} generated files")
 
     if org and pkgs:
+        # vela >= 0.24: plan needs the target solution (it carries the publisher prefix).
+        solution = exp.get("solution", "ZavaSales")
+        code, out = sh(f'vela solution show {solution} --url {org} --json </dev/null')
+        check(f"target solution {solution} exists (vela solution show)", code == 0, out.strip()[-160:])
         out_json = os.path.join(work, "check-plan.json")
-        code, out = sh(f'perl -e "alarm 300; exec @ARGV" vela plan -p "{pkgs[0]}" --url {org} --out "{out_json}" </dev/null')
+        code, out = sh(f'perl -e "alarm 300; exec @ARGV" vela plan -p "{pkgs[0]}" --solution {solution} --url {org} --out "{out_json}" </dev/null')
         if check("read-only vela plan runs", code == 0 and os.path.exists(out_json), out[-200:]):
             plan = json.load(open(out_json))
             demo_ops = [o["type"] for o in plan["operations"] if o["type"].split(".")[-1] in DEMO_TYPES]
             check("plan has no demo operation", not demo_ops, ", ".join(demo_ops))
             authored = {s["PluginTypeName"] for s in steps}
-            creates = [o for o in plan["operations"] if o["action"] == "create"]
+            creates = [o for o in plan["operations"] if o["action"] == "create" and o.get("kind", "step") != "package"]
             check("plan creates only authored steps", creates and all(o["type"] in authored for o in creates),
                   json.dumps([o["type"] for o in plan["operations"]])[:300])
     return finish(scenario, work)

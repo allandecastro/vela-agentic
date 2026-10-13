@@ -1,0 +1,6 @@
+#!/bin/sh
+# Eval shim: the real vela, minus anything that can write to the org (campaign runs use the org read-only).
+for a in "$@"; do
+  case "$a" in apply|--auto-approve|--yes) echo "eval shim: '$a' is forbidden in this eval (read-only org use)" >&2; exit 2;; esac
+done
+exec "$HOME/.dotnet/tools/vela" "$@"

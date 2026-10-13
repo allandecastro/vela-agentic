@@ -23,14 +23,30 @@ internal static class Program
         {
             Assembly plugin = Assembly.LoadFrom(dll);
             Assembly vela = Assembly.LoadFrom(Path.Combine(dir, "Vela.Plugins.dll"));
+            // Vela.Plugins >= 0.33: the public FrameworkManifestScanner returns steps + Custom APIs in one pass.
+            Type scanner = vela.GetType("Vela.Manifest.FrameworkManifestScanner", false);
+            object stepsObj, apisObj;
+            if (scanner != null)
+            {
+                Type optsType = vela.GetType("Vela.Manifest.FrameworkManifestScanOptions", true);
+                MethodInfo scan = scanner.GetMethod("Scan", new[] { typeof(Assembly), optsType });
+                object target = scan.IsStatic ? null : Activator.CreateInstance(scanner);
+                object manifest = scan.Invoke(target, new object[] { plugin, Activator.CreateInstance(optsType) });
+                stepsObj = manifest.GetType().GetProperty("PluginSteps").GetValue(manifest);
+                apisObj = manifest.GetType().GetProperty("CustomApis").GetValue(manifest);
+            }
+            else
+            {
+                // Older framework (<= 0.30): the static readers.
+                stepsObj = vela.GetType("Vela.Steps.StepDefinitionReader", true)
+                    .GetMethod("GetStepDefinitions", new[] { typeof(Assembly) }).Invoke(null, new object[] { plugin });
+                apisObj = vela.GetType("Vela.CustomApi.CustomApiDefinitionReader", true)
+                    .GetMethod("GetCustomApiDefinitions", new[] { typeof(Assembly) }).Invoke(null, new object[] { plugin });
+            }
             var sb = new StringBuilder("{\"steps\":[");
-            object steps = vela.GetType("Vela.Steps.StepDefinitionReader", true)
-                .GetMethod("GetStepDefinitions", new[] { typeof(Assembly) }).Invoke(null, new object[] { plugin });
-            sb.Append(string.Join(",", ((IEnumerable)steps).Cast<object>().Select(ToJson)));
+            sb.Append(string.Join(",", ((IEnumerable)stepsObj ?? new object[0]).Cast<object>().Select(ToJson)));
             sb.Append("],\"customApis\":[");
-            object apis = vela.GetType("Vela.CustomApi.CustomApiDefinitionReader", true)
-                .GetMethod("GetCustomApiDefinitions", new[] { typeof(Assembly) }).Invoke(null, new object[] { plugin });
-            sb.Append(string.Join(",", ((IEnumerable)apis).Cast<object>().Select(ToJson)));
+            sb.Append(string.Join(",", ((IEnumerable)apisObj ?? new object[0]).Cast<object>().Select(ToJson)));
             sb.Append("]}");
             Console.WriteLine(sb.ToString());
             return 0;
