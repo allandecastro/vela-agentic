@@ -1,7 +1,7 @@
 ---
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Review the plan (self-grilling)
@@ -44,12 +44,12 @@ Announce: `Using vela-plan-review to grill the plan`.
      (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
      Shared by the steps of one plugin → private helper; across plugins → service.
    - **Structure - outbound integration?** Does the behaviour call another system (HTTP API, queue,
-     Azure service, e-mail gateway...)? Yes → the call goes in a **service in the Plugins project** (its
-     csproj already references `System.Net.Http`), usually behind an **Async** PostOperation step (see
-     Sync vs Async), HTTPS to a DNS name with an explicit timeout, credentials via
-     `.WithSecureConfigFrom("Name")`. Do **not** scaffold with `vela init --samples` to get an
-     Integrations project: it also adds demo code and a ConsoleApp. Record the answer in the Canvas
-     (Structure), including the secure-config name the deployer must supply.
+     Azure service, e-mail gateway...)? Yes → the call goes in a service in the **Integrations project**
+     (scaffold with `vela init --integrations`: empty, no demos, references `System.Net.Http`), usually
+     behind an **Async** PostOperation step (see Sync vs Async), HTTPS to a DNS name with an explicit
+     timeout, credentials via `.WithSecureConfigFrom("Name")`. It builds its own package - the preview
+     covers **both** packages. Never `vela init --samples` (demo code and a ConsoleApp). Record the
+     answer in the Canvas (Structure), including the secure-config name the deployer must supply.
    - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
      components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
      it); with an org, confirm both read-only with `vela solution show <uniquename> --json`. The

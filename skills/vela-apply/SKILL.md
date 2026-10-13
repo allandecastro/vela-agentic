@@ -1,7 +1,7 @@
 ---
 name: vela-apply
 description: Use when a built, reviewed, tested Vela plugin needs to be packaged, signed, previewed against, or deployed to a Dataverse environment.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Package, preview and apply to a Dataverse org
@@ -31,7 +31,9 @@ Announce: `Using vela-apply to <purpose>`.
    `artifacts/` folder. **Not `dotnet pack`**: run cold it exits 0 with `NU5128` and emits a package with
    **no assembly**. Then check the package really holds your plugin -
    `unzip -l artifacts/<Prefix>.Plugins.<ver>.nupkg | grep '<Prefix>.Plugins.dll'` - and record its
-   path and hash (`shasum -a 256 <pkg>`). This is the artifact everything below refers to.
+   path and hash (`shasum -a 256 <pkg>`). This is the artifact everything below refers to. A project
+   scaffolded with `--integrations` builds a second package, `<Prefix>.Integrations.<ver>.nupkg`: check,
+   hash, sign and preview it the same way.
    **Build it last.** Every Release build that includes the plugin project - including building the
    test project - repacks the package with a **new hash** even without a source change (verified). Run
    the tests first, then this build, then nothing else before `plan`; the human applies that file

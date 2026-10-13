@@ -3,7 +3,7 @@
 # Vela.Testing harness API (verbatim)
 
 Ground truth for writing and running harness tests. Skills point here. Every snippet below was compiled and
-run under the Mono runner against vela 0.24.1 / Vela.Testing 0.33.0 (net48).
+run under the Mono runner against vela 0.25.0 / Vela.Testing 0.34.0 (net48).
 
 ## Two ways to run a plugin - pick by what the test must prove
 
@@ -14,7 +14,7 @@ run under the Mono runner against vela 0.24.1 / Vela.Testing 0.33.0 (net48).
 | what is actually **saved**, cascades, recursion, async steps | **`PluginPipeline`** | runs every registered step around each write, commits, then runs async steps |
 
 A "step does not fire when an unrelated column changes" test written with `Execute` passes **and
-proves nothing** (re-verified, 0.33.0). Write it with the pipeline:
+proves nothing** (re-verified, 0.34.0). Write it with the pipeline:
 ```csharp
 var id = Guid.NewGuid();
 var p = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "orig" });
@@ -22,35 +22,38 @@ p.Service.Update(new Account { Id = id, Revenue = new Money(2m) });   // filtere
 Assert.Empty(p.ExecutionLog);                                          // the step did not fire
 p.Service.Update(new Account { Id = id, Name = "changed" });
 var run = Assert.Single(p.ExecutionLog);                               // it fired once
-Assert.Equal("Update", run.Message);                                   // entries: PluginTypeName, Message, Stage,
-Assert.Equal(PluginStages.PreOperation, run.Stage);                    // Mode, EntityLogicalName, Depth
+Assert.True(run.HandlerInvoked);                                       // entries: PluginTypeName, Message, Stage, Mode,
+Assert.Equal("Update", run.Message);                                   // EntityLogicalName, Depth, HandlerInvoked,
+Assert.Equal(PluginStages.PreOperation, run.Stage);                    // SkipReason (null unless skipped)
 var row = Assert.Single(p.GetAll("account"));                          // what was saved
 Assert.Equal("changed", row.GetAttributeValue<string>("name"));
 ```
 
-## Generated test shape (`vela add test <Name> --kind plugin --entity <Entity>`, run in the test project)
+## Generated test shape (`vela add test <Name> --kind plugin --entity <Entity> --message <M>`, run in the test project)
 
 ```csharp
 [Fact]
-public void Runs_Its_Handler()
+public void Fires_On_Update()
 {
-    // Arrange: an in-memory Dataverse the plugin's injected IOrganizationService reads and writes.
-    InMemoryOrganizationService crm = new InMemoryOrganizationService();
-    Account target = new Account { Id = Guid.NewGuid() };
+    // Arrange: Empty().Register<T>() scopes the pipeline to this plugin (FromAssemblyOf<T>() takes them all).
+    PluginPipeline pipeline = PluginPipeline.Empty().Register<<Name>>();
 
-    // Act: a single-step plugin derives its trigger (message/stage/mode) from its own registration. For a
-    // multi-step plugin, select the step under test: .OnUpdate().Stage(PluginStages.PostOperation).Sync().
-    PluginContextBuilder<Account> builder = PluginContext.For<Account>()
-        .WithTarget(target)
-        .WithOrganizationService(crm);
-    builder.Execute(new <Name>(string.Empty, string.Empty));
+    // Act: send the Update the step is registered on.
+    Guid id = Guid.NewGuid();
+    pipeline.Seed(new Account { Id = id });
+    // The step filters on Name, so the request sets it (TODO: give it a real value).
+    pipeline.Service.Update(new Account { Id = id, Name = default });
 
-    // Assert: the handler ran (the scaffolded one traces this line). Replace it ...
-    Assert.Contains("<Name> executed", builder.TraceCapture.Output);
+    // Assert: the step fired. What the handler does is the next test's job.
+    Assert.Contains(pipeline.ExecutionLog, e => e.PluginTypeName == typeof(<Name>).FullName && e.Message == "Update");
 }
+
+[Fact(Skip = "TODO: assert what <Name> does")]
+public void Does_What_It_Should() { /* seed, send the request, read back what the plugin wrote */ }
 ```
-The generated assertion only proves the scaffold's trace line ran - it fails as soon as you replace the
-handler body. Replace it with assertions on what the plugin does (below).
+The generated `Fires_On_*` test only proves the step fired. Give the filtered column a real value, then
+un-skip `Does_What_It_Should` and fill it with assertions on what the plugin does (below) - the acceptance
+cases live there, plus the negative "does not fire" cases.
 
 Critical, easy-to-get-wrong facts:
 - Run a step with an instance, `.Execute(new <Plugin>(string.Empty, string.Empty))`, or with
@@ -61,24 +64,25 @@ Critical, easy-to-get-wrong facts:
   never registers still gets the one the test passes). Test "fires / does not fire", "the value is actually
   saved" and "the image is there" with `PluginPipeline`.
 - **Trigger:** a single-step plugin derives it - don't chain `.OnUpdate().Stage()...`. A **multi-step**
-  plugin needs the message **and** the stage of the step under test:
-  `.OnUpdate().Stage(PluginStages.PreOperation)` (`using Vela.Constants;`). The message alone is not enough
-  (the stage defaults to PostOperation): `.OnCreate()` on a PreOperation Create step throws "has no
-  registered step matching message 'Create'"; no trigger at all throws "... matching message 'Update'".
-  The pipeline needs none of this: it dispatches each write to the matching step.
+  plugin needs the message of the step under test: `.OnCreate()` / `.OnUpdate()` resolves the single step
+  registered on that message (verified, 0.34.0); several matching steps, or none, throw with the list -
+  then add `.Stage(PluginStages.PreOperation)` (`using Vela.Constants;`). No trigger at all on a
+  multi-step plugin throws. The pipeline needs none of this: it dispatches each write to the matching step.
 - **Bulk (`*Multiple`):** seed the batch with `WithTargets(params T[])` (or an `EntityCollection`) - for a
   single-step plugin that alone is enough; otherwise
   `.OnMessage("UpdateMultiple").Stage(PluginStages.PreOperation)`. `WithTargets(params T[])` keeps your
   instances, so assert on them. To prove what is saved, use the pipeline:
   `p.Service.Execute(new UpdateMultipleRequest { Targets = ... })` (`using Microsoft.Xrm.Sdk.Messages;`) fires
   the step once for the batch; a single `p.Service.Update(...)` fires an UpdateMultiple step too.
-  `vela add test <Plugin> --message UpdateMultiple` generates `WithTargets(...)`.
-- **Associate / Disassociate** (verified, 0.33.0): the step is **message-level** - the pipeline fires it
-  whichever table the call is issued from (`run.EntityLogicalName` is that side). A step scoped with
-  `.ForRelationship("<schema>")` skips its handler on any other relationship, **but `ExecutionLog` still
-  records the dispatch** (the trace says "relationship outside the step's ForRelationship scope") - assert
-  on the handler's effect or trace, not on `ExecutionLog`, for the out-of-scope case. The test `vela add
-  test --message Associate` generates (`WithTarget(new Contact ...)`) proves nothing - replace it:
+  `vela add test <Plugin> --message UpdateMultiple` generates that pipeline `UpdateMultipleRequest` test.
+- **Associate / Disassociate** (verified, 0.34.0): the step is **message-level** - the pipeline fires it
+  whichever table the call is issued from (`run.EntityLogicalName` is that side; a Contact plugin's step
+  also runs with an `account` Target when associated from the account side - see `dataverse-gotchas.md`).
+  A step scoped with `.ForRelationship("<schema>")` is still logged on any other relationship, with
+  `HandlerInvoked == false` and `SkipReason` "Vela: relationship outside the step's ForRelationship scope;
+  nothing to run." - assert on that for the out-of-scope case. `vela add test --message Associate`
+  generates a real pipeline Associate (`WithManyToMany(...)` + `Service.Associate(...)`): replace its
+  `todo_relationship` / `todo_intersect` / `todo_*id` placeholders with the real relationship, e.g.:
   ```csharp
   Guid contactId = Guid.NewGuid(), listId = Guid.NewGuid();
   var p = PluginPipeline.Empty().Register<ListMemberAdded>()
@@ -86,8 +90,9 @@ Critical, easy-to-get-wrong facts:
       .Seed(new Contact { Id = contactId }, new Entity("list", listId));
   p.Service.Associate("contact", contactId, new Relationship("listcontact_association"),
       new EntityReferenceCollection { new EntityReference("list", listId) });
-  Assert.Equal("Associate", Assert.Single(p.ExecutionLog).Message);
-  Assert.Contains("ListMemberAdded executed", p.Trace.Output);
+  var run = Assert.Single(p.ExecutionLog);
+  Assert.Equal("Associate", run.Message);
+  Assert.True(run.HandlerInvoked);                                       // False + SkipReason on another relationship
   ```
 - **Images:** `.WithPreImage(preImage)` - the alias is optional and defaults to the one `ctx.PreImage`
   reads. The pipeline builds the pre-image from the seeded row, **only if the step registers it** - so an
@@ -116,9 +121,8 @@ Critical, easy-to-get-wrong facts:
   sent, so it is on the target either way): don't assert on trace text; cover it by design review and
   record it as a Canvas note.
 - **A handler that writes by `ctx.PrimaryEntityId`** (PostOperation, async): in a `PluginContext` test
-  `ctx.PrimaryEntityId` is a random id, **not** `target.Id`, so the write throws "account With Id = ... Does
-  Not Exist". Pass `.WithPrimaryEntity("account", target.Id)` (and seed that row), or use the pipeline,
-  where the ids are real.
+  `ctx.PrimaryEntityId` follows the Target's id (verified, 0.34.0), so seed that row before `Execute`;
+  `.WithPrimaryEntity(...)` only to override it. The pipeline uses the real ids.
 - `.Build()` does **not** derive the trigger (it defaults to Update / PostOperation / Sync);
   `.Build<TPlugin>()` and `.Build(plugin)` derive it from a single-step plugin, like `Execute`. Use them
   when you build a context to inspect it (`context.PluginExecutionContext.InputParameters["Target"]`).
@@ -154,19 +158,25 @@ Assert.Equal(900m, response.Value);
 ```
 `pipeline.Service.Execute(...)` returns a base `OrganizationResponse` that cannot be cast to the typed one;
 `.ToResponse<T>()` views it as `T` over the same results. The typed request/response classes are
-`OrganizationRequest` / `OrganizationResponse` subclasses (e.g. generated by `vela models --custom-apis`).
+Vela's `CustomApiRequest` / `CustomApiResponse` subclasses for a Custom API you author (used with
+`CustomApiBase<TRequest, TResponse>`, see `plugin-authoring-api.md`), or `OrganizationRequest` /
+`OrganizationResponse` subclasses generated by `vela models --custom-apis` for one that exists in the org.
 When the handler uses an org service (a revenue or duplicate check), pass `.WithOrganizationService(crm)`,
 or those lookups have nothing to read. A pure computation needs none.
 
 - `vela add test <Name> --kind customapi` generates two tests: the definition builds under its unique name
-  (`new <Api>(string.Empty, string.Empty).GetCustomApiDefinition().UniqueName`), and every declared output is
-  set (`PluginContext.ForMessage("<prefix>_<Name>")`, `builder.Context.OutputParameters`). Add inputs with
-  `.WithInputParameter("Name", value)` and assert the values, not only their presence.
+  (`new <Api>(string.Empty, string.Empty).GetCustomApiDefinition().UniqueName`), and a
+  `[Fact(Skip = "TODO: set the inputs ...")]` test that every declared output is set
+  (`PluginContext.ForMessage("<prefix>_<Name>")` for a global API, `PluginContext.ForRequest(new
+  <Name>Request { ... })` + a `Target` for a typed bound one; `builder.Context.OutputParameters`). Set the
+  inputs (`.WithInputParameter("Name", value)` or the request's properties), remove `Skip`, and assert
+  the values, not only their presence.
 - Parameters use their **plain names**: `InputParameters["Discount"]` → `OutputParameters["Value"]`.
-- The harness does **not** enforce `optional: false` (re-verified, 0.33.0: a missing required input does not
-  throw): the handler must check the input and throw itself. A missing required input should throw
-  `InvalidPluginExecutionException` - test it:
-  `Assert.Throws<InvalidPluginExecutionException>(() => api.Execute(context.ServiceProvider))`.
+- A missing required input (`optional: false`) throws as on Dataverse (verified, 0.34.0), through the
+  pipeline and `builder.Execute(api)`: `FaultException<OrganizationServiceFault>` "Required field 'AccountId'
+  is missing for RequestName='<prefix>_<Name>'" (`using System.ServiceModel;`) - test it:
+  `Assert.Throws<FaultException<OrganizationServiceFault>>(() => p.Service.Execute(new EstimateValueRequest()))`.
+  Recipe 1 (`.Build()` + `api.Execute(context.ServiceProvider)`) skips that validation.
 
 Trigger and image signatures (`PluginContextBuilder<T>`): `.OnCreate()` / `.OnUpdate()` / `.OnDelete()` /
 `.OnMessage("<name>")`, `.Stage(PluginStages x)` (`Vela.Constants`), `.Mode(ExecutionMode x)`
@@ -187,7 +197,7 @@ an assembly), `Seed(...)`, write through `pipeline.Service`, inspect `ExecutionL
 `WithSecureConfigFrom(name)`), `WithMaxDepth(n)`.
 
 Recursion / cascade recipe - `PluginPipeline` runs every registered plugin on each write made through
-`pipeline.Service`, so a self-triggering plugin actually recurses (verified, 0.33.0):
+`pipeline.Service`, so a self-triggering plugin actually recurses (verified, 0.34.0):
 ```csharp
 var id = Guid.NewGuid();
 var pipeline = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "x" });

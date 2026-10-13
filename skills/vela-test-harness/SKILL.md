@@ -1,7 +1,7 @@
 ---
 name: vela-test-harness
 description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins / Vela.Testing >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins / Vela.Testing >= 0.34.0); dotnet SDK."
 ---
 
 # Verify with the Vela.Testing harness
@@ -35,8 +35,10 @@ Write a case for each, drawn from the Vela Canvas's acceptance cases:
 - on **Update**: a column **not sent** vs a column **cleared** (sent as null) - they are different
   (`ctx.Request.Target` only holds the columns that were sent). For a column that can't be cleared
   (e.g. `statecode`), test "sent with the same value" instead.
-- negative pipeline cases - **both** "sent with the same value" and "cleared" - each assert the step **ran** (`ExecutionLog`) and left
-  the value alone - otherwise it also passes with a broken trigger.
+- negative pipeline cases - **both** "sent with the same value" and "cleared" - each assert the step **ran** (`ExecutionLog`,
+  `HandlerInvoked`) and left the value alone - otherwise it also passes with a broken trigger. A "does
+  not fire" case asserts `Assert.Empty(p.ExecutionLog)` (filter not matched), or `HandlerInvoked == false`
+  for a step the pipeline skipped (out of `ForRelationship` scope, depth guard) - plus the effect.
 A single happy-path test does not satisfy the gate.
 
 **Pick the runner by what the case proves** (`references/harness-api.md`): `PluginContext...Execute`
@@ -49,9 +51,12 @@ and async steps - `Execute` ignores `FilterOn`, the registered stage/mode and th
 Announce: `Using vela-test-harness to <purpose>`.
 
 1. Ensure a `.Tests` project references `Vela.Testing` (`vela init` scaffolds one unless `--no-tests`).
-   Add a test class with `vela add test <Name> --kind plugin --entity <Entity>` (`--message <X>Multiple`
-   generates `WithTargets(...)`), run **inside the test project**; replace its placeholder assertion
-   (`Assert.Contains("<Name> executed", ...)`) with real ones.
+   Add a test class with `vela add test <Name> --kind plugin --entity <Entity> --message <M>`, run
+   **inside the test project**. It generates a `PluginPipeline` test that the step fired
+   (`Assert.Contains(pipeline.ExecutionLog, e => e.PluginTypeName == ... && e.Message == "<M>")`) and a
+   skipped "read back what the plugin wrote" stub: give the filtered column a real value, replace the
+   `todo_*` placeholders (Associate: the real relationship), then un-skip and fill the stub. A Custom API
+   (`--kind customapi`) gets a unique-name test and a skipped execution test - set its inputs, remove `Skip`.
 2. Write the test using the **real** shape (see `references/harness-api.md`):
    ```csharp
    var crm = new InMemoryOrganizationService();
@@ -64,7 +69,7 @@ Announce: `Using vela-test-harness to <purpose>`.
    ```
    `Execute(new X(string.Empty, string.Empty))` or `.Execute<X>()` (both work since 0.33.0). Do **not**
    chain a trigger for a single-step plugin - it auto-derives; for a multi-step plugin state the message
-   **and** stage of the step under test (`.OnUpdate().Stage(PluginStages.PreOperation)`).
+   of the step under test (`.OnUpdate()`), and add `.Stage(...)` only when several steps share it.
 3. Write the full **Coverage** set above (not just the happy path).
 4. **RED first (mandatory):** run the tests before implementing and confirm the behaviour cases
    **fail** for the right reason. Guard / no-op cases ("already normal", "null → untouched",
@@ -76,6 +81,7 @@ Announce: `Using vela-test-harness to <purpose>`.
    - macOS/Linux: `dotnet test` cannot host net48 - build, then
      `mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe
      tests/<P>.Plugins.Tests/bin/Release/net48/<P>.Plugins.Tests.dll -parallel none`.
+     Run each test assembly (`<P>.Integrations.Tests` too, when the project has one).
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -91,8 +97,8 @@ Announce: `Using vela-test-harness to <purpose>`.
 ## Red flags
 
 - Claiming success from `dotnet build` alone, or from a partial/crashed test run.
-- Restating a trigger on a single-step plugin, or a message without its stage on a multi-step one.
-- Keeping the generated `Assert.Contains("<Name> executed", ...)` as the only assertion.
+- Restating a trigger on a single-step plugin, or no message on a multi-step one.
+- Keeping the generated "fires" test as the only assertion, or leaving `Does_What_It_Should` skipped.
 - A "step does not fire" / filtering-attribute case written with `Execute` instead of `PluginPipeline`.
 - Reporting a Mono native segv (missing `-parallel none`) as a test failure.
 

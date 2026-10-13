@@ -106,10 +106,10 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.24.1
-framework: 0.33.0
-packages: [Zava.Plugins.1.0.0.nupkg]   # the plugin package (an Integrations package only with --samples + an outbound flow)
-package_sha256: <sha256 of the previewed package>
+vela_cli: 0.25.0
+framework: 0.34.0
+packages: [Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ Zava.Integrations.<ver>.nupkg for an outbound call)
+package_sha256: <sha256 of the previewed package>   # one per package when there are several
 signed: no                # yes | no (a human signs before apply) | n/a (org does not require it) | unknown (asked at the gate)
 harness: pass             # pass | fail  (must be pass to reach the gate)
 analyzers: clean          # clean | violations  (authored code)

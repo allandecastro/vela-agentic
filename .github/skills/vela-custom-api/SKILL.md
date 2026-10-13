@@ -1,7 +1,7 @@
 ---
 name: vela-custom-api
 description: Use when a story asks for a callable operation (an endpoint, action, function or message other code or a flow invokes) rather than a reaction to a table event, or when a Vela Custom API must be added, changed or tested.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Build a Vela Custom API
@@ -49,12 +49,15 @@ Announce: `Using vela-custom-api to <purpose>`.
    project has none, and check the generated `RegisterCustomApi("<prefix>_<Name>"...)` against the
    Canvas. Global → a lightweight untyped class in `GlobalCustomApis/` (handler passed to
    `RegisterCustomApi(name, handler)`); `--entity` → a **typed** class in `<Entity>/CustomApis/`
-   (`CustomApiBase<TRequest, TResponse>`, `Execute(ctx, request)`) with request/response classes (its
-   placeholder `Result` response property is to be renamed or replaced). Both shapes are in
+   (`CustomApiBase<TRequest, TResponse>`, `Execute(ctx, request)`) with request/response classes -
+   subclasses of Vela's `CustomApiRequest` / `CustomApiResponse` (`using Vela.Messages;`), as in the
+   scaffold's `AGENTS.md` (its placeholder `Result` response property is to be renamed or replaced). Both shapes are in
    `references/plugin-authoring-api.md` - don't convert one into the other by hand.
-4. **Tests first (RED)** with `vela-test-harness`: `vela add test <Name> --kind customapi`, then one
-   test per acceptance case - outputs for valid inputs, each edge, and each invalid input throwing
-   `InvalidPluginExecutionException` (recipe in `references/harness-api.md`). Watch them fail.
+4. **Tests first (RED)** with `vela-test-harness`: `vela add test <Name> --kind customapi` (a unique-name
+   test + a skipped execution test: set its inputs, remove `Skip`), then one test per acceptance case -
+   outputs for valid inputs, each edge, and each invalid input throwing `InvalidPluginExecutionException`
+   (recipe in `references/harness-api.md`). A missing **required** input is rejected by the harness itself
+   (`FaultException`, as on Dataverse) - the handler validates values, not presence. Watch them fail.
 5. **Implement** to green:
    - Global: declare parameters with `.RequestParameter<T>(name, optional, description)` /
      `.ResponseParameter<T>(name, description)`; read with `ctx.GetInputParameter<T>(name)`, write with

@@ -19,9 +19,10 @@ composing `vela` commands, never by reaching around the CLI into internal APIs.
 
 ## The command surface (verified)
 
-- `vela init` (alias `new`) - scaffold a solution on disk (minimal by default; `--samples` adds demos).
+- `vela init` (alias `new`) - scaffold a solution on disk (minimal by default; `--integrations` adds an
+  empty Integrations project for outbound calls; `--samples` adds demos - never for real work).
   Never connects to Dataverse. It writes Vela's own `AGENTS.md` into the project; where that file
-  differs from this pack (e.g. it offers `--auto-approve`), this pack's rules govern.
+  differs from this pack (e.g. it shows `vela models --interactive`), this pack's rules govern.
 - `vela add <plugin|customapi|service|test|step|form-script|ribbon-script> <Name>` - add a
   component to a project. Local only.
 - `vela models` - generate early-bound C# models, or TypeScript form/table models; or
@@ -100,7 +101,7 @@ the quality signal.
    frontmatter (the verified version is recorded in `references/cli-surface.md`). If the installed
    CLI is at or above it, proceed. If it is older, tell the user to `vela update`; only **stop** if a
    *named* feature the skill depends on is genuinely missing. Do not halt merely because the patch
-   version differs (e.g. 0.24.1 vs 0.24.2 is fine).
+   version differs (e.g. 0.25.0 vs 0.25.1 is fine).
 3. **Announce the skill.** When you start a skill, say `Using <skill> to <purpose>` so the
    run is traceable.
 4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that

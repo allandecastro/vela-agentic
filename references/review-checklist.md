@@ -45,7 +45,7 @@ Structure decisions):
 ## Axis 2 - Standards + Dataverse smell baseline
 
 Analyzer intent (VELA0xx) plus these recurring Dataverse smells (see `dataverse-gotchas.md`). Items
-marked **[analyzer: VELAxxx]** are enforced by the build (Vela.Plugins 0.33.0): if the build output
+marked **[analyzer: VELAxxx]** are enforced by the build (Vela.Plugins 0.34.0): if the build output
 the dispatcher pasted is clean, they hold - don't re-litigate them, but a suppressed or ignored
 diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required**.
 
@@ -111,9 +111,9 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
   `.WithSecureConfigFrom("Name")` (value given at deploy time) or uses a secret store. A secret in code
   or unsecure configuration is **Critical**.
 - **Outbound calls:** HTTPS to a DNS name (no raw IP), an explicit timeout, from an Async step unless
-  the Canvas records why it must be Sync - **Required**. Code in an Integrations/ConsoleApp project from
-  `vela init --samples`, or leftover sample code, in a real project - **Required** (outbound code lives
-  in the Plugins project).
+  the Canvas records why it must be Sync - **Required**. Code in a ConsoleApp or demo code from
+  `vela init --samples`, or outbound code outside the Integrations project (`vela init --integrations`),
+  in a real project - **Required**.
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions. A
   PreOperation edit that writes a column only when its value actually changes (writing an unchanged
   value adds it to the save and can fire other steps) - Nit unless the Canvas requires otherwise.

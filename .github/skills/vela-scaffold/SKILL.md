@@ -1,7 +1,7 @@
 ---
 name: vela-scaffold
 description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Scaffold Vela projects and components
@@ -40,21 +40,23 @@ Announce: `Using vela-scaffold to <purpose>`.
 3. **New solution?** `vela init <Name> --prefix <Prefix> --publisher-prefix <publisherPrefix> -o <dir>`.
    It creates `<dir>/<Name>/` (nested under `-o`) and is **minimal**: `src/<Prefix>.Shared` (models),
    `src/<Prefix>.Plugins` (the plugin package), `tests/<Prefix>.Plugins.Tests` - no demo code, no
-   models. Two different prefixes:
+   models. Add `--integrations` when the Canvas records an outbound call (HTTP API, queue, ...): an
+   **empty** `src/<Prefix>.Integrations` plugin project (references `System.Net.Http`) + its tests, which
+   builds its own package - the outbound code goes there. Two different prefixes:
    - `--prefix` - the **namespace / assembly prefix**, used verbatim, so pass it PascalCase
      (`--prefix Zava` → `Zava.Plugins`; `--prefix zava` → `zava.Plugins`). Omitted → the solution name.
    - `--publisher-prefix` - the **Dataverse publisher prefix** from step 2 (2-8 chars, e.g. `zava`),
      recorded as `<VelaPublisherPrefix>`; `vela add customapi` names APIs `<publisherPrefix>_<Name>`
      with it (see `references/registration-rules.md`). `plan`/`apply` take the prefix from `--solution`.
-   - Never `--samples` for a real project: it adds the demos and the Integrations/ConsoleApp projects
-     (`--no-integrations`/`--no-console` only apply with it). Outbound HTTP code fits the Plugins project
-     (it references `System.Net.Http`). `--no-tests` never - tests are the acceptance criteria.
+   - Never `--samples` for a real project: it adds the demos and a ConsoleApp (`--no-integrations`/
+     `--no-console` only apply with it); `--integrations` gives the Integrations project without them
+     (`--managed-identity` implies it). `--no-tests` never - tests are the acceptance criteria.
    - `vela init` also writes an `AGENTS.md` in the project (Vela's own agent guide: layout, commands,
      code samples). It is useful context, but **this pack's skills govern**. Where it differs, follow the
-     pack: it lists `vela apply ... --auto-approve` as a way to skip the prompt (our rule: stop before
-     `apply`, never auto-approve unless authorized for this run), `vela models ... --interactive` (use
-     the resolved headless connection) and `vela plan --packages-dir artifacts` (preview the exact
-     package with `-p`, see `vela-apply`).
+     pack: it shows `vela models ... --interactive` (use the resolved headless connection) and
+     `vela plan --packages-dir artifacts` (preview the exact package(s) with `-p`, see `vela-apply`); its
+     Custom API example (`CustomApiBase<TRequest, TResponse>` + `CustomApiRequest`/`CustomApiResponse`)
+     is valid. Our rule on `apply` is stricter: stop before it, never `--auto-approve` unless authorized.
 4. **Generate the models before the first plugin** (`vela-models`): the scaffold has none, and a plugin on
    `Account` does not compile until the model exists (`CS0234` "The type or namespace name 'Shared' does
    not exist" / `CS0118`). `vela models --entities <tables> --project src/<Prefix>.Shared/<Prefix>.Shared.csproj <connection>` -
@@ -68,14 +70,17 @@ Announce: `Using vela-scaffold to <purpose>`.
 6. **Add the component** - always with `--project <path>.csproj` (without it, outside a project folder,
    `vela add` prints "No .csproj found" and exits `2`); read the "Created"/"Added" line (or `--json`'s `created`):
    - Plugin: `vela add plugin <Name> --entity <ModelType> --message <Msg> --stage <PreValidation|PreOperation|PostOperation> --mode <Sync|Async> --filtering-attributes <A,B> --project src/<Prefix>.Plugins/<Prefix>.Plugins.csproj`
-     (`--filter` is the short alias; pass the **model property** names - `Name`, not the logical name
-     `name`, which is echoed verbatim as `e => e.name`). Create/Update(+Multiple) without a filter exits `2`.
+     (an outbound plugin: `--project src/<Prefix>.Integrations/<Prefix>.Integrations.csproj`). `--filter` is
+     the short alias; logical names are mapped to the model property (`name` → `FilterOn(e => e.Name)`, with
+     a "corrected to" note). Create/Update(+Multiple) without a filter exits `2`.
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg> --stage <Stage> --mode <Mode> --filtering-attributes <A,B> --project ...`
    - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--project ...]` - the unique
      name is `<VelaPublisherPrefix>_<Name>` (`--prefix <pub>` overrides it); omit `--entity` for a global
      API. Design it with `vela-custom-api` first.
    - Test: `vela add test <PluginName> --kind plugin|customapi [--entity <E>] [--message <Msg>] --project tests/<Prefix>.Plugins.Tests/<Prefix>.Plugins.Tests.csproj`
-     (`--prefix` for a Custom API test when the project records none).
+     (`--prefix` for a Custom API test when the project records none; an Integrations plugin's tests go in
+     `tests/<Prefix>.Integrations.Tests`). A plugin gets a pipeline "fires" test + a skipped "does what it
+     should" stub; a Custom API a unique-name test + a skipped execution test - `vela-test-harness` fills them.
 7. **Scaffold the registration the Canvas decided** - pass `--stage`, `--mode` and `--filtering-attributes`
    to `add plugin` / `add step`; the chain, the handler's context type and the `FilterOn` are generated to
    match. Then **read the generated chain** against the Canvas: stage, mode and filter must be what you
@@ -107,15 +112,16 @@ Announce: `Using vela-scaffold to <purpose>`.
 
 - You are about to hand-edit a generated file (`Models/Generated`, compiler output).
 - The Canvas says PreOperation but the scaffolded step still says `.PostOperation()`.
-- `vela init --samples` (demos, Integrations, ConsoleApp) for a project headed for `vela apply`.
+- `vela init --samples` (demos, Integrations, ConsoleApp) for a project headed for `vela apply`; or
+  outbound code in the Plugins project instead of a `--integrations` project.
 - A lower-case `--prefix` (namespaces like `zava.Plugins`), or a `--publisher-prefix` nobody confirmed
   with `vela solution show`.
 - A committed file is named `*.generated.cs` (often gitignored).
 - You guessed a flag instead of reading `--help`.
-- You accepted the generated `FilterOn` without checking it: an echoed lowercase attribute
-  (`e => e.name`) or a column the Canvas did not choose ships a wrong registration.
+- You accepted the generated `FilterOn` without checking it: a column the Canvas did not choose ships
+  a wrong registration.
 - You used `--interactive` on `vela init`/`vela add` (a TTY wizard - an agent must pass flags).
-- You followed the scaffold's `AGENTS.md` where it contradicts the pack (e.g. `--auto-approve`).
+- You followed the scaffold's `AGENTS.md` where it contradicts the pack (e.g. `vela models --interactive`).
 - The **build fails right after `vela models`** with an error in generated code (an incompatible
   auto-resolved framework version): pin a known-good core with `vela init --core-version <v>` (see
   `references/cli-surface.md`) and report the regression.

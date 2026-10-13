@@ -11,7 +11,7 @@ You take a **user story** and build the plugin that satisfies it, driving everyt
 the `vela` CLI. You apply the Vela skills. The only agent you dispatch is the read-only `vela-reviewer`
 at Review (step 9); you never orchestrate other builders. Follow the rules in the `using-vela` skill
 (preloaded; it mirrors the pack's `AGENTS.md`). The `AGENTS.md` that `vela init` writes into the project is
-Vela's own guide: useful context, but where it differs (e.g. `--auto-approve`), the pack's rules win.
+Vela's own guide: useful context, but where it differs (e.g. `vela models --interactive`), the pack's rules win.
 
 ## Autonomy boundary
 
@@ -37,7 +37,8 @@ package. A blocked story is a correct outcome, not a failure to work around.
    only the human can resolve an ambiguity, use `vela-grill`.
 4. **Scaffold** - `vela-scaffold`: confirm the solution and its publisher prefix with
    `vela solution show <uniquename> --json` (read-only), then `vela init` (minimal; `--prefix` PascalCase
-   namespace, `--publisher-prefix` from the solution).
+   namespace, `--publisher-prefix` from the solution; `--integrations` when the Canvas records an
+   outbound call - that project builds a second package to preview).
 5. **Model** - `vela-models` for the entities involved (needs a connection), **before** `vela add plugin`:
    the scaffold has no models and a plugin does not compile without them. Then `vela add` the components
    and build to confirm it compiles.

@@ -7,8 +7,8 @@ snapshot, the CLI is the contract. Every command has its own `vela <command> --h
 `vela help <command>`); `vela help --json` prints every command, option, alias and exit code as one
 JSON document (`schemaVersion: 1`) - the machine-readable source to check a flag against.
 
-**Verified against:** `vela 0.24.1` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.33.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
+**Verified against:** `vela 0.25.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.34.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
 
@@ -18,7 +18,8 @@ the floor.
 Scaffold a solution on disk, into `<output>/<Name>/` (nested). **Minimal by default**: three empty
 projects - `<Prefix>.Shared` (models + shared services, `net48;net10.0`), `<Prefix>.Plugins` (`net48`,
 builds the plugin package into `artifacts/`) and `tests/<Prefix>.Plugins.Tests` - plus an `AGENTS.md`,
-a `README.md` and `.vela/scaffold-manifest.json`. No demo code, no models, no Integrations/Console project.
+a `README.md` and `.vela/scaffold-manifest.json`. No demo code, no models, no Integrations/Console project
+(unless `--integrations`).
 - `--name <Name>` (or first positional, required) · `--output`/`-o <dir>` (default `.`)
 - `--prefix <Prefix>` - **namespace / assembly prefix**, used verbatim (`--prefix Zava` →
   `Zava.Plugins`; `--prefix zava` → `zava.Plugins`). Pass it PascalCase. Omitted → the solution name.
@@ -26,9 +27,13 @@ a `README.md` and `.vela/scaffold-manifest.json`. No demo code, no models, no In
   `<VelaPublisherPrefix>` in the Plugins project and used by `vela add customapi` for `<prefix>_<Name>`.
   Omitted → not recorded (Custom APIs then fall back to the lower-cased `--prefix`).
 - `--no-tests` · `--core-version <v>` (default: latest `Vela.Plugins` on nuget.org)
+- `--integrations` - add an **empty** Integrations plugin project (`src/<Prefix>.Integrations`, `net48`,
+  references `System.Net.Http`) and its tests (`tests/<Prefix>.Integrations.Tests`), no demos. It builds
+  its own package (`artifacts/<Prefix>.Integrations.<ver>.nupkg`). The home for outbound calls.
+  `--managed-identity`/`--mi` adds the signing step to that package and implies `--integrations`.
 - `--samples` - add the demos (sample models, plugins, Custom APIs, services, tests) **and** the
-  Integrations + ConsoleApp projects. `--no-integrations`, `--no-console`, `--managed-identity`/`--mi`
-  apply only with `--samples`. `--minimal`/`--no-demos` is the default (kept as an alias).
+  Integrations + ConsoleApp projects - never for real work. `--no-integrations`, `--no-console` apply
+  only with `--samples`. `--minimal`/`--no-demos` is the default (kept as an alias).
 - `--web-resources`/`--webresources` (+ `--web-resources-namespace`, `--web-resources-folder`) - preview
 - `--force` - regenerate into a non-empty folder; only files Vela wrote and you did not edit are
   overwritten or removed (tracked in `.vela/scaffold-manifest.json` - commit it).
@@ -44,8 +49,8 @@ lands in `Account/Plugins/<Name>.cs`). Each kind accepts only its own options. `
   - Generates a **single-step** plugin whose handler is `OnExecute`, with the chain and context type for
     `--stage`/`--mode`. Defaults: `--message Create`, PostOperation, Sync - pass them from the Canvas.
   - Create/Update(+Multiple) **require** `--filtering-attributes`: without it the command exits `2`
-    ("A Update step needs a filtering attribute"). Pass **model property** names: the value is echoed
-    verbatim, so `--filter name` generates `e => e.name` (fails to compile against the model).
+    ("A Update step needs a filtering attribute"). Logical names are mapped to the model property
+    (`--filter name` generates `FilterOn(e => e.Name)`); model property names work too.
 - `add step <PluginName> --entity <ModelType> [--message ...] [--handler <Method>] [--stage ...] [--mode ...] [--filtering-attributes a,b] [--project <csproj>]` -
   edits an existing plugin, adding a second `RegisterStep()` + a handler method (default name
   `Handle<Message>`, e.g. `HandleUpdate`). The plugin becomes **multi-step**. Same filter rule (exit `2`).
@@ -64,7 +69,7 @@ lands in `Account/Plugins/<Name>.cs`). Each kind accepts only its own options. `
 ## `vela models` - connects to Dataverse (reads metadata)
 Scope is REQUIRED (combinable): `--solution <name>` · `--entities a,b` · `--custom-apis [a,b]` (bare =
 every Custom API, with a warning; add `--package`/`-p <nupkg>` (repeatable) or `--packages-dir <folder>`
-to exclude the ones you authored, `--package-assembly <name.dll>` when it cannot be inferred) ·
+to exclude the typed Custom APIs you authored, `--package-assembly <name.dll>` when it cannot be inferred) ·
 `--messages [a,b]` (bare = all consumable messages) · `--roles <a,b>` · `--solution-roles` ·
 `--intersect` (also the N:N intersect tables of the scoped tables).
 - C# (default, `--lang csharp`): **`--project <csproj>`** uses that project's namespace and its
@@ -113,7 +118,7 @@ package id) · `--package-assembly <name.dll>` · **`--solution <uniquename>`** 
   unless `--auto-approve`. **Do not auto-approve unless explicitly told to.** Every operation is an
   idempotent upsert, so a partial apply (exit `7`) is fixed then re-run.
 - `vela inspect` - local packages vs the live environment (read-only).
-- **`plan` JSON (`--out`/`--json`/piped, verified 0.24.1):** `{schemaVersion: 1, mode: "plan", environment,
+- **`plan` JSON (`--out`/`--json`/piped, verified 0.24.1 and 0.25.0):** `{schemaVersion: 1, mode: "plan", environment,
   hasChanges, summary: {added, removed, changed}, operations: [{action: create|update|delete, kind:
   package|step|image|custom-api|..., type, reason}], diff: {localAssemblies, currentAssemblies, added,
   removed, changed, ...}, diagnostics: [string], notes, unmanaged, info: [string]}`. Read `operations` (what

@@ -1,7 +1,7 @@
 ---
 name: vela-models
 description: Use when a plugin needs typed models for an attribute or entity not yet in the generated model, or when checking whether committed models still match the org.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Generate typed models
@@ -39,7 +39,8 @@ Announce: `Using vela-models to <purpose>`.
      - `--project` takes that project's namespace and writes into its `Models/Generated` folder (the
      scaffold's home for models - the Shared project, not the Plugins project). Without `--project`,
      pass `--out <dir>` and `--namespace <ns>`.
-   - Custom APIs from the org, excluding the ones you author: `vela models --custom-apis --package artifacts/<Prefix>.Plugins.<ver>.nupkg --project ... <connection>`.
+   - Custom APIs from the org, excluding the typed ones you author: `vela models --custom-apis --package artifacts/<Prefix>.Plugins.<ver>.nupkg --project ... <connection>`
+     (`--package` is repeatable - add the Integrations package when it has typed Custom APIs too).
    - `--no-annotations` omits `[StringLength]`/`[Range]`. TypeScript: `--lang ts` with `--forms` and/or `--tables` (preview).
    - Large orgs: pass `--timeout <minutes>`.
 5. **Verify mode** (no write): `vela models --verify ...` - exit `5` means drift.

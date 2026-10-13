@@ -11,7 +11,7 @@ extraction). Skills point here.
 Vela's fluent `RegisterStep()` gates message × stage × mode × image through its interfaces, so
 **illegal combinations do not compile** - e.g. `WithPostImage` does not exist on a Delete step,
 `Async()` exists only on `PostOperation()`, `ForRelationship` only on Associate/Disassociate. The
-analyzers (vela 0.24.1 / Vela.Plugins 0.33.0) turn the rest into build errors: a Create/Update step
+analyzers (vela 0.25.0 / Vela.Plugins 0.34.0) turn the rest into build errors: a Create/Update step
 without `FilterOn` (VELA020), `On<UpdateRequest>()` instead of the typed trigger (VELA023), an image
 read but not captured (VELA017). Trust the type system; if something does not compile, it is usually an
 illegal registration, not a framework bug.
@@ -85,10 +85,12 @@ prefix), or components fall into the org's default solution.
 - **Reuse** an existing plugin/step/service where the behaviour already exists - do not duplicate.
 
 ### Outbound integration (calls to another system)
-- A minimal `vela init` has no Integrations project; `--samples` is the only way to get one and it also
-  adds demo code and a ConsoleApp - **don't scaffold with `--samples` for real work**.
-- Outbound HTTP code lives in the **Plugins project** (its csproj already references `System.Net.Http`),
-  in a service, usually behind an **Async** PostOperation step. Sandbox rules apply: HTTPS to DNS names
+- Outbound code lives in the **Integrations project**: scaffold with `vela init --integrations` (an
+  empty `src/<Prefix>.Integrations` plugin project + `tests/<Prefix>.Integrations.Tests`, no demos; its
+  csproj references `System.Net.Http`; `--managed-identity` implies it). **Don't scaffold with
+  `--samples` for real work** - it adds demo code and a ConsoleApp.
+- It builds its **own package** (`artifacts/<Prefix>.Integrations.<ver>.nupkg`): preview (`vela plan`)
+  **both** packages. Put the call in a service, usually behind an **Async** PostOperation step. Sandbox rules apply: HTTPS to DNS names
   only (no raw IP), explicit timeouts well under the 2-minute limit, secrets via
   `WithSecureConfigFrom("Name")` (never code or unsecure config). See `dataverse-gotchas.md`.
 

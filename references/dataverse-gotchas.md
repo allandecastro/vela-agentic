@@ -8,12 +8,13 @@ symptom → cause → fix.
 - **Associate / Disassociate steps not firing - or firing for everything.** In Dataverse these
   messages have a **single message filter: primary entity `none`** (verified on a dev org:
   `sdkmessagefilters` for Associate = 1, primary `none`); a step matched by a primary entity never runs.
-  Vela (0.33.0) registers `RegisterStep().OnAssociate()` / `OnDisassociate()` **message-level** (step
+  Vela (0.34.0) registers `RegisterStep().OnAssociate()` / `OnDisassociate()` **message-level** (step
   definition `EntityLogicalName` empty), so the step fires - for **every** relationship in the org.
   Scope it with `.ForRelationship("<schema name>", ...)`: Vela enforces the scope at dispatch (the
-  handler runs only for those relationships). The plugin's `<T>` does not filter the Target: in the
-  harness an association made from the other side ran an `EntityPluginBase<Contact>` handler with an
-  `account` Target - check `ctx.Request.Target.LogicalName` and the related entities' types. (Marketing
+  handler runs only for those relationships). The plugin's `<T>` does not filter the Target: the message
+  is relationship-level, so either side can be the Target - an association made from the account side
+  runs an `EntityPluginBase<Contact>` handler with an `account` Target. Check
+  `ctx.Request.Target.LogicalName` and the related entities' types. (Marketing
   lists: adding members from the UI may raise `AddMember` / `AddListMembers` rather than Associate -
   typed `OnAddMemberList()` / `OnAddListMembersList()` triggers exist; confirm which message the story
   really needs.)
@@ -64,7 +65,8 @@ symptom → cause → fix.
   isolated sandbox: no file system (**VELA019**), registry or local machine APIs; outbound calls over
   HTTP/HTTPS to DNS names only (no raw IP addresses); and a plugin execution is cut off after
   **2 minutes**. Keep Sync steps short; move slow or external work to an Async step (outbound HTTP code
-  lives in the Plugins project, which references `System.Net.Http`; set an explicit timeout).
+  lives in the Integrations project from `vela init --integrations`, which references `System.Net.Http`;
+  set an explicit timeout).
 - **An error in a plugin undoes more (or less) than expected.** Sync PreOperation/PostOperation steps
   run inside the database transaction: throwing rolls back the whole operation, including earlier
   plugin writes. PreValidation runs before the main transaction. Async steps run after the commit:
@@ -92,7 +94,7 @@ symptom → cause → fix.
 
 ## Custom APIs
 
-- **Custom API parameter rejected: "can contain only letters, digits and underscores".** Vela 0.33.0's
+- **Custom API parameter rejected: "can contain only letters, digits and underscores".** Vela 0.34.0's
   builder rejects a dotted (or otherwise non-identifier) parameter name when the definition is built
   (harness `Register`, `vela plan`) - not at `dotnet build`. Use plain identifiers (`AccountId`).
 - **Custom API rejected at apply: unique name without the publisher prefix.** Nothing local checks the
@@ -131,10 +133,10 @@ symptom → cause → fix.
   table + message + stage. Use `WithExecutionOrder(n)` only to sequence *your* steps relative to
   each other when you register more than one; don't set it reactively to avoid managed steps.
 
-## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.33.0)
+## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.34.0)
 
 Treat every VELA diagnostic in authored code as a gate failure. Several are **build errors** (marked
-*error*); the rest are warnings. Each one below was verified by compiling a violation on 0.33.0 unless
+*error*); the rest are warnings. Each one below was verified by compiling a violation on 0.33.0 (0.34.0 ships the same rule set) unless
 its text is quoted from the analyzer's own description:
 
 - **VELA001** *error* - a column selector (`FilterOn`, images, typed `Select`) targets a member that is

@@ -1,7 +1,7 @@
 ---
 name: using-vela
 description: Read first when starting any Vela work, or when unsure which Vela skill applies.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Using Vela
@@ -67,7 +67,7 @@ failed system jobs, read-only).
 - **Stop before `apply`.** Never write to a live org without explicit human go-ahead; never
   pass `--auto-approve` unless told to for this run.
 - **This pack governs.** `vela init` writes its own `AGENTS.md` into the project; where it differs from
-  these skills (e.g. it offers `--auto-approve`), the skills win.
+  these skills (e.g. it shows `vela models --interactive`), the skills win.
 
 ## References
 

@@ -1,7 +1,7 @@
 ---
 name: vela-debug-plugin
 description: Use when a Vela plugin does not fire, fires on the wrong message or entity, throws, or produces unexpected results.
-compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
+compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
 ---
 
 # Debug a Vela plugin
@@ -73,7 +73,7 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    - a required image missing or lacking the attribute (`ctx.PreImage` is null / incomplete),
    - wrong stage (PostOperation edit of the target has no effect; PreOperation write-back recursion),
    - Associate/Disassociate scoped by `.ForRelationship(...)` to another relationship (the handler is
-     skipped; the trace says "relationship outside the step's ForRelationship scope"),
+     skipped: its `ExecutionLog` entry has `HandlerInvoked == false` and a `SkipReason`),
    - custom API param name with a dot (uncallable), mutable plugin state (VELA011),
    - sandbox limits (file system, raw IP, 2-minute timeout).
    Compare intent with the live registration via `vela inspect -p <pkg> --solution <uniquename>
@@ -82,7 +82,7 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
 6. **Instrument** if the cause is still unclear: add `ctx.Trace(...)` lines for the values you need,
    reproduce, read the message block (`pipeline.Trace.Output` locally, `vela logs --full` on the org). A
    step that never fires writes no trace - read `pipeline.ExecutionLog` instead (which steps ran, with
-   message, stage, mode, depth). Remove noise
+   message, stage, mode, depth, `HandlerInvoked` and `SkipReason` for a skipped one). Remove noise
    afterwards; keep traces that help operations.
 7. **Fix** the single most-likely cause with evidence - and **only** that cause. The diff is the cause
    plus the repro tests: no incidental edit to another step's registration, description, filter,

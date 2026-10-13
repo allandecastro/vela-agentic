@@ -3,7 +3,7 @@
 # Plugin authoring API (verbatim)
 
 The real shape `vela add plugin` generates and the members you use inside a handler.
-This is ground truth from the framework (verified against vela 0.24.1 / Vela.Plugins 0.33.0: every
+This is ground truth from the framework (verified against vela 0.25.0 / Vela.Plugins 0.34.0: every
 snippet below was compiled); skills point here instead of paraphrasing.
 
 ## Generated plugin shape
@@ -276,7 +276,8 @@ public sealed class ScoreLead(string unsecureConfig, string secureConfig)
 ### Bound / typed form (`vela add customapi <Name> --entity <E>`)
 
 With `--entity`, the CLI generates a **typed** Custom API bound to the table (in `<Entity>/CustomApis/`),
-with its request and response classes in the same file:
+with its request and response classes in the same file - subclasses of Vela's `CustomApiRequest` /
+`CustomApiResponse` (`using Vela.Messages;`), the same pattern the scaffold's `AGENTS.md` shows:
 
 ```csharp
 public sealed class RecalcAccount(string unsecureConfig, string secureConfig)
