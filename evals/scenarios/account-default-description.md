@@ -14,8 +14,8 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Setup for the run
 - The evaluator gives you a work dir; nothing outside it.
-- `vela` and `dotnet` on PATH. No Dataverse org: SKIP `vela models` and `vela plan`/`apply`,
-  recording the exact command that would have run. Never run `vela apply`.
+- `vela` and `dotnet` on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only**
+  (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## Success criteria (a clean pass)
 1. `vela init` + `vela add plugin` exit 0, following `vela-scaffold`; tests live in the scaffold's `.Tests`
