@@ -61,8 +61,9 @@ Announce: `Using vela-plan-review to grill the plan`.
      that apply is blocked until the prefix and solution are confirmed.
    - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
      with the same value. Record whether the behaviour needs the value to actually differ (compare with
-     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not a
-     write: re-assigning the same value there costs nothing, so no compare is needed.
+     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not an
+     extra write, but setting a column the request did not change adds it to the save (and can fire other
+     steps filtered on it): set it only when the new value differs.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (build error VELA020 without one; `vela add` needs `--filtering-attributes`); on
      Create it's ignored at runtime, so it can never be dropped; default it to the primary column

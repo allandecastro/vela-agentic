@@ -178,7 +178,7 @@ def main():
             plan = json.load(open(out_json))
             demo_ops = [o["type"] for o in plan["operations"] if o["type"].split(".")[-1] in DEMO_TYPES]
             check("plan has no demo operation", not demo_ops, ", ".join(demo_ops))
-            authored = {s["PluginTypeName"] for s in steps}
+            authored = {s["PluginTypeName"] for s in steps} | {a.get("PluginTypeName") for a in apis}
             creates = [o for o in plan["operations"] if o["action"] == "create" and o.get("kind", "step") != "package"]
             check("plan creates only authored steps", creates and all(o["type"] in authored for o in creates),
                   json.dumps([o["type"] for o in plan["operations"]])[:300])
