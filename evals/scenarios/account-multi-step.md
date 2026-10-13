@@ -13,7 +13,7 @@ depends_on: account-default-description
 ## Setup for the run
 - The evaluator provides the reviewed `account-default-description` baseline, which already has the
   `AccountDefaultDescription` Create plugin (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`,
-  a git repo). No org; never `vela apply`.
+  a git repo). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## User story
 "Also on update: when an Account's Name changes, uppercase its account number."

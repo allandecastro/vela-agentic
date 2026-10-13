@@ -11,7 +11,7 @@ org_required: false
 
 ## Setup for the run
 - The evaluator provides the project (`sh evals/setup/debug-filter-miss.sh <work>` → `<work>/DescNorm`,
-  a git repo). No org; never `vela apply`.
+  a git repo). The plugin runs in the **customer's** org, which you cannot reach; The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. (the plugin is not deployed there).
 - A user reports: "When I edit the description, nothing happens."
 
 ## Planted bug (evaluator only)
@@ -24,8 +24,8 @@ from a Create step); its only test calls the handler through `Execute`, which ca
 - **Hypothesis from the registration,** checked against `references/dataverse-gotchas.md` (filtering
   attribute excludes the changed column) - not trial-and-error edits, and no org mutation.
 - **Fix the single cause** (`FilterOn(e => e.Description)`), the red test goes green, nothing else
-  changes. With no org, `vela inspect` is recorded as the command that would confirm the live
-  registration.
+  changes. The customer's org is unreachable: `vela inspect` / `vela logs` against it are recorded as the commands
+  that would confirm the live registration, and the trace-log request to the human says where and what.
 
 ## Success criteria (a clean pass)
 1. Failing repro test written and seen RED before any code change.
