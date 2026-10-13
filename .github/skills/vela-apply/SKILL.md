@@ -78,7 +78,8 @@ Announce: `Using vela-apply to <purpose>`.
    ahead and apply" **for this run**. "Ship it", "looks good", "merge it" or a ready/merged PR are
    not that: they are about the code, not a write to the org.
 9. If (and only if) authorized: `vela apply -p <pkg> --solution <uniquename> <connection>` - the same
-   package (same hash), the same `--solution` and `--secure-config` as the plan. Every written component is
+   package (same hash), the same `--solution`, `--secure-config` **and connection** (`--url <org>`) as the plan -
+   never a bare `-i`, which targets whatever org vela last remembered. Every written component is
    added to that solution. On a TTY it still requires a typed `yes`; non-interactive it refuses. Never pass
    `--auto-approve`/`--yes` unless the user asked for an unattended apply. (`--batch-size` only tunes the
    ExecuteMultiple chunk size; leave the default unless told otherwise.)

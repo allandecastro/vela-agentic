@@ -161,7 +161,7 @@ Never estimate or fill in a value you did not observe (no timings from memory).
 
 ## Gate - human approval required
 Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):
-`vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes from the plan's `operations`>.
+`vela apply -p <pkg> --solution <uniquename> <the plan's connection, e.g. --url https://<org>>`  - this will: <exact changes from the plan's `operations`>.
 Exit `7` = partial apply (fix the cause, re-run); `5` = not converged (the org still differs) - both are
 reported, never "done".
 

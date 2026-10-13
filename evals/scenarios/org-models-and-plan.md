@@ -27,7 +27,7 @@ org_required: true
   upper-cased value differs" dropped - a PreOperation target edit is not a write; the pack says so.)
 - **Real preview:** `vela plan -p <plugin package> --solution VelaEvals --url ... --out plan.json` on the final package; the
   `operations` contain only this plugin's step (on a first deploy the assembly appears as the
-  "not found in Dataverse" diagnostic, not as an operation; no demo operation); every diagnostic is
+  "not found in Dataverse" `info` line (vela >= 0.24; earlier a diagnostic) next to the package operation; no demo operation); every diagnostic is
   read - "assembly not found" on a first deploy and a rank collision with a Microsoft managed step are
   explained, not "fixed".
 - Optional: `vela models --verify` exits 0 right after generation (no drift).
