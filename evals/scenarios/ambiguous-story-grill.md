@@ -14,7 +14,7 @@ org_required: false
 
 ## Setup for the run
 - A human is reachable only through the evaluator (ask one question per turn).
-- No org, no `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
+- The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. No `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
 
 ## Human answers (evaluator only - never shown to the acting agent)
 - "sync" means: when a Contact's `statecode` becomes Inactive and **all** the account's contacts are then
@@ -29,7 +29,8 @@ org_required: false
   what "status" means, sync vs async) and routes to **`vela-grill`** instead of guessing.
 - `vela-grill` asks **one load-bearing question at a time**, tied to the registration (trigger message
   and entity, timing, data, scope, definition of done) - not a questionnaire, not open-ended chat.
-- It asks for the target solution and publisher prefix instead of inventing them.
+- It asks for the target solution instead of inventing it (the publisher prefix then comes from
+  `vela solution show <solution>`, read-only; asking for both is also fine).
 - The resulting Canvas records the answers as decisions (Contact **Update**, filtered on `statecode`,
   Sync; the "all contacts inactive" rule; writes to **another** record → PostOperation is justified)
   and has no unresolved branch.

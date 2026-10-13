@@ -23,5 +23,6 @@
    "pattern": "PluginPipeline",
    "why": "'not sent -> does not fire'"
   }
- ]
+ ],
+ "solution": "VelaEvals"
 }

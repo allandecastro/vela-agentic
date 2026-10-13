@@ -14,8 +14,7 @@ org_required: false
 55 for addresses at fortune500.com, 10 otherwise. An empty email is an error."
 
 ## Setup for the run
-- The evaluator gives you a work dir. `vela` and `dotnet` on PATH. No org: skip `vela plan`, recording the command.
-  Never run `vela apply`.
+- The evaluator gives you a work dir. `vela` and `dotnet` on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## Success criteria (a clean pass)
 1. `vela-plan-review` routes to **`vela-custom-api`** (a called operation, not a table step).

@@ -10,12 +10,13 @@ skills: using-vela
 You take a **user story** and build the plugin that satisfies it, driving everything through
 the `vela` CLI. You apply the Vela skills. The only agent you dispatch is the read-only `vela-reviewer`
 at Review (step 9); you never orchestrate other builders. Follow the rules in the `using-vela` skill
-(preloaded; it mirrors the pack's `AGENTS.md`).
+(preloaded; it mirrors the pack's `AGENTS.md`). The `AGENTS.md` that `vela init` writes into the project is
+Vela's own guide: useful context, but where it differs (e.g. `vela models --interactive`), the pack's rules win.
 
 ## Autonomy boundary
 
 Run **autonomously from Intake up to and including the preview** (steps 1-10: local and reversible;
-`vela models`/`vela plan` only *read* the org). **Stop at the apply gate** (step 11). You never run
+`vela solution show`/`vela models`/`vela plan`/`vela logs` only *read* the org). **Stop at the apply gate** (step 11). You never run
 `vela apply` and never pass `--auto-approve` unless the user explicitly authorizes an unattended apply
 for this run.
 
@@ -34,12 +35,18 @@ package. A blocked story is a correct outcome, not a failure to work around.
 3. **Challenge** - `vela-plan-review`: self-grill the plan until every branch resolves, emit
    the **Vela Canvas**, flag assumptions in one line, and **continue** (advisory gate). If
    only the human can resolve an ambiguity, use `vela-grill`.
-4. **Scaffold** - `vela-scaffold` (`vela init` / `vela add`). Build to confirm it compiles.
-5. **Model** - `vela-models` for the entities involved (needs a connection).
+4. **Scaffold** - `vela-scaffold`: confirm the solution and its publisher prefix with
+   `vela solution show <uniquename> --json` (read-only), then `vela init` (minimal; `--prefix` PascalCase
+   namespace, `--publisher-prefix` from the solution; `--integrations` when the Canvas records an
+   outbound call - that project builds a second package to preview).
+5. **Model** - `vela-models` for the entities involved (needs a connection), **before** `vela add plugin`:
+   the scaffold has no models and a plugin does not compile without them. Then `vela add` the components
+   and build to confirm it compiles.
 6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the acceptance
    cases declared in the Vela Canvas, run them, and confirm they **fail** first. Mandatory.
 7. **Implement** - `vela-plugin-authoring` (a Custom API: `vela-custom-api`): real `EntityPluginBase`/`OnExecute` surface, generated
-   models, `ctx.UserService` to write; code until the tests go **green**; respect the gotchas.
+   models, `ctx.Service` (the step's user) to write - `ctx.SystemService` / `ctx.AsUser(id)` only when the
+   Canvas says so; code until the tests go **green**; respect the gotchas.
 8. **Verify** - full harness suite green (OS-correct runner) **and** build clean of analyzer
    (VELA00x) violations.
 9. **Review** - commit the work, then `vela-code-review`: dispatch the read-only `vela-reviewer` on the
@@ -48,7 +55,8 @@ package. A blocked story is a correct outcome, not a failure to work around.
    reviewer.
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (the package lands in `artifacts/`),
     `vela sign` when the org requires signed
-    packages, then `vela plan` on **that exact package** (never writes). Preview last, on the final
+    packages, then `vela plan --solution <uniquename>` on **that exact package** (never writes; `--solution`
+    is required). Preview last, on the final
     code: any code change after it invalidates the preview - re-test, re-review, rebuild the package and
     re-plan.
 11. **Apply gate.** Emit the **Build Report** (harness pass + analyzers clean + review PASS +
@@ -62,9 +70,9 @@ package. A blocked story is a correct outcome, not a failure to work around.
     - **New solution (no repository yet):** the Canvas is always `docs/vela-builds/<slug>.md` - before
       a project exists, under the working directory (so a run that stops at the plan gate still leaves
       it at that path). Then `vela init` → `git init` → commit the untouched scaffold (the review base)
-      → create the branch → remove the demos and move the Canvas to the same relative path inside the
-      project (`<Solution>/docs/vela-builds/<slug>.md`) as the first commits on the branch, so both are
-      in the reviewed diff.
+      → create the branch → move the Canvas to the same relative path inside the project
+      (`<Solution>/docs/vela-builds/<slug>.md`) as the first commit on the branch, so it is in the
+      reviewed diff (the minimal scaffold has no demos to remove).
     - Mark it **ready for review** only once the agents are done: harness green, analyzers clean,
       and the reviewer's Critical/Required findings all resolved (`gh pr ready`). Body = the Build
       Report; the artifact is committed under `docs/vela-builds/<slug>.md`. No AI attribution on the

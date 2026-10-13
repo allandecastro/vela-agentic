@@ -29,15 +29,14 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 4. `dotnet build` is green **and** has no analyzer (VELA00x) violations.
 5. Behaviours proven: empty (null / whitespace) Description → defaulted; non-empty → untouched.
 6. **Stage:** the step is **PreOperation** and sets the default on `ctx.Request.Target`; no
-   `ctx.UserService.Update` of the account (a PostOperation write-back is a finding).
+   `ctx.Service.Update` of the account (a PostOperation write-back is a finding).
 7. A Vela Canvas (with the acceptance cases listed) and Build Report (harness pass + analyzers
    clean + cases checklist) are produced per `references/build-report-template.md`.
 
-## No-org note
-`account.description` is not in the scaffold's sealed demo model. With no org, follow
-`vela-plugin-authoring`'s documented no-org exception (a labelled stand-in property); a real run
-regenerates via `vela-models`. Keep the scaffold's `FilterOn(e => e.Name)` - a Create step
-requires a filter at build even though Create ignores it at runtime.
+## Models note
+The minimal scaffold has no models: `account` is generated from the read-only dev org with `vela models`
+before the plugin builds (no hand-written stand-in). A Create step still needs a `FilterOn` (Create
+ignores it at runtime). (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
 
 ## Known findings closed
 - Iteration 1 blockers (harness API, macOS Mono runner, `EntityPluginBase`/`OnExecute` authoring

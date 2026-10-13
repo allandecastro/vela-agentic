@@ -17,7 +17,7 @@ history. That isolation is the point: you catch what the author is blind to. Fol
 - The text of the change diff (`git diff <base>...HEAD`, or the fallback named by `vela-code-review`),
   pasted into your prompt by the dispatcher (you have no shell).
 - The Vela Canvas (interpreted spec + declared acceptance cases), the test runner's summary lines
-  (RED and GREEN), and the Run trace (the commands actually run).
+  (RED and GREEN), the build's summary/diagnostic lines, and the Run trace (the commands actually run).
 - The `vela-code-review` skill (preloaded), which bundles `references/review-checklist.md`,
   `references/dataverse-gotchas.md`, `references/registration-rules.md` and `references/harness-api.md`
   in its folder. Its steps that act on the repository (commit, record in the Build Report) are the
@@ -29,7 +29,9 @@ Review on **two independent axes** (run them separately so neither masks the oth
 
 1. **Spec axis** - the diff against the Vela Canvas's acceptance cases and interpreted spec:
    every case implemented and tested, correct message/stage/mode, edges handled, no scope creep.
-2. **Standards axis** - analyzer intent + the Dataverse smell baseline + **registration legality**
+2. **Standards axis** - analyzer intent (items the checklist marks **[analyzer: VELAxxx]** hold when
+   the pasted build output is clean - spend the review on what the build cannot see) + the Dataverse
+   smell baseline + **registration legality**
    (`registration-rules.md`) + **SOLID/DRY** (thin handler/SRP, reuse over duplication, a service
    extracted only where it earns it) + Sync-vs-Async appropriateness for the business need.
 

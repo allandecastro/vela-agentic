@@ -20,13 +20,12 @@ org_required: true
   `--auto-approve`/`--yes`, no other write to the org.
 
 ## What the skills must get right
-- **Real models, no stand-in:** `account.accountnumber` is not in the scaffold's demo model; with an org
-  available the agent runs `vela models` (into `<Prefix>.Shared/Models/Generated`, namespace inferred
+- **Real models, no stand-in:** the minimal scaffold has no models; the agent runs `vela models` (into `<Prefix>.Shared/Models/Generated`, namespace inferred
   inside the project), confirms the "Generated N file(s)" line, and never hand-edits the model.
-- **Scaffold for the org:** `--prefix veval`, `--no-integrations` (no outbound flow), demos removed.
+- **Scaffold for the org:** minimal `vela init` with `--publisher-prefix veval` (confirmed by `vela solution show VelaEvals`). (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
 - **Stage:** PreOperation on `ctx.Request.Target`, `FilterOn(e => e.AccountNumber)`. (Rubric note, campaign 2026-09-30: "only writes when the
   upper-cased value differs" dropped - a PreOperation target edit is not a write; the pack says so.)
-- **Real preview:** `vela plan -p <plugin package> --url ... --out plan.json` on the final package; the
+- **Real preview:** `vela plan -p <plugin package> --solution VelaEvals --url ... --out plan.json` on the final package; the
   `operations` contain only this plugin's step (on a first deploy the assembly appears as the
   "not found in Dataverse" diagnostic, not as an operation; no demo operation); every diagnostic is
   read - "assembly not found" on a first deploy and a rank collision with a Microsoft managed step are
