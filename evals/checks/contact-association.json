@@ -1,9 +1,11 @@
 {
- "expect_no_solution": true,
- "canvas_contains": [
-  "status:\\s*blocked",
-  "Hand-off",
-  "none",
-  "AddMember|AddListMembers"
- ]
+ "min_tests": 3,
+ "steps": [
+  {"message": "Associate", "entity": "", "stage": "PostOperation", "mode": "Synchronous", "relationship": "contactleads_association"}
+ ],
+ "step_count": 1,
+ "canvas_contains": ["contactleads_association", "Associate"],
+ "forbid_src": [{"pattern": "SystemService", "why": "write as the calling user (ctx.Service)"}],
+ "require_tests": [{"pattern": "PluginPipeline", "why": "firing / relationship scope needs the pipeline"},
+                   {"pattern": "WithManyToMany", "why": "the N:N must be declared"}]
 }

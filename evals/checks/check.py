@@ -109,12 +109,13 @@ def main():
 
     for want in exp.get("steps", []):
         match = [s for s in steps if s["Message"] == want["message"] and s["EntityLogicalName"] == want.get("entity", s["EntityLogicalName"])]
-        desc = f"{want['message']} {want.get('entity','*')} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}"
+        desc = f"{want['message']} {want.get('entity','*')!r} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}" + (f" rel={want['relationship']}" if want.get('relationship') else "")
         ok = False
         for s in match:
             ok = (want.get("stage") in (None, s["Stage"]) and want.get("mode") in (None, s["Mode"]) and
                   (want.get("filter") is None or sorted(s["FilteringAttributes"] or []) == sorted(want["filter"])) and
-                  (want.get("pre_image") is None or any(sorted(i["Attributes"]) == sorted(want["pre_image"]) for i in s["PreImages"] or [])))
+                  (want.get("pre_image") is None or any(sorted(i["Attributes"]) == sorted(want["pre_image"]) for i in s["PreImages"] or [])) and
+                  (want.get("relationship") is None or want["relationship"] in json.dumps(s.get("Relationships"))))
             if ok: break
         check(f"step registered: {desc}", ok, json.dumps([{k: s[k] for k in ("Message", "EntityLogicalName", "Stage", "Mode", "FilteringAttributes")} for s in match])[:300])
     if "step_count" in exp:

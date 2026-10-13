@@ -34,11 +34,11 @@ The lint warns about any non-meta skill no scenario exercises.
 | --- | --- |
 | `diagnosing-vela` | **none** |
 | `using-vela` | ambiguous-story-grill, apply-gate |
-| `vela-apply` | account-default-description, apply-gate, org-models-and-plan |
+| `vela-apply` | account-default-description, apply-gate, contact-association, org-models-and-plan |
 | `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
 | `vela-custom-api` | lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
-| `vela-grill` | ambiguous-story-grill |
+| `vela-grill` | ambiguous-story-grill, contact-association |
 | `vela-models` | org-models-and-plan |
 | `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, lead-score-custom-api |
 | `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, org-models-and-plan |
