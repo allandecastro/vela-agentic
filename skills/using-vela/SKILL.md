@@ -1,7 +1,7 @@
 ---
 name: using-vela
 description: Read first when starting any Vela work, or when unsure which Vela skill applies.
-compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
 ---
 
 # Using Vela
@@ -23,8 +23,10 @@ reversible until the gate; the org is only touched at `apply`.
    decisions), flag assumptions. Advisory gate - continue (the user may interrupt). If only the
    human can resolve an ambiguity, use `vela-grill`. The Canvas is a **living spec**: if the
    requirement changes later, update the Canvas before the code.
-4. **Scaffold** - `vela-scaffold`
-5. **Model** - `vela-models`
+4. **Scaffold** - `vela-scaffold`: confirm the solution + publisher prefix (`vela solution show`, read-only),
+   `vela init` (minimal), then models, then `vela add`.
+5. **Model** - `vela-models` (before the first plugin: a new scaffold has no models and a plugin does not
+   compile without them).
 6. **Test (RED)** - `vela-test-harness`: write the failing harness tests for the declared
    acceptance cases, and watch them fail. Test-first is mandatory.
 7. **Implement** - `vela-plugin-authoring`: write logic until the tests go **green**.
@@ -34,15 +36,17 @@ reversible until the gate; the org is only touched at `apply`.
    findings block the gate (fix, re-verify, re-review).
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (package in `artifacts/`) →
     `vela sign` (when the org requires signed
-    packages) → `vela plan` on that exact package (preview, never writes). Always run the preview,
-    and run it last: a code change after it means re-test, re-review, rebuild and re-plan.
+    packages) → `vela plan --solution <uniquename>` on that exact package (preview, never writes; `--solution`
+    is required). Always run the preview, and run it last: a code change after it means re-test, re-review,
+    rebuild and re-plan.
 11. **Apply gate** - emit the **Build Report**, stop. A human runs `vela apply`.
 12. **Report** - PR with the Build Report as its body; commit the artifact in the project.
 
 A story that asks for a callable operation (inputs → outputs) rather than a reaction to a table event
 follows the same loop with `vela-custom-api` driving the design, tests and implementation.
 
-If something misbehaves, switch to `vela-debug-plugin`.
+If something misbehaves, switch to `vela-debug-plugin` (`vela logs` reads the org's plug-in trace log and
+failed system jobs, read-only).
 
 ## Skills, agents and how they run
 
@@ -56,12 +60,14 @@ If something misbehaves, switch to `vela-debug-plugin`.
 
 ## Non-negotiable rules
 
-- **The CLI is the contract.** Confirm flags with `vela <command> --help`; never invent one.
+- **The CLI is the contract.** Confirm flags with `vela <command> --help` (or `vela help --json`); never invent one.
 - **Version first.** `vela version` before you rely on any feature.
 - **Announce the skill.** Say `Using <skill> to <purpose>` when you start one.
 - **Evidence over claims.** No "seems right" - paste the build/test/plan output.
 - **Stop before `apply`.** Never write to a live org without explicit human go-ahead; never
   pass `--auto-approve` unless told to for this run.
+- **This pack governs.** `vela init` writes its own `AGENTS.md` into the project; where it differs from
+  these skills (e.g. it offers `--auto-approve`), the skills win.
 
 ## References
 

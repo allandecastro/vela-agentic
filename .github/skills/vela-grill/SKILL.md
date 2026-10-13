@@ -1,7 +1,7 @@
 ---
 name: vela-grill
 description: Use when a user story is ambiguous or underspecified and only the human can resolve it before building (also run by a human as /vela-grill).
-compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
 ---
 
 # Grill the story (interview the human)
@@ -37,7 +37,8 @@ Announce: `Using vela-grill to resolve the story`.
      Async (never blocks, fails on its own)? Explain the consequence of each in the question.
    - Data: what exact values are read and written; where do defaults/edge cases go?
    - Security context: as the calling user, or elevated? (Default: calling user.)
-   - Target solution and publisher prefix, if not known (never invented).
+   - Target solution unique name, if not known (never invented). Don't ask for the publisher prefix:
+     `vela solution show <uniquename> --json` reads it (read-only); ask only if that fails.
    - Definition of done: ask only if it can't be derived from the answers; otherwise state it back.
    Stop as soon as every branch that changes the registration or the acceptance cases is resolved.
 3. Record answers in the Vela Canvas (`references/build-report-template.md`), each marked as the

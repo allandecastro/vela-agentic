@@ -34,8 +34,8 @@ paths are relative to the skill's folder (some hosts resolve relative paths agai
 ## Framework gaps: report them, don't compensate
 
 The pack is the agent layer on top of Vela; Vela and its CLI are owned upstream. When a capability is
-missing or misbehaves (e.g. Associate can't be registered at message level), don't invent a workaround
-pattern in a skill. State the gap in one or two factual lines (observed behaviour + version), make the
+missing or misbehaves (e.g. Associate could not be registered at message level before Vela.Plugins
+0.33.0), don't invent a workaround pattern in a skill. State the gap in one or two factual lines (observed behaviour + version), make the
 agent stop or mark the story **blocked** where it matters, and list the gap for the owner, who fixes it
 in Vela / the CLI. When the fix ships, delete the gap note - no compatibility layers.
 

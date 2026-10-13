@@ -1,7 +1,7 @@
 ---
 name: vela-code-review
 description: Use once a plugin change's tests are green and analyzers are clean, before the apply gate, to review the diff for correctness, spec-fidelity, and Dataverse pitfalls.
-compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
+compatibility: "vela CLI >= 0.24.1 (Vela.Plugins >= 0.33.0); dotnet SDK."
 ---
 
 # Review the change before the apply gate
@@ -11,13 +11,16 @@ compatibility: "vela CLI >= 0.21.4 (Vela.Plugins >= 0.29.1); dotnet SDK."
 
 Green tests and clean analyzers prove what you *thought* to check. A review catches the
 registration-level mistakes that compile, pass a thin suite, and then fail on a live org
-(dropped filtering attribute, unregistered image, Associate/Disassociate matched by entity,
-dotted custom-API param). This gate sits between VERIFY and the apply gate.
+(wrong filtering attribute, image read through an untyped alias, Associate/Disassociate without
+`ForRelationship`, a Custom API unique name without the publisher prefix, a self-triggering write
+"guarded" by `SkipWhenDepthAbove`). What the analyzers already enforce (VELA020, VELA023, VELA017 ...)
+is marked as such in the checklist - the review covers what the build cannot see. This gate sits between VERIFY and the apply gate.
 
 ## When to use
 
 - After `vela-test-harness` is green and the build is analyzer-clean, before emitting the Build
-  Report / reaching the apply gate.
+  Report / reaching the apply gate. Hand the reviewer the build's summary/diagnostic lines too, so it
+  can rely on the analyzer-enforced items.
 
 ## Process
 
@@ -27,13 +30,13 @@ Announce: `Using vela-code-review to review the change`.
    (base = the branch point; uncommitted changes are not in it). No repository (e.g. a fresh scratch
    run)? `git init` + commit right after scaffolding and diff against that commit; if git is not
    allowed, diff against a copy of the tree taken right after scaffolding (`diff -ruN`). Say which.
-   Keep the diff reviewable: hand generated models (`vela models` output) and demo deletions over as
+   Keep the diff reviewable: hand generated models (`vela models` output) over as
    `git diff --stat` - they are not reviewed line by line - and the
    rest in full; the scaffold writes CRLF files, so keep CRLF when editing or use
    `git diff --ignore-cr-at-eol`.
 2. Review on **two axes** using `references/review-checklist.md` (harness semantics - e.g. what
    `PluginContext...Execute` auto-derives, why "does not fire" needs `PluginPipeline` - are in
-   `references/harness-api.md`; CLI facts - e.g. `plan` takes no `--solution` - in `references/cli-surface.md`; handler shapes in
+   `references/harness-api.md`; CLI facts - e.g. `plan` needs `--solution` - in `references/cli-surface.md`; handler shapes in
    `references/plugin-authoring-api.md`):
    - **Spec axis** - the diff against the **Vela Canvas** (acceptance cases + the Approach/Structure
      decisions: Sync/Async appropriate, reuse-vs-new respected). If the code diverged from the

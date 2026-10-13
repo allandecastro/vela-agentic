@@ -47,8 +47,10 @@ images: []                # e.g. [{pre: [statecode]}, {post: [statecode, parentc
 #                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
 reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
-solution: <uniquename>    # target unmanaged solution (must already exist in the org)
-publisher_prefix: <pfx>   # must equal the solution publisher's prefix AND the scaffold --prefix
+solution: <uniquename>    # target unmanaged solution (must already exist in the org); passed to plan/apply --solution
+publisher_prefix: <pfx>   # the solution publisher's prefix, confirmed by `vela solution show <uniquename> --json`;
+                          # = the scaffold --publisher-prefix (Custom API unique names)
+namespace_prefix: Zava    # the scaffold --prefix (PascalCase project/namespace prefix, not the publisher prefix)
 acceptance_cases:
   - "empty Description -> defaulted to 'Created via Vela plugin'"
   - "whitespace Description -> defaulted"
@@ -106,15 +108,16 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied
 entity: account
 message: Create
-vela_cli: 0.22.0
-framework: 0.29.1
-packages: [zava.Plugins.1.0.0.nupkg]   # the plugin package only (not an Integrations package)
+vela_cli: 0.24.1
+framework: 0.33.0
+packages: [Zava.Plugins.1.0.0.nupkg]   # the plugin package (an Integrations package only with --samples + an outbound flow)
 package_sha256: <sha256 of the previewed package>
 signed: no                # yes | no (a human signs before apply) | n/a (org does not require it) | unknown (asked at the gate)
 harness: pass             # pass | fail  (must be pass to reach the gate)
-analyzers: clean          # clean | violations  (authored code; scaffold-demo VELA013 excluded)
+analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)
-plan_preview: clean       # clean | changes | skipped(no-org)
+plan_preview: changes     # changes (exit 8 with --detailed-exitcode) | clean (exit 0, nothing to do) | unavailable (connection failed: record the command + exit)
+plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out plan.json"
 apply: pending
 ---
 
@@ -130,8 +133,11 @@ apply: pending
 - Acceptance cases (RED→green): [x] empty→defaulted  [x] whitespace→defaulted  [x] non-empty→untouched
 - Harness: <runner summary + runner name>
 - Code review: <PASS / BLOCK; findings most-severe first>
+- Solution: `vela solution show <uniquename> --json` → `{"solution": ..., "publisherPrefix": ...}` (exit 0)
 - Package: <path> · sha256 <hash> · signed <yes/no/n/a/unknown>
-- `vela plan` (on that package, after review): <the diff apply WOULD make, or "skipped - no org">
+- `vela plan --solution <uniquename>` (on that package, after review): <the `operations` apply WOULD run
+  (package + steps / Custom APIs), every `diagnostics` line, and the exit code; or "unavailable" with the
+  exact command and its exit code>
 
 ## Sync log
 <any Canvas changes made during the build (requirement change → Canvas updated first; refactor →
@@ -145,15 +151,19 @@ Never estimate or fill in a value you did not observe (no timings from memory).
 
 | # | step | skill | command | exit | verdict |
 |---|------|-------|---------|------|---------|
-| 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava` | 0 | ok |
-| 2 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
-| 3 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
-| 4 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
-| 5 | package | vela-apply | `dotnet build Zava.sln -c Release` (→ `artifacts/zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
-| 6 | plan | vela-apply | `vela plan -p artifacts/zava.Plugins.1.0.0.nupkg --out plan.json` | - | skipped (no org) |
+| 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava` | 0 | ok |
+| 2 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url <org>` | 0 | Generated <N> file(s) |
+| 3 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
+| 4 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
+| 5 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
+| 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
+| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out plan.json` | 8 | changes: create package + 1 step |
 
 ## Gate - human approval required
-Run to deploy: `vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes>
+Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):
+`vela apply -p <pkg> --solution <uniquename> -i`  - this will: <exact changes from the plan's `operations`>.
+Exit `7` = partial apply (fix the cause, re-run); `5` = not converged (the org still differs) - both are
+reported, never "done".
 
 ## Open questions
 <anything the human must decide>
