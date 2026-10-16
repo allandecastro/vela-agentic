@@ -59,8 +59,8 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 7. **SOLID / DRY.** Keep `OnExecute` thin (SRP): orchestration in the handler, real logic in a
    **service** when it is reusable or worth testing in isolation → `vela add service <Name>
    --entity <E>`, injected via DI. Reuse an existing service or plugin before adding one; do not
-   duplicate logic. Do not extract a service for a trivial one-liner (steps of one plugin share a private helper;
-   plugins share a service). Follow the generated
+   duplicate logic. Do not extract a service for a trivial one-liner (steps of one plugin share a private helper -
+   the rule itself, not just a constant; a per-step guard wraps the call - plugins share a service). Follow the generated
    **naming** conventions (prefix, `OnExecute`, project layout); don't rename generated members.
 
 ## Rationalizations (excuse → rebuttal)

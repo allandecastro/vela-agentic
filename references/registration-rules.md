@@ -98,4 +98,6 @@ prefix), or components fall into the org's default solution.
   reusable or worth testing in isolation → `vela add service <Name> --entity <E>`, inject via DI.
 - Reuse an existing service before adding one. Do not extract a service for a one-line, single-use
   operation - that is ceremony, not design. Logic shared by the steps of **one** plugin → a private
-  helper (+ constant); logic shared **across plugins** → a service.
+  helper (+ constant); logic shared **across plugins** → a service. A shared constant alone is not
+  sharing the logic: the rule itself (e.g. "empty → default") lives once in the helper, and each step's own
+  guard (e.g. "only when the column was sent") wraps the call.
