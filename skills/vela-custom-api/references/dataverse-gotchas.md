@@ -30,9 +30,10 @@ symptom → cause → fix.
   attribute being written.
 - **Create/Update step without a filter: build error VELA020.** Every Create/Update(+Multiple) step
   requires a `FilterOn(...)` (`vela add plugin|step` refuses Create/Update without
-  `--filtering-attributes`). On Create the filter is ignored at runtime but still mandatory - default it
-  to the primary column and never drop it, even when the step should fire on every create. On Update the
-  filter actually gates the trigger.
+  `--filtering-attributes`). **On Create the filter gates the trigger exactly as on Update** (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): a
+  create whose payload has none of the filtered columns does not fire the step (the harness `PluginPipeline`
+  behaves the same). A step meant to fire on every create filters on a column every create sends
+  (business-required) - and the Canvas says what happens to a create without it.
 - **Image is empty at runtime.** The image was not registered for that message/stage, or the
   requested attributes were not included. With the generated `<Handler>Context`, an uncaptured column
   does not compile and reading an uncaptured image is VELA017; through the untyped extensions

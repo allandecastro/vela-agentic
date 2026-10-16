@@ -35,8 +35,8 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Models note
 The minimal scaffold has no models: `account` is generated from the read-only dev org with `vela models`
-before the plugin builds (no hand-written stand-in). A Create step still needs a `FilterOn` (Create
-ignores it at runtime). (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
+before the plugin builds (no hand-written stand-in). A Create step still needs a `FilterOn`, and it gates
+the trigger on Create too (verified live): `Name` (sent on every create of an account) is the natural pick. (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
 
 ## Known findings closed
 - Iteration 1 blockers (harness API, macOS Mono runner, `EntityPluginBase`/`OnExecute` authoring

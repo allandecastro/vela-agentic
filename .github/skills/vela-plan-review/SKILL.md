@@ -66,8 +66,9 @@ Announce: `Using vela-plan-review to grill the plan`.
      steps filtered on it): set it only when the new value differs.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (build error VELA020 without one; `vela add` needs `--filtering-attributes`); on
-     Create it's ignored at runtime, so it can never be dropped; default it to the primary column
-     (another column is harmless there - Nit).
+     **Create it gates the trigger too** (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): a create that sends none
+     of the filtered columns does not fire. For "on every create", filter on a column every create sends
+     (e.g. a business-required one) and record the residual risk in the Canvas.
    - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
    - **Association:** Associate/Disassociate → `vela add plugin <Name> --entity <E> --message

@@ -52,7 +52,8 @@ the dispatcher pasted is clean, they hold - don't re-litigate them, but a suppre
 diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required**.
 
 - **Registration:** Create/Update step has a `FilterOn(...)` [analyzer: VELA020] and it names the
-  right attribute for Update; a message with a typed trigger registered via `On<TRequest>()`
+  right attribute - on Update **and Create** (a Create filter on a column a create may omit silently skips
+  those creates: **Required** unless the Canvas records it); a message with a typed trigger registered via `On<TRequest>()`
   [analyzer: VELA023]; an Associate/Disassociate step **without `ForRelationship(...)`** - **Required**
   (it runs for every association in the org), **Critical** if the handler writes; an Associate handler
   that assumes the Target is the plugin's table without checking `ctx.Request.Target.LogicalName` -
