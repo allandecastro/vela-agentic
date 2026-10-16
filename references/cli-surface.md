@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Every command has its own `vela <command> --h
 `vela help <command>`); `vela help --json` prints every command, option, alias and exit code as one
 JSON document (`schemaVersion: 1`) - the machine-readable source to check a flag against.
 
-**Verified against:** `vela 0.25.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+**Verified against:** `vela 0.25.1` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
 `Vela.Testing` `0.34.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
@@ -151,7 +151,8 @@ Resolution order:
 ## Exit codes
 `0` success · `2` invalid arguments · `3` file not found · `4` error (incl. a `--strict` failure, a missing
 `--solution` on plan/apply, a missing solution on `solution show`) · `5` drift (`models --verify`) or apply
-not converged (the org still differs after the write) · `6` Dataverse connection failure · `7` partial apply
+not converged (the org still differs after the write) · `6` Dataverse connection failure (since 0.25.1 any network error - DNS, socket, HTTP, timeout - on any
+Dataverse call of plan/apply/inspect/models/solution/logs; `models` stops with `6` instead of skipping the entity; verified) · `7` partial apply
 (fix the cause, re-run `apply`) · `8` changes pending (`plan --detailed-exitcode` only).
 
 ## Other

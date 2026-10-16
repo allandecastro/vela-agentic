@@ -89,7 +89,9 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    image or code "while you are there" (each is a second change `vela plan` will show and the human
    must re-verify). Anything else you notice goes in the report as a follow-up, not in this fix.
 8. **Regression-test.** The red test now passes and stays in the suite; the full suite is green;
-   `vela inspect`/`vela plan` (or the recorded commands) confirm the registration matches intent.
+   `vela inspect` **and** `vela plan` (or the recorded commands) confirm the registration matches intent.
+   When the faulty org is unreachable, record for the human the exact `vela inspect`, `vela plan` and
+   `vela logs` commands against that org (`vela logs` is the CLI route to the Plug-in Trace Log).
 
 ## Rationalizations (excuse → rebuttal)
 
