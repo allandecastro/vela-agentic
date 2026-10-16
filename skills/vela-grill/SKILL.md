@@ -34,7 +34,8 @@ Announce: `Using vela-grill to resolve the story`.
      (which lookup / relationship)?
    - Trigger: on which message, and only when which attribute changes? Do **other events** reach the
      same outcome (delete, re-parent, bulk) - are they in scope?
-   - Timing: before or after the write is committed? Sync (blocks the user, rolls back together) or
+   - Timing: inside the user's transaction or after it? Sync (blocks the user, rolls back together - even
+     at PostOperation, which is still before the commit) or
      Async (never blocks, fails on its own)? Explain the consequence of each in the question.
    - Data: what exact values are read and written; where do defaults/edge cases go?
    - Security context: as the calling user, or elevated? (Default: calling user.)

@@ -59,7 +59,8 @@ prefix), or components fall into the org's default solution.
   Update event, nothing to re-trigger. This is the default for defaulting, normalising, deriving a
   column from others on the same row.
 - **Validation / abort → PreValidation or PreOperation**, throwing `InvalidPluginExecutionException`.
-- **PostOperation** only when you need the committed result: the new record's id on Create, writes to
+- **PostOperation** only when you need the saved result (a **Sync** PostOperation still runs inside the
+  transaction, before the commit - a failure rolls the write back; only Async runs after the commit): the new record's id on Create, writes to
   **other** records (children, parents, related tables), or work that must see what was actually saved.
 - **Anti-pattern: PostOperation + `ctx.Service.Update(...)` of the same record.** It is a second
   write, fires a second Update through every plugin on that table (including this one if its filter

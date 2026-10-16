@@ -28,8 +28,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Wording like "set or
      changed" can cover **Create** too (a value set on a new record) - decide both, or ask (`vela-grill`). Is the stage
      right? Changing a column of the same record → **PreOperation**, set on `ctx.Request.Target` (no
-     extra write, nothing re-triggered). PostOperation only for the committed id, other records, or
-     the saved result. PostOperation + an `Update` of the same record needs a written reason.
+     extra write, nothing re-triggered). PostOperation only for the new id, other records, or the
+     saved result (Sync PostOperation is still inside the transaction; only Async runs after commit). PostOperation + an `Update` of the same record needs a written reason.
    - **Recursion:** does anything this plugin writes re-trigger it (its own filtering attributes, or
      another plugin on the same table)? Fix it in the design - `SkipWhenDepthAbove(n)` / a `ctx.Depth`
      check is not a fix (the write still happens twice). See the recursion gotcha in
