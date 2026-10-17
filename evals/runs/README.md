@@ -8,7 +8,7 @@ input for the next iteration. The lint checks the frontmatter.
 scenario: account-update-recursion   # a file in ../scenarios/
 date: 2026-09-28
 verdict: fail                        # pass (no blocking finding) | fail  - campaign runs: checks AND grader
-campaign: 2026-09-30                 # campaign runs only: the campaign id
+campaign: 2026-09-30                 # campaign runs only: the campaign id (YYYY-MM-DD; a re-run the same day: 2026-09-30b)
 run: 1/3                             # campaign runs only: k/N
 checks: pass                         # campaign runs only: evals/checks/check.py result (passed/total in the body)
 grader: pass                         # campaign runs only: the separate grader's verdict
