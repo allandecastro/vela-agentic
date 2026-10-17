@@ -128,5 +128,7 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
 ## Output
 
 A findings list, most severe first, each: `severity - file:line - what - why - suggested fix`.
-End with a verdict: **PASS** (no Critical/Required) or **BLOCK** (list the blockers). Record the
+End with a verdict: **PASS** (no Critical/Required) or **BLOCK** (list the blockers). On PASS, also list
+the Canvas decisions you checked, one line each (Sync/Async + stage, reuse-vs-new, service-or-helper,
+filter) - a PASS with no findings must still show the spec axis was actually reviewed. Record the
 list in the Build Report.

@@ -37,7 +37,8 @@ Review on **two independent axes** (run them separately so neither masks the oth
 
 Return findings, most severe first: `severity - file:line - what - why - suggested fix`, with
 severities **Critical / Required / Nit**, and a final **PASS** (no Critical/Required) or
-**BLOCK** (list the blockers) verdict.
+**BLOCK** (list the blockers) verdict. On PASS, also list the Canvas decisions you checked, one line each
+(Sync/Async + stage, reuse-vs-new, service-or-helper, filter).
 
 ## Boundaries
 
