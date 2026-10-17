@@ -1,0 +1,49 @@
+{
+ "min_tests": 4,
+ "solution": "VelaEvals",
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "contact",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": ["telephone1"]
+  },
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": ["address1_country"]
+  },
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": ["address1_country"]
+  }
+ ],
+ "step_count": 3,
+ "plan_ops": {
+  "create step": 0,
+  "update step": 0,
+  "delete step": 0
+ },
+ "forbid_src": [
+  {
+   "pattern": "catch\\s*(\\([^)]*\\))?\\s*\\{\\s*\\}",
+   "why": "no swallowed exception"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "Telephone1\\s*=\\s*null",
+   "why": "repro: the import sends the phone empty"
+  }
+ ],
+ "canvas_contains": [
+  "vela logs",
+  "ContactPhoneNormalize"
+ ]
+}

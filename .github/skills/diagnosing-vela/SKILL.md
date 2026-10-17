@@ -6,42 +6,39 @@ compatibility: "Meta skill - no vela CLI dependency."
 
 # Diagnosing Vela runs
 
-Read a run's transcript and produce precise findings against the skills, so the loop-engineering
-cycle (`writing-vela-skills`) has something concrete to fix. This is how a messy autonomous run
-becomes a numbered list of skill defects.
+Turn a run into numbered, line-level findings against the skills, for `writing-vela-skills` to fix.
 
 ## When to use
 
-- After an eval/rehearsal or a real run, especially one that stalled or produced wrong output.
+- After an eval/rehearsal or real run, especially one that stalled or went wrong.
 
 ## Process
 
 Announce: `Using diagnosing-vela to analyse the run`.
 
-1. Reconstruct what the agent did, step by step, against the build loop. Start from the **Run
-   trace** in the Build Report (commands, exit codes, gate verdicts) when present - it is
-   the structured record; fall back to the host transcript otherwise.
-2. For each deviation, wrong command, or stuck point, record a **finding**:
-   - which skill/reference file and what it said,
-   - what the agent actually did / the exact error,
-   - what the correct command/API is (grounded in source or `--help`),
-   - severity: **blocker** (a literal reading fails) vs minor.
-3. Separate **skill defects** (fix the skill) from **environment issues** (e.g. no org, a Mono
-   segv) - the latter get a note in the relevant skill, not a logic change.
-4. Output the numbered findings + a verdict (ready / not ready, top fixes), and hand them to
-   `writing-vela-skills`.
+1. Reconstruct the run against the build loop - from the Build Report's **Run trace** when present,
+   else the transcript.
+2. Per deviation, wrong command or stuck point, a **finding**: the file and what it said; what the agent
+   did / the exact error; the correct command/API (from source or `--help`); severity, exactly one of:
+   - **blocker** - a literal reading of the skill leads to the failure, or a missing rule let a gate
+     (tests, analyzers, review, preview) pass what it should have stopped;
+   - **minor** - anything else (clarity, wording, a gap nothing slipped through).
+3. Separate **skill defects** from **environment issues** (no org, a Mono segv): those get a note, not a
+   logic change.
+4. Output the findings + a verdict (ready / not ready, top fixes).
 
 ## Rationalizations (excuse → rebuttal)
 
-- "The agent was just wrong." → If the skill's literal text allowed it, that's a skill finding.
-- "One-off, won't recur." → If nothing closes the loophole, it recurs. Record it and refactor.
+- "The agent was just wrong." → If the literal text allowed it, it's a skill finding.
+- "One-off, won't recur." → If nothing closes the loophole, it recurs.
 
 ## Red flags
 
-- Findings without file + evidence (unactionable).
-- Blaming the model instead of the skill for a literal-reading failure.
+- Findings without file + evidence.
+- Blaming the model for a literal-reading failure.
+- A severity outside blocker / minor ("required" is the review checklist's scale).
+- Rating "minor" the rule whose absence let a gate pass the defect.
 
 ## Verification
 
-- Every finding names a file, quotes what the skill said, and states the correct path - precise
-  enough to edit the skill directly.
+- Every finding names a file, quotes the skill and states the correct path - precise enough to edit it.

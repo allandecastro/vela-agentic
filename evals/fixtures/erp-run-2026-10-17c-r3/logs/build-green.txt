@@ -1,0 +1,20 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Zava.Shared -> <run>/work/ZavaSales/src/Zava.Shared/bin/Release/net48/Zava.Shared.dll
+  Zava.Shared -> <run>/work/ZavaSales/src/Zava.Shared/bin/Release/net10.0/Zava.Shared.dll
+  Zava.Plugins -> <run>/work/ZavaSales/src/Zava.Plugins/bin/Release/net48/Zava.Plugins.dll
+  Zava.Integrations -> <run>/work/ZavaSales/src/Zava.Integrations/bin/Release/net48/Zava.Integrations.dll
+  Zava.Plugins -> <run>/work/ZavaSales/src/Zava.Plugins/bin/Release/net48/publish/
+  Zava.Integrations -> <run>/work/ZavaSales/src/Zava.Integrations/bin/Release/net48/publish/
+  The package Zava.Integrations.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '<run>/work/ZavaSales/src/Zava.Integrations/../../artifacts/Zava.Integrations.1.0.0.nupkg'.
+  Zava.Integrations.Tests -> <run>/work/ZavaSales/tests/Zava.Integrations.Tests/bin/Release/net48/Zava.Integrations.Tests.dll
+  The package Zava.Plugins.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '<run>/work/ZavaSales/src/Zava.Plugins/../../artifacts/Zava.Plugins.1.0.0.nupkg'.
+  Zava.Plugins.Tests -> <run>/work/ZavaSales/tests/Zava.Plugins.Tests/bin/Release/net48/Zava.Plugins.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.87

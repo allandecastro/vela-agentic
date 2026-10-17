@@ -1,7 +1,7 @@
 ---
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
-compatibility: "vela CLI >= 0.26.1 (Vela.Plugins >= 0.36.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
 ---
 
 # Review the plan (self-grilling)
@@ -9,9 +9,8 @@ compatibility: "vela CLI >= 0.26.1 (Vela.Plugins >= 0.36.0); dotnet SDK."
 > Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
 > directory containing this `SKILL.md`), not to the project you are working in.
 
-Before building anything, interrogate your own plan until every branch resolves. This is the
-front gate: it catches a mis-interpreted story before a wasted build. It is **advisory** - you
-flag unresolved assumptions and continue; you do not block.
+Interrogate your own plan until every branch resolves. This front gate catches a mis-interpreted story
+before a wasted build. It is **advisory**: flag unresolved assumptions and continue; do not block.
 
 ## When to use
 
@@ -22,100 +21,74 @@ flag unresolved assumptions and continue; you do not block.
 Announce: `Using vela-plan-review to grill the plan`.
 
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
-2. **Grill it** - answer each question; an unanswered one becomes an assumption or open question:
-   - **Step or Custom API?** A reaction to a table event (create/update/delete...) is a plugin step. An
-     operation someone *calls* with inputs and outputs is a Custom API → `vela-custom-api`.
-   - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Wording like "set or
-     changed" can cover **Create** too (a value set on a new record) - decide both, or ask (`vela-grill`). Is the stage
-     right? Changing a column of the same record → **PreOperation**, set on `ctx.Request.Target` (no
-     extra write, nothing re-triggered). PostOperation only for the new id, other records, or the
-     saved result (Sync PostOperation is still inside the transaction; only Async runs after commit). PostOperation + an `Update` of the same record needs a written reason.
-   - **Recursion:** does anything this plugin writes re-trigger it (its own filtering attributes, or
-     another plugin on the same table)? Fix it in the design - `SkipWhenDepthAbove(n)` / a `ctx.Depth`
-     check is not a fix (the write still happens twice). See the recursion gotcha in
-     `references/dataverse-gotchas.md`.
-   - **Approach - Sync vs Async:** Sync when the effect must be seen/validated in the same
-     transaction; Async only for non-blocking, slow, external, eventual work (PostOperation-only).
-     Default Sync; justify Async. (See `references/registration-rules.md`.)
-   - **Approach - reuse vs new:** New plugin (no class) → `vela add plugin` then code. Behaviour on
-     a table that already has a plugin → prefer `vela add step`. Reuse an existing plugin/service;
-     never duplicate; never hand-create a class.
-   - **Structure - service?** Keep the handler thin (SRP). Real/reusable logic → a service
-     (`vela add service`) injected via DI; reuse an existing one; don't extract for a one-liner.
-     Shared by the steps of one plugin → private helper; across plugins → service.
-   - **Structure - outbound integration?** Does the behaviour call another system (HTTP API, queue,
-     Azure service, e-mail gateway...)? Yes → the call goes in a service in the **Integrations project**
-     (scaffold with `vela init --integrations`: empty, no demos, references `System.Net.Http`), usually
-     behind an **Async** PostOperation step (see Sync vs Async), HTTPS to a DNS name with an explicit
-     timeout, credentials via `.WithSecureConfigFrom("Name")`. It builds its own package - the preview
-     covers **both** packages. Never `vela init --samples` (demo code and a ConsoleApp). Record the
-     answer in the Canvas (Structure), including the secure-config name the deployer must supply.
-   - **Structure - target solution & publisher:** which **unmanaged solution** (unique name) do
-     components go into, and its **publisher prefix**? It must already exist (Vela doesn't create
-     it); with an org, confirm both read-only with `vela solution show <uniquename> --json`. The
-     scaffold's `--publisher-prefix` must equal that prefix (it names Custom APIs); `--prefix` is only
-     the namespace/project prefix. Record both in the Canvas (see `references/registration-rules.md`).
-     **Not in the story and no org to read it from?** Ask the human once before scaffolding if one is
-     available (`vela-grill`); otherwise scaffold with a flagged assumption - a placeholder that can't
-     pass for real, e.g. `--publisher-prefix tbd` - list it as an open question, and state in the Gate
-     that apply is blocked until the prefix and solution are confirmed.
-   - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
-     with the same value. Record whether the behaviour needs the value to actually differ (compare with
-     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not an
-     extra write, but setting a column the request did not change adds it to the save (and can fire other
-     steps filtered on it): set it only when the new value differs.
-   - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
-     is **mandatory** (build error VELA020 without one; `vela add` needs `--filtering-attributes`); on
-     **Create it gates the trigger too** (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): a create that sends none
-     of the filtered columns does not fire. For "on every create", filter on a column every create sends
-     (e.g. a business-required one) and record the residual risk in the Canvas.
-   - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
-     (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
-   - **Association:** Associate/Disassociate → `vela add plugin <Name> --entity <E> --message
-     Associate` (message-level `OnAssociate()`), scoped with `.ForRelationship("<schema name>")` -
-     record the relationship schema name(s) in the Canvas, and that either side can be the Target.
-     Which message the story really means (Associate, or marketing-list `AddMember` /
-     `AddListMembers` - typed `OnAddMemberList()` / `OnAddListMembersList()` triggers exist - or dynamic
-     lists that raise no event) is a question for the human - ask it (`vela-grill`) or list it as an
-     open question.
-   - **Bulk:** `*Multiple` vs single-record message - one of them, never both for the same logic
-     (merged pipelines); record why. A story scoped to "bulk updates" can't stay bulk-only: the step
-     also runs for single Updates - that is a scope point for the human to confirm, listed at the Gate.
-   - **Models:** Which tables and columns must `vela-models` generate (a minimal scaffold has none)?
-   - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent. **Secrets:** any key or
-     password → secure configuration (`WithSecureConfigFrom`), never code.
-   - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,
-     each applicable gotcha. These become the RED tests. Include what `vela-test-harness` will
-     require anyway: on Update, "column not sent" vs "column cleared"; a `PluginPipeline` case when
-     the step must (not) fire or could re-trigger itself. **Every assumption that changes behaviour**
-     (e.g. "whitespace-only means empty") is also an acceptance case.
-3. **Fill the Vela Canvas** (`references/build-report-template.md`): the seven REASONS-adapted
-   sections (R Requirements/DoD · E Entities · A Approach · S Structure · O Operations · N Norms ·
-   S Safeguards), with the acceptance cases, assumptions and open questions. Keep it proportional -
-   one line per section for a simple story.
-4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
-   is a **business decision only the human can make** (what a story term means, which record drives
-   which, the rule itself - including **edge values that change an acceptance case**, e.g. "is an email
-   without `@` invalid?", "does a single Update count?"): then use `vela-grill` first, and resume here with
-   the answers. With a human reachable, such a rule is **asked**, never left as an assumption. No human
-   reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
-   that blocks the apply gate. A **blocked** outcome (framework limit, story not deliverable) always
-   wins over "continue": set the Canvas `status: blocked` and stop (see the builder's "Blocked stories").
+2. **Grill it** (unanswered → assumption or open question). Decisions and legal matrix:
+   `references/registration-rules.md`; traps: `references/dataverse-gotchas.md`.
+   - **Step or Custom API?** Reaction to a table event → plugin step. An operation someone *calls* with
+     inputs/outputs → `vela-custom-api`.
+   - **Message/stage/mode:** "set or changed" can cover **Create** too - decide both, or ask (`vela-grill`).
+     Changing a column of the same record → **PreOperation** on `ctx.Request.Target`. PostOperation only for
+     the new id, other records, or the saved result (Sync PostOperation is still in the transaction; only
+     Async runs after commit). PostOperation + `Update` of the same record needs a written reason.
+   - **Recursion:** does a write re-trigger this or another plugin? Fix it in the design;
+     `SkipWhenDepthAbove(n)` / `ctx.Depth` is not a fix (recursion gotcha).
+   - **Approach - Sync vs Async:** default Sync; justify Async.
+   - **Approach - reuse vs new:** no class → `vela add plugin`; table already has a plugin → prefer
+     `vela add step`. Reuse, never duplicate, never hand-create a class.
+   - **Structure - service?** Thin handler; real/reusable logic → `vela add service`; none for a
+     one-liner; one plugin → private helper, across plugins → service.
+   - **Structure - outbound integration?** Calls another system → a service in the **Integrations project**
+     (`vela init --integrations`, never `--samples`), usually Async PostOperation (rules: registration-rules
+     "Outbound integration"). Record it in Structure, with the secure-config name the deployer must supply.
+   - **Structure - target solution & publisher:** the existing **unmanaged solution** unique name and its
+     **publisher prefix** (Vela doesn't create them). With an org, confirm read-only:
+     `vela solution show <uniquename> --json`. `--publisher-prefix` must equal that prefix; `--prefix` is
+     only the namespace. **Unknown and no org?** Ask the human once (`vela-grill`) if reachable; otherwise
+     scaffold with an obvious placeholder (`--publisher-prefix tbd`), list it as an open question, and state
+     in the Gate that apply is blocked until confirmed.
+   - **"When X changes" on Update:** the filter fires whenever the column is *sent*, even unchanged.
+     Record whether the value must differ (compare `ctx.PreImage`); write, or set an unsent Target column,
+     only when the value differs.
+   - **Trigger:** `FilterOn` is mandatory on Create/Update (VELA020) and **gates Create too** (the
+     Microsoft docs are wrong): a create sending none of the filtered columns does not fire. "Every
+     create" → filter on a column every create sends; record the residual risk.
+   - **Images / legality:** which images? Legal per the matrix?
+   - **Association:** `vela add plugin <Name> --entity <E> --message Associate`, scoped with
+     `.ForRelationship("<schema name>")`; record the schema name(s) and that either side can be the Target.
+     Associate vs marketing-list `AddMember` / `AddListMembers` vs dynamic lists (no event) is a question
+     for the human - ask (`vela-grill`) or list it as open.
+   - **Bulk:** `*Multiple` or single-record, never both; record why. A "bulk only" story also runs on
+     single Updates - a scope point for the human, listed at the Gate.
+   - **Models:** which tables/columns must `vela-models` generate (a minimal scaffold has none)?
+   - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
+     business decision: with a human reachable, ask (one question); record answer and reason. Data read as
+     SYSTEM never reaches the user beyond what they may read (a count, not names).
+   - **Norms:** generated naming + prefix; SOLID/DRY; secrets → `WithSecureConfigFrom`, never code.
+   - **Acceptance cases:** the DoD as concrete RED tests - primary behaviour, each edge, each applicable
+     gotcha; on Update "column not sent" vs "column cleared"; a `PluginPipeline` case when the step must
+     (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.
+3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, acceptance cases,
+   assumptions, open questions - one line per section for a simple story.
+4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
+   decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
+   **edge values that change an acceptance case**): then `vela-grill` first and resume with the answers.
+   With a human reachable such a rule is **asked**, never assumed. No human reachable → a flagged
+   assumption, listed as an open question that blocks the apply gate. A **blocked** outcome (framework
+   limit, undeliverable story) wins: set the Canvas `status: blocked` and stop (see the builder's
+   "Blocked stories").
 
 ## Rationalizations (excuse → rebuttal)
 
-- "The story is clear enough." → Grill it anyway; the cost is a paragraph, the payoff is not
-  building the wrong thing.
-- "I'll figure out images/filtering while coding." → Decide them now; they change the
-  registration, which changes the scaffold.
+- "The story is clear enough." → Grill it anyway; a paragraph is cheaper than building the wrong thing.
+- "I'll figure out images/filtering while coding." → Decide now; they change the registration and the
+  scaffold.
 
 ## Red flags
 
 - Any grilling branch left unanswered and not recorded as an assumption or open question.
-- Proceeding without a Vela Canvas, or a Canvas whose Approach/Structure leave Sync-vs-Async or
-  reuse-vs-new undecided.
+- Proceeding without a Vela Canvas, or one whose Approach/Structure leave Sync-vs-Async or reuse-vs-new
+  undecided.
 
 ## Verification
 
-- A Vela Canvas exists with all seven sections filled (proportional), every grilling branch
-  resolved or logged, and the assumptions surfaced to the user.
+- A Vela Canvas exists with all seven sections filled (proportional), every grilling branch resolved or
+  logged, and the assumptions surfaced to the user.

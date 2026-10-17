@@ -1,0 +1,42 @@
+{
+ "min_tests": 6,
+ "steps": [
+  {
+   "message": "Delete",
+   "entity": "account",
+   "stage": "PreValidation",
+   "mode": "Synchronous"
+  }
+ ],
+ "step_count": 2,
+ "forbid_src": [
+  {
+   "pattern": "new QueryExpression|GetAttributeValue<",
+   "why": "typed query on the generated models"
+  }
+ ],
+ "require_src": [
+  {
+   "pattern": "Query\\.For<Contact>",
+   "why": "typed query"
+  },
+  {
+   "pattern": "StateCode",
+   "why": "only active contacts block"
+  },
+  {
+   "pattern": "InvalidPluginExecutionException",
+   "why": "the block surfaces to the user"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "\\.Delete\\(",
+   "why": "the delete goes through the pipeline"
+  }
+ ],
+ "canvas_contains": [
+  "PreValidation",
+  "Delete"
+ ]
+}

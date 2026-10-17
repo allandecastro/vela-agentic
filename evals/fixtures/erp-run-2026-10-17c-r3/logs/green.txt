@@ -1,0 +1,7 @@
+﻿﻿xUnit.net Console Runner v2.9.2+82543a6df6 (64-bit .NET Framework 4.7.2, runtime: 4.0.30319.42000)
+  Discovering: Zava.Integrations.Tests
+  Discovered:  Zava.Integrations.Tests
+  Starting:    Zava.Integrations.Tests
+  Finished:    Zava.Integrations.Tests
+=== TEST EXECUTION SUMMARY ===
+   Zava.Integrations.Tests  Total: 18, Errors: 0, Failed: 0, Skipped: 0, Time: 0,476s

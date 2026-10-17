@@ -1,0 +1,2475 @@
+diff --git a/docs/vela-builds/account-erp-outbound.md b/docs/vela-builds/account-erp-outbound.md
+new file mode 100644
+index 0000000..fd111ef
+--- /dev/null
++++ b/docs/vela-builds/account-erp-outbound.md
+@@ -0,0 +1,182 @@
++---
++kind: vela-build
++slug: account-erp-outbound
++date: 2026-10-17
++status: awaiting-apply     # Canvas never human-approved beyond the grill answers; no apply has run
++vela_cli: 0.26.1
++framework: 0.36.0
++packages: [Zava.Integrations.1.0.0.nupkg]   # Zava.Plugins.1.0.0.nupkg is empty (nothing of this story) - left out of preview and apply
++package_sha256: 5f31628c6adfb5bdda3e8790b395d7cdae8f95be24a802641b5c8e7fa3b4790d
++signed: unknown            # no certificate held by the agent; whether the org requires signing is an open question
++harness: pass
++analyzers: clean
++review: pass
++plan_preview: changes
++plan_command: "vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json"
++apply: pending
++entity: account
++message: Create
++stage: PostOperation       # needs the new record id; the outbound call happens after the save
++mode: Asynchronous         # Async(deleteJobOnSuccess: true): ERP down never blocks the save; a failure stays as a failed system job
++filtering_attributes: [Name]
++images: []
++secure_config: ErpApiKey   # WithSecureConfigFrom("ErpApiKey") - the X-Api-Key value, supplied by the deployer at apply
++reuse: new-plugin          # AccountErpNotify (Integrations project) - no Account plugin exists
++service: new:ErpAccountSender   # IErpAccountSender in the Integrations project: the HTTP call
++solution: ZavaSales
++publisher_prefix: zava     # confirmed: `vela solution show ZavaSales --json` -> {"solution":"ZavaSales","publisherPrefix":"zava"} (exit 0)
++namespace_prefix: Zava
++acceptance_cases:
++  - "AC1 Create of an account with a name -> the step fires once (pipeline: Create, PostOperation, Asynchronous) and sends the ERP the new account's id and name"
++  - "AC2 the ERP call fails (sender throws) -> the account is still saved; the failure is recorded as a failed async job (AsyncStepFailures), not thrown to the caller"
++  - "AC3 the request is POST https://erp.zava-demo.com/api/accounts, Content-Type application/json, header X-Api-Key = the secure config value, body {\"id\":\"<guid, lower-case hyphenated>\",\"name\":\"<name>\"}"
++  - "AC4 the ERP answers non-2xx (500, 401) -> InvalidPluginExecutionException naming the status code (failed system job)"
++  - "AC5 the ERP is unreachable (transport error) -> InvalidPluginExecutionException (failed system job)"
++  - "AC6 the ERP never answers -> the call fails with InvalidPluginExecutionException within the configured timeout (explicit, 30 s in production), not the 100 s default"
++  - "AC7 a name with quotes, backslash and non-ASCII characters -> the body is valid JSON that parses back to the same name"
++  - "AC8 the secure config ErpApiKey is missing/blank -> InvalidPluginExecutionException, no HTTP call; the account is still saved"
++  - "AC9 a Create that does not send name -> the step does not fire (Create filter gate, residual risk below)"
++  - "AC10 an Update of the account (name changed) -> the step does not fire (Create only)"
++  - "AC11 the API key never appears in the trace output"
++decisions:
++  - {by: human, what: "target solution ZavaSales (publisher prefix zava), namespace prefix Zava"}
++  - {by: human, what: "ERP down/error -> no retry: the call fails once and stays as a failed system job; ops replays it"}
++  - {by: human, what: "body is {\"id\": \"<account guid>\", \"name\": \"<account name>\"}; success = any 2xx"}
++assumptions:
++  - "Async PostOperation runs after the commit, so a failed call never rolls back or blocks the account save (registration-rules)."
++  - "Create filtering attributes gate the trigger (pack: verified live). Account name is business-required, so every UI/form create sends it; an API create that omits name is not sent to the ERP (residual risk, AC9)."
++  - "The name sent is the one in the Create request (ctx.Request.Target.Name); a null name sent explicitly is serialised as JSON null."
++  - "Id = ctx.PrimaryEntityId (the created record's id), formatted Guid.ToString(\"D\") (lower-case hyphenated)."
++  - "Payload serialised with DataContractJsonSerializer over a PUBLIC [DataContract] type (sandbox partial trust - gotcha)."
++  - "Timeout 30 s: explicit, well under the 2-minute sandbox limit."
++open_questions:
++  - "Who supplies the ErpApiKey secure-config value at apply (`--secure-config ErpApiKey=@<file>` or VELA_SECURE_CONFIG_ErpApiKey)? The agent does not hold it - blocks the apply gate."
++  - "Does the dev org require signed plugin packages? (signed: unknown - unsigned; a human signs before apply if required, then re-plans)"
++skills: [vela-plan-review, vela-grill, vela-scaffold, vela-models, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
++---
++
++## R - Requirements & DoD
++"When an Account is created, tell our ERP about it: POST the account's id and name as JSON to
++`https://erp.zava-demo.com/api/accounts`. The ERP authenticates calls with an API key sent in the
++`X-Api-Key` header. If the ERP is down, people must still be able to save accounts."
++
++DoD: AC1-AC11 are harness tests, green; analyzers clean; review PASS; `vela plan --solution ZavaSales`
++preview on the final package(s). No test reaches the network.
++
++## E - Entities
++account: `accountid` (read - the created id), `name` (read from the Create target). No column is written;
++no Dataverse write at all.
++
++## A - Approach
++Create, **PostOperation, Async** (`Async(deleteJobOnSuccess: true)`): the call is external and slow-ish,
++and the story requires the save to succeed when the ERP is down - Async runs after the commit, so a
++failure becomes a failed system job and never undoes or blocks the save (human decision: no retry, ops
++replays failed jobs). PostOperation because the new id exists only after the create. New plugin: no
++Account plugin exists in this new solution.
++
++## S - Structure
++`vela init --integrations`: the outbound code lives in `src/Zava.Integrations` (own package
++`Zava.Integrations.<ver>.nupkg`). Plugin `AccountErpNotify` (`vela add plugin` into the Integrations
++project) - thin handler: guard the secure config, resolve `IErpAccountSender`, send (id, name).
++Service `ErpAccountSender` (`vela add service`, Integrations project): builds the JSON, POSTs with
++`X-Api-Key`, explicit timeout, maps non-2xx / transport error / timeout to `InvalidPluginExecutionException`.
++It takes an `HttpMessageHandler` so tests use a fake transport. Models: `account` generated into
++`src/Zava.Shared`. The `Zava.Plugins` package stays empty (nothing of this story in it): it is left out of the
++preview and the apply command (`vela plan` does not create an empty package).
++
++## O - Operations
++```
++RegisterStep().OnCreate().PostOperation().Async(deleteJobOnSuccess: true)
++    .FilterOn(e => e.Name)
++    .WithSecureConfigFrom("ErpApiKey")
++    .WithDescription("Sends the new account (id, name) to the ERP.")
++    .Handle(OnExecute);
++OnExecute: if SecureConfig blank -> throw IPE; ctx.GetRequiredService<IErpAccountSender>()
++           .Send(ctx.PrimaryEntityId, ctx.Request.Target.Name); trace id (never the key).
++ConfigureServices: AddScoped<IErpAccountSender>(r => new ErpAccountSender(SecureConfig)).
++```
++Tests: pipeline tests with `WithService<IErpAccountSender>(fake)` + `WithSecureConfig("ErpApiKey", ...)`
++(AC1, AC2, AC8, AC9, AC10, AC11); `ErpAccountSender` against a fake `HttpMessageHandler` (AC3-AC7).
++
++## N - Norms
++Namespace `Zava.Integrations.Account.*`; generated naming kept (`OnExecute`). Thin handler, HTTP logic in
++the service (SRP); no mutable fields; `InvalidPluginExecutionException` only; secret only in secure config.
++
++## S - Safeguards
++Legal: Create PostOperation Async, no images, FilterOn Name (VELA020). HTTPS to a DNS name, explicit
++timeout, public payload type, no secret in code/unsecure config/trace. No Dataverse write -> no recursion.
++Never `vela apply` - stop at the gate; the ErpApiKey value is supplied by the deployer.
++
++## What was built
++- Commands: `vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations -o .`;
++  `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url <org>`;
++  `vela add plugin AccountErpNotify --entity Account --message Create --stage PostOperation --mode Async --filtering-attributes name --project src/Zava.Integrations/Zava.Integrations.csproj`;
++  `vela add service ErpAccountSender --entity Account --project src/Zava.Integrations/Zava.Integrations.csproj`;
++  `vela add test AccountErpNotify --kind plugin --entity Account --message Create` (in tests/Zava.Integrations.Tests).
++- `src/Zava.Integrations/Account/Plugins/AccountErpNotify.cs` - Create / PostOperation / Async(deleteJobOnSuccess) /
++  FilterOn(Name) / WithSecureConfigFrom("ErpApiKey"); OnExecute guards the key, resolves `IErpAccountSender`, sends
++  (`ctx.PrimaryEntityId`, `ctx.Request.Target.Name`). No Dataverse write.
++- `src/Zava.Integrations/Account/Services/ErpAccountSender.cs` - DataContractJsonSerializer over public
++  `ErpAccountPayload`; POST with `X-Api-Key`; 30 s timeout; non-2xx / transport error / timeout ->
++  `InvalidPluginExecutionException`.
++- Tests: `tests/Zava.Integrations.Tests/Account/Plugins/AccountErpNotifyTests.cs` (pipeline, fake sender via
++  `WithService`), `tests/Zava.Integrations.Tests/Account/Services/ErpAccountSenderTests.cs` (fake `HttpMessageHandler`).
++
++## Evidence
++- `dotnet build ZavaSales.sln -c Release`: `0 Warning(s)` `0 Error(s)` (no VELA diagnostic, nothing suppressed).
++- Harness (Mono + xunit.console 2.9.2, `-parallel none`): RED `Total: 18, Errors: 0, Failed: 14, Skipped: 0`
++  (commit 2117636) -> GREEN `Total: 18, Errors: 0, Failed: 0, Skipped: 0` (commit 1f6de50). Zava.Plugins.Tests: `Total: 0`.
++  Passed before implementation (guard cases, expected): AC9, AC10, AC11, AC6 constant.
++- Acceptance cases: [x] AC1 [x] AC2 [x] AC3 [x] AC4 [x] AC5 [x] AC6 [x] AC7 [x] AC8 [x] AC9 [x] AC10 [x] AC11
++- Code review: isolated `vela-reviewer` subagent - **PASS**, 0 Critical / 0 Required, 7 Nits (verbatim in
++  `logs/review1/review.md` of the run): (1) trim the API key / map a header FormatException to IPE; (2) keep the
++  TaskCanceledException as inner exception; (3) assert no key in the trace on the failure paths too; (4) AC7 parses
++  with the same serializer; (5) the "null name -> JSON null" assumption is untested; (6) Canvas status; (7) unused
++  `using System.Linq`. Nits not applied in this run (non-blocking; any code change would need re-test, re-review and re-plan).
++- Solution: `vela solution show ZavaSales --json` -> `{"solution":"ZavaSales","publisherPrefix":"zava"}` (exit 0).
++- Package: `artifacts/Zava.Integrations.1.0.0.nupkg` (holds `lib/net48/Zava.Integrations.dll` + `Zava.Shared.dll`) ·
++  sha256 `5f31628c6adfb5bdda3e8790b395d7cdae8f95be24a802641b5c8e7fa3b4790d` · unsigned (signed: unknown).
++- `vela plan` (exit **8**, changes): operations - `create package zava_Zava.Integrations`; `create step
++  Zava.Integrations.Account.Plugins.AccountErpNotify` (Create, account, stage 40, mode 1 async, filtering
++  `name`, asyncAutoDelete true, no images). diagnostics - "Step 'Zava.Integrations.Account.Plugins.AccountErpNotify:stepkey:dv-bf29ed0d8c04'
++  expects the secure configuration 'ErpApiKey', but none is set in the environment and no value was given; pass
++  --secure-config ErpApiKey=VALUE (or set VELA_SECURE_CONFIG_ErpApiKey)." (kept as evidence: the agent does not hold
++  the key). info - "Plugin assembly 'Zava.Integrations' not found in Dataverse (first deployment)."
++
++## Sync log
++- Canvas Structure: the production `ErpAccountSender(apiKey)` uses a per-call `HttpClient` that owns (and disposes)
++  its default handler; the test constructor takes a caller-owned `HttpMessageHandler`. Behaviour unchanged.
++
++## Run trace
++| # | step | skill | command | exit | verdict |
++|---|------|-------|---------|------|---------|
++| 1 | version | using-vela | `vela version` | 0 | vela 0.26.1 |
++| 2 | grill | vela-grill | Q1-Q3 to the human (solution, ERP-down behaviour, JSON body) | - | answered |
++| 3 | solution | vela-scaffold | `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` | 0 | {"solution":"ZavaSales","publisherPrefix":"zava"} |
++| 4 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations -o .` | 0 | 11 files, Vela.Plugins 0.36.0 |
++| 5 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url https://dyn-premium-dev.crm.dynamics.com` | 0 | Generated 4 file(s) |
++| 6 | add | vela-scaffold | `vela add plugin AccountErpNotify --entity Account --message Create --stage PostOperation --mode Async --filtering-attributes name --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created plugin |
++| 7 | add | vela-scaffold | `vela add service ErpAccountSender --entity Account --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created service |
++| 8 | add | vela-scaffold | `vela add test AccountErpNotify --kind plugin --entity Account --message Create --project Zava.Integrations.Tests.csproj` | 0 | Created test |
++| 9 | build | vela-test-harness | `dotnet build ZavaSales.sln -c Release` | 0 | 0 Warning(s) 0 Error(s) |
++| 10 | test-red | vela-test-harness | `mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe tests/Zava.Integrations.Tests/bin/Release/net48/Zava.Integrations.Tests.dll -parallel none` | 1 | RED 14/18 fail (expected) |
++| 11 | build | vela-plugin-authoring | `dotnet build ZavaSales.sln -c Release` | 0 | 0 Warning(s) 0 Error(s) |
++| 12 | verify | vela-test-harness | same mono runner, Zava.Integrations.Tests.dll | 0 | GREEN 18/18 |
++| 13 | verify | vela-test-harness | same mono runner, Zava.Plugins.Tests.dll | 0 | Total: 0 |
++| 14 | review | vela-code-review | isolated vela-reviewer subagent on `git diff a8b2aba...HEAD` | - | PASS, 7 Nits |
++| 15 | package | vela-apply | `rm -rf artifacts && dotnet build ZavaSales.sln -c Release` (dll checked with `unzip -l`) | 0 | Zava.Integrations.1.0.0.nupkg sha256 5f31628c...4790d |
++| 16 | plan | vela-apply | `vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` | 8 | changes: create package + 1 step; secure-config diagnostic |
++
++## Gate - human approval required
++Not applied. After `shasum -a 256 artifacts/Zava.Integrations.1.0.0.nupkg` matches
++`5f31628c6adfb5bdda3e8790b395d7cdae8f95be24a802641b5c8e7fa3b4790d` (and after signing + re-plan, if the org requires
++signed packages), a human runs:
++`vela apply -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --secure-config ErpApiKey=@<file holding the key>`
++- this will: create plugin package `zava_Zava.Integrations` and the step `AccountErpNotify` (Create of account,
++PostOperation, Async, auto-delete on success, filtering `name`, secure config ErpApiKey), both added to ZavaSales.
++`Zava.Plugins.1.0.0.nupkg` is deliberately not in the command (empty package). Exit `7` = partial apply (fix, re-run);
++`5` = not converged - both reported, never "done".
++
++## Open questions (block the gate)
++- Who supplies the `ErpApiKey` value at apply, and how (`--secure-config ErpApiKey=@<file>` or `VELA_SECURE_CONFIG_ErpApiKey`)?
++- Does the org require signed plugin packages? If yes, sign this package, then re-run `vela plan` on the signed file.
+diff --git a/src/Zava.Integrations/Account/Plugins/AccountErpNotify.cs b/src/Zava.Integrations/Account/Plugins/AccountErpNotify.cs
+new file mode 100644
+index 0000000..3ec4763
+--- /dev/null
++++ b/src/Zava.Integrations/Account/Plugins/AccountErpNotify.cs
+@@ -0,0 +1,41 @@
++namespace Zava.Integrations.Account.Plugins
++{
++    using Microsoft.Xrm.Sdk;
++    using Vela.Context;
++    using Vela.DI;
++    using Vela.Plugin;
++    using Zava.Integrations.Account.Services;
++    using Zava.Shared.Models.Generated;
++
++    /// <summary>Plugin generated by <c>vela add plugin</c>.</summary>
++    public sealed partial class AccountErpNotify(string unsecureConfig, string secureConfig) : EntityPluginBase<Account>(unsecureConfig, secureConfig)
++    {
++        protected override void RegisterPluginSteps()
++        {
++            RegisterStep().OnCreate()
++                .PostOperation()
++                .Async(deleteJobOnSuccess: true)
++                .FilterOn(e => e.Name)
++                .WithSecureConfigFrom("ErpApiKey")
++                .WithDescription("Sends the new account (id, name) to the ERP.")
++                .Handle(OnExecute);
++        }
++
++        protected override void ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)
++            => services.AddScoped<IErpAccountSender>(r => new ErpAccountSender(SecureConfig));
++
++        private void OnExecute(ICreatePostContext<Account> ctx)
++        {
++            ctx.Trace("AccountErpNotify: sending {0} '{1}' to the ERP.", ctx.PrimaryEntityName, ctx.PrimaryEntityId);
++
++            if (string.IsNullOrWhiteSpace(SecureConfig))
++            {
++                throw new InvalidPluginExecutionException(
++                    "The ERP API key is not configured: set the step's secure configuration 'ErpApiKey'.");
++            }
++
++            ctx.GetRequiredService<IErpAccountSender>().Send(ctx.PrimaryEntityId, ctx.Request.Target.Name);
++            ctx.Trace("AccountErpNotify: ERP accepted account '{0}'.", ctx.PrimaryEntityId);
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/src/Zava.Integrations/Account/Services/ErpAccountSender.cs b/src/Zava.Integrations/Account/Services/ErpAccountSender.cs
+new file mode 100644
+index 0000000..5d2d84c
+--- /dev/null
++++ b/src/Zava.Integrations/Account/Services/ErpAccountSender.cs
+@@ -0,0 +1,113 @@
++namespace Zava.Integrations.Account.Services
++{
++    using System;
++    using System.IO;
++    using System.Net.Http;
++    using System.Runtime.Serialization;
++    using System.Runtime.Serialization.Json;
++    using System.Text;
++    using System.Threading.Tasks;
++    using Microsoft.Xrm.Sdk;
++
++    /// <summary>
++    /// Sends a newly created account to the ERP. Generated by <c>vela add service</c>; registered from
++    /// <c>AccountErpNotify.ConfigureServices(...)</c> and resolved with <c>ctx.GetRequiredService&lt;IErpAccountSender&gt;()</c>.
++    /// </summary>
++    public interface IErpAccountSender
++    {
++        void Send(Guid accountId, string name);
++    }
++
++    /// <summary>
++    /// POSTs <c>{"id":"&lt;guid&gt;","name":"&lt;name&gt;"}</c> to the ERP with the API key in <c>X-Api-Key</c>.
++    /// Any non-2xx answer, transport error or timeout throws <see cref="InvalidPluginExecutionException"/>, which fails
++    /// the async system job (no retry: ops replays it).
++    /// </summary>
++    public sealed class ErpAccountSender : IErpAccountSender
++    {
++        public const string Endpoint = "https://erp.zava-demo.com/api/accounts";
++        public const string ApiKeyHeader = "X-Api-Key";
++
++        /// <summary>Explicit timeout, well under the 2-minute sandbox limit.</summary>
++        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
++
++        private readonly string _apiKey;
++        private readonly HttpMessageHandler _handler;
++        private readonly TimeSpan _timeout;
++
++        /// <summary>Production: the default transport (owned and disposed per call) and <see cref="DefaultTimeout"/>.</summary>
++        public ErpAccountSender(string apiKey)
++        {
++            _apiKey = apiKey;
++            _handler = null;
++            _timeout = DefaultTimeout;
++        }
++
++        /// <summary>A caller-owned transport (e.g. a fake in tests) and an explicit timeout.</summary>
++        public ErpAccountSender(string apiKey, HttpMessageHandler handler, TimeSpan timeout)
++        {
++            _apiKey = apiKey;
++            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
++            _timeout = timeout;
++        }
++
++        public void Send(Guid accountId, string name)
++        {
++            string json = Serialize(new ErpAccountPayload { Id = accountId.ToString("D"), Name = name });
++
++            using (HttpClient client = _handler == null ? new HttpClient() : new HttpClient(_handler, disposeHandler: false))
++            using (var request = new HttpRequestMessage(HttpMethod.Post, Endpoint))
++            {
++                client.Timeout = _timeout;
++                request.Headers.Add(ApiKeyHeader, _apiKey);
++                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
++
++                HttpResponseMessage response;
++                try
++                {
++                    response = client.SendAsync(request).GetAwaiter().GetResult();
++                }
++                catch (TaskCanceledException)
++                {
++                    throw new InvalidPluginExecutionException(
++                        $"ERP call for account {accountId} timed out after {_timeout.TotalSeconds} s.");
++                }
++                catch (HttpRequestException ex)
++                {
++                    throw new InvalidPluginExecutionException(
++                        $"ERP unreachable for account {accountId}: {ex.Message}", ex);
++                }
++
++                using (response)
++                {
++                    if (!response.IsSuccessStatusCode)
++                    {
++                        throw new InvalidPluginExecutionException(
++                            $"ERP rejected account {accountId}: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}).");
++                    }
++                }
++            }
++        }
++
++        private static string Serialize(ErpAccountPayload payload)
++        {
++            var serializer = new DataContractJsonSerializer(typeof(ErpAccountPayload));
++            using (var stream = new MemoryStream())
++            {
++                serializer.WriteObject(stream, payload);
++                return Encoding.UTF8.GetString(stream.ToArray());
++            }
++        }
++    }
++
++    /// <summary>The ERP request body. Public: the sandbox's partial trust only serializes public types.</summary>
++    [DataContract]
++    public sealed class ErpAccountPayload
++    {
++        [DataMember(Name = "id", Order = 0)]
++        public string Id { get; set; }
++
++        [DataMember(Name = "name", Order = 1)]
++        public string Name { get; set; }
++    }
++}
+diff --git a/src/Zava.Shared/Models/Generated/Account.cs b/src/Zava.Shared/Models/Generated/Account.cs
+new file mode 100644
+index 0000000..5fd56c4
+--- /dev/null
++++ b/src/Zava.Shared/Models/Generated/Account.cs
+@@ -0,0 +1,1701 @@
++// <auto-generated/>
++#nullable enable
++namespace Zava.Shared.Models.Generated
++{
++    using System;
++    using System.ComponentModel.DataAnnotations;
++    using Microsoft.Xrm.Sdk;
++    using Microsoft.Xrm.Sdk.Client;
++
++    /// <summary>Account — Business that represents a customer or potential customer. The company that is billed in business transactions.</summary>
++    [EntityLogicalName(EntityLogicalNameValue)]
++    public partial class Account : Entity
++    {
++        public const string EntityLogicalNameValue = "account";
++
++        public Account()
++            : base(EntityLogicalNameValue)
++        {
++        }
++
++        [AttributeLogicalName("accountid")]
++        public override Guid Id
++        {
++            get => base.Id;
++            set { base.Id = value; SetAttributeValue("accountid", value); }
++        }
++
++        /// <summary>Category — Select a category to indicate whether the customer account is standard or preferred.</summary>
++        [AttributeLogicalName("accountcategorycode")]
++        public AccountCategoryCodeOptionSet? AccountCategoryCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("accountcategorycode"); return raw == null ? null : (AccountCategoryCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("accountcategorycode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Classification — Select a classification code to indicate the potential value of the customer account based on the projected return on investment, cooperation level, sales cycle length or other criteria.</summary>
++        [AttributeLogicalName("accountclassificationcode")]
++        public AccountClassificationCodeOptionSet? AccountClassificationCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("accountclassificationcode"); return raw == null ? null : (AccountClassificationCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("accountclassificationcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Account — Unique identifier of the account. (Required: SystemRequired)</summary>
++        [AttributeLogicalName("accountid")]
++        [RequiredLevel(Microsoft.Xrm.Sdk.Metadata.AttributeRequiredLevel.SystemRequired)]
++        public Guid? AccountId
++        {
++            get => GetAttributeValue<Guid?>("accountid");
++            set { SetAttributeValue("accountid", value); base.Id = value ?? Guid.Empty; }
++        }
++
++        /// <summary>Account Number — Type an ID number or code for the account to quickly search and identify the account in system views. (max 20)</summary>
++        [AttributeLogicalName("accountnumber")]
++        [StringLength(20)]
++        public string AccountNumber
++        {
++            get => GetAttributeValue<string>("accountnumber");
++            set => SetAttributeValue("accountnumber", value);
++        }
++
++        /// <summary>Account Rating — Select a rating to indicate the value of the customer account.</summary>
++        [AttributeLogicalName("accountratingcode")]
++        public AccountRatingCodeOptionSet? AccountRatingCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("accountratingcode"); return raw == null ? null : (AccountRatingCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("accountratingcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 1: ID — Unique identifier for address 1.</summary>
++        [AttributeLogicalName("address1_addressid")]
++        public Guid? Address1_AddressId
++        {
++            get => GetAttributeValue<Guid?>("address1_addressid");
++            set => SetAttributeValue("address1_addressid", value);
++        }
++
++        /// <summary>Address 1: Address Type — Select the primary address type.</summary>
++        [AttributeLogicalName("address1_addresstypecode")]
++        public Address1_AddressTypeCodeOptionSet? Address1_AddressTypeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address1_addresstypecode"); return raw == null ? null : (Address1_AddressTypeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address1_addresstypecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 1: City — Type the city for the primary address. (max 80)</summary>
++        [AttributeLogicalName("address1_city")]
++        [StringLength(80)]
++        public string Address1_City
++        {
++            get => GetAttributeValue<string>("address1_city");
++            set => SetAttributeValue("address1_city", value);
++        }
++
++        /// <summary>Address 1 — Shows the complete primary address. (max 1000)</summary>
++        [AttributeLogicalName("address1_composite")]
++        [StringLength(1000)]
++        public string Address1_Composite
++        {
++            get => GetAttributeValue<string>("address1_composite");
++            set => SetAttributeValue("address1_composite", value);
++        }
++
++        /// <summary>Address 1: Country/Region — Type the country or region for the primary address. (max 80)</summary>
++        [AttributeLogicalName("address1_country")]
++        [StringLength(80)]
++        public string Address1_Country
++        {
++            get => GetAttributeValue<string>("address1_country");
++            set => SetAttributeValue("address1_country", value);
++        }
++
++        /// <summary>Address 1: County — Type the county for the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_county")]
++        [StringLength(50)]
++        public string Address1_County
++        {
++            get => GetAttributeValue<string>("address1_county");
++            set => SetAttributeValue("address1_county", value);
++        }
++
++        /// <summary>Address 1: Fax — Type the fax number associated with the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_fax")]
++        [StringLength(50)]
++        public string Address1_Fax
++        {
++            get => GetAttributeValue<string>("address1_fax");
++            set => SetAttributeValue("address1_fax", value);
++        }
++
++        /// <summary>Address 1: Freight Terms — Select the freight terms for the primary address to make sure shipping orders are processed correctly.</summary>
++        [AttributeLogicalName("address1_freighttermscode")]
++        public Address1_FreightTermsCodeOptionSet? Address1_FreightTermsCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address1_freighttermscode"); return raw == null ? null : (Address1_FreightTermsCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address1_freighttermscode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 1: Latitude — Type the latitude value for the primary address for use in mapping and other applications. (-90–90)</summary>
++        [AttributeLogicalName("address1_latitude")]
++        [Range(-90, 90)]
++        public double? Address1_Latitude
++        {
++            get => GetAttributeValue<double?>("address1_latitude");
++            set => SetAttributeValue("address1_latitude", value);
++        }
++
++        /// <summary>Address 1: Street 1 — Type the first line of the primary address. (max 250)</summary>
++        [AttributeLogicalName("address1_line1")]
++        [StringLength(250)]
++        public string Address1_Line1
++        {
++            get => GetAttributeValue<string>("address1_line1");
++            set => SetAttributeValue("address1_line1", value);
++        }
++
++        /// <summary>Address 1: Street 2 — Type the second line of the primary address. (max 250)</summary>
++        [AttributeLogicalName("address1_line2")]
++        [StringLength(250)]
++        public string Address1_Line2
++        {
++            get => GetAttributeValue<string>("address1_line2");
++            set => SetAttributeValue("address1_line2", value);
++        }
++
++        /// <summary>Address 1: Street 3 — Type the third line of the primary address. (max 250)</summary>
++        [AttributeLogicalName("address1_line3")]
++        [StringLength(250)]
++        public string Address1_Line3
++        {
++            get => GetAttributeValue<string>("address1_line3");
++            set => SetAttributeValue("address1_line3", value);
++        }
++
++        /// <summary>Address 1: Longitude — Type the longitude value for the primary address for use in mapping and other applications. (-180–180)</summary>
++        [AttributeLogicalName("address1_longitude")]
++        [Range(-180, 180)]
++        public double? Address1_Longitude
++        {
++            get => GetAttributeValue<double?>("address1_longitude");
++            set => SetAttributeValue("address1_longitude", value);
++        }
++
++        /// <summary>Address 1: Name — Type a descriptive name for the primary address, such as Corporate Headquarters. (max 200)</summary>
++        [AttributeLogicalName("address1_name")]
++        [StringLength(200)]
++        public string Address1_Name
++        {
++            get => GetAttributeValue<string>("address1_name");
++            set => SetAttributeValue("address1_name", value);
++        }
++
++        /// <summary>Address 1: ZIP/Postal Code — Type the ZIP Code or postal code for the primary address. (max 20)</summary>
++        [AttributeLogicalName("address1_postalcode")]
++        [StringLength(20)]
++        public string Address1_PostalCode
++        {
++            get => GetAttributeValue<string>("address1_postalcode");
++            set => SetAttributeValue("address1_postalcode", value);
++        }
++
++        /// <summary>Address 1: Post Office Box — Type the post office box number of the primary address. (max 20)</summary>
++        [AttributeLogicalName("address1_postofficebox")]
++        [StringLength(20)]
++        public string Address1_PostOfficeBox
++        {
++            get => GetAttributeValue<string>("address1_postofficebox");
++            set => SetAttributeValue("address1_postofficebox", value);
++        }
++
++        /// <summary>Address 1: Primary Contact Name — Type the name of the main contact at the account's primary address. (max 100)</summary>
++        [AttributeLogicalName("address1_primarycontactname")]
++        [StringLength(100)]
++        public string Address1_PrimaryContactName
++        {
++            get => GetAttributeValue<string>("address1_primarycontactname");
++            set => SetAttributeValue("address1_primarycontactname", value);
++        }
++
++        /// <summary>Address 1: Shipping Method — Select a shipping method for deliveries sent to this address.</summary>
++        [AttributeLogicalName("address1_shippingmethodcode")]
++        public Address1_ShippingMethodCodeOptionSet? Address1_ShippingMethodCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address1_shippingmethodcode"); return raw == null ? null : (Address1_ShippingMethodCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address1_shippingmethodcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 1: State/Province — Type the state or province of the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_stateorprovince")]
++        [StringLength(50)]
++        public string Address1_StateOrProvince
++        {
++            get => GetAttributeValue<string>("address1_stateorprovince");
++            set => SetAttributeValue("address1_stateorprovince", value);
++        }
++
++        /// <summary>Address Phone — Type the main phone number associated with the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_telephone1")]
++        [StringLength(50)]
++        public string Address1_Telephone1
++        {
++            get => GetAttributeValue<string>("address1_telephone1");
++            set => SetAttributeValue("address1_telephone1", value);
++        }
++
++        /// <summary>Address 1: Telephone 2 — Type a second phone number associated with the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_telephone2")]
++        [StringLength(50)]
++        public string Address1_Telephone2
++        {
++            get => GetAttributeValue<string>("address1_telephone2");
++            set => SetAttributeValue("address1_telephone2", value);
++        }
++
++        /// <summary>Address 1: Telephone 3 — Type a third phone number associated with the primary address. (max 50)</summary>
++        [AttributeLogicalName("address1_telephone3")]
++        [StringLength(50)]
++        public string Address1_Telephone3
++        {
++            get => GetAttributeValue<string>("address1_telephone3");
++            set => SetAttributeValue("address1_telephone3", value);
++        }
++
++        /// <summary>Address 1: UPS Zone — Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS. (max 4)</summary>
++        [AttributeLogicalName("address1_upszone")]
++        [StringLength(4)]
++        public string Address1_UPSZone
++        {
++            get => GetAttributeValue<string>("address1_upszone");
++            set => SetAttributeValue("address1_upszone", value);
++        }
++
++        /// <summary>Address 1: UTC Offset — Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address. (-1500–1500)</summary>
++        [AttributeLogicalName("address1_utcoffset")]
++        [Range(-1500, 1500)]
++        public int? Address1_UTCOffset
++        {
++            get => GetAttributeValue<int?>("address1_utcoffset");
++            set => SetAttributeValue("address1_utcoffset", value);
++        }
++
++        /// <summary>Address 2: ID — Unique identifier for address 2.</summary>
++        [AttributeLogicalName("address2_addressid")]
++        public Guid? Address2_AddressId
++        {
++            get => GetAttributeValue<Guid?>("address2_addressid");
++            set => SetAttributeValue("address2_addressid", value);
++        }
++
++        /// <summary>Address 2: Address Type — Select the secondary address type.</summary>
++        [AttributeLogicalName("address2_addresstypecode")]
++        public Address2_AddressTypeCodeOptionSet? Address2_AddressTypeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address2_addresstypecode"); return raw == null ? null : (Address2_AddressTypeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address2_addresstypecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 2: City — Type the city for the secondary address. (max 80)</summary>
++        [AttributeLogicalName("address2_city")]
++        [StringLength(80)]
++        public string Address2_City
++        {
++            get => GetAttributeValue<string>("address2_city");
++            set => SetAttributeValue("address2_city", value);
++        }
++
++        /// <summary>Address 2 — Shows the complete secondary address. (max 1000)</summary>
++        [AttributeLogicalName("address2_composite")]
++        [StringLength(1000)]
++        public string Address2_Composite
++        {
++            get => GetAttributeValue<string>("address2_composite");
++            set => SetAttributeValue("address2_composite", value);
++        }
++
++        /// <summary>Address 2: Country/Region — Type the country or region for the secondary address. (max 80)</summary>
++        [AttributeLogicalName("address2_country")]
++        [StringLength(80)]
++        public string Address2_Country
++        {
++            get => GetAttributeValue<string>("address2_country");
++            set => SetAttributeValue("address2_country", value);
++        }
++
++        /// <summary>Address 2: County — Type the county for the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_county")]
++        [StringLength(50)]
++        public string Address2_County
++        {
++            get => GetAttributeValue<string>("address2_county");
++            set => SetAttributeValue("address2_county", value);
++        }
++
++        /// <summary>Address 2: Fax — Type the fax number associated with the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_fax")]
++        [StringLength(50)]
++        public string Address2_Fax
++        {
++            get => GetAttributeValue<string>("address2_fax");
++            set => SetAttributeValue("address2_fax", value);
++        }
++
++        /// <summary>Address 2: Freight Terms — Select the freight terms for the secondary address to make sure shipping orders are processed correctly.</summary>
++        [AttributeLogicalName("address2_freighttermscode")]
++        public Address2_FreightTermsCodeOptionSet? Address2_FreightTermsCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address2_freighttermscode"); return raw == null ? null : (Address2_FreightTermsCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address2_freighttermscode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 2: Latitude — Type the latitude value for the secondary address for use in mapping and other applications. (-90–90)</summary>
++        [AttributeLogicalName("address2_latitude")]
++        [Range(-90, 90)]
++        public double? Address2_Latitude
++        {
++            get => GetAttributeValue<double?>("address2_latitude");
++            set => SetAttributeValue("address2_latitude", value);
++        }
++
++        /// <summary>Address 2: Street 1 — Type the first line of the secondary address. (max 250)</summary>
++        [AttributeLogicalName("address2_line1")]
++        [StringLength(250)]
++        public string Address2_Line1
++        {
++            get => GetAttributeValue<string>("address2_line1");
++            set => SetAttributeValue("address2_line1", value);
++        }
++
++        /// <summary>Address 2: Street 2 — Type the second line of the secondary address. (max 250)</summary>
++        [AttributeLogicalName("address2_line2")]
++        [StringLength(250)]
++        public string Address2_Line2
++        {
++            get => GetAttributeValue<string>("address2_line2");
++            set => SetAttributeValue("address2_line2", value);
++        }
++
++        /// <summary>Address 2: Street 3 — Type the third line of the secondary address. (max 250)</summary>
++        [AttributeLogicalName("address2_line3")]
++        [StringLength(250)]
++        public string Address2_Line3
++        {
++            get => GetAttributeValue<string>("address2_line3");
++            set => SetAttributeValue("address2_line3", value);
++        }
++
++        /// <summary>Address 2: Longitude — Type the longitude value for the secondary address for use in mapping and other applications. (-180–180)</summary>
++        [AttributeLogicalName("address2_longitude")]
++        [Range(-180, 180)]
++        public double? Address2_Longitude
++        {
++            get => GetAttributeValue<double?>("address2_longitude");
++            set => SetAttributeValue("address2_longitude", value);
++        }
++
++        /// <summary>Address 2: Name — Type a descriptive name for the secondary address, such as Corporate Headquarters. (max 200)</summary>
++        [AttributeLogicalName("address2_name")]
++        [StringLength(200)]
++        public string Address2_Name
++        {
++            get => GetAttributeValue<string>("address2_name");
++            set => SetAttributeValue("address2_name", value);
++        }
++
++        /// <summary>Address 2: ZIP/Postal Code — Type the ZIP Code or postal code for the secondary address. (max 20)</summary>
++        [AttributeLogicalName("address2_postalcode")]
++        [StringLength(20)]
++        public string Address2_PostalCode
++        {
++            get => GetAttributeValue<string>("address2_postalcode");
++            set => SetAttributeValue("address2_postalcode", value);
++        }
++
++        /// <summary>Address 2: Post Office Box — Type the post office box number of the secondary address. (max 20)</summary>
++        [AttributeLogicalName("address2_postofficebox")]
++        [StringLength(20)]
++        public string Address2_PostOfficeBox
++        {
++            get => GetAttributeValue<string>("address2_postofficebox");
++            set => SetAttributeValue("address2_postofficebox", value);
++        }
++
++        /// <summary>Address 2: Primary Contact Name — Type the name of the main contact at the account's secondary address. (max 100)</summary>
++        [AttributeLogicalName("address2_primarycontactname")]
++        [StringLength(100)]
++        public string Address2_PrimaryContactName
++        {
++            get => GetAttributeValue<string>("address2_primarycontactname");
++            set => SetAttributeValue("address2_primarycontactname", value);
++        }
++
++        /// <summary>Address 2: Shipping Method — Select a shipping method for deliveries sent to this address.</summary>
++        [AttributeLogicalName("address2_shippingmethodcode")]
++        public Address2_ShippingMethodCodeOptionSet? Address2_ShippingMethodCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("address2_shippingmethodcode"); return raw == null ? null : (Address2_ShippingMethodCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("address2_shippingmethodcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Address 2: State/Province — Type the state or province of the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_stateorprovince")]
++        [StringLength(50)]
++        public string Address2_StateOrProvince
++        {
++            get => GetAttributeValue<string>("address2_stateorprovince");
++            set => SetAttributeValue("address2_stateorprovince", value);
++        }
++
++        /// <summary>Address 2: Telephone 1 — Type the main phone number associated with the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_telephone1")]
++        [StringLength(50)]
++        public string Address2_Telephone1
++        {
++            get => GetAttributeValue<string>("address2_telephone1");
++            set => SetAttributeValue("address2_telephone1", value);
++        }
++
++        /// <summary>Address 2: Telephone 2 — Type a second phone number associated with the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_telephone2")]
++        [StringLength(50)]
++        public string Address2_Telephone2
++        {
++            get => GetAttributeValue<string>("address2_telephone2");
++            set => SetAttributeValue("address2_telephone2", value);
++        }
++
++        /// <summary>Address 2: Telephone 3 — Type a third phone number associated with the secondary address. (max 50)</summary>
++        [AttributeLogicalName("address2_telephone3")]
++        [StringLength(50)]
++        public string Address2_Telephone3
++        {
++            get => GetAttributeValue<string>("address2_telephone3");
++            set => SetAttributeValue("address2_telephone3", value);
++        }
++
++        /// <summary>Address 2: UPS Zone — Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS. (max 4)</summary>
++        [AttributeLogicalName("address2_upszone")]
++        [StringLength(4)]
++        public string Address2_UPSZone
++        {
++            get => GetAttributeValue<string>("address2_upszone");
++            set => SetAttributeValue("address2_upszone", value);
++        }
++
++        /// <summary>Address 2: UTC Offset — Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address. (-1500–1500)</summary>
++        [AttributeLogicalName("address2_utcoffset")]
++        [Range(-1500, 1500)]
++        public int? Address2_UTCOffset
++        {
++            get => GetAttributeValue<int?>("address2_utcoffset");
++            set => SetAttributeValue("address2_utcoffset", value);
++        }
++
++        /// <summary>Created By (IP Address) (max 100)</summary>
++        [AttributeLogicalName("adx_createdbyipaddress")]
++        [StringLength(100)]
++        public string Adx_CreatedByIPAddress
++        {
++            get => GetAttributeValue<string>("adx_createdbyipaddress");
++            set => SetAttributeValue("adx_createdbyipaddress", value);
++        }
++
++        /// <summary>Created By (User Name) (max 100)</summary>
++        [AttributeLogicalName("adx_createdbyusername")]
++        [StringLength(100)]
++        public string Adx_CreatedByUsername
++        {
++            get => GetAttributeValue<string>("adx_createdbyusername");
++            set => SetAttributeValue("adx_createdbyusername", value);
++        }
++
++        /// <summary>Modified By (IP Address) (max 100)</summary>
++        [AttributeLogicalName("adx_modifiedbyipaddress")]
++        [StringLength(100)]
++        public string Adx_ModifiedByIPAddress
++        {
++            get => GetAttributeValue<string>("adx_modifiedbyipaddress");
++            set => SetAttributeValue("adx_modifiedbyipaddress", value);
++        }
++
++        /// <summary>Modified By (User Name) (max 100)</summary>
++        [AttributeLogicalName("adx_modifiedbyusername")]
++        [StringLength(100)]
++        public string Adx_ModifiedByUsername
++        {
++            get => GetAttributeValue<string>("adx_modifiedbyusername");
++            set => SetAttributeValue("adx_modifiedbyusername", value);
++        }
++
++        /// <summary>Aging 30 — For system use only. (0–100000000000000)</summary>
++        [AttributeLogicalName("aging30")]
++        public Money Aging30
++        {
++            get => GetAttributeValue<Money>("aging30");
++            set => SetAttributeValue("aging30", value);
++        }
++
++        /// <summary>Aging 30 (Base) — The base currency equivalent of the aging 30 field. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("aging30_base")]
++        public Money Aging30_Base
++        {
++            get => GetAttributeValue<Money>("aging30_base");
++            set => SetAttributeValue("aging30_base", value);
++        }
++
++        /// <summary>Aging 60 — For system use only. (0–100000000000000)</summary>
++        [AttributeLogicalName("aging60")]
++        public Money Aging60
++        {
++            get => GetAttributeValue<Money>("aging60");
++            set => SetAttributeValue("aging60", value);
++        }
++
++        /// <summary>Aging 60 (Base) — The base currency equivalent of the aging 60 field. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("aging60_base")]
++        public Money Aging60_Base
++        {
++            get => GetAttributeValue<Money>("aging60_base");
++            set => SetAttributeValue("aging60_base", value);
++        }
++
++        /// <summary>Aging 90 — For system use only. (0–100000000000000)</summary>
++        [AttributeLogicalName("aging90")]
++        public Money Aging90
++        {
++            get => GetAttributeValue<Money>("aging90");
++            set => SetAttributeValue("aging90", value);
++        }
++
++        /// <summary>Aging 90 (Base) — The base currency equivalent of the aging 90 field. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("aging90_base")]
++        public Money Aging90_Base
++        {
++            get => GetAttributeValue<Money>("aging90_base");
++            set => SetAttributeValue("aging90_base", value);
++        }
++
++        /// <summary>Business Type — Select the legal designation or other business type of the account for contracts or reporting purposes.</summary>
++        [AttributeLogicalName("businesstypecode")]
++        public BusinessTypeCodeOptionSet? BusinessTypeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("businesstypecode"); return raw == null ? null : (BusinessTypeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("businesstypecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Created By — Shows who created the record. (Targets: systemuser)</summary>
++        [AttributeLogicalName("createdby")]
++        [LookupTargets("systemuser")]
++        public EntityReference CreatedBy
++        {
++            get => GetAttributeValue<EntityReference>("createdby");
++            set => SetAttributeValue("createdby", value);
++        }
++
++        /// <summary>Created By (External Party) — Shows the external party who created the record. (Targets: externalparty)</summary>
++        [AttributeLogicalName("createdbyexternalparty")]
++        [LookupTargets("externalparty")]
++        public EntityReference CreatedByExternalParty
++        {
++            get => GetAttributeValue<EntityReference>("createdbyexternalparty");
++            set => SetAttributeValue("createdbyexternalparty", value);
++        }
++
++        /// <summary>Created On — Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.</summary>
++        [AttributeLogicalName("createdon")]
++        public DateTime? CreatedOn
++        {
++            get => GetAttributeValue<DateTime?>("createdon");
++            set => SetAttributeValue("createdon", value);
++        }
++
++        /// <summary>Created By (Delegate) — Shows who created the record on behalf of another user. (Targets: systemuser)</summary>
++        [AttributeLogicalName("createdonbehalfby")]
++        [LookupTargets("systemuser")]
++        public EntityReference CreatedOnBehalfBy
++        {
++            get => GetAttributeValue<EntityReference>("createdonbehalfby");
++            set => SetAttributeValue("createdonbehalfby", value);
++        }
++
++        /// <summary>Credit Limit — Type the credit limit of the account. This is a useful reference when you address invoice and accounting issues with the customer. (0–100000000000000)</summary>
++        [AttributeLogicalName("creditlimit")]
++        public Money CreditLimit
++        {
++            get => GetAttributeValue<Money>("creditlimit");
++            set => SetAttributeValue("creditlimit", value);
++        }
++
++        /// <summary>Credit Limit (Base) — Shows the credit limit converted to the system's default base currency for reporting purposes. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("creditlimit_base")]
++        public Money CreditLimit_Base
++        {
++            get => GetAttributeValue<Money>("creditlimit_base");
++            set => SetAttributeValue("creditlimit_base", value);
++        }
++
++        /// <summary>Credit Hold — Select whether the credit for the account is on hold. This is a useful reference while addressing the invoice and accounting issues with the customer.</summary>
++        [AttributeLogicalName("creditonhold")]
++        public bool? CreditOnHold
++        {
++            get => GetAttributeValue<bool?>("creditonhold");
++            set => SetAttributeValue("creditonhold", value);
++        }
++
++        /// <summary>Customer Size — Select the size category or range of the account for segmentation and reporting purposes.</summary>
++        [AttributeLogicalName("customersizecode")]
++        public CustomerSizeCodeOptionSet? CustomerSizeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("customersizecode"); return raw == null ? null : (CustomerSizeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("customersizecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Relationship Type — Select the category that best describes the relationship between the account and your organization.</summary>
++        [AttributeLogicalName("customertypecode")]
++        public CustomerTypeCodeOptionSet? CustomerTypeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("customertypecode"); return raw == null ? null : (CustomerTypeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("customertypecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Price List — Choose the default price list associated with the account to make sure the correct product prices for this customer are applied in sales opportunities, quotes, and orders. (Targets: pricelevel)</summary>
++        [AttributeLogicalName("defaultpricelevelid")]
++        [LookupTargets("pricelevel")]
++        public EntityReference DefaultPriceLevelId
++        {
++            get => GetAttributeValue<EntityReference>("defaultpricelevelid");
++            set => SetAttributeValue("defaultpricelevelid", value);
++        }
++
++        /// <summary>Description — Type additional information to describe the account, such as an excerpt from the company's website. (max 2000)</summary>
++        [AttributeLogicalName("description")]
++        [StringLength(2000)]
++        public string Description
++        {
++            get => GetAttributeValue<string>("description");
++            set => SetAttributeValue("description", value);
++        }
++
++        /// <summary>Do not allow Bulk Emails — Select whether the account allows bulk email sent through campaigns. If Do Not Allow is selected, the account can be added to marketing lists, but is excluded from email.</summary>
++        [AttributeLogicalName("donotbulkemail")]
++        public bool? DoNotBulkEMail
++        {
++            get => GetAttributeValue<bool?>("donotbulkemail");
++            set => SetAttributeValue("donotbulkemail", value);
++        }
++
++        /// <summary>Do not allow Bulk Mails — Select whether the account allows bulk postal mail sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the account can be added to marketing lists, but will be excluded from the postal mail.</summary>
++        [AttributeLogicalName("donotbulkpostalmail")]
++        public bool? DoNotBulkPostalMail
++        {
++            get => GetAttributeValue<bool?>("donotbulkpostalmail");
++            set => SetAttributeValue("donotbulkpostalmail", value);
++        }
++
++        /// <summary>Do not allow Emails — Select whether the account allows direct email sent from Microsoft Dynamics 365.</summary>
++        [AttributeLogicalName("donotemail")]
++        public bool? DoNotEMail
++        {
++            get => GetAttributeValue<bool?>("donotemail");
++            set => SetAttributeValue("donotemail", value);
++        }
++
++        /// <summary>Do not allow Faxes — Select whether the account allows faxes. If Do Not Allow is selected, the account will be excluded from fax activities distributed in marketing campaigns.</summary>
++        [AttributeLogicalName("donotfax")]
++        public bool? DoNotFax
++        {
++            get => GetAttributeValue<bool?>("donotfax");
++            set => SetAttributeValue("donotfax", value);
++        }
++
++        /// <summary>Do not allow Phone Calls — Select whether the account allows phone calls. If Do Not Allow is selected, the account will be excluded from phone call activities distributed in marketing campaigns.</summary>
++        [AttributeLogicalName("donotphone")]
++        public bool? DoNotPhone
++        {
++            get => GetAttributeValue<bool?>("donotphone");
++            set => SetAttributeValue("donotphone", value);
++        }
++
++        /// <summary>Do not allow Mails — Select whether the account allows direct mail. If Do Not Allow is selected, the account will be excluded from letter activities distributed in marketing campaigns.</summary>
++        [AttributeLogicalName("donotpostalmail")]
++        public bool? DoNotPostalMail
++        {
++            get => GetAttributeValue<bool?>("donotpostalmail");
++            set => SetAttributeValue("donotpostalmail", value);
++        }
++
++        /// <summary>Send Marketing Materials — Select whether the account accepts marketing materials, such as brochures or catalogs.</summary>
++        [AttributeLogicalName("donotsendmm")]
++        public bool? DoNotSendMM
++        {
++            get => GetAttributeValue<bool?>("donotsendmm");
++            set => SetAttributeValue("donotsendmm", value);
++        }
++
++        /// <summary>Email — Type the primary email address for the account. (max 100)</summary>
++        [AttributeLogicalName("emailaddress1")]
++        [StringLength(100)]
++        public string EMailAddress1
++        {
++            get => GetAttributeValue<string>("emailaddress1");
++            set => SetAttributeValue("emailaddress1", value);
++        }
++
++        /// <summary>Email Address 2 — Type the secondary email address for the account. (max 100)</summary>
++        [AttributeLogicalName("emailaddress2")]
++        [StringLength(100)]
++        public string EMailAddress2
++        {
++            get => GetAttributeValue<string>("emailaddress2");
++            set => SetAttributeValue("emailaddress2", value);
++        }
++
++        /// <summary>Email Address 3 — Type an alternate email address for the account. (max 100)</summary>
++        [AttributeLogicalName("emailaddress3")]
++        [StringLength(100)]
++        public string EMailAddress3
++        {
++            get => GetAttributeValue<string>("emailaddress3");
++            set => SetAttributeValue("emailaddress3", value);
++        }
++
++        /// <summary>Entity Image Id — For internal use only.</summary>
++        [AttributeLogicalName("entityimageid")]
++        public Guid? EntityImageId
++        {
++            get => GetAttributeValue<Guid?>("entityimageid");
++            set => SetAttributeValue("entityimageid", value);
++        }
++
++        /// <summary>Exchange Rate — Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency. (1E-12–100000000000)</summary>
++        [AttributeLogicalName("exchangerate")]
++        [Range(typeof(decimal), "0.000000000001", "100000000000")]
++        public decimal? ExchangeRate
++        {
++            get => GetAttributeValue<decimal?>("exchangerate");
++            set => SetAttributeValue("exchangerate", value);
++        }
++
++        /// <summary>Fax — Type the fax number for the account. (max 50)</summary>
++        [AttributeLogicalName("fax")]
++        [StringLength(50)]
++        public string Fax
++        {
++            get => GetAttributeValue<string>("fax");
++            set => SetAttributeValue("fax", value);
++        }
++
++        /// <summary>Follow Email Activity — Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the account.</summary>
++        [AttributeLogicalName("followemail")]
++        public bool? FollowEmail
++        {
++            get => GetAttributeValue<bool?>("followemail");
++            set => SetAttributeValue("followemail", value);
++        }
++
++        /// <summary>FTP Site — Type the URL for the account's FTP site to enable users to access data and share documents. (max 200)</summary>
++        [AttributeLogicalName("ftpsiteurl")]
++        [StringLength(200)]
++        public string FtpSiteURL
++        {
++            get => GetAttributeValue<string>("ftpsiteurl");
++            set => SetAttributeValue("ftpsiteurl", value);
++        }
++
++        /// <summary>Import Sequence Number — Unique identifier of the data import or data migration that created this record. (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("importsequencenumber")]
++        [Range(-2147483648, 2147483647)]
++        public int? ImportSequenceNumber
++        {
++            get => GetAttributeValue<int?>("importsequencenumber");
++            set => SetAttributeValue("importsequencenumber", value);
++        }
++
++        /// <summary>Industry — Select the account's primary industry for use in marketing segmentation and demographic analysis.</summary>
++        [AttributeLogicalName("industrycode")]
++        public IndustryCodeOptionSet? IndustryCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("industrycode"); return raw == null ? null : (IndustryCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("industrycode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>IsPrivate</summary>
++        [AttributeLogicalName("isprivate")]
++        public bool? IsPrivate
++        {
++            get => GetAttributeValue<bool?>("isprivate");
++            set => SetAttributeValue("isprivate", value);
++        }
++
++        /// <summary>Last On Hold Time — Contains the date and time stamp of the last on hold time.</summary>
++        [AttributeLogicalName("lastonholdtime")]
++        public DateTime? LastOnHoldTime
++        {
++            get => GetAttributeValue<DateTime?>("lastonholdtime");
++            set => SetAttributeValue("lastonholdtime", value);
++        }
++
++        /// <summary>Last Date Included in Campaign — Shows the date when the account was last included in a marketing campaign or quick campaign.</summary>
++        [AttributeLogicalName("lastusedincampaign")]
++        public DateTime? LastUsedInCampaign
++        {
++            get => GetAttributeValue<DateTime?>("lastusedincampaign");
++            set => SetAttributeValue("lastusedincampaign", value);
++        }
++
++        /// <summary>Market Capitalization — Type the market capitalization of the account to identify the company's equity, used as an indicator in financial performance analysis. (0–100000000000000)</summary>
++        [AttributeLogicalName("marketcap")]
++        public Money MarketCap
++        {
++            get => GetAttributeValue<Money>("marketcap");
++            set => SetAttributeValue("marketcap", value);
++        }
++
++        /// <summary>Market Capitalization (Base) — Shows the market capitalization converted to the system's default base currency. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("marketcap_base")]
++        public Money MarketCap_Base
++        {
++            get => GetAttributeValue<Money>("marketcap_base");
++            set => SetAttributeValue("marketcap_base", value);
++        }
++
++        /// <summary>Marketing Only — Whether is only for marketing</summary>
++        [AttributeLogicalName("marketingonly")]
++        public bool? MarketingOnly
++        {
++            get => GetAttributeValue<bool?>("marketingonly");
++            set => SetAttributeValue("marketingonly", value);
++        }
++
++        /// <summary>Master ID — Shows the master account that the account was merged with. (Targets: account)</summary>
++        [AttributeLogicalName("masterid")]
++        [LookupTargets("account")]
++        public EntityReference MasterId
++        {
++            get => GetAttributeValue<EntityReference>("masterid");
++            set => SetAttributeValue("masterid", value);
++        }
++
++        /// <summary>Merged — Shows whether the account has been merged with another account.</summary>
++        [AttributeLogicalName("merged")]
++        public bool? Merged
++        {
++            get => GetAttributeValue<bool?>("merged");
++            set => SetAttributeValue("merged", value);
++        }
++
++        /// <summary>Modified By — Shows who last updated the record. (Targets: systemuser)</summary>
++        [AttributeLogicalName("modifiedby")]
++        [LookupTargets("systemuser")]
++        public EntityReference ModifiedBy
++        {
++            get => GetAttributeValue<EntityReference>("modifiedby");
++            set => SetAttributeValue("modifiedby", value);
++        }
++
++        /// <summary>Modified By (External Party) — Shows the external party who modified the record. (Targets: externalparty)</summary>
++        [AttributeLogicalName("modifiedbyexternalparty")]
++        [LookupTargets("externalparty")]
++        public EntityReference ModifiedByExternalParty
++        {
++            get => GetAttributeValue<EntityReference>("modifiedbyexternalparty");
++            set => SetAttributeValue("modifiedbyexternalparty", value);
++        }
++
++        /// <summary>Modified On — Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.</summary>
++        [AttributeLogicalName("modifiedon")]
++        public DateTime? ModifiedOn
++        {
++            get => GetAttributeValue<DateTime?>("modifiedon");
++            set => SetAttributeValue("modifiedon", value);
++        }
++
++        /// <summary>Modified By (Delegate) — Shows who created the record on behalf of another user. (Targets: systemuser)</summary>
++        [AttributeLogicalName("modifiedonbehalfby")]
++        [LookupTargets("systemuser")]
++        public EntityReference ModifiedOnBehalfBy
++        {
++            get => GetAttributeValue<EntityReference>("modifiedonbehalfby");
++            set => SetAttributeValue("modifiedonbehalfby", value);
++        }
++
++        /// <summary>Managing Partner — Unique identifier for Account associated with Account. (Targets: account)</summary>
++        [AttributeLogicalName("msa_managingpartnerid")]
++        [LookupTargets("account")]
++        public EntityReference msa_managingpartnerid
++        {
++            get => GetAttributeValue<EntityReference>("msa_managingpartnerid");
++            set => SetAttributeValue("msa_managingpartnerid", value);
++        }
++
++        /// <summary>KPI (Targets: msdyn_accountkpiitem)</summary>
++        [AttributeLogicalName("msdyn_accountkpiid")]
++        [LookupTargets("msdyn_accountkpiitem")]
++        public EntityReference msdyn_accountkpiid
++        {
++            get => GetAttributeValue<EntityReference>("msdyn_accountkpiid");
++            set => SetAttributeValue("msdyn_accountkpiid", value);
++        }
++
++        /// <summary>GDPR Optout — Describes whether account is opted out or not</summary>
++        [AttributeLogicalName("msdyn_gdproptout")]
++        public bool? msdyn_gdproptout
++        {
++            get => GetAttributeValue<bool?>("msdyn_gdproptout");
++            set => SetAttributeValue("msdyn_gdproptout", value);
++        }
++
++        /// <summary>Primary Time Zone — Indicates the primary time zone that the client works on. (-1500–1500)</summary>
++        [AttributeLogicalName("msdyn_primarytimezone")]
++        [Range(-1500, 1500)]
++        public int? msdyn_PrimaryTimeZone
++        {
++            get => GetAttributeValue<int?>("msdyn_primarytimezone");
++            set => SetAttributeValue("msdyn_primarytimezone", value);
++        }
++
++        /// <summary>Sales Acceleration Insights ID — Sales Acceleration Insights ID (Targets: msdyn_salesaccelerationinsight)</summary>
++        [AttributeLogicalName("msdyn_salesaccelerationinsightid")]
++        [LookupTargets("msdyn_salesaccelerationinsight")]
++        public EntityReference msdyn_salesaccelerationinsightid
++        {
++            get => GetAttributeValue<EntityReference>("msdyn_salesaccelerationinsightid");
++            set => SetAttributeValue("msdyn_salesaccelerationinsightid", value);
++        }
++
++        /// <summary>Segment Id — Unique identifier for Segment associated with account. (Targets: msdyn_segment)</summary>
++        [AttributeLogicalName("msdyn_segmentid")]
++        [LookupTargets("msdyn_segment")]
++        public EntityReference msdyn_segmentid
++        {
++            get => GetAttributeValue<EntityReference>("msdyn_segmentid");
++            set => SetAttributeValue("msdyn_segmentid", value);
++        }
++
++        /// <summary>Account Name — Type the company or business name. (max 160; Required: ApplicationRequired)</summary>
++        [AttributeLogicalName("name")]
++        [RequiredLevel(Microsoft.Xrm.Sdk.Metadata.AttributeRequiredLevel.ApplicationRequired)]
++        [StringLength(160)]
++        public string Name
++        {
++            get => GetAttributeValue<string>("name");
++            set => SetAttributeValue("name", value);
++        }
++
++        /// <summary>Number of Employees — Type the number of employees that work at the account for use in marketing segmentation and demographic analysis. (0–1000000000)</summary>
++        [AttributeLogicalName("numberofemployees")]
++        [Range(0, 1000000000)]
++        public int? NumberOfEmployees
++        {
++            get => GetAttributeValue<int?>("numberofemployees");
++            set => SetAttributeValue("numberofemployees", value);
++        }
++
++        /// <summary>On Hold Time (Minutes) — Shows how long, in minutes, that the record was on hold. (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("onholdtime")]
++        [Range(-2147483648, 2147483647)]
++        public int? OnHoldTime
++        {
++            get => GetAttributeValue<int?>("onholdtime");
++            set => SetAttributeValue("onholdtime", value);
++        }
++
++        /// <summary>Open Deals — Number of open opportunities against an account and its child accounts. (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("opendeals")]
++        [Range(-2147483648, 2147483647)]
++        public int? OpenDeals
++        {
++            get => GetAttributeValue<int?>("opendeals");
++            set => SetAttributeValue("opendeals", value);
++        }
++
++        /// <summary>Open Deals (Last Updated On) — Last Updated time of rollup field Open Deals.</summary>
++        [AttributeLogicalName("opendeals_date")]
++        public DateTime? OpenDeals_Date
++        {
++            get => GetAttributeValue<DateTime?>("opendeals_date");
++            set => SetAttributeValue("opendeals_date", value);
++        }
++
++        /// <summary>Open Deals (State) — State of rollup field Open Deals. (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("opendeals_state")]
++        [Range(-2147483648, 2147483647)]
++        public int? OpenDeals_State
++        {
++            get => GetAttributeValue<int?>("opendeals_state");
++            set => SetAttributeValue("opendeals_state", value);
++        }
++
++        /// <summary>Open Revenue — Sum of open revenue against an account and its child accounts. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("openrevenue")]
++        public Money OpenRevenue
++        {
++            get => GetAttributeValue<Money>("openrevenue");
++            set => SetAttributeValue("openrevenue", value);
++        }
++
++        /// <summary>Open Revenue (Base) — Value of the Open Revenue in base currency. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("openrevenue_base")]
++        public Money OpenRevenue_Base
++        {
++            get => GetAttributeValue<Money>("openrevenue_base");
++            set => SetAttributeValue("openrevenue_base", value);
++        }
++
++        /// <summary>Open Revenue (Last Updated On) — Last Updated time of rollup field Open Revenue.</summary>
++        [AttributeLogicalName("openrevenue_date")]
++        public DateTime? OpenRevenue_Date
++        {
++            get => GetAttributeValue<DateTime?>("openrevenue_date");
++            set => SetAttributeValue("openrevenue_date", value);
++        }
++
++        /// <summary>Open Revenue (State) — State of rollup field Open Revenue. (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("openrevenue_state")]
++        [Range(-2147483648, 2147483647)]
++        public int? OpenRevenue_State
++        {
++            get => GetAttributeValue<int?>("openrevenue_state");
++            set => SetAttributeValue("openrevenue_state", value);
++        }
++
++        /// <summary>Originating Lead — Shows the lead that the account was created from if the account was created by converting a lead in Microsoft Dynamics 365. This is used to relate the account to data on the originating lead for use in reporting and analytics. (Targets: lead)</summary>
++        [AttributeLogicalName("originatingleadid")]
++        [LookupTargets("lead")]
++        public EntityReference OriginatingLeadId
++        {
++            get => GetAttributeValue<EntityReference>("originatingleadid");
++            set => SetAttributeValue("originatingleadid", value);
++        }
++
++        /// <summary>Record Created On — Date and time that the record was migrated.</summary>
++        [AttributeLogicalName("overriddencreatedon")]
++        public DateTime? OverriddenCreatedOn
++        {
++            get => GetAttributeValue<DateTime?>("overriddencreatedon");
++            set => SetAttributeValue("overriddencreatedon", value);
++        }
++
++        /// <summary>Owner — Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user. (Targets: systemuser, team; Required: SystemRequired)</summary>
++        [AttributeLogicalName("ownerid")]
++        [RequiredLevel(Microsoft.Xrm.Sdk.Metadata.AttributeRequiredLevel.SystemRequired)]
++        [LookupTargets("systemuser", "team")]
++        public EntityReference OwnerId
++        {
++            get => GetAttributeValue<EntityReference>("ownerid");
++            set => SetAttributeValue("ownerid", value);
++        }
++
++        /// <summary>Ownership — Select the account's ownership structure, such as public or private.</summary>
++        [AttributeLogicalName("ownershipcode")]
++        public OwnershipCodeOptionSet? OwnershipCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("ownershipcode"); return raw == null ? null : (OwnershipCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("ownershipcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Owning Business Unit — Shows the business unit that the record owner belongs to. (Targets: businessunit)</summary>
++        [AttributeLogicalName("owningbusinessunit")]
++        [LookupTargets("businessunit")]
++        public EntityReference OwningBusinessUnit
++        {
++            get => GetAttributeValue<EntityReference>("owningbusinessunit");
++            set => SetAttributeValue("owningbusinessunit", value);
++        }
++
++        /// <summary>Owning Team — Unique identifier of the team who owns the account. (Targets: team)</summary>
++        [AttributeLogicalName("owningteam")]
++        [LookupTargets("team")]
++        public EntityReference OwningTeam
++        {
++            get => GetAttributeValue<EntityReference>("owningteam");
++            set => SetAttributeValue("owningteam", value);
++        }
++
++        /// <summary>Owning User — Unique identifier of the user who owns the account. (Targets: systemuser)</summary>
++        [AttributeLogicalName("owninguser")]
++        [LookupTargets("systemuser")]
++        public EntityReference OwningUser
++        {
++            get => GetAttributeValue<EntityReference>("owninguser");
++            set => SetAttributeValue("owninguser", value);
++        }
++
++        /// <summary>Parent Account — Choose the parent account associated with this account to show parent and child businesses in reporting and analytics. (Targets: account)</summary>
++        [AttributeLogicalName("parentaccountid")]
++        [LookupTargets("account")]
++        public EntityReference ParentAccountId
++        {
++            get => GetAttributeValue<EntityReference>("parentaccountid");
++            set => SetAttributeValue("parentaccountid", value);
++        }
++
++        /// <summary>Participates in Workflow — For system use only. Legacy Microsoft Dynamics CRM 3.0 workflow data.</summary>
++        [AttributeLogicalName("participatesinworkflow")]
++        public bool? ParticipatesInWorkflow
++        {
++            get => GetAttributeValue<bool?>("participatesinworkflow");
++            set => SetAttributeValue("participatesinworkflow", value);
++        }
++
++        /// <summary>Payment Terms — Select the payment terms to indicate when the customer needs to pay the total amount.</summary>
++        [AttributeLogicalName("paymenttermscode")]
++        public PaymentTermsCodeOptionSet? PaymentTermsCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("paymenttermscode"); return raw == null ? null : (PaymentTermsCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("paymenttermscode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Preferred Day — Select the preferred day of the week for service appointments.</summary>
++        [AttributeLogicalName("preferredappointmentdaycode")]
++        public PreferredAppointmentDayCodeOptionSet? PreferredAppointmentDayCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("preferredappointmentdaycode"); return raw == null ? null : (PreferredAppointmentDayCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("preferredappointmentdaycode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Preferred Time — Select the preferred time of day for service appointments.</summary>
++        [AttributeLogicalName("preferredappointmenttimecode")]
++        public PreferredAppointmentTimeCodeOptionSet? PreferredAppointmentTimeCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("preferredappointmenttimecode"); return raw == null ? null : (PreferredAppointmentTimeCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("preferredappointmenttimecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Preferred Method of Contact — Select the preferred method of contact.</summary>
++        [AttributeLogicalName("preferredcontactmethodcode")]
++        public PreferredContactMethodCodeOptionSet? PreferredContactMethodCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("preferredcontactmethodcode"); return raw == null ? null : (PreferredContactMethodCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("preferredcontactmethodcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Preferred Facility/Equipment — Choose the account's preferred service facility or equipment to make sure services are scheduled correctly for the customer. (Targets: equipment)</summary>
++        [AttributeLogicalName("preferredequipmentid")]
++        [LookupTargets("equipment")]
++        public EntityReference PreferredEquipmentId
++        {
++            get => GetAttributeValue<EntityReference>("preferredequipmentid");
++            set => SetAttributeValue("preferredequipmentid", value);
++        }
++
++        /// <summary>Preferred Service — Choose the account's preferred service for reference when you schedule service activities. (Targets: service)</summary>
++        [AttributeLogicalName("preferredserviceid")]
++        [LookupTargets("service")]
++        public EntityReference PreferredServiceId
++        {
++            get => GetAttributeValue<EntityReference>("preferredserviceid");
++            set => SetAttributeValue("preferredserviceid", value);
++        }
++
++        /// <summary>Preferred User — Choose the preferred service representative for reference when you schedule service activities for the account. (Targets: systemuser)</summary>
++        [AttributeLogicalName("preferredsystemuserid")]
++        [LookupTargets("systemuser")]
++        public EntityReference PreferredSystemUserId
++        {
++            get => GetAttributeValue<EntityReference>("preferredsystemuserid");
++            set => SetAttributeValue("preferredsystemuserid", value);
++        }
++
++        /// <summary>Primary Contact — Choose the primary contact for the account to provide quick access to contact details. (Targets: contact)</summary>
++        [AttributeLogicalName("primarycontactid")]
++        [LookupTargets("contact")]
++        public EntityReference PrimaryContactId
++        {
++            get => GetAttributeValue<EntityReference>("primarycontactid");
++            set => SetAttributeValue("primarycontactid", value);
++        }
++
++        /// <summary>Primary Satori ID — Primary Satori ID for Account (max 200)</summary>
++        [AttributeLogicalName("primarysatoriid")]
++        [StringLength(200)]
++        public string PrimarySatoriId
++        {
++            get => GetAttributeValue<string>("primarysatoriid");
++            set => SetAttributeValue("primarysatoriid", value);
++        }
++
++        /// <summary>Primary Twitter ID — Primary Twitter ID for Account (max 128)</summary>
++        [AttributeLogicalName("primarytwitterid")]
++        [StringLength(128)]
++        public string PrimaryTwitterId
++        {
++            get => GetAttributeValue<string>("primarytwitterid");
++            set => SetAttributeValue("primarytwitterid", value);
++        }
++
++        /// <summary>Process — Shows the ID of the process.</summary>
++        [AttributeLogicalName("processid")]
++        public Guid? ProcessId
++        {
++            get => GetAttributeValue<Guid?>("processid");
++            set => SetAttributeValue("processid", value);
++        }
++
++        /// <summary>Annual Revenue — Type the annual revenue for the account, used as an indicator in financial performance analysis. (0–100000000000000)</summary>
++        [AttributeLogicalName("revenue")]
++        public Money Revenue
++        {
++            get => GetAttributeValue<Money>("revenue");
++            set => SetAttributeValue("revenue", value);
++        }
++
++        /// <summary>Annual Revenue (Base) — Shows the annual revenue converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area. (-922337203685477–922337203685477)</summary>
++        [AttributeLogicalName("revenue_base")]
++        public Money Revenue_Base
++        {
++            get => GetAttributeValue<Money>("revenue_base");
++            set => SetAttributeValue("revenue_base", value);
++        }
++
++        /// <summary>Shares Outstanding — Type the number of shares available to the public for the account. This number is used as an indicator in financial performance analysis. (0–1000000000)</summary>
++        [AttributeLogicalName("sharesoutstanding")]
++        [Range(0, 1000000000)]
++        public int? SharesOutstanding
++        {
++            get => GetAttributeValue<int?>("sharesoutstanding");
++            set => SetAttributeValue("sharesoutstanding", value);
++        }
++
++        /// <summary>Shipping Method — Select a shipping method for deliveries sent to the account's address to designate the preferred carrier or other delivery option.</summary>
++        [AttributeLogicalName("shippingmethodcode")]
++        public ShippingMethodCodeOptionSet? ShippingMethodCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("shippingmethodcode"); return raw == null ? null : (ShippingMethodCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("shippingmethodcode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>SIC Code — Type the Standard Industrial Classification (SIC) code that indicates the account's primary industry of business, for use in marketing segmentation and demographic analysis. (max 20)</summary>
++        [AttributeLogicalName("sic")]
++        [StringLength(20)]
++        public string SIC
++        {
++            get => GetAttributeValue<string>("sic");
++            set => SetAttributeValue("sic", value);
++        }
++
++        /// <summary>SLA — Choose the service level agreement (SLA) that you want to apply to the Account record. (Targets: sla)</summary>
++        [AttributeLogicalName("slaid")]
++        [LookupTargets("sla")]
++        public EntityReference SLAId
++        {
++            get => GetAttributeValue<EntityReference>("slaid");
++            set => SetAttributeValue("slaid", value);
++        }
++
++        /// <summary>Last SLA applied — Last SLA that was applied to this case. This field is for internal use only. (Targets: sla)</summary>
++        [AttributeLogicalName("slainvokedid")]
++        [LookupTargets("sla")]
++        public EntityReference SLAInvokedId
++        {
++            get => GetAttributeValue<EntityReference>("slainvokedid");
++            set => SetAttributeValue("slainvokedid", value);
++        }
++
++        /// <summary>(Deprecated) Process Stage — Shows the ID of the stage.</summary>
++        [AttributeLogicalName("stageid")]
++        public Guid? StageId
++        {
++            get => GetAttributeValue<Guid?>("stageid");
++            set => SetAttributeValue("stageid", value);
++        }
++
++        /// <summary>Status — Shows whether the account is active or inactive. Inactive accounts are read-only and can't be edited unless they are reactivated. (Required: SystemRequired)</summary>
++        [AttributeLogicalName("statecode")]
++        [RequiredLevel(Microsoft.Xrm.Sdk.Metadata.AttributeRequiredLevel.SystemRequired)]
++        public StateCodeOptionSet? StateCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("statecode"); return raw == null ? null : (StateCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("statecode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Status Reason — Select the account's status.</summary>
++        [AttributeLogicalName("statuscode")]
++        public StatusCodeOptionSet? StatusCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("statuscode"); return raw == null ? null : (StatusCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("statuscode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Stock Exchange — Type the stock exchange at which the account is listed to track their stock and financial performance of the company. (max 20)</summary>
++        [AttributeLogicalName("stockexchange")]
++        [StringLength(20)]
++        public string StockExchange
++        {
++            get => GetAttributeValue<string>("stockexchange");
++            set => SetAttributeValue("stockexchange", value);
++        }
++
++        /// <summary>TeamsFollowed — Number of users or conversations followed the record (-2147483648–2147483647)</summary>
++        [AttributeLogicalName("teamsfollowed")]
++        [Range(-2147483648, 2147483647)]
++        public int? TeamsFollowed
++        {
++            get => GetAttributeValue<int?>("teamsfollowed");
++            set => SetAttributeValue("teamsfollowed", value);
++        }
++
++        /// <summary>Main Phone — Type the main phone number for this account. (max 50)</summary>
++        [AttributeLogicalName("telephone1")]
++        [StringLength(50)]
++        public string Telephone1
++        {
++            get => GetAttributeValue<string>("telephone1");
++            set => SetAttributeValue("telephone1", value);
++        }
++
++        /// <summary>Other Phone — Type a second phone number for this account. (max 50)</summary>
++        [AttributeLogicalName("telephone2")]
++        [StringLength(50)]
++        public string Telephone2
++        {
++            get => GetAttributeValue<string>("telephone2");
++            set => SetAttributeValue("telephone2", value);
++        }
++
++        /// <summary>Telephone 3 — Type a third phone number for this account. (max 50)</summary>
++        [AttributeLogicalName("telephone3")]
++        [StringLength(50)]
++        public string Telephone3
++        {
++            get => GetAttributeValue<string>("telephone3");
++            set => SetAttributeValue("telephone3", value);
++        }
++
++        /// <summary>Territory Code — Select a region or territory for the account for use in segmentation and analysis.</summary>
++        [AttributeLogicalName("territorycode")]
++        public TerritoryCodeOptionSet? TerritoryCode
++        {
++            get { OptionSetValue raw = GetAttributeValue<OptionSetValue>("territorycode"); return raw == null ? null : (TerritoryCodeOptionSet)raw.Value; }
++            set => SetAttributeValue("territorycode", value.HasValue ? new OptionSetValue((int)value.Value) : null);
++        }
++
++        /// <summary>Territory — Choose the sales region or territory for the account to make sure the account is assigned to the correct representative and for use in segmentation and analysis. (Targets: territory)</summary>
++        [AttributeLogicalName("territoryid")]
++        [LookupTargets("territory")]
++        public EntityReference TerritoryId
++        {
++            get => GetAttributeValue<EntityReference>("territoryid");
++            set => SetAttributeValue("territoryid", value);
++        }
++
++        /// <summary>Ticker Symbol — Type the stock exchange symbol for the account to track financial performance of the company. You can click the code entered in this field to access the latest trading information from MSN Money. (max 10)</summary>
++        [AttributeLogicalName("tickersymbol")]
++        [StringLength(10)]
++        public string TickerSymbol
++        {
++            get => GetAttributeValue<string>("tickersymbol");
++            set => SetAttributeValue("tickersymbol", value);
++        }
++
++        /// <summary>Time Spent by me — Total time spent for emails (read and write) and meetings by me in relation to account record. (max 1250)</summary>
++        [AttributeLogicalName("timespentbymeonemailandmeetings")]
++        [StringLength(1250)]
++        public string TimeSpentByMeOnEmailAndMeetings
++        {
++            get => GetAttributeValue<string>("timespentbymeonemailandmeetings");
++            set => SetAttributeValue("timespentbymeonemailandmeetings", value);
++        }
++
++        /// <summary>Time Zone Rule Version Number — For internal use only. (-1–2147483647)</summary>
++        [AttributeLogicalName("timezoneruleversionnumber")]
++        [Range(-1, 2147483647)]
++        public int? TimeZoneRuleVersionNumber
++        {
++            get => GetAttributeValue<int?>("timezoneruleversionnumber");
++            set => SetAttributeValue("timezoneruleversionnumber", value);
++        }
++
++        /// <summary>Currency — Choose the local currency for the record to make sure budgets are reported in the correct currency. (Targets: transactioncurrency)</summary>
++        [AttributeLogicalName("transactioncurrencyid")]
++        [LookupTargets("transactioncurrency")]
++        public EntityReference TransactionCurrencyId
++        {
++            get => GetAttributeValue<EntityReference>("transactioncurrencyid");
++            set => SetAttributeValue("transactioncurrencyid", value);
++        }
++
++        /// <summary>(Deprecated) Traversed Path — For internal use only. (max 1250)</summary>
++        [AttributeLogicalName("traversedpath")]
++        [StringLength(1250)]
++        public string TraversedPath
++        {
++            get => GetAttributeValue<string>("traversedpath");
++            set => SetAttributeValue("traversedpath", value);
++        }
++
++        /// <summary>UTC Conversion Time Zone Code — Time zone code that was in use when the record was created. (-1–2147483647)</summary>
++        [AttributeLogicalName("utcconversiontimezonecode")]
++        [Range(-1, 2147483647)]
++        public int? UTCConversionTimeZoneCode
++        {
++            get => GetAttributeValue<int?>("utcconversiontimezonecode");
++            set => SetAttributeValue("utcconversiontimezonecode", value);
++        }
++
++        /// <summary>Version Number — Version number of the account.</summary>
++        [AttributeLogicalName("versionnumber")]
++        public long? VersionNumber
++        {
++            get => GetAttributeValue<long?>("versionnumber");
++            set => SetAttributeValue("versionnumber", value);
++        }
++
++        /// <summary>Website — Type the account's website URL to get quick details about the company profile. (max 200)</summary>
++        [AttributeLogicalName("websiteurl")]
++        [StringLength(200)]
++        public string WebSiteURL
++        {
++            get => GetAttributeValue<string>("websiteurl");
++            set => SetAttributeValue("websiteurl", value);
++        }
++
++        /// <summary>Yomi Account Name — Type the phonetic spelling of the company name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications. (max 160)</summary>
++        [AttributeLogicalName("yominame")]
++        [StringLength(160)]
++        public string YomiName
++        {
++            get => GetAttributeValue<string>("yominame");
++            set => SetAttributeValue("yominame", value);
++        }
++
++        /// <summary>Reference by alternate key (<c>accountnumber</c>).</summary>
++        public static EntityReference Byvelam_accountnumberkey(string accountNumber)
++        {
++            KeyAttributeCollection keys = new KeyAttributeCollection();
++            keys["accountnumber"] = accountNumber;
++
++            return new EntityReference(EntityLogicalNameValue, keys);
++        }
++
++        /// <summary>N:1 relationship <c>account_master_account</c> to <c>account</c>. Populate for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("account_master_account")]
++        public Account? Master { get; set; }
++
++        /// <summary>N:1 relationship <c>account_parent_account</c> to <c>account</c>. Populate for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("account_parent_account")]
++        public Account? ParentAccount { get; set; }
++
++        /// <summary>N:1 relationship <c>msa_account_managingpartner</c> to <c>account</c>. Populate for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("msa_account_managingpartner")]
++        public Account? msa_managingpartnerid1 { get; set; }
++
++        /// <summary>1:N relationship <c>account_master_account</c> to <c>account</c>. Add children for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("account_master_account")]
++        public System.Collections.Generic.IList<Account> Accounts { get; set; } = new System.Collections.Generic.List<Account>();
++
++        /// <summary>1:N relationship <c>account_parent_account</c> to <c>account</c>. Add children for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("account_parent_account")]
++        public System.Collections.Generic.IList<Account> Account_parent_account { get; set; } = new System.Collections.Generic.List<Account>();
++
++        /// <summary>1:N relationship <c>msa_account_managingpartner</c> to <c>account</c>. Add children for a deep insert; hydrated by a relationship-aware read.</summary>
++        [RelationshipSchemaName("msa_account_managingpartner")]
++        public System.Collections.Generic.IList<Account> Msa_account_managingpartner { get; set; } = new System.Collections.Generic.List<Account>();
++
++        /// <summary>Choice values for <c>AccountCategoryCodeOptionSet</c>.</summary>
++        public enum AccountCategoryCodeOptionSet
++        {
++            PreferredCustomer = 1,
++            Standard = 2,
++        }
++
++        /// <summary>Choice values for <c>AccountClassificationCodeOptionSet</c>.</summary>
++        public enum AccountClassificationCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>AccountRatingCodeOptionSet</c>.</summary>
++        public enum AccountRatingCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>Address1_AddressTypeCodeOptionSet</c>.</summary>
++        public enum Address1_AddressTypeCodeOptionSet
++        {
++            BillTo = 1,
++            ShipTo = 2,
++            Primary = 3,
++            Other = 4,
++        }
++
++        /// <summary>Choice values for <c>Address1_FreightTermsCodeOptionSet</c>.</summary>
++        public enum Address1_FreightTermsCodeOptionSet
++        {
++            FOB = 1,
++            NoCharge = 2,
++        }
++
++        /// <summary>Choice values for <c>Address1_ShippingMethodCodeOptionSet</c>.</summary>
++        public enum Address1_ShippingMethodCodeOptionSet
++        {
++            Airborne = 1,
++            DHL = 2,
++            FedEx = 3,
++            UPS = 4,
++            PostalMail = 5,
++            FullLoad = 6,
++            WillCall = 7,
++        }
++
++        /// <summary>Choice values for <c>Address2_AddressTypeCodeOptionSet</c>.</summary>
++        public enum Address2_AddressTypeCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>Address2_FreightTermsCodeOptionSet</c>.</summary>
++        public enum Address2_FreightTermsCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>Address2_ShippingMethodCodeOptionSet</c>.</summary>
++        public enum Address2_ShippingMethodCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>BusinessTypeCodeOptionSet</c>.</summary>
++        public enum BusinessTypeCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>CustomerSizeCodeOptionSet</c>.</summary>
++        public enum CustomerSizeCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>CustomerTypeCodeOptionSet</c>.</summary>
++        public enum CustomerTypeCodeOptionSet
++        {
++            Competitor = 1,
++            Consultant = 2,
++            Customer = 3,
++            Investor = 4,
++            Partner = 5,
++            Influencer = 6,
++            Press = 7,
++            Prospect = 8,
++            Reseller = 9,
++            Supplier = 10,
++            Vendor = 11,
++            Other = 12,
++        }
++
++        /// <summary>Choice values for <c>IndustryCodeOptionSet</c>.</summary>
++        public enum IndustryCodeOptionSet
++        {
++            Accounting = 1,
++            AgricultureandNonpetrolNaturalResourceExtraction = 2,
++            BroadcastingPrintingandPublishing = 3,
++            Brokers = 4,
++            BuildingSupplyRetail = 5,
++            BusinessServices = 6,
++            Consulting = 7,
++            ConsumerServices = 8,
++            DesignDirectionandCreativeManagement = 9,
++            DistributorsDispatchersandProcessors = 10,
++            DoctorsOfficesandClinics = 11,
++            DurableManufacturing = 12,
++            EatingandDrinkingPlaces = 13,
++            EntertainmentRetail = 14,
++            EquipmentRentalandLeasing = 15,
++            Financial = 16,
++            FoodandTobaccoProcessing = 17,
++            InboundCapitalIntensiveProcessing = 18,
++            InboundRepairandServices = 19,
++            Insurance = 20,
++            LegalServices = 21,
++            NonDurableMerchandiseRetail = 22,
++            OutboundConsumerService = 23,
++            PetrochemicalExtractionandDistribution = 24,
++            ServiceRetail = 25,
++            SIGAffiliations = 26,
++            SocialServices = 27,
++            SpecialOutboundTradeContractors = 28,
++            SpecialtyRealty = 29,
++            Transportation = 30,
++            UtilityCreationandDistribution = 31,
++            VehicleRetail = 32,
++            Wholesale = 33,
++        }
++
++        /// <summary>Choice values for <c>OwnershipCodeOptionSet</c>.</summary>
++        public enum OwnershipCodeOptionSet
++        {
++            Public = 1,
++            Private = 2,
++            Subsidiary = 3,
++            Other = 4,
++        }
++
++        /// <summary>Choice values for <c>PaymentTermsCodeOptionSet</c>.</summary>
++        public enum PaymentTermsCodeOptionSet
++        {
++            Net30 = 1,
++            _210Net30 = 2,
++            Net45 = 3,
++            Net60 = 4,
++        }
++
++        /// <summary>Choice values for <c>PreferredAppointmentDayCodeOptionSet</c>.</summary>
++        public enum PreferredAppointmentDayCodeOptionSet
++        {
++            Sunday = 0,
++            Monday = 1,
++            Tuesday = 2,
++            Wednesday = 3,
++            Thursday = 4,
++            Friday = 5,
++            Saturday = 6,
++        }
++
++        /// <summary>Choice values for <c>PreferredAppointmentTimeCodeOptionSet</c>.</summary>
++        public enum PreferredAppointmentTimeCodeOptionSet
++        {
++            Morning = 1,
++            Afternoon = 2,
++            Evening = 3,
++        }
++
++        /// <summary>Choice values for <c>PreferredContactMethodCodeOptionSet</c>.</summary>
++        public enum PreferredContactMethodCodeOptionSet
++        {
++            Any = 1,
++            Email = 2,
++            Phone = 3,
++            Fax = 4,
++            Mail = 5,
++        }
++
++        /// <summary>Choice values for <c>ShippingMethodCodeOptionSet</c>.</summary>
++        public enum ShippingMethodCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++
++        /// <summary>Choice values for <c>StateCodeOptionSet</c>.</summary>
++        public enum StateCodeOptionSet
++        {
++            Active = 0,
++            Inactive = 1,
++        }
++
++        /// <summary>Choice values for <c>StatusCodeOptionSet</c>.</summary>
++        public enum StatusCodeOptionSet
++        {
++            Active = 1,
++            Inactive = 2,
++        }
++
++        /// <summary>Choice values for <c>TerritoryCodeOptionSet</c>.</summary>
++        public enum TerritoryCodeOptionSet
++        {
++            DefaultValue = 1,
++        }
++    }
++}
+diff --git a/src/Zava.Shared/Models/Generated/LookupTargetsAttribute.cs b/src/Zava.Shared/Models/Generated/LookupTargetsAttribute.cs
+new file mode 100644
+index 0000000..ff78ad6
+--- /dev/null
++++ b/src/Zava.Shared/Models/Generated/LookupTargetsAttribute.cs
+@@ -0,0 +1,22 @@
++// <auto-generated/>
++namespace Zava.Shared.Models.Generated
++{
++    using System;
++
++    /// <summary>
++    /// Records the target tables of a lookup / Customer / polymorphic column on the generated
++    /// property (a single-target lookup carries one; Customer and polymorphic lookups several).
++    /// Informational: it carries the targets for tooling and for <c>FakeEntityMetadata.From&lt;T&gt;()</c>
++    /// recovery, since no standard annotation expresses a lookup's targets.
++    /// </summary>
++    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
++    public sealed class LookupTargetsAttribute : Attribute
++    {
++        public LookupTargetsAttribute(params string[] targets)
++        {
++            this.Targets = targets ?? Array.Empty<string>();
++        }
++
++        public string[] Targets { get; }
++    }
++}
+diff --git a/src/Zava.Shared/Models/Generated/RelationshipSchemaNameAttribute.cs b/src/Zava.Shared/Models/Generated/RelationshipSchemaNameAttribute.cs
+new file mode 100644
+index 0000000..ea887cc
+--- /dev/null
++++ b/src/Zava.Shared/Models/Generated/RelationshipSchemaNameAttribute.cs
+@@ -0,0 +1,25 @@
++// <auto-generated/>
++namespace Zava.Shared.Models.Generated
++{
++    using System;
++
++    /// <summary>
++    /// Marks a generated relationship navigation property (N:1 parent, 1:N child collection, or N:N
++    /// collection) with its Dataverse relationship schema name. It is NOT a column: the querying and
++    /// image column resolvers reject a property carrying this attribute (use a relationship-aware
++    /// read/deep-insert/associate instead). <c>ManyToMany</c> is true for a N:N collection (associate
++    /// existing records) versus a 1:N collection (deep-insert children).
++    /// </summary>
++    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
++    public sealed class RelationshipSchemaNameAttribute : Attribute
++    {
++        public RelationshipSchemaNameAttribute(string schemaName)
++        {
++            this.SchemaName = schemaName ?? string.Empty;
++        }
++
++        public string SchemaName { get; }
++
++        public bool ManyToMany { get; set; }
++    }
++}
+diff --git a/src/Zava.Shared/Models/Generated/RequiredLevelAttribute.cs b/src/Zava.Shared/Models/Generated/RequiredLevelAttribute.cs
+new file mode 100644
+index 0000000..a7b5746
+--- /dev/null
++++ b/src/Zava.Shared/Models/Generated/RequiredLevelAttribute.cs
+@@ -0,0 +1,23 @@
++// <auto-generated/>
++namespace Zava.Shared.Models.Generated
++{
++    using System;
++    using Microsoft.Xrm.Sdk.Metadata;
++
++    /// <summary>
++    /// Records a column's full Dataverse <see cref="AttributeRequiredLevel"/> (None/Recommended/
++    /// ApplicationRequired/SystemRequired) on the generated property, preserving the exact level
++    /// rather than a lossy boolean. Informational: it carries the level for tooling and for
++    /// <c>FakeEntityMetadata.From&lt;T&gt;()</c> recovery; it does not itself enforce validation.
++    /// </summary>
++    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
++    public sealed class RequiredLevelAttribute : Attribute
++    {
++        public RequiredLevelAttribute(AttributeRequiredLevel level)
++        {
++            this.Level = level;
++        }
++
++        public AttributeRequiredLevel Level { get; }
++    }
++}
+diff --git a/tests/Zava.Integrations.Tests/Account/Plugins/AccountErpNotifyTests.cs b/tests/Zava.Integrations.Tests/Account/Plugins/AccountErpNotifyTests.cs
+new file mode 100644
+index 0000000..2abf4c8
+--- /dev/null
++++ b/tests/Zava.Integrations.Tests/Account/Plugins/AccountErpNotifyTests.cs
+@@ -0,0 +1,151 @@
++namespace Zava.Integrations.Tests.Account.Plugins
++{
++    using System;
++    using System.Collections.Generic;
++    using System.Linq;
++    using Microsoft.Xrm.Sdk;
++    using Vela.Constants;
++    using Vela.Steps;
++    using Vela.Testing;
++    using Xunit;
++    using Zava.Integrations.Account.Plugins;
++    using Zava.Integrations.Account.Services;
++    using Zava.Shared.Models.Generated;
++
++    /// <summary>
++    /// Pipeline tests for <see cref="AccountErpNotify"/>: the step's registration (Create, PostOperation, Async,
++    /// FilterOn Name, secure config ErpApiKey) and what it hands the ERP sender. The sender is replaced with a fake
++    /// through WithService - no test reaches the network.
++    /// </summary>
++    public sealed class AccountErpNotifyTests
++    {
++        private const string ApiKey = "test-api-key-7f3c";
++
++        private static PluginPipeline Pipeline(FakeErpSender fake, string apiKey = ApiKey)
++        {
++            PluginPipeline pipeline = PluginPipeline.Empty().WithService<IErpAccountSender>(fake);
++            if (apiKey != null)
++            {
++                pipeline = pipeline.WithSecureConfig("ErpApiKey", apiKey);
++            }
++
++            return pipeline.Register<AccountErpNotify>();
++        }
++
++        // AC1 - the step fires once on Create (PostOperation, Async) and sends the new id and name.
++        [Fact]
++        public void Fires_On_Create_PostOperation()
++        {
++            var fake = new FakeErpSender();
++            PluginPipeline pipeline = Pipeline(fake);
++
++            Guid id = pipeline.Service.Create(new Account { Name = "Contoso" });
++
++            var run = Assert.Single(pipeline.ExecutionLog);
++            Assert.Equal(typeof(AccountErpNotify).FullName, run.PluginTypeName);
++            Assert.Equal("Create", run.Message);
++            Assert.Equal(PluginStages.PostOperation, run.Stage);
++            Assert.Equal(ExecutionMode.Asynchronous, run.Mode);
++            Assert.True(run.HandlerInvoked);
++            Assert.Empty(pipeline.AsyncStepFailures);
++
++            var call = Assert.Single(fake.Calls);
++            Assert.Equal(id, call.Key);
++            Assert.Equal("Contoso", call.Value);
++        }
++
++        // AC2 - the ERP call fails: the account is still saved, the failure is a failed async job (not thrown).
++        [Fact]
++        public void Erp_Failure_Does_Not_Block_The_Save()
++        {
++            var fake = new FakeErpSender { Failure = new InvalidPluginExecutionException("ERP returned 503 (Service Unavailable).") };
++            PluginPipeline pipeline = Pipeline(fake);
++
++            Guid id = pipeline.Service.Create(new Account { Name = "Contoso" });   // does not throw
++
++            Assert.Single(pipeline.AsyncStepFailures);
++            Assert.Single(fake.Calls);
++            var row = Assert.Single(pipeline.GetAll("account"));
++            Assert.Equal(id, row.Id);
++            Assert.Equal("Contoso", row.GetAttributeValue<string>("name"));
++        }
++
++        // AC8 - no secure config: failed async job, no ERP call, account saved.
++        [Theory]
++        [InlineData(null)]
++        [InlineData("")]
++        [InlineData("   ")]
++        public void Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp(string apiKey)
++        {
++            var fake = new FakeErpSender();
++            PluginPipeline pipeline = Pipeline(fake, apiKey);
++
++            pipeline.Service.Create(new Account { Name = "Contoso" });
++
++            var run = Assert.Single(pipeline.ExecutionLog);
++            Assert.True(run.HandlerInvoked);
++            Assert.Single(pipeline.AsyncStepFailures);
++            Assert.Empty(fake.Calls);
++            Assert.Single(pipeline.GetAll("account"));
++        }
++
++        // AC9 - a Create that does not send name does not fire the step (Create filter gate).
++        [Fact]
++        public void Create_Without_Name_Does_Not_Fire()
++        {
++            var fake = new FakeErpSender();
++            PluginPipeline pipeline = Pipeline(fake);
++
++            pipeline.Service.Create(new Account { AccountNumber = "A-1" });
++
++            Assert.Empty(pipeline.ExecutionLog);
++            Assert.Empty(fake.Calls);
++            Assert.Single(pipeline.GetAll("account"));
++        }
++
++        // AC10 - an Update (even of name) does not fire the step: Create only.
++        [Fact]
++        public void Update_Does_Not_Fire()
++        {
++            var fake = new FakeErpSender();
++            PluginPipeline pipeline = Pipeline(fake);
++            Guid id = Guid.NewGuid();
++            pipeline.Seed(new Account { Id = id, Name = "Old" });
++
++            pipeline.Service.Update(new Account { Id = id, Name = "New" });
++
++            Assert.Empty(pipeline.ExecutionLog);
++            Assert.Empty(fake.Calls);
++        }
++
++        // AC11 - the API key never lands in the trace (Plugin Trace Log).
++        [Fact]
++        public void Api_Key_Is_Not_Traced()
++        {
++            var fake = new FakeErpSender();
++            PluginPipeline pipeline = Pipeline(fake);
++
++            Guid id = pipeline.Service.Create(new Account { Name = "Contoso" });
++
++            string trace = string.Join("\n", pipeline.Trace.Traces);
++            Assert.Contains(id.ToString(), trace);
++            Assert.DoesNotContain(ApiKey, trace);
++        }
++
++        private sealed class FakeErpSender : IErpAccountSender
++        {
++            public List<KeyValuePair<Guid, string>> Calls { get; } = new List<KeyValuePair<Guid, string>>();
++
++            public Exception Failure { get; set; }
++
++            public void Send(Guid accountId, string name)
++            {
++                Calls.Add(new KeyValuePair<Guid, string>(accountId, name));
++                if (Failure != null)
++                {
++                    throw Failure;
++                }
++            }
++        }
++    }
++}
+diff --git a/tests/Zava.Integrations.Tests/Account/Services/ErpAccountSenderTests.cs b/tests/Zava.Integrations.Tests/Account/Services/ErpAccountSenderTests.cs
+new file mode 100644
+index 0000000..598d354
+--- /dev/null
++++ b/tests/Zava.Integrations.Tests/Account/Services/ErpAccountSenderTests.cs
+@@ -0,0 +1,162 @@
++namespace Zava.Integrations.Tests.Account.Services
++{
++    using System;
++    using System.Diagnostics;
++    using System.IO;
++    using System.Linq;
++    using System.Net;
++    using System.Net.Http;
++    using System.Runtime.Serialization;
++    using System.Runtime.Serialization.Json;
++    using System.Text;
++    using System.Threading;
++    using System.Threading.Tasks;
++    using Microsoft.Xrm.Sdk;
++    using Xunit;
++    using Zava.Integrations.Account.Services;
++
++    /// <summary>
++    /// Tests for the real <see cref="ErpAccountSender"/> against a fake HttpMessageHandler - no network.
++    /// </summary>
++    public sealed class ErpAccountSenderTests
++    {
++        private const string ApiKey = "test-api-key-7f3c";
++
++        // AC3 - POST to the ERP endpoint, JSON body {"id","name"}, X-Api-Key header; any 2xx is success.
++        [Theory]
++        [InlineData(HttpStatusCode.OK)]
++        [InlineData(HttpStatusCode.Created)]
++        [InlineData(HttpStatusCode.NoContent)]
++        public void Posts_Id_And_Name_As_Json_With_Api_Key(HttpStatusCode status)
++        {
++            var handler = new RecordingHandler(status);
++            var sender = new ErpAccountSender(ApiKey, handler, TimeSpan.FromSeconds(5));
++            var id = new Guid("3F2B8C1D-0A4E-4B6F-9C7D-112233445566");
++
++            sender.Send(id, "Contoso");
++
++            Assert.Equal(1, handler.Count);
++            Assert.Equal(HttpMethod.Post, handler.Method);
++            Assert.Equal(new Uri("https://erp.zava-demo.com/api/accounts"), handler.Uri);
++            Assert.Equal("application/json", handler.MediaType);
++            Assert.Equal(ApiKey, handler.ApiKey);
++            Assert.Equal("{\"id\":\"3f2b8c1d-0a4e-4b6f-9c7d-112233445566\",\"name\":\"Contoso\"}", handler.Body);
++        }
++
++        // AC4 - a non-2xx answer fails the job with the status code in the message.
++        [Theory]
++        [InlineData(HttpStatusCode.InternalServerError, "500")]
++        [InlineData(HttpStatusCode.Unauthorized, "401")]
++        [InlineData(HttpStatusCode.ServiceUnavailable, "503")]
++        public void Non_Success_Status_Throws_InvalidPluginExecutionException(HttpStatusCode status, string code)
++        {
++            var sender = new ErpAccountSender(ApiKey, new RecordingHandler(status), TimeSpan.FromSeconds(5));
++
++            var ex = Assert.Throws<InvalidPluginExecutionException>(() => sender.Send(Guid.NewGuid(), "Contoso"));
++
++            Assert.Contains(code, ex.Message);
++            Assert.DoesNotContain(ApiKey, ex.Message);
++        }
++
++        // AC5 - ERP unreachable (transport error) fails the job with InvalidPluginExecutionException.
++        [Fact]
++        public void Unreachable_Erp_Throws_InvalidPluginExecutionException()
++        {
++            var sender = new ErpAccountSender(ApiKey, new FailingHandler(), TimeSpan.FromSeconds(5));
++
++            Assert.Throws<InvalidPluginExecutionException>(() => sender.Send(Guid.NewGuid(), "Contoso"));
++        }
++
++        // AC6 - the ERP never answers: the call fails within the explicit timeout, not the 100 s default.
++        [Fact]
++        public void Never_Answering_Erp_Times_Out()
++        {
++            var sender = new ErpAccountSender(ApiKey, new NeverAnsweringHandler(), TimeSpan.FromMilliseconds(300));
++            var watch = Stopwatch.StartNew();
++
++            var ex = Assert.Throws<InvalidPluginExecutionException>(() => sender.Send(Guid.NewGuid(), "Contoso"));
++
++            watch.Stop();
++            Assert.True(watch.Elapsed < TimeSpan.FromSeconds(10), "took " + watch.Elapsed);
++            Assert.Contains("timed out", ex.Message);
++        }
++
++        // AC6 - the production timeout is explicit and well under the 2-minute sandbox limit.
++        [Fact]
++        public void Production_Timeout_Is_Explicit()
++        {
++            Assert.Equal(TimeSpan.FromSeconds(30), ErpAccountSender.DefaultTimeout);
++        }
++
++        // AC7 - quotes, backslash, slash and non-ASCII in the name still produce valid JSON with the same name.
++        [Fact]
++        public void Special_Characters_In_Name_Produce_Valid_Json()
++        {
++            const string name = "He said \"hi\" \\ A/B Zoë 東京\t";
++            var handler = new RecordingHandler(HttpStatusCode.OK);
++            var sender = new ErpAccountSender(ApiKey, handler, TimeSpan.FromSeconds(5));
++            var id = Guid.NewGuid();
++
++            sender.Send(id, name);
++
++            var parsed = Parse(handler.Body);
++            Assert.Equal(id.ToString("D"), parsed.Id);
++            Assert.Equal(name, parsed.Name);
++        }
++
++        private static ParsedBody Parse(string json)
++        {
++            var serializer = new DataContractJsonSerializer(typeof(ParsedBody));
++            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
++            {
++                return (ParsedBody)serializer.ReadObject(stream);
++            }
++        }
++
++        [DataContract]
++        public sealed class ParsedBody
++        {
++            [DataMember(Name = "id")]
++            public string Id { get; set; }
++
++            [DataMember(Name = "name")]
++            public string Name { get; set; }
++        }
++
++        private sealed class RecordingHandler(HttpStatusCode status) : HttpMessageHandler
++        {
++            public int Count { get; private set; }
++            public HttpMethod Method { get; private set; }
++            public Uri Uri { get; private set; }
++            public string MediaType { get; private set; }
++            public string ApiKey { get; private set; }
++            public string Body { get; private set; }
++
++            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
++            {
++                Count++;
++                Method = request.Method;
++                Uri = request.RequestUri;
++                MediaType = request.Content?.Headers.ContentType?.MediaType;
++                ApiKey = request.Headers.TryGetValues("X-Api-Key", out var values) ? values.Single() : null;
++                Body = request.Content == null ? null : await request.Content.ReadAsStringAsync().ConfigureAwait(false);
++                return new HttpResponseMessage(status);
++            }
++        }
++
++        private sealed class FailingHandler : HttpMessageHandler
++        {
++            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
++                => throw new HttpRequestException("No such host is known.");
++        }
++
++        private sealed class NeverAnsweringHandler : HttpMessageHandler
++        {
++            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
++            {
++                await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
++                return new HttpResponseMessage(HttpStatusCode.OK);
++            }
++        }
++    }
++}

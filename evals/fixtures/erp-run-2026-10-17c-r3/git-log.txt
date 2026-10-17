@@ -1,0 +1,42 @@
+commit e707d8c docs: Build Report for account-erp-outbound (awaiting apply)
+
+ docs/vela-builds/account-erp-outbound.md | 91 ++++++++++++++++++++++++++++++--
+ 1 file changed, 88 insertions(+), 3 deletions(-)
+commit 1f6de50 feat: AccountErpNotify sends new accounts to the ERP (async, X-Api-Key from secure config, 30 s timeout)
+
+ .../Account/Plugins/AccountErpNotify.cs            | 19 ++++--
+ .../Account/Services/ErpAccountSender.cs           | 78 ++++++++++++++++++++--
+ 2 files changed, 89 insertions(+), 8 deletions(-)
+commit 2117636 test: RED harness tests for AccountErpNotify + ErpAccountSender (scaffolded via vela add plugin/service/test; step registration per Canvas)
+
+ .../Account/Plugins/AccountErpNotify.cs            |  30 ++++
+ .../Account/Services/ErpAccountSender.cs           |  43 ++++++
+ .../Account/Plugins/AccountErpNotifyTests.cs       | 151 +++++++++++++++++++
+ .../Account/Services/ErpAccountSenderTests.cs      | 162 +++++++++++++++++++++
+ 4 files changed, 386 insertions(+)
+commit d0e217d feat(models): vela models --entities account into Zava.Shared
+
+ src/Zava.Shared/Models/Generated/Account.cs        | 1701 ++++++++++++++++++++
+ .../Models/Generated/LookupTargetsAttribute.cs     |   22 +
+ .../Generated/RelationshipSchemaNameAttribute.cs   |   25 +
+ .../Models/Generated/RequiredLevelAttribute.cs     |   23 +
+ 4 files changed, 1771 insertions(+)
+commit d166a6f docs: Vela Canvas for account-erp-outbound
+
+ docs/vela-builds/account-erp-outbound.md | 97 ++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+commit a8b2aba chore: vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations (untouched scaffold)
+
+ .gitignore                                         |  10 ++
+ .vela/scaffold-manifest.json                       |  17 +++
+ AGENTS.md                                          | 166 +++++++++++++++++++++
+ Directory.Build.props                              |  11 ++
+ Directory.Packages.props                           |   5 +
+ README.md                                          |  46 ++++++
+ ZavaSales.sln                                      |  45 ++++++
+ src/Zava.Integrations/Zava.Integrations.csproj     |  72 +++++++++
+ src/Zava.Plugins/Zava.Plugins.csproj               |  72 +++++++++
+ src/Zava.Shared/Zava.Shared.csproj                 |  44 ++++++
+ .../Zava.Integrations.Tests.csproj                 |  38 +++++
+ tests/Zava.Plugins.Tests/Zava.Plugins.Tests.csproj |  38 +++++
+ 12 files changed, 564 insertions(+)

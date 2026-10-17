@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Plugins target net48, so their tests do too (Vela.Testing is a net462 package, consumable from net48). -->
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>Zava.Integrations.Tests</RootNamespace>
+    <AssemblyName>Zava.Integrations.Tests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <!-- Dataverse publisher prefix for Custom API unique names (read by `vela add customapi`). -->
+    <VelaPublisherPrefix>zava</VelaPublisherPrefix>
+    <!-- In a solution build, a ProjectReference that MSBuild cannot match to the solution configuration (its path
+         differs in form, e.g. through a symlink) is otherwise built WITHOUT Configuration/Platform, i.e. a second,
+         Debug build of the plugin project running in parallel with the solution's Release one. Both pack into the
+         same artifacts/<Plugin>.1.0.0.nupkg and fail with "being used by another process". Inheriting this
+         project's Configuration/Platform makes it the same build, run once. -->
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <!-- The test host runs against the real SDK assemblies (not the sandbox), so they are copied to output. -->
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.59" />
+    <!-- Vela.Testing resolves from nuget.org, the same source as Vela.Plugins. -->
+    <PackageReference Include="Vela.Testing" Version="0.36.0" />
+    <!-- HttpClient on .NET Framework binds against this GAC facade, as in the plugin project; without it a test that
+         builds an HttpClient (e.g. around a fake HttpMessageHandler) does not compile. Harmless when unused. -->
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Test projects live under tests/; the projects under test are under src/. -->
+    <ProjectReference Include="..\..\src\Zava.Integrations\Zava.Integrations.csproj" />
+    <ProjectReference Include="..\..\src\Zava.Shared\Zava.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+{
+ "canvas": false,
+ "no_build": true,
+ "output_contains": [
+  {"glob": "findings.md", "pattern": "review-checklist", "why": "names the checklist"},
+  {"glob": "findings.md", "pattern": "harness-api", "why": "names the harness reference"},
+  {"glob": "findings.md", "pattern": "WithService", "why": "the fake never sees the key"},
+  {"glob": "findings.md", "pattern": "secure.?config", "why": "the secret's proof"},
+  {"glob": "findings.md", "pattern": "blocker", "why": "severities given"}
+ ]
+}

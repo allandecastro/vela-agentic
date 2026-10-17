@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- .NET Framework 4.8 is the version Microsoft supports and recommends for plug-ins (4.8.1 is not supported).
+         Plugin packages above net471 register only on Dataverse 9.2.26092 or later; on an older environment, set
+         net471 here until it is updated. -->
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>Zava.Plugins</RootNamespace>
+    <AssemblyName>Zava.Plugins</AssemblyName>
+    <PackageId>Zava.Plugins</PackageId>
+    <Version>1.0.0</Version>
+    <!-- Auto-increment the assembly version on every build. Dataverse caches plugin assemblies by version, so
+         re-deploying changed code under the SAME version can serve a stale assembly and fail at runtime with
+         "The plug-in type could not be found in the plug-in assembly". The 1.0.* wildcard needs a
+         non-deterministic build. (vela apply also fails fast if you add a new plugin type without bumping this.) -->
+    <Deterministic>false</Deterministic>
+    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <!-- The 1.0.* wildcard is deliberate (see above), so silence CS7035 ("version string not in the recommended
+         major.minor.build.revision format") - the compiler's nag about the wildcard form, not a real problem. -->
+    <NoWarn>$(NoWarn);CS7035</NoWarn>
+    <!-- The Power Platform plugin SDK bundles the assembly plus its dependent assemblies into a plugin-package
+         .nupkg. That bundling runs on BUILD (it packs the publish output), so `dotnet build -c Release` produces
+         the deployable package, NOT `dotnet pack` (run cold it skips the publish and emits an assembly-less
+         package that vela plan rejects with "No assemblies found"). PackageOutputPath drops the package into the
+         solution's artifacts folder so vela plan can read it from there. -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>$(MSBuildProjectDirectory)\..\..\artifacts</PackageOutputPath>
+    <IsWorkflowActivity>false</IsWorkflowActivity>
+    <!-- Dataverse publisher prefix for Custom API unique names (read by `vela add customapi`). -->
+    <VelaPublisherPrefix>zava</VelaPublisherPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.59" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.PowerApps.MSBuild.Plugin" Version="1.41.1" PrivateAssets="all" />
+    <PackageReference Include="Vela.Plugins" Version="0.36.0" />
+    <!-- HttpClient on .NET Framework binds against this GAC facade; without it, outbound HTTP (e.g. a managed-identity
+         call) fails to compile/load. Harmless when unused. -->
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zava.Shared\Zava.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- `vela models` (messages and Custom APIs) writes each message's On<Message>() step extension to
+       Messages/*.Steps.cs beside its contract. They extend the Vela.Plugins step builder, which the Shared project
+       does not reference, so the plugin project compiles them. -->
+  <ItemGroup>
+    <Compile Include="..\Zava.Shared\Models\Generated\Messages\*.Steps.cs" Link="Models\Generated\Messages\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Register this assembly's early-bound entity types with the SDK serializer. Without it, passing an
+       early-bound entity (e.g. new Account { ... }) to ctx.Service.Create/Update inside a plugin fails at
+       runtime with a SerializationException ("The deserializer has no knowledge of any type that maps to the
+       name '<namespace>:Account'"), because the sandbox cannot resolve the generated subclass. -->
+  <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.Xrm.Sdk.Client.ProxyTypesAssemblyAttribute" />
+  </ItemGroup>
+
+  <!-- The package version is pinned to 1.0.0 (so `vela plan/apply` can reference a stable artifacts path) while
+       the assembly version auto-increments (1.0.*). Because the .nupkg filename never changes, Pack's incremental
+       check can keep a STALE package after a code-only change and deploy an old assembly. Delete the package
+       before each build so GeneratePackageOnBuild always repacks it from the freshly built assembly. -->
+  <Target Name="RefreshPluginPackage" BeforeTargets="Build">
+    <PropertyGroup>
+      <_PluginPackagePath>$([MSBuild]::EnsureTrailingSlash('$(PackageOutputPath)'))$(PackageId).$(Version).nupkg</_PluginPackagePath>
+    </PropertyGroup>
+    <Delete Files="$(_PluginPackagePath)" Condition="Exists('$(_PluginPackagePath)')" />
+  </Target>
+
+</Project>
