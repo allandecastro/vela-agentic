@@ -99,8 +99,11 @@ RegisterStep().OnAssociate().PostOperation().Sync()
 
 ## Handler context
 
-One context type per message and stage (`ICreatePostContext<T>`, `IUpdatePreContext<T>`...) or the
-generated `<Handler>Context`; a mismatch is VELA015. Add `using Microsoft.Xrm.Sdk;` for `Money`,
+Use the generated **`{Handler}Context`** (e.g. `private void OnExecute(OnExecuteContext ctx)`) - Vela's recommended
+signature: it derives from the message context, stays stable when images change, and types `ctx.PreImage` /
+`ctx.PostImage` to the captured columns. `vela add plugin` scaffolds the message context (`ICreatePreContext<T>`...):
+switch it. Known Vela gap (0.37.0): its typed image reads a choice column (e.g. `StateCode`) as null - for such a
+column, read the image through the message context and name the gap. A context that doesn't match the step is VELA015. Add `using Microsoft.Xrm.Sdk;` for `Money`,
 `EntityReference`, `InvalidPluginExecutionException` (generated files don't import it).
 
 - **Target: `ctx.Request.Target`** - a typed `Account` over the live InputParameters: setting a property

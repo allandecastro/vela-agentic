@@ -43,7 +43,9 @@ are agents; there is no build or apply slash command.
 
 ## Non-negotiable rules
 
-- **The CLI is the contract.** Confirm flags with `vela <command> --help` (or `vela help --json`).
+- **The CLI is the contract.** Confirm flags with `vela <command> --help` (or `vela help --json`). For framework API
+  detail this pack doesn't carry, read Vela's own docs: `https://raw.githubusercontent.com/allandecastro/vela/main/docs/llms.txt`
+  (index of the guides) - don't guess an API.
 - **Version first.** `vela version` before relying on a feature.
 - **Announce the skill.** `Using <skill> to <purpose>`.
 - **Evidence over claims.** Paste the build/test/plan output.
