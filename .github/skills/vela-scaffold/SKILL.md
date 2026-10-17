@@ -74,9 +74,9 @@ Announce: `Using vela-scaffold to <purpose>`.
      the short alias; logical names are mapped to the model property (`name` → `FilterOn(e => e.Name)`, with
      a "corrected to" note). Create/Update(+Multiple) without a filter exits `2`.
    - Extra step on a plugin: `vela add step <PluginName> --entity <ModelType> --message <Msg> --stage <Stage> --mode <Mode> --filtering-attributes <A,B> --project ...`
-   - Custom API: `vela add customapi <Name> [--entity <E>] [--function|--action] [--project ...]` - the unique
-     name is `<VelaPublisherPrefix>_<Name>` (`--prefix <pub>` overrides it); omit `--entity` for a global
-     API. Design it with `vela-custom-api` first.
+   - Custom API: `vela add customapi <Name> [--entity <E>] [--bound|--global] [--function|--action] [--project ...]` - the unique
+     name is `<VelaPublisherPrefix>_<Name>` (`--prefix <pub>` overrides it); a global API: `--global` and no
+     `--entity`; a bound one: `--bound --entity <E>`. Design it with `vela-custom-api` first.
    - Test: `vela add test <PluginName> --kind plugin|customapi [--entity <E>] [--message <Msg>] --project tests/<Prefix>.Plugins.Tests/<Prefix>.Plugins.Tests.csproj`
      (`--prefix` for a Custom API test when the project records none; an Integrations plugin's tests go in
      `tests/<Prefix>.Integrations.Tests`). A plugin gets a pipeline "fires" test + a skipped "does what it
