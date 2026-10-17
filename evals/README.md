@@ -49,39 +49,27 @@ The lint warns about any non-meta skill no scenario exercises.
 
 ## Scenarios
 
-- `scenarios/account-default-description.md` - baseline: Account create → default Description.
-  Iterations 1-4 (2026-09-24/25) drove the pack from 9 defects (3 blockers) to a clean pass with
-  the code-review gate; see the repo history. Re-run 2026-09-29 against the current skills: **pass** (see `runs/`).
-- `scenarios/account-second-behaviour.md` - decisions + review: a second behaviour on a table that
-  already has a plugin, exercising reuse-vs-new, DRY/service extraction, Sync-vs-Async, and the
-  review's SOLID/DRY axis (with a planted-violation check). Re-run 2026-09-29 against the current skills: **pass** (see `runs/`).
-- `scenarios/account-update-recursion.md` - stage + recursion: normalise a column on Update. The
-  PostOperation write-back trap recurses until the depth guard throws (reproduced with
-  `PluginPipeline`); the skills must lead to PreOperation on `ctx.Request.Target`. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
-- `scenarios/lead-score-custom-api.md` - Custom API: routing (step vs Custom API), Action vs
-  Function, dot-free naming, errors as `InvalidPluginExecutionException`. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
-- `scenarios/account-multi-step.md` - `vela add step` on an existing plugin: `Handle<Message>` handler,
-  the VELA001 `FilterOn` placeholder, multi-step harness triggers. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
-- `scenarios/apply-gate.md` - "ship it" is not an apply authorization: build the package → plan on the final
-  package, re-plan after a planted change, no self-approval past the hook. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
-- `scenarios/debug-filter-miss.md` - "my plugin does not fire": failing repro first, then the
-  one-line filtering-attribute fix. Iteration 1: fail; **iteration 2: pass** (see `runs/`).
-- `scenarios/ambiguous-story-grill.md` - a story too vague to build: plan-review routes to
-  `vela-grill`, one load-bearing question at a time, no invented prefix, a complete Canvas. **2026-09-29: pass** (see `runs/`).
-- `scenarios/org-models-and-plan.md` - the first scenario **with a dev org**: real `vela models`
-  (no stand-in), a real `vela plan` whose operations must match the Canvas. Read-only use of the org. **2026-09-29: pass**
-  against DYN-PREMIUM-DEV (see `runs/`).
-- `scenarios/contact-association.md` - Associate: iteration 1 fail - Vela 0.29.3 cannot register Associate at
-  message level (Dataverse's only filter is primary `none`, verified); the scenario now expects the agent
-  to report the framework limit, not ship a workaround. **Iteration 2: pass** (blocked Canvas + hand-off).
-- `scenarios/account-typed-images.md` - typed pre-image (`partial`), "lowered" = the value differs. **2026-09-29: pass.**
-- `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Iteration 1 fail (wrong bulk
-  test recipe, bulk handler shape and bulk gotchas missing) - fixed; **iteration 2: pass**.
-- `scenarios/account-erp-outbound.md` - outbound call: `vela init --integrations`, Async PostOperation,
-  API key via secure configuration, sandbox rules (HTTPS DNS name, explicit timeout), no network in tests,
-  `vela plan` on both packages. Added 2026-10-17.
-- `scenarios/account-credit-function.md` - bound **typed** Custom API: Function vs Action, an optional
-  input mapped in `.Request(...)`, the output in `.Response(...)`, no side effects. Added 2026-10-17.
+One line each (title of the scenario file); the history lives in git and the latest records in `runs/`.
+
+- `scenarios/account-credit-function.md` - a read-only operation bound to an account (typed Custom API)
+- `scenarios/account-deactivate-cascade.md` - deactivate the contacts when their account is deactivated
+- `scenarios/account-default-description.md` - default an Account's Description on create
+- `scenarios/account-delete-guard.md` - block deleting an account that still has active contacts
+- `scenarios/account-erp-outbound.md` - notify an external ERP when an account is created (outbound call)
+- `scenarios/account-multi-step.md` - add a second step to an existing plugin
+- `scenarios/account-second-behaviour.md` - second behaviour on a table that already has a plugin
+- `scenarios/account-typed-images.md` - compare old and new values with a typed pre-image
+- `scenarios/account-update-recursion.md` - normalise a column on update without re-triggering yourself
+- `scenarios/ambiguous-story-grill.md` - a story too vague to build
+- `scenarios/apply-gate.md` - reach the apply gate and stop
+- `scenarios/bulk-update-multiple.md` - a bulk-aware plugin
+- `scenarios/contact-association.md` - react to an association
+- `scenarios/debug-filter-miss.md` - "my plugin does not fire"
+- `scenarios/debug-live-trace.md` - a deployed plugin fails in the org - diagnose from the real trace log
+- `scenarios/deployed-plugin-change.md` - change a plugin that is already deployed (a step goes away)
+- `scenarios/diagnose-failed-run.md` - turn a failed builder run into findings against the skills
+- `scenarios/lead-score-custom-api.md` - a callable lead-scoring operation
+- `scenarios/org-models-and-plan.md` - real models and a real preview against a dev org
 
 ## Guaranteed runs (hidden criteria, separate grader, deterministic checks, N runs)
 
