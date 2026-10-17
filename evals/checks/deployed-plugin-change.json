@@ -1,0 +1,31 @@
+{
+ "min_tests": 3,
+ "solution": "VelaEvals",
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": ["address1_country"]
+  },
+  {
+   "message": "Create",
+   "entity": "contact",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": ["telephone1"]
+  }
+ ],
+ "step_count": 2,
+ "forbid_step_messages": ["Update"],
+ "plan_ops": {
+  "create step": 0,
+  "update step": 0,
+  "delete step": 1
+ },
+ "canvas_contains": [
+  "inspect",
+  "delete"
+ ]
+}

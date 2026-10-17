@@ -16,7 +16,7 @@ brief = subprocess.run([sys.executable, os.path.join(ROOT, "evals/tools/brief.py
 
 path = f'export PATH="{shim}:$HOME/.dotnet/tools:$PATH"' if shim else 'export PATH="$HOME/.dotnet/tools:$PATH"'
 org_rule = (f"- Dataverse dev org, READ-ONLY: `{org}`, reached with `--url` alone (the machine's az session). Only "
-            "`vela models` / `vela plan` / `vela inspect` may touch it; never `vela apply`, `--auto-approve`, `--yes`, "
+            "`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs` (all read-only) may touch it; never `vela apply`, `--auto-approve`, `--yes`, "
             "or any other write.") if org else \
            "- There is NO Dataverse org: where a skill needs one, record the exact command instead of running it. Never `vela apply`."
 print(f"""You are the `vela-builder` agent (`{ROOT}/agents/vela-builder.agent.md`) working on a real task for a user.

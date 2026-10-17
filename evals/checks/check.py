@@ -61,6 +61,14 @@ def main():
     for needle in exp.get("canvas_contains", []):
         check(f"canvas mentions {needle!r}", re.search(needle, canvas, re.I), "")
 
+    for rule in exp.get("output_contains", []):
+        outs = [f for f in glob.glob(os.path.join(work, rule["glob"]), recursive=True) if os.path.isfile(f)]
+        text = "\n".join(open(f, encoding="utf-8", errors="replace").read() for f in outs)
+        check(f"{rule['glob']} mentions /{rule['pattern']}/ ({rule['why']})", outs and re.search(rule["pattern"], text, re.I),
+              ", ".join(os.path.relpath(f, work) for f in outs))
+    if exp.get("no_build"):
+        return finish(scenario, work)
+
     slns = files(work, "**/*.sln")
     if exp.get("expect_no_solution"):
         check("nothing scaffolded (no .sln)", not slns, ", ".join(os.path.relpath(s, work) for s in slns))
@@ -197,8 +205,15 @@ def main():
             check("plan has no demo operation", not demo_ops, ", ".join(demo_ops))
             authored = {s["PluginTypeName"] for s in steps} | {a.get("PluginTypeName") for a in apis}
             creates = [o for o in plan["operations"] if o["action"] == "create" and o.get("kind", "step") != "package"]
-            check("plan creates only authored steps", creates and all(o["type"] in authored for o in creates),
-                  json.dumps([o["type"] for o in plan["operations"]])[:300])
+            ops = json.dumps([(o["action"], o.get("kind"), o["type"].split(".")[-1]) for o in plan["operations"]])[:400]
+            if "plan_ops" in exp:
+                # A change to a deployed plugin: count the plan's operations by "action kind" (e.g. "delete step").
+                for key, want in exp["plan_ops"].items():
+                    a, k = key.split()
+                    got = len([o for o in plan["operations"] if o["action"] == a and o.get("kind", "step") == k])
+                    check(f"plan has {want} x {key}", got == want, ops)
+            else:
+                check("plan creates only authored steps", creates and all(o["type"] in authored for o in creates), ops)
     return finish(scenario, work)
 
 

@@ -34,16 +34,16 @@ The lint warns about any non-meta skill no scenario exercises.
 | --- | --- |
 | `diagnosing-vela` | **none** |
 | `using-vela` | ambiguous-story-grill, apply-gate |
-| `vela-apply` | account-default-description, account-erp-outbound, apply-gate, contact-association, org-models-and-plan |
-| `vela-code-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
+| `vela-apply` | account-default-description, account-erp-outbound, apply-gate, contact-association, debug-live-trace, deployed-plugin-change, org-models-and-plan |
+| `vela-code-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan |
 | `vela-custom-api` | account-credit-function, lead-score-custom-api |
-| `vela-debug-plugin` | debug-filter-miss |
+| `vela-debug-plugin` | debug-filter-miss, debug-live-trace |
 | `vela-grill` | ambiguous-story-grill, contact-association |
 | `vela-models` | account-credit-function, account-erp-outbound, org-models-and-plan |
-| `vela-plan-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, lead-score-custom-api |
-| `vela-plugin-authoring` | account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, org-models-and-plan |
+| `vela-plan-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, deployed-plugin-change, lead-score-custom-api |
+| `vela-plugin-authoring` | account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, deployed-plugin-change, org-models-and-plan |
 | `vela-scaffold` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
-| `vela-test-harness` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
