@@ -119,7 +119,7 @@ generated `<Handler>Context`; a mismatch is VELA015. Add `using Microsoft.Xrm.Sd
   List<Contact> contacts = Query.For<Contact>()
       .Select(c => c.LastName, c => c.EmailAddress1)
       .Where(c => c.ParentCustomerId, ConditionOperator.Equal, accountId)
-      .ToList(ctx.Service);
+      .ToList(ctx.Service);   // or .FirstOrDefault(svc), .CountScalar(svc, c => c.ContactId), .Top(n)
   ```
   By id: `ctx.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(...)).ToEntity<Account>()`.
 - **Delete:** `ctx.Request.Target` is an **`EntityReference`** (no columns) - read what you need with a

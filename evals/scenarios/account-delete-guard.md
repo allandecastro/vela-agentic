@@ -38,8 +38,8 @@ can deal with the contacts first."
 3. RED then green; review PASS; `vela plan --solution ZavaSales` shows the new Delete step; no apply.
 
 ## Planted-violation check (adversarial)
-The review must BLOCK each of: (a) the step registered **Async** → **Critical** (it cannot block the
-delete); (b) the query without the `StateCode` condition (inactive contacts also block) → **Required**
+The review must BLOCK each of: (a) the step registered **Async** (plant it as `.PostOperation().Async()` - PreValidation + Async does not
+compile) → **Critical** (it cannot block the delete); (b) the query without the `StateCode` condition (inactive contacts also block) → **Required**
 (spec drift); (c) the query rewritten as a `QueryExpression` with logical-name strings → **Required**.
 
 ## Human answers (evaluator only - never shown to the acting agent)
