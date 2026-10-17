@@ -15,6 +15,7 @@ namespace Veval.Plugins.Account.Plugins
                 .Sync()
                 .FilterOn(e => e.Address1_Country)
                 .WithDescription("Stamp the sales region on create.")
+                .WithExecutionOrder(10)
                 .Handle(OnExecute);
 
             RegisterStep().OnUpdate()
@@ -22,6 +23,7 @@ namespace Veval.Plugins.Account.Plugins
                 .Sync()
                 .FilterOn(e => e.Address1_Country)
                 .WithDescription("Stamp the sales region when the country changes.")
+                .WithExecutionOrder(10)
                 .Handle(HandleUpdate);
         }
 

@@ -82,6 +82,11 @@ Announce: `Using vela-plan-review to grill the plan`.
      (merged pipelines); record why. A story scoped to "bulk updates" can't stay bulk-only: the step
      also runs for single Updates - that is a scope point for the human to confirm, listed at the Gate.
    - **Models:** Which tables and columns must `vela-models` generate (a minimal scaffold has none)?
+   - **Security context:** the plugin reads and writes as the step's user (`ctx.Service`) by default, so
+     record-level security applies. Reading or writing as SYSTEM (`ctx.SystemService`) - e.g. to count records
+     the user cannot see - is a business decision: when a human is reachable, ask it (one question) instead of
+     assuming; record the answer and the reason in the Canvas. Data read as SYSTEM never goes into a message
+     or output the user sees beyond what they may read (a count, not names).
    - **Norms:** Naming per generated conventions + prefix; SOLID/DRY intent. **Secrets:** any key or
      password → secure configuration (`WithSecureConfigFrom`), never code.
    - **Acceptance cases:** Turn the DoD into concrete test cases - primary behaviour, each edge,

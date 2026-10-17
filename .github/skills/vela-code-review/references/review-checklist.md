@@ -85,7 +85,8 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
 - **Service:** writes go through `ctx.Service` (the step's user - the default) / `ctx.SystemService`
   (SYSTEM) / `ctx.AsUser(id)`; there is no `ctx.OrganizationService` and no `ctx.UserService` (both
   fail to compile). `ctx.SystemService` (bypasses record-level security) used without a reason in the
-  Canvas - **Required**.
+  Canvas - **Required**; data read as SYSTEM that reaches the user (names or fields in an error message or
+  an output) - **Required**, even with a reason (it discloses records the user may not read).
 - **Performance / safety:** no `new ColumnSet(true)` in real queries [analyzer: VELA013]; no unbounded
   RetrieveMultiple; a Sync step does no slow or unreliable external I/O; no parallel work
   [analyzer: VELA024] and no file I/O [analyzer: VELA019].
