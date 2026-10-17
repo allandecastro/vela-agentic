@@ -178,7 +178,11 @@ its text is quoted from the analyzer's own description:
 - **VELA022** - a step on SetState never fires.
 - **VELA023** *error* - a message with a typed trigger registered through `On<TRequest>()`
   (e.g. `On<UpdateRequest>()`): use `OnUpdate()`.
-- **VELA024** (warning) - `Task.Run` / `Parallel.*`: parallel work in a plugin.
+- **VELA024** (warning) - parallel work (`Task.Run`, `Parallel.*`, `new Thread`) or blocking on a task (`.Result`,
+  `.Wait()`, `GetAwaiter().GetResult()`) inside a plugin / Custom API type. Code outside that type (a service, a
+  test) is not checked: the synchronous wrapper over `HttpClient` lives in the outbound service.
+- **VELA025** (warning, 0.37.0) - an HTTP call to an IP address: the sandbox only reaches DNS names.
+- **VELA026** (warning, 0.37.0) - an `HttpClient` that never sets `Timeout` (100 s default, close to the 2-minute cutoff).
 - Read the diagnostic text; don't suppress it.
 
 ## Verification discipline

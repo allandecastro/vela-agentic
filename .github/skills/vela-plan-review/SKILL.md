@@ -1,7 +1,7 @@
 ---
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
-compatibility: "vela CLI >= 0.26.1 (Vela.Plugins >= 0.36.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
 ---
 
 # Review the plan (self-grilling)

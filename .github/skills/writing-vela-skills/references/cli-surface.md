@@ -7,8 +7,8 @@ snapshot, the CLI is the contract. Every command has its own `vela <command> --h
 `vela help <command>`); `vela help --json` prints every command, option, alias and exit code as one
 JSON document (`schemaVersion: 1`) - the machine-readable source to check a flag against.
 
-**Verified against:** `vela 0.26.1` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.36.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
+**Verified against:** `vela 0.26.2` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.37.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
 
@@ -104,7 +104,7 @@ to exclude the typed Custom APIs you authored, `--package-assembly <name.dll>` w
 ## Deploy - `plan` (safe) vs `apply` (writes) vs `inspect` (read)
 Shared inputs: `--package`/`-p <.nupkg>` (repeatable) or `--packages-dir <folder>` (newest version of each
 package id) · `--package-assembly <name.dll>` · **`--solution <uniquename>`** (alias `--solution-unique-name`) ·
-`--secure-config <NAME=VALUE|NAME=@file>` (repeatable; or env `VELA_SECURE_CONFIG_<NAME>`) ·
+`--secure-config <NAME=VALUE|NAME=@file>` (repeatable; or env `VELA_SECURE_CONFIG_<NAME>`; `@file` drops one trailing line ending since 0.26.2 (release note, not re-verified) - prefer it or the env var, never `NAME=VALUE` on a command line) ·
 `--webresources <folder>` (preview; requires `--solution`) · connection options (below) · `--environment <label>` ·
 `--out <file>` · `--json` · `--verbose`.
 - **`--solution` is required on `plan` and `apply`**: it resolves the publisher prefix Dataverse needs to

@@ -1,7 +1,7 @@
 ---
 name: vela-custom-api
 description: Use when a story asks for a callable operation (an endpoint, action, function or message other code or a flow invokes) rather than a reaction to a table event, or when a Vela Custom API must be added, changed or tested.
-compatibility: "vela CLI >= 0.26.1 (Vela.Plugins >= 0.36.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
 ---
 
 # Build a Vela Custom API

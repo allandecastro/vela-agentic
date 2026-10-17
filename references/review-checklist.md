@@ -123,10 +123,10 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
   sent to another system) must be **proven by a test** that supplies it (`WithSecureConfig(name, value)`)
   and asserts it reaches the call - no such test (only a "missing key" guard test) is **Required**: a
   hard-coded key would keep the suite green.
-- **Outbound calls:** a raw IP address or plain HTTP - **Critical** (the sandbox blocks it: every call
-  fails on the org); an outbound call from a **Sync** step without a reason in the Canvas - **Critical**
+- **Outbound calls:** a raw IP address [analyzer: VELA025, in plugin types] or plain HTTP - **Critical** (the
+  sandbox blocks it: every call fails on the org); an outbound call from a **Sync** step without a reason in the Canvas - **Critical**
   (the save waits on, and fails with, the other system, and the external side effect is not rolled back
-  with the transaction); no explicit timeout - **Required** (the 2-minute sandbox cutoff is the only
+  with the transaction); no explicit timeout [analyzer: VELA026, in plugin types; check services by hand] - **Required** (the 2-minute sandbox cutoff is the only
   bound). Code in a ConsoleApp or demo code from
   `vela init --samples`, or outbound code outside the Integrations project (`vela init --integrations`),
   in a real project - **Required**.
