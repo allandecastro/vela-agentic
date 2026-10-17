@@ -109,10 +109,11 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 36/36 runs pass.
+Latest campaign per scenario - 39/39 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
+| `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `account-default-description` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-second-behaviour` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |

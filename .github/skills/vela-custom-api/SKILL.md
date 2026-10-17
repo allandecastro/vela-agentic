@@ -72,6 +72,11 @@ Announce: `Using vela-custom-api to <purpose>`.
    exists in the org, `vela models --custom-apis <uniquename>` generates them (`vela-models`); for your
    own typed API, the request class itself is callable
    (`service.Execute(new <Name>Request { ... }).ToResponse<<Name>Response>()`).
+   **Client callers** (a form button, a ribbon command): the client script is a separate piece of work -
+   `vela add form-script|ribbon-script` is a preview the pack does not cover yet. Build the server side,
+   and record in the Canvas and the Build Report, as an open item for the human, what the client must
+   call (unique name, binding, parameters, Function → GET / Action → POST). Do not present that split as
+   a decision the human made or a rule the pack states.
 7. Continue the loop: verify (suite green, analyzers clean) → `vela-code-review` → `vela-apply`
    (the preview lists the Custom API and its parameters).
 
