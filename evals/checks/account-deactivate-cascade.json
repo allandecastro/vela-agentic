@@ -33,7 +33,7 @@
  ],
  "require_tests": [
   {
-   "pattern": "SetStateRequest",
+   "pattern": "new SetStateRequest",
    "why": "SetState also fires the Update step"
   }
  ],
