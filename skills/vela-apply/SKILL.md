@@ -60,7 +60,9 @@ Announce: `Using vela-apply to <purpose>`.
 6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out plan.json`
    on **the packages the Canvas ships** (`-p` repeated when there are several). **`--solution` is required**:
    without it `plan` fails with exit `4` ("no solution publisher prefix ... Re-run with --solution"). Don't
-   use `--packages-dir artifacts` blindly: it previews whatever is there. Exit `8` = changes to apply, `0` =
+   use `--packages-dir artifacts` blindly: it previews whatever is there. A package with nothing of yours in it
+   (e.g. the empty `<P>.Plugins` next to an Integrations-only story) is left out of the preview **and** the
+   apply command, with the decision recorded in the Canvas - applying it only creates an empty package. Exit `8` = changes to apply, `0` =
    nothing to do; `--out` keeps the JSON as evidence. Read the changes and every `diagnostics` line (add
    `--strict` to fail on any warning; `info` lines, such as "Plugin assembly ... not found in Dataverse
    (first deployment)", are expected). The JSON's `operations` list is what `apply` would do - a `package`
