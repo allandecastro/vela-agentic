@@ -117,7 +117,10 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
   for severities).
 - **Secrets:** none in code or unsecure configuration (`WithUnsecureConfig`) - the step declares
   `.WithSecureConfigFrom("Name")` (value given at deploy time) or uses a secret store. A secret in code
-  or unsecure configuration is **Critical**.
+  or unsecure configuration is **Critical**. A secure-config value the behaviour depends on (an API key
+  sent to another system) must be **proven by a test** that supplies it (`WithSecureConfig(name, value)`)
+  and asserts it reaches the call - no such test (only a "missing key" guard test) is **Required**: a
+  hard-coded key would keep the suite green.
 - **Outbound calls:** a raw IP address or plain HTTP - **Critical** (the sandbox blocks it: every call
   fails on the org); an outbound call from a **Sync** step without a reason in the Canvas - **Critical**
   (the save waits on, and fails with, the other system, and the external side effect is not rolled back

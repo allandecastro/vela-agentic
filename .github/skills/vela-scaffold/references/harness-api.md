@@ -211,7 +211,11 @@ Assert.Equal(1, fake.Calls);                                      // the Async s
 Assert.Equal("test-key", fake.LastApiKey);                        // the key really comes from secure config
 ```
 Assert what the plugin hands the fake (the secure-config value included): a test that only covers "missing
-key" would also pass if the plugin read the unsecure configuration.
+key" would also pass if the plugin read the unsecure configuration. Design for it: the value must reach
+the fake, so pass it through the interface (`Send(id, name, apiKey)`), or make the **transport** the replaced
+service (e.g. an `IHttpSender` wrapping `HttpClient`) and assert the `X-Api-Key` header on the request it
+receives. A key captured in the real service's constructor inside `ConfigureServices` never reaches a
+`WithService` fake - that test proves nothing about the key.
 Put the HTTP call behind an interface registered in `ConfigureServices`; test the real implementation
 against a fake `HttpMessageHandler` (the `--integrations` test project references `System.Net.Http` since
 0.26.1). No test may reach the network.
