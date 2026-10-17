@@ -14,8 +14,8 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Setup for the run
 - The evaluator gives you a work dir; nothing outside it.
-- `vela` and `dotnet` on PATH. No Dataverse org: SKIP `vela models` and `vela plan`/`apply`,
-  recording the exact command that would have run. Never run `vela apply`.
+- `vela` and `dotnet` on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only**
+  (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## Success criteria (a clean pass)
 1. `vela init` + `vela add plugin` exit 0, following `vela-scaffold`; tests live in the scaffold's `.Tests`
@@ -35,8 +35,8 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Models note
 The minimal scaffold has no models: `account` is generated from the read-only dev org with `vela models`
-before the plugin builds (no hand-written stand-in). A Create step still needs a `FilterOn` (Create
-ignores it at runtime). (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
+before the plugin builds (no hand-written stand-in). A Create step still needs a `FilterOn`, and it gates
+the trigger on Create too (verified live): `Name` (sent on every create of an account) is the natural pick. (Campaign 2026-10 note: vela 0.24.1 / Vela.Plugins 0.33.0 - minimal scaffold, org read-only for every run.)
 
 ## Known findings closed
 - Iteration 1 blockers (harness API, macOS Mono runner, `EntityPluginBase`/`OnExecute` authoring

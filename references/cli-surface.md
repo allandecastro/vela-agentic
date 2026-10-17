@@ -5,7 +5,7 @@ snapshot, the CLI is the contract. Every command has its own `vela <command> --h
 `vela help <command>`); `vela help --json` prints every command, option, alias and exit code as one
 JSON document (`schemaVersion: 1`) - the machine-readable source to check a flag against.
 
-**Verified against:** `vela 0.25.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+**Verified against:** `vela 0.26.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
 `Vela.Testing` `0.34.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
@@ -18,7 +18,7 @@ projects - `<Prefix>.Shared` (models + shared services, `net48;net10.0`), `<Pref
 builds the plugin package into `artifacts/`) and `tests/<Prefix>.Plugins.Tests` - plus an `AGENTS.md`,
 a `README.md` and `.vela/scaffold-manifest.json`. No demo code, no models, no Integrations/Console project
 (unless `--integrations`).
-- `--name <Name>` (or first positional, required) · `--output`/`-o <dir>` (default `.`)
+- `--name <Name>` (or first positional, required) · `--output`/`-o <dir>` (parent folder: the solution lands in `<dir>/<SolutionName>`; default `.`)
 - `--prefix <Prefix>` - **namespace / assembly prefix**, used verbatim (`--prefix Zava` →
   `Zava.Plugins`; `--prefix zava` → `zava.Plugins`). Pass it PascalCase. Omitted → the solution name.
 - `--publisher-prefix <prefix>` - the **Dataverse publisher prefix** (2-8 chars, e.g. `zava`), recorded as
@@ -58,7 +58,8 @@ lands in `Account/Plugins/<Name>.cs`). Each kind accepts only its own options. `
 - `add service <Name> --entity <ModelType> [--project <csproj>] [--force]` - table-scoped interface + implementation.
 - `add test <PluginName> [--kind plugin|customapi] [--entity <ModelType>] [--message <Message>] [--prefix <publisherprefix>] [--project <csproj>] [--force]` -
   run inside the test project (RootNamespace ending in `.Tests`); `<PluginName>` is the class under test,
-  the file is `<PluginName>Tests.cs`.
+  the file is `<PluginName>Tests.cs`. On an existing class it **adds the tests of the steps it lacks**
+  (0.26.0; e.g. `Fires_On_Create_PreOperation`); `--force` overwrites instead.
 - `add form-script <entity>` / `add ribbon-script <entity>` [`--project <web-resources dir>`] - TS web
   resources (preview; **not covered by this pack yet**).
 - **Exit code:** outside a project folder without `--project` it prints "No .csproj found" and exits `2`.
@@ -116,14 +117,16 @@ package id) · `--package-assembly <name.dll>` · **`--solution <uniquename>`** 
   unless `--auto-approve`. **Do not auto-approve unless explicitly told to.** Every operation is an
   idempotent upsert, so a partial apply (exit `7`) is fixed then re-run.
 - `vela inspect` - local packages vs the live environment (read-only).
-- **`plan` JSON (`--out`/`--json`/piped, verified 0.24.1 and 0.25.0):** `{schemaVersion: 1, mode: "plan", environment,
+- **`plan` JSON (`--out`/`--json`/piped, verified 0.24.1, 0.25.0, 0.26.0):** `{schemaVersion: 1, mode: "plan", environment,
   hasChanges, summary: {added, removed, changed}, operations: [{action: create|update|delete, kind:
   package|step|image|custom-api|..., type, reason}], diff: {localAssemblies, currentAssemblies, added,
   removed, changed, ...}, diagnostics: [string], notes, unmanaged, info: [string]}`. Read `operations` (what
   apply would do) and every `diagnostics` line. A **`package` operation** creates or republishes the plugin
   package - on a first deploy `create package <pfx>_<Package>`; after a recompile that changes no
   definition, the registration diff is empty yet `hasChanges` is true and apply republishes the package.
-  `summary` counts the registrations (not the package). On a first deploy `currentAssemblies` is `[]` and
+  `summary` counts the registrations (not the package). Each step's `definition` in the diff carries its
+  `relationships` (the `ForRelationship` scope of an Associate/Disassociate step, 0.26.0 - verified): check it
+  matches the Canvas. On a first deploy `currentAssemblies` is `[]` and
   `info` says "Plugin assembly '<x>' not found in Dataverse (first deployment)" - expected, not a finding.
   A rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) in `diagnostics` is not a finding
   about your code. Don't parse the free-text `notes`.
@@ -151,7 +154,8 @@ Resolution order:
 ## Exit codes
 `0` success · `2` invalid arguments · `3` file not found · `4` error (incl. a `--strict` failure, a missing
 `--solution` on plan/apply, a missing solution on `solution show`) · `5` drift (`models --verify`) or apply
-not converged (the org still differs after the write) · `6` Dataverse connection failure · `7` partial apply
+not converged (the org still differs after the write) · `6` Dataverse connection failure (since 0.25.1 any network error - DNS, socket, HTTP, timeout - on any
+Dataverse call of plan/apply/inspect/models/solution/logs; `models` stops with `6` instead of skipping the entity; verified) · `7` partial apply
 (fix the cause, re-run `apply`) · `8` changes pending (`plan --detailed-exitcode` only).
 
 ## Other

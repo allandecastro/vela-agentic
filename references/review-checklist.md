@@ -50,7 +50,8 @@ the dispatcher pasted is clean, they hold - don't re-litigate them, but a suppre
 diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required**.
 
 - **Registration:** Create/Update step has a `FilterOn(...)` [analyzer: VELA020] and it names the
-  right attribute for Update; a message with a typed trigger registered via `On<TRequest>()`
+  right attribute - on Update **and Create** (a Create filter on a column a create may omit silently skips
+  those creates: **Required** unless the Canvas records it); a message with a typed trigger registered via `On<TRequest>()`
   [analyzer: VELA023]; an Associate/Disassociate step **without `ForRelationship(...)`** - **Required**
   (it runs for every association in the org), **Critical** if the handler writes; an Associate handler
   that assumes the Target is the plugin's table without checking `ctx.Request.Target.LogicalName` -
@@ -84,12 +85,14 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
   Create, Async only at PostOperation (these don't compile); Create/Update has a `FilterOn`
   [analyzer: VELA020]; no step on SetState [analyzer: VELA022].
 - **Async step that edits the Target:** `ctx.Request.Target` written in an Async handler - **Critical**
-  (lost, see Axis 1) [analyzer: VELA018 warning - a warning is still a gate failure].
+  (lost, see Axis 1) [analyzer: VELA018 warning - a warning is still a gate failure; since Vela.Plugins 0.35 it also
+  catches writes through a local alias or a helper - verified].
 - **Execution order:** rank-sharing with Microsoft/managed steps is NOT a finding (normal, harmless).
   Only flag missing/ambiguous ordering among *our own* steps on the same table+message+stage.
 - **SOLID / DRY** (duplicated logic - across plugins or between the steps of one plugin - is
   **Required**): every handler (`OnExecute`, `Handle<Message>`) is thin (SRP) with real logic in a service where it earns it; no
-  logic duplicated across plugins; an existing service/plugin reused rather than re-implemented; no
+  logic duplicated across plugins or between the steps of one plugin (a shared constant with the rule
+  copied into each handler is still duplication); an existing service/plugin reused rather than re-implemented; no
   service extracted for a trivial one-liner.
 - **Stage:** a PostOperation step that `Update`s its own primary record where a PreOperation edit of
   `ctx.Request.Target` would do - **Required** (extra write + re-trigger risk), unless the Canvas

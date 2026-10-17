@@ -1,7 +1,7 @@
 ---
 name: vela-custom-api
 description: Use when a story asks for a callable operation (an endpoint, action, function or message other code or a flow invokes) rather than a reaction to a table event, or when a Vela Custom API must be added, changed or tested.
-compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.0 (Vela.Plugins >= 0.35.0); dotnet SDK."
 ---
 
 # Build a Vela Custom API
@@ -38,7 +38,8 @@ Announce: `Using vela-custom-api to <purpose>`.
      (letters, digits, underscores - no dot, no prefix) and short (`email`, `leadScore`); the unique name
      is `<publisher prefix>_<Name>`, with the prefix of the target solution's publisher (the project's
      `<VelaPublisherPrefix>`, set by `vela init --publisher-prefix`).
-   - **Errors:** which invalid inputs throw `InvalidPluginExecutionException`, with which message. A
+   - **Errors:** which invalid inputs throw `InvalidPluginExecutionException`, with which message. What
+     counts as invalid beyond the story (malformed, out of range...) is the human's call - ask it with `vela-grill`. A
      Custom API has no HTTP status codes.
    - **Exposure:** `.Private()` if only your own code calls it; `.ExecutePrivilege(...)` if callers need
      a specific privilege; `.AllowedCustomProcessingSteps(CustomApiAllowedCustomProcessingStepType.None)`

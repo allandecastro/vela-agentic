@@ -14,7 +14,7 @@
  "real_models": "public string AccountNumber",
  "forbid_src": [
   {
-   "pattern": "UserService\\.(Update|Create)\\(",
+   "pattern": "Service\\.(Update|Create)\\(",
    "why": "PreOperation edits ctx.Request.Target; no write-back"
   }
  ],

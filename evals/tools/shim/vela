@@ -1,5 +1,7 @@
 #!/bin/sh
 # Eval shim: the real vela, minus anything that can write to the org (campaign runs use the org read-only).
+# Help is always allowed (`vela apply --help` is part of the skills' flag check).
+for a in "$@"; do case "$a" in --help|-h) exec "$HOME/.dotnet/tools/vela" "$@";; esac; done
 for a in "$@"; do
   case "$a" in apply|--auto-approve|--yes) echo "eval shim: '$a' is forbidden in this eval (read-only org use)" >&2; exit 2;; esac
 done

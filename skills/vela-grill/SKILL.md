@@ -1,7 +1,7 @@
 ---
 name: vela-grill
 description: Use when a user story is ambiguous or underspecified and only the human can resolve it before building (also run by a human as /vela-grill).
-compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.0 (Vela.Plugins >= 0.35.0); dotnet SDK."
 ---
 
 # Grill the story (interview the human)
@@ -26,14 +26,16 @@ Announce: `Using vela-grill to resolve the story`.
    roughly this order, skipping what the story already answers. Only **business decisions** go to the
    human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions. A business
    value nobody raised (e.g. which Inactive status reason) may take the platform default - record it as an
-   assumption, don't spend a question on it. A one-line edge-case follow-up may ride along with its
+   assumption, don't spend a question on it. Ask every edge value that changes an acceptance case (scope, empty/malformed
+   input) before ending the interview - not as a gate question. A one-line edge-case follow-up may ride along with its
    question when the answer stays one line; never bundle two independent decisions.
    - Meaning: which column/table does each story term mean (a standard column or a custom one)?
    - Direction and records: which record drives the change, which is written; how are they related
      (which lookup / relationship)?
    - Trigger: on which message, and only when which attribute changes? Do **other events** reach the
      same outcome (delete, re-parent, bulk) - are they in scope?
-   - Timing: before or after the write is committed? Sync (blocks the user, rolls back together) or
+   - Timing: inside the user's transaction or after it? Sync (blocks the user, rolls back together - even
+     at PostOperation, which is still before the commit) or
      Async (never blocks, fails on its own)? Explain the consequence of each in the question.
    - Data: what exact values are read and written; where do defaults/edge cases go?
    - Security context: as the calling user, or elevated? (Default: calling user.)

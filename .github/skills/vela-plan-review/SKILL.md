@@ -1,7 +1,7 @@
 ---
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
-compatibility: "vela CLI >= 0.25.0 (Vela.Plugins >= 0.34.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.0 (Vela.Plugins >= 0.35.0); dotnet SDK."
 ---
 
 # Review the plan (self-grilling)
@@ -28,8 +28,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Message/stage/mode:** Is the message right (Create vs Update vs *Multiple)? Wording like "set or
      changed" can cover **Create** too (a value set on a new record) - decide both, or ask (`vela-grill`). Is the stage
      right? Changing a column of the same record → **PreOperation**, set on `ctx.Request.Target` (no
-     extra write, nothing re-triggered). PostOperation only for the committed id, other records, or
-     the saved result. PostOperation + an `Update` of the same record needs a written reason.
+     extra write, nothing re-triggered). PostOperation only for the new id, other records, or the
+     saved result (Sync PostOperation is still inside the transaction; only Async runs after commit). PostOperation + an `Update` of the same record needs a written reason.
    - **Recursion:** does anything this plugin writes re-trigger it (its own filtering attributes, or
      another plugin on the same table)? Fix it in the design - `SkipWhenDepthAbove(n)` / a `ctx.Depth`
      check is not a fix (the write still happens twice). See the recursion gotcha in
@@ -61,12 +61,14 @@ Announce: `Using vela-plan-review to grill the plan`.
      that apply is blocked until the prefix and solution are confirmed.
    - **"When X changes" on Update:** a filtering attribute fires whenever the column is *sent*, even
      with the same value. Record whether the behaviour needs the value to actually differ (compare with
-     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not a
-     write: re-assigning the same value there costs nothing, so no compare is needed.
+     `ctx.PreImage`) and write only when it changes. A PreOperation edit of `ctx.Request.Target` is not an
+     extra write, but setting a column the request did not change adds it to the save (and can fire other
+     steps filtered on it): set it only when the new value differs.
    - **Trigger:** On Update, which filtering attribute gates this? On Create/Update a `FilterOn`
      is **mandatory** (build error VELA020 without one; `vela add` needs `--filtering-attributes`); on
-     Create it's ignored at runtime, so it can never be dropped; default it to the primary column
-     (another column is harmless there - Nit).
+     **Create it gates the trigger too** (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): a create that sends none
+     of the filtered columns does not fire. For "on every create", filter on a column every create sends
+     (e.g. a business-required one) and record the residual risk in the Canvas.
    - **Images / legality:** Pre-image or post-image needed, and registered? Check the legal matrix
      (`registration-rules.md`): no post-image on Delete, no pre-image on Create, Async = PostOp only.
    - **Association:** Associate/Disassociate → `vela add plugin <Name> --entity <E> --message
@@ -93,7 +95,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    one line per section for a simple story.
 4. Flag the assumptions in one line to the user and **continue** to `vela-scaffold` - unless a branch
    is a **business decision only the human can make** (what a story term means, which record drives
-   which, the rule itself): then use `vela-grill` first, and resume here with the answers. No human
+   which, the rule itself - including **edge values that change an acceptance case**, e.g. "is an email
+   without `@` invalid?", "does a single Update count?"): then use `vela-grill` first, and resume here with
+   the answers. With a human reachable, such a rule is **asked**, never left as an assumption. No human
    reachable (e.g. an unattended run)? Continue on a flagged assumption, listed as an open question
    that blocks the apply gate. A **blocked** outcome (framework limit, story not deliverable) always
    wins over "continue": set the Canvas `status: blocked` and stop (see the builder's "Blocked stories").

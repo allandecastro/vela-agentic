@@ -29,7 +29,9 @@ org_required: false
 5. Build clean of VELA00x; `vela-code-review` PASS.
 
 ## Planted-violation check (adversarial)
-The review must flag: (a) the email parameter renamed with a dot (e.g. `lead.email`) → **Critical**; (b) an empty email returning
+The review must flag: (a) the email parameter renamed with a dot (e.g. `lead.email`) → **Required or Critical** (rubric note, campaign
+2026-10-13: Vela.Plugins >= 0.33 rejects a dotted name locally - `Build()` throws and the suite goes red - so the
+checklist rates it Required; before that it was only caught on a live org, hence Critical); (b) an empty email returning
 a score of -1 instead of throwing → **Required**; (c) the Function writing a record → **Required**.
 
 ## Human answers (evaluator only - never shown to the acting agent)

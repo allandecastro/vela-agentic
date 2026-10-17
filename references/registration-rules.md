@@ -18,7 +18,7 @@ illegal registration, not a framework bug.
 
 | Message | Stages | Pre-image | Post-image | Mode | FilterOn |
 | --- | --- | --- | --- | --- | --- |
-| Create | PreValidation / PreOperation / PostOperation | no (record doesn't exist yet) | yes at PostOperation | Sync (Async at PostOp) | **required** - VELA020 (ignored at runtime) |
+| Create | PreValidation / PreOperation / PostOperation | no (record doesn't exist yet) | yes at PostOperation | Sync (Async at PostOp) | **required** - VELA020; gates the trigger (as on Update) |
 | Update | PreValidation / PreOperation / PostOperation | yes | yes at PostOperation | Sync (Async at PostOp) | **required** - VELA020 (gates the trigger) |
 | Delete | PreValidation / PreOperation / PostOperation | yes | **no (record is gone)** | Sync (Async at PostOp) | n/a |
 | Associate / Disassociate | PreValidation / PreOperation / PostOperation | n/a | n/a | Sync (Async at PostOp) | n/a - registered message-level (primary entity `none`); scope with `ForRelationship("<schema>")` (see gotchas) |
@@ -27,8 +27,8 @@ illegal registration, not a framework bug.
 - **Async is PostOperation-only** for every message.
 - **No post-image on Delete** and **no pre-image on Create** - the record doesn't exist on the
   other side. (Trying either won't compile.)
-- Create's FilterOn is a registration requirement but ignored at runtime - default it to the
-  primary column, never drop it (see `dataverse-gotchas.md`).
+- Create's FilterOn gates the trigger like Update's (verified live; the Microsoft docs are wrong here) -
+  for "every create", filter on a column every create sends (see `dataverse-gotchas.md`).
 - SetState steps never fire (VELA022): react to the Update (or SetStateDynamicEntity) instead.
 
 ## Target solution & publisher (prerequisite - decide in the Canvas)
@@ -59,7 +59,8 @@ prefix), or components fall into the org's default solution.
   Update event, nothing to re-trigger. This is the default for defaulting, normalising, deriving a
   column from others on the same row.
 - **Validation / abort → PreValidation or PreOperation**, throwing `InvalidPluginExecutionException`.
-- **PostOperation** only when you need the committed result: the new record's id on Create, writes to
+- **PostOperation** only when you need the saved result (a **Sync** PostOperation still runs inside the
+  transaction, before the commit - a failure rolls the write back; only Async runs after the commit): the new record's id on Create, writes to
   **other** records (children, parents, related tables), or work that must see what was actually saved.
 - **Anti-pattern: PostOperation + `ctx.Service.Update(...)` of the same record.** It is a second
   write, fires a second Update through every plugin on that table (including this one if its filter
@@ -97,4 +98,6 @@ prefix), or components fall into the org's default solution.
   reusable or worth testing in isolation → `vela add service <Name> --entity <E>`, inject via DI.
 - Reuse an existing service before adding one. Do not extract a service for a one-line, single-use
   operation - that is ceremony, not design. Logic shared by the steps of **one** plugin → a private
-  helper (+ constant); logic shared **across plugins** → a service.
+  helper (+ constant); logic shared **across plugins** → a service. A shared constant alone is not
+  sharing the logic: the rule itself (e.g. "empty → default") lives once in the helper, and each step's own
+  guard (e.g. "only when the column was sent") wraps the call.

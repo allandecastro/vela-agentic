@@ -81,10 +81,10 @@ private void HandleUpdate(IUpdatePostContext<Account> ctx) { /* TODO (read ctx.R
 - **Mode:** `Sync()`, `Async()` / `Async(deleteJobOnSuccess: true)` (Dataverse `asyncautodelete`).
   **Async is PostOperation-only.**
 - **Config:** `FilterOn(e => e.Attr, ...)` - **REQUIRED on every Create/Update(+Multiple) step**; a
-  missing one is a **build error (VELA020)**. On **Create**, Dataverse ignores filtering attributes at
-  runtime, so the filter is a registration requirement only - default it to the primary column
-  (e.g. `FilterOn(e => e.Name)`) and never drop it, even for a step that must fire on every
-  create. On **Update**, the filter genuinely gates the trigger. Not offered on Delete/Retrieve.
+  missing one is a **build error (VELA020)**. On **Create** and **Update** alike the filter gates the
+  trigger (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): the step fires only when the payload carries a
+  filtered column. For "every create", filter on a column every create sends (e.g. a business-required
+  `FilterOn(e => e.Name)`). Not offered on Delete/Retrieve.
   `WithPreImage(e => e.Attr, ...)` (Update/Delete), `WithPostImage(e => e.Attr, ...)`
   (Create/Update PostOperation), `ForRelationship("schema_name", ...)` (Associate/Disassociate only, see
   below), `WithDescription(...)`, `WithExecutionOrder(int)`, `WithStepKey(...)` (two steps on one
