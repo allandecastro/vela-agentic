@@ -39,7 +39,8 @@ print(f"""You are the `vela-builder` agent (`{ROOT}/agents/vela-builder.agent.md
   answer - append it under the same `## Q<n>` as `Answer:`. Never invent the human's answers.
 - When the task is done (or blocked), write a short final report to `{os.path.dirname(work.rstrip('/'))}/actor-report.md`
   (what you did and decided, the evidence - commands and their output lines -, the paths of what you
-  produced) and give the same report as your final answer. Do not grade yourself.
+  produced) and give the same report as your final answer (if the Write tool refuses a report file, write it
+  with Bash - writing your deliverables is part of the assignment). Do not grade yourself.
 
 ## Your assignment
 {brief}""")
