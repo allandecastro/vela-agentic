@@ -93,13 +93,16 @@ def main():
 
     # Registration really compiled.
     # The project's own assembly (<prefix>.Plugins.dll sits next to the framework's Vela.Plugins.dll).
-    plugin_dlls = [d for d in glob.glob(os.path.join(sol, "src", "*.Plugins", "bin", "Release", "net4*", "*.Plugins.dll"))
+    # vela init --integrations adds a second plugin project (<prefix>.Integrations) with its own package.
+    plugin_dlls = [d for proj in ("Plugins", "Integrations")
+                   for d in glob.glob(os.path.join(sol, "src", f"*.{proj}", "bin", "Release", "net4*", f"*.{proj}.dll"))
                    if os.path.basename(d) == os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(d))))) + ".dll"]
     reg = {"steps": [], "customApis": []}
     if check("plugin dll built", plugin_dlls, ", ".join(os.path.relpath(d, work) for d in plugin_dlls)):
-        code, out = sh(f'mono "{PROBE}" "{plugin_dlls[0]}"')
-        if check("registration probe runs", code == 0, out[-300:] if code else ""):
-            reg = json.loads(out)
+        for dll in plugin_dlls:
+            code, out = sh(f'mono "{PROBE}" "{dll}"')
+            if check(f"registration probe runs ({os.path.basename(dll)})", code == 0, out[-300:] if code else ""):
+                r = json.loads(out); reg["steps"] += r["steps"]; reg["customApis"] += r["customApis"]
     steps = [s for s in reg["steps"] if s["PluginTypeName"].split(".")[-1] not in DEMO_TYPES]
     apis = [a for a in reg["customApis"] if a.get("PluginTypeName", "").split(".")[-1] not in DEMO_TYPES]
     demo_left = [s["PluginTypeName"].split(".")[-1] for s in reg["steps"] if s["PluginTypeName"].split(".")[-1] in DEMO_TYPES] + \
@@ -109,15 +112,19 @@ def main():
 
     for want in exp.get("steps", []):
         match = [s for s in steps if s["Message"] == want["message"] and s["EntityLogicalName"] == want.get("entity", s["EntityLogicalName"])]
-        desc = f"{want['message']} {want.get('entity','*')!r} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}" + (f" rel={want['relationship']}" if want.get('relationship') else "")
+        desc = f"{want['message']} {want.get('entity','*')!r} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}" + \
+               (f" rel={want['relationship']}" if want.get('relationship') else "") + \
+               (f" secure_config={want['secure_config']}" if "secure_config" in want else "") + (f" in {want['project']}" if want.get("project") else "")
         ok = False
         for s in match:
             ok = (want.get("stage") in (None, s["Stage"]) and want.get("mode") in (None, s["Mode"]) and
                   (want.get("filter") is None or sorted(s["FilteringAttributes"] or []) == sorted(want["filter"])) and
                   (want.get("pre_image") is None or any(sorted(i["Attributes"]) == sorted(want["pre_image"]) for i in s["PreImages"] or [])) and
-                  (want.get("relationship") is None or want["relationship"] in json.dumps(s.get("Relationships"))))
+                  (want.get("relationship") is None or want["relationship"] in json.dumps(s.get("Relationships"))) and
+                  (want.get("secure_config") is None or bool(s.get("SecureConfigName")) == want["secure_config"]) and
+                  (want.get("project") is None or f".{want['project']}." in s["PluginTypeName"]))
             if ok: break
-        check(f"step registered: {desc}", ok, json.dumps([{k: s[k] for k in ("Message", "EntityLogicalName", "Stage", "Mode", "FilteringAttributes")} for s in match])[:300])
+        check(f"step registered: {desc}", ok, json.dumps([{k: s.get(k) for k in ("PluginTypeName", "Message", "EntityLogicalName", "Stage", "Mode", "FilteringAttributes", "SecureConfigName")} for s in match])[:400])
     if "step_count" in exp:
         check(f"exactly {exp['step_count']} authored step(s)", len(steps) == exp["step_count"], str(len(steps)))
     for msg in exp.get("forbid_step_messages", []):
@@ -130,10 +137,15 @@ def main():
             m[0]["IsFunction"] == want["is_function"], m[0]["IsBound"] == want.get("is_bound", False),
             want.get("input_types") is None or types(m[0]["InputParameters"]) == sorted(want["input_types"]),
             want.get("output_types") is None or types(m[0]["OutputParameters"]) == sorted(want["output_types"]),
-            all(not p.get("IsOptional") for p in m[0]["InputParameters"]) if want.get("inputs_required") else True])
+            all(not p.get("IsOptional") for p in m[0]["InputParameters"]) if want.get("inputs_required") else True,
+            all(p.get("IsOptional") for p in m[0]["InputParameters"]) if want.get("inputs_optional") else True,
+            want.get("n_inputs") is None or len(m[0]["InputParameters"]) == want["n_inputs"],
+            want.get("n_outputs") is None or len(m[0]["OutputParameters"]) == want["n_outputs"]])
         check(f"exactly one custom API: function={want['is_function']} bound={want.get('is_bound', False)} "
               f"in={want.get('input_types')} out={want.get('output_types')}", ok,
-              json.dumps([{k: a[k] for k in ("UniqueName", "IsFunction", "IsBound")} for a in m])[:300])
+              json.dumps([{"UniqueName": a["UniqueName"], "IsFunction": a["IsFunction"], "IsBound": a["IsBound"],
+                           "in": [(p["Name"], str(p.get("ParameterTypeName")), p.get("IsOptional")) for p in a["InputParameters"]],
+                           "out": [(p["Name"], str(p.get("ParameterTypeName"))) for p in a["OutputParameters"]]} for a in m])[:400])
     dotted = [a["UniqueName"] for a in apis if "." in a["UniqueName"]] + \
              [p["Name"] for a in apis for p in a["InputParameters"] + a["OutputParameters"] if "." in p["Name"]]
     check("no dotted Custom API names", not dotted, ", ".join(dotted))
@@ -143,6 +155,10 @@ def main():
     if exp.get("package", True):
         ok = bool(pkgs) and any(n.endswith(".Plugins.dll") and n.startswith("lib/") for n in zipfile.ZipFile(pkgs[0]).namelist())
         check("plugin package holds the plugin dll", ok, ", ".join(os.path.relpath(p, work) for p in pkgs))
+    for proj in exp.get("extra_packages", []):
+        ipk = [pk for pk in delivered if re.search(rf"\.{proj}\.[^/]*\.nupkg$", pk)]
+        ok = bool(ipk) and any(n.endswith(f".{proj}.dll") and n.startswith("lib/") for n in zipfile.ZipFile(ipk[0]).namelist())
+        check(f"{proj} package holds the {proj} dll", ok, ", ".join(os.path.relpath(p, work) for p in ipk))
         if exp.get("report_hash_matches") and pkgs:
             sha = hashlib.sha256(open(pkgs[0], "rb").read()).hexdigest()
             check("Build Report sha256 = package on disk", sha in canvas, sha[:16])
@@ -173,7 +189,8 @@ def main():
         code, out = sh(f'vela solution show {solution} --url {org} --json </dev/null')
         check(f"target solution {solution} exists (vela solution show)", code == 0, out.strip()[-160:])
         out_json = os.path.join(work, "check-plan.json")
-        code, out = sh(f'perl -e "alarm 300; exec @ARGV" vela plan -p "{pkgs[0]}" --solution {solution} --url {org} --out "{out_json}" </dev/null')
+        source = f'--packages-dir "{os.path.dirname(pkgs[0])}"' if len(delivered) > 1 else f'-p "{pkgs[0]}"'
+        code, out = sh(f'perl -e "alarm 300; exec @ARGV" vela plan {source} --solution {solution} --url {org} --out "{out_json}" </dev/null')
         if check("read-only vela plan runs", code == 0 and os.path.exists(out_json), out[-200:]):
             plan = json.load(open(out_json))
             demo_ops = [o["type"] for o in plan["operations"] if o["type"].split(".")[-1] in DEMO_TYPES]

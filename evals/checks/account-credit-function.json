@@ -1,0 +1,40 @@
+{
+ "min_tests": 5,
+ "custom_apis": [
+  {
+   "is_function": true,
+   "is_bound": true,
+   "inputs_optional": true,
+   "n_inputs": 1,
+   "n_outputs": 1
+  }
+ ],
+ "forbid_src": [
+  {
+   "pattern": "Service\\.(Update|Create|Delete)\\(",
+   "why": "a Function has no side effects"
+  },
+  {
+   "pattern": "SystemService",
+   "why": "no elevation for a read on the caller's behalf"
+  }
+ ],
+ "require_src": [
+  {
+   "pattern": "\\.Request\\(",
+   "why": "the typed input is mapped"
+  },
+  {
+   "pattern": "\\.Response\\(",
+   "why": "the typed output is mapped"
+  },
+  {
+   "pattern": "InvalidPluginExecutionException",
+   "why": "invalid input throws"
+  }
+ ],
+ "canvas_contains": [
+  "Function",
+  "bound|BoundTo"
+ ]
+}

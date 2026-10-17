@@ -34,16 +34,16 @@ The lint warns about any non-meta skill no scenario exercises.
 | --- | --- |
 | `diagnosing-vela` | **none** |
 | `using-vela` | ambiguous-story-grill, apply-gate |
-| `vela-apply` | account-default-description, apply-gate, contact-association, org-models-and-plan |
-| `vela-code-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
-| `vela-custom-api` | lead-score-custom-api |
+| `vela-apply` | account-default-description, account-erp-outbound, apply-gate, contact-association, org-models-and-plan |
+| `vela-code-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
+| `vela-custom-api` | account-credit-function, lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss |
 | `vela-grill` | ambiguous-story-grill, contact-association |
-| `vela-models` | org-models-and-plan |
-| `vela-plan-review` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, lead-score-custom-api |
-| `vela-plugin-authoring` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, org-models-and-plan |
-| `vela-scaffold` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
-| `vela-test-harness` | account-default-description, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
+| `vela-models` | account-credit-function, account-erp-outbound, org-models-and-plan |
+| `vela-plan-review` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, lead-score-custom-api |
+| `vela-plugin-authoring` | account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, org-models-and-plan |
+| `vela-scaffold` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-credit-function, account-default-description, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, lead-score-custom-api, org-models-and-plan |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
@@ -77,6 +77,11 @@ The lint warns about any non-meta skill no scenario exercises.
 - `scenarios/account-typed-images.md` - typed pre-image (`partial`), "lowered" = the value differs. **2026-09-29: pass.**
 - `scenarios/bulk-update-multiple.md` - UpdateMultiple vs Update, batch targets. Iteration 1 fail (wrong bulk
   test recipe, bulk handler shape and bulk gotchas missing) - fixed; **iteration 2: pass**.
+- `scenarios/account-erp-outbound.md` - outbound call: `vela init --integrations`, Async PostOperation,
+  API key via secure configuration, sandbox rules (HTTPS DNS name, explicit timeout), no network in tests,
+  `vela plan` on both packages. Added 2026-10-17.
+- `scenarios/account-credit-function.md` - bound **typed** Custom API: Function vs Action, an optional
+  input mapped in `.Request(...)`, the output in `.Response(...)`, no side effects. Added 2026-10-17.
 
 ## Guaranteed runs (hidden criteria, separate grader, deterministic checks, N runs)
 
