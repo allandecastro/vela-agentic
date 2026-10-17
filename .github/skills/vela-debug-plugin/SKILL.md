@@ -78,7 +78,9 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
    - sandbox limits (file system, raw IP, 2-minute timeout).
    Compare intent with the live registration via `vela inspect -p <pkg> --solution <uniquename>
    <connection>` when a connection is available (flags in `references/cli-surface.md`); otherwise record
-   the exact command for the human.
+   the exact command for the human. Take `<uniquename>` from the Canvas / Build Report or ask the human -
+   never guess it from the repo or project name (a wrong name is exit 4, and a plan against the wrong
+   solution proves nothing).
 6. **Instrument** if the cause is still unclear: add `ctx.Trace(...)` lines for the values you need,
    reproduce, read the message block (`pipeline.Trace.Output` locally, `vela logs --full` on the org). A
    step that never fires writes no trace - read `pipeline.ExecutionLog` instead (which steps ran, with
@@ -91,7 +93,9 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
 8. **Regression-test.** The red test now passes and stays in the suite; the full suite is green;
    `vela inspect` **and** `vela plan` (or the recorded commands) confirm the registration matches intent.
    When the faulty org is unreachable, record for the human the exact `vela inspect`, `vela plan` and
-   `vela logs` commands against that org (`vela logs` is the CLI route to the Plug-in Trace Log).
+   `vela logs` commands against that org (`vela logs` is the CLI route to the Plug-in Trace Log), and
+   aim the apply gate at **that** org: a plan or apply against another org you can reach does not
+   ship the fix where the fault is.
 
 ## Rationalizations (excuse → rebuttal)
 
@@ -114,6 +118,8 @@ minimize → hypothesize → instrument → fix → regression-test - not trial 
 - Mutating the org while diagnosing (investigation is read-only by default).
 - Reporting the intended state instead of the observed state.
 - Guarding with `if (ctx.Depth > 1) return;` to make a recursion symptom disappear.
+- Guessing the solution unique name (from the repo or project name) instead of reading it from the
+  Canvas or asking.
 - Asking the human for "the logs" without saying where they are and which fields to paste - or asking at
   all when a connection is available and `vela logs` can read them.
 

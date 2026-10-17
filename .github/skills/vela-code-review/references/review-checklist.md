@@ -22,7 +22,9 @@ Structure decisions):
   reviewer has no shell: the dispatcher includes the test runner's summary lines with the diff.)
 - **RED evidence:** the Run trace shows the tests failing before the implementation for the right
   reason, then passing; every acceptance case has a test that would fail if the behaviour broke (not
-  a test that passes whatever the code does - e.g. a "does not fire" case run with `Execute`).
+  a test that passes whatever the code does - e.g. a "does not fire" case run with `Execute`). A
+  declared acceptance clause that no test can falsify (e.g. "exactly one write" while the test only counts
+  rows) is **Required**: add the assertion, or drop the clause from the Canvas.
 - **Canvas consistency:** the Canvas agrees with itself (DoD vs acceptance cases, status) and with the
   Run trace (the commands it names were the ones run) - Nit, or Required if a decision is contradicted.
 - **Unconfirmed solution / publisher prefix** (a flagged assumption): not a code finding - it must be
