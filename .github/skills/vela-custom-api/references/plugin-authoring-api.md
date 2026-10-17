@@ -178,6 +178,17 @@ message/stage context is VELA015. Generated plugin files don't import `Microsoft
   when the column is in the Target **and** differs from the registered pre-image (needs a pre-image with
   that column - VELA009 without one; a column absent from the Target counts as unchanged;
   Delete/Assign/SetState throw).
+- **Read the org - typed** (`using Vela.Querying;`, verified 0.36.0): build queries on the generated
+  models, never with logical-name strings:
+  ```csharp
+  List<Contact> contacts = Query.For<Contact>()
+      .Select(c => c.LastName, c => c.EmailAddress1)
+      .Where(c => c.ParentCustomerId, ConditionOperator.Equal, accountId)
+      .ToList(ctx.Service);                              // also FirstOrDefault(svc), CountScalar(svc, c => c.ContactId)
+  ```
+  The builder also has `WhereIn`, `WhereAll`/`WhereAny`, `OrderBy`, `Top`, `Link<T>(...)`, `Distinct`, `Page`;
+  `service.RetrieveByKey<T>(key, columns...)` reads by alternate key. A single row by id:
+  `ctx.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(...)).ToEntity<Account>()`.
 - **Depth:** `ctx.Depth` (see the recursion gotcha in `dataverse-gotchas.md`).
 - **Write to the org** (there is no `ctx.OrganizationService`, and **no `ctx.UserService`** any more):
   - `ctx.Service` - the step's user (the "Run in User's Context" user when the step impersonates,

@@ -23,8 +23,8 @@ var run = Assert.Single(p.ExecutionLog);                               // it fir
 Assert.True(run.HandlerInvoked);                                       // entries: PluginTypeName, Message, Stage, Mode,
 Assert.Equal("Update", run.Message);                                   // EntityLogicalName, Depth, HandlerInvoked,
 Assert.Equal(PluginStages.PreOperation, run.Stage);                    // SkipReason (null unless skipped)
-var row = Assert.Single(p.GetAll("account"));                          // what was saved
-Assert.Equal("changed", row.GetAttributeValue<string>("name"));
+var row = Assert.Single(p.GetAll(Account.EntityLogicalNameValue)).ToEntity<Account>();   // what was saved, typed
+Assert.Equal("changed", row.Name);
 ```
 
 ## Generated test shape (`vela add test <Name> --kind plugin --entity <Entity> --message <M>`, run in the test project)
@@ -98,7 +98,7 @@ Critical, easy-to-get-wrong facts:
   ```csharp
   var p = PluginPipeline.Empty().Register<AccountRevenueGuard>().Seed(new Account { Id = id, Revenue = new Money(10m) });
   Assert.Throws<InvalidPluginExecutionException>(() => p.Service.Update(new Account { Id = id, Revenue = new Money(5m) }));
-  Assert.Equal(10m, p.GetAll("account").Single().GetAttributeValue<Money>("revenue").Value);   // rolled back
+  Assert.Equal(10m, p.GetAll(Account.EntityLogicalNameValue).Single().ToEntity<Account>().Revenue.Value);   // rolled back
   ```
 - **Async steps:** the pipeline runs them **after the outermost operation commits**, and never when it rolls
   back. An async failure is **not thrown** to the caller (as on Dataverse, it is a failed system job): it is
@@ -108,7 +108,7 @@ Critical, easy-to-get-wrong facts:
   var run = Assert.Single(p.ExecutionLog);
   Assert.Equal(ExecutionMode.Asynchronous, run.Mode);                    // using Vela.Steps;
   Assert.Empty(p.AsyncStepFailures);                                     // or Assert.Single(...) for a failure case
-  Assert.Equal("renamed", p.GetAll("account").Single().GetAttributeValue<string>("description"));
+  Assert.Equal("renamed", p.GetAll(Account.EntityLogicalNameValue).Single().ToEntity<Account>().Description);
   ```
 - Assert by reading records back (`crm.GetAll("account")`, `p.GetAll("account")`, `Retrieve`), not by
   counting calls.
@@ -224,8 +224,8 @@ Recursion / cascade recipe - `PluginPipeline` runs every registered plugin on ea
 var id = Guid.NewGuid();
 var pipeline = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "x" });
 pipeline.Service.Update(new Account { Id = id, Name = "  Hello   world  " });
-var row = pipeline.Service.Retrieve("account", id, new ColumnSet("name"));
-Assert.Equal("Hello world", row.GetAttributeValue<string>("name"));
+var row = pipeline.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(true)).ToEntity<Account>();
+Assert.Equal("Hello world", row.Name);              // typed read-back on the generated model, no logical-name strings
 ```
 A write-back loop throws `InvalidPluginExecutionException` "Vela pipeline stopped at depth 9 (cap 8).
 Likely infinite recursion between plugins." Use the pipeline whenever a step writes a column that could
