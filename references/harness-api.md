@@ -200,10 +200,16 @@ an assembly), `Seed(...)`, write through `pipeline.Service`, inspect `ExecutionL
 network (no internal test constructor, no test-only seam in the plugin):
 ```csharp
 var fake = new FakeErpSender();                                   // : IErpSender, records the calls
-var p = PluginPipeline.Empty().WithService<IErpSender>(fake).Register<ErpNotify>();
+var p = PluginPipeline.Empty()
+    .WithService<IErpSender>(fake)
+    .WithSecureConfig("ErpApiKey", "test-key")                    // the step's WithSecureConfigFrom("ErpApiKey")
+    .Register<ErpNotify>();
 p.Service.Create(new Account { Id = Guid.NewGuid(), Name = "Contoso" });
 Assert.Equal(1, fake.Calls);                                      // the Async step ran through the pipeline
+Assert.Equal("test-key", fake.LastApiKey);                        // the key really comes from secure config
 ```
+Assert what the plugin hands the fake (the secure-config value included): a test that only covers "missing
+key" would also pass if the plugin read the unsecure configuration.
 Put the HTTP call behind an interface registered in `ConfigureServices`; test the real implementation
 against a fake `HttpMessageHandler` (the `--integrations` test project references `System.Net.Http` since
 0.26.1). No test may reach the network.
