@@ -9,10 +9,9 @@ compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
 > Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
 > directory containing this `SKILL.md`), not to the project you are working in.
 
-A Custom API is a message you define: other code, Power Automate or a client calls it by its unique
-name, and your handler returns outputs. It is the right tool when the story says "expose", "call",
-"endpoint", "action", "compute on demand" - not "when a record is created/updated" (that is a plugin
-step). It follows the same loop: Canvas → scaffold → RED tests → implement → verify → review → preview.
+A message you define that code, flows or a client call by unique name ("expose", "call", "endpoint",
+"compute on demand" - not "when a record is created/updated", a plugin step). Same build loop. Shapes:
+`references/plugin-authoring-api.md` ("Custom API authoring").
 
 ## When to use
 
@@ -23,92 +22,60 @@ step). It follows the same loop: Canvas → scaffold → RED tests → implement
 
 Announce: `Using vela-custom-api to <purpose>`.
 
-1. `vela version`; `vela add --help` to confirm flags (`references/cli-surface.md`).
+1. `vela version`; confirm flags with `vela add --help`.
 2. **Decide in the Vela Canvas** (Approach/Structure), each with a reason:
-   - **Global or bound?** Operates on one record of a table → bound (`--entity <E>`, the record comes
-     as the target); otherwise global.
-   - **Action or Function?** Decide by **who calls it**, then by side effects:
-     - called from **Power Automate / flows / workflows** (the Dataverse connector) → **Action**, even
-       for a pure computation - the connector can only call Actions;
-     - side effects (writes, sends) → **Action**; "POST" in a story means Action;
-     - a pure read/computation called only from code or the Web API with GET → **Function** (it must
-       return at least one output - the builder rejects a Function without one).
-     The kind **cannot be changed after the Custom API is created** in the org - get it right here.
-   - **Parameters:** names, types, required/optional, and the outputs. Names are **plain identifiers**
-     (letters, digits, underscores - no dot, no prefix) and short (`email`, `leadScore`); the unique name
-     is `<publisher prefix>_<Name>`, with the prefix of the target solution's publisher (the project's
-     `<VelaPublisherPrefix>`, set by `vela init --publisher-prefix`).
-   - **Errors:** which invalid inputs throw `InvalidPluginExecutionException`, with which message. What
-     counts as invalid beyond the story (malformed, out of range...) is the human's call - ask it with `vela-grill`. A
-     Custom API has no HTTP status codes.
-   - **Exposure:** `.Private()` if only your own code calls it; `.ExecutePrivilege(...)` if callers need
-     a specific privilege; `.AllowedCustomProcessingSteps(CustomApiAllowedCustomProcessingStepType.None)`
-     unless others must hook plugins on it (`AsyncOnly` / `SyncAndAsync`).
-3. **Scaffold** with `vela-scaffold`: `vela add customapi <Name> [--entity <E> | --global] [--action|--function]`
-   (`--global` is the explicit form of "no `--entity`"). The unique name `<prefix>_<Name>` takes the
-   prefix from `--prefix`, else the project's `<VelaPublisherPrefix>` - pass `--prefix` only when the
-   project has none, and check the generated `RegisterCustomApi("<prefix>_<Name>"...)` against the
-   Canvas. Global → a lightweight untyped class in `GlobalCustomApis/` (handler passed to
-   `RegisterCustomApi(name, handler)`); `--entity` → a **typed** class in `<Entity>/CustomApis/`
-   (`CustomApiBase<TRequest, TResponse>`, `Execute(ctx, request)`) with request/response classes -
-   subclasses of Vela's `CustomApiRequest` / `CustomApiResponse` (`using Vela.Messages;`), as in the
-   scaffold's `AGENTS.md` (its placeholder `Result` response property is to be renamed or replaced). Both shapes are in
-   `references/plugin-authoring-api.md` - don't convert one into the other by hand.
-4. **Tests first (RED)** with `vela-test-harness`: `vela add test <Name> --kind customapi` (a unique-name
-   test + a skipped execution test: set its inputs, remove `Skip`), then one test per acceptance case -
-   outputs for valid inputs, each edge, and each invalid input throwing `InvalidPluginExecutionException`
-   (recipe in `references/harness-api.md`). A missing **required** input is rejected by the harness itself
-   (`FaultException`, as on Dataverse) - the handler validates values, not presence. Watch them fail.
-5. **Implement** to green:
-   - Global: declare parameters with `.RequestParameter<T>(name, optional, description)` /
-     `.ResponseParameter<T>(name, description)`; read with `ctx.GetInputParameter<T>(name)`, write with
-     `ctx.SetOutputParameter(name, value)`.
-   - Typed: add a property per parameter on the request/response classes (`Get<T>()` / `Set(value)`)
-     **and** map it with `.Request(r => r.Add(x => x.Prop).Add(x => x.Opt, optional: true, "..."))` /
-     `.Response(r => r.Add(x => x.Prop))` - once `.Request(...)` is called, an unmapped property is not
-     registered.
-   - Real logic in a service when it earns it (same SOLID/DRY rules as plugins).
-6. **Callers in C#** (another plugin, the Integrations project) use typed classes: for an API that
-   exists in the org, `vela models --custom-apis <uniquename>` generates them (`vela-models`); for your
-   own typed API, the request class itself is callable
-   (`service.Execute(new <Name>Request { ... }).ToResponse<<Name>Response>()`).
-   **Client callers** (a form button, a ribbon command): the client script is a separate piece of work -
-   `vela add form-script|ribbon-script` is a preview the pack does not cover yet. Build the server side,
-   and record in the Canvas and the Build Report, as an open item for the human, what the client must
-   call (unique name, binding, parameters, Function → GET / Action → POST). Do not present that split as
-   a decision the human made or a rule the pack states.
-7. Continue the loop: verify (suite green, analyzers clean) → `vela-code-review` → `vela-apply`
-   (the preview lists the Custom API and its parameters).
+   - **Global or bound?** Operates on one record of a table → bound (`--entity <E>`); otherwise global.
+   - **Action or Function?** By **caller** first, then side effects: called from **Power Automate /
+     flows** → **Action**, even if pure (the connector only calls Actions); writes/sends or "POST" →
+     Action; pure read called only from code / Web API GET → **Function** (needs at least one output).
+     The kind **cannot change after creation** in the org.
+   - **Parameters:** names, types, required/optional, outputs. **Plain identifiers**, short (`email`,
+     `leadScore`). Unique name `<publisher prefix>_<Name>`, the target solution's publisher prefix.
+   - **Errors:** which invalid inputs throw `InvalidPluginExecutionException`, with which message (no HTTP
+     codes). Invalid beyond the story is the human's call (`vela-grill`).
+   - **Exposure:** `.Private()` if only your code calls it; `.ExecutePrivilege(...)` if callers need a
+     privilege; `.AllowedCustomProcessingSteps(CustomApiAllowedCustomProcessingStepType.None)` unless
+     others must hook plugins on it (`AsyncOnly` / `SyncAndAsync`).
+3. **Scaffold** (`vela-scaffold`): `vela add customapi <Name> [--entity <E> | --global] [--action|--function]`.
+   `--prefix` only when the project has no `<VelaPublisherPrefix>`; check the generated unique name against
+   the Canvas. Rename or replace the typed form's placeholder `Result` property. Never convert global ↔
+   typed by hand.
+4. **Tests first (RED)** (`vela-test-harness`): `vela add test <Name> --kind customapi` (set the inputs,
+   remove `Skip`), then one test per acceptance case - outputs for valid inputs, each edge, each invalid
+   input throwing `InvalidPluginExecutionException` (`references/harness-api.md`). A missing **required**
+   input is rejected by the harness itself - validate values, not presence. Watch them fail.
+5. **Implement** to green (`references/plugin-authoring-api.md`). Typed form: a property per parameter
+   **and** its mapping in `.Request(...)` / `.Response(...)` - an unmapped property is not registered.
+   Real logic in a service when it earns it.
+6. **Callers.** C#: `vela models --custom-apis <uniquename>` for an API in the org; your own typed request
+   class is callable directly. **Client** (form button, ribbon): `form-script|ribbon-script` is not covered
+   by the pack - build the server side and record in the Canvas and Build Report, as an open item for the human (not as their decision or
+   a pack rule), what the client must call (unique name, binding, parameters, Function → GET / Action → POST).
+7. Continue: verify (suite green, analyzers clean) → `vela-code-review` → `vela-apply` (the preview lists
+   the Custom API and its parameters).
 
 ## Rationalizations (excuse → rebuttal)
 
-- "It's triggered by the UI, so it's a plugin step." → If someone *calls* it with inputs and expects
-  outputs, it is a Custom API; a step reacts to a table event.
-- "I'll name the parameter `Account.Id`." → The builder rejects it (letters, digits, underscores
-  only). `AccountId`.
-- "I'll return an error code in an output." → Callers expect a fault. Throw
-  `InvalidPluginExecutionException` with a clear message.
-- "It only computes, so it's a Function." → Not if a flow calls it: the Dataverse connector only
-  calls Actions, and the kind can't be changed after creation. Callers first.
-- "I added the property, it's enough." → On the typed form an unmapped property is not a registered
-  parameter. Map it in `.Request(...)` / `.Response(...)`.
+- "It's triggered by the UI, so it's a plugin step." → Called with inputs/outputs = Custom API.
+- "I'll name the parameter `Account.Id`." → Rejected; `AccountId`.
+- "I'll return an error code in an output." → Callers expect a fault: throw
+  `InvalidPluginExecutionException`.
+- "It only computes, so it's a Function." → Not if a flow calls it; the kind can't change later.
+- "I added the property, it's enough." → Typed form: map it in `.Request(...)` / `.Response(...)`.
 
 ## Red flags
 
-- A parameter name that is not a plain identifier, or a unique name without the target solution's
-  publisher prefix (nothing local checks the prefix).
-- A Function that writes data, or a Function the story says a flow / Power Automate calls.
-- A typed request/response property not mapped in `.Request(...)` / `.Response(...)`.
-- Using the internal `<uniquename>.<prop>` keys from the generated comments as parameter names.
+- A non-identifier parameter name, or a unique name without the publisher prefix (nothing local checks it).
+- A Function that writes, or one the story says a flow calls.
+- A typed property not mapped in `.Request(...)` / `.Response(...)`.
+- The internal `<uniquename>.<prop>` keys from generated comments used as parameter names.
 - No test for an invalid input.
 
 ## Verification
 
-- The Canvas records global/bound, Action/Function (with the callers), parameters and error cases,
-  each with a reason.
-- Optional self-check of what will be registered: a test reading
-  `new <Api>(string.Empty, string.Empty).GetCustomApiDefinition()` (`references/plugin-authoring-api.md`).
-- Harness tests cover every acceptance case including the failing inputs, seen RED then green (runner
-  summary pasted).
+- The Canvas records global/bound, Action/Function (with callers), parameters and error cases, each with
+  a reason.
+- Optional: a test reading `new <Api>(string.Empty, string.Empty).GetCustomApiDefinition()`.
+- Harness tests cover every acceptance case incl. failing inputs, seen RED then green (summary pasted).
 - Build clean of VELA diagnostics in authored code; review PASS; `vela plan` shows the Custom API with the
   expected parameters (or `skipped - no org` with the exact command).

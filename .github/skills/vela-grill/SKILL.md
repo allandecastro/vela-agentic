@@ -9,9 +9,8 @@ compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
 > Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
 > directory containing this `SKILL.md`), not to the project you are working in.
 
-Interview the human: when a story is too vague to build safely, grill the human until the
-plan has no unresolved branch. This is the interactive sibling of `vela-plan-review` (which
-grills the plan itself); use this one when only the human can resolve the ambiguity.
+Interview the human until no branch of a vague story is unresolved. Interactive sibling of
+`vela-plan-review`.
 
 ## When to use
 
@@ -21,47 +20,42 @@ grills the plan itself); use this one when only the human can resolve the ambigu
 
 Announce: `Using vela-grill to resolve the story`.
 
-1. Restate the story in your own words and name the entity/message you think it implies.
-2. Ask **one focused question at a time** - preferably multiple choice, answerable in one line - in
-   roughly this order, skipping what the story already answers. Only **business decisions** go to the
-   human; platform facts (how Dataverse behaves) are yours to know or to record as assumptions. A business
-   value nobody raised (e.g. which Inactive status reason) may take the platform default - record it as an
-   assumption, don't spend a question on it. Ask every edge value that changes an acceptance case (scope, empty/malformed
-   input) before ending the interview - not as a gate question. A one-line edge-case follow-up may ride along with its
-   question when the answer stays one line; never bundle two independent decisions.
-   - Meaning: which column/table does each story term mean (a standard column or a custom one)?
-   - Direction and records: which record drives the change, which is written; how are they related
-     (which lookup / relationship)?
-   - Trigger: on which message, and only when which attribute changes? Do **other events** reach the
-     same outcome (delete, re-parent, bulk) - are they in scope?
-   - Timing: inside the user's transaction or after it? Sync (blocks the user, rolls back together - even
-     at PostOperation, which is still before the commit) or
-     Async (never blocks, fails on its own)? Explain the consequence of each in the question.
-   - Data: what exact values are read and written; where do defaults/edge cases go?
-   - Security context: as the calling user, or elevated? (Default: calling user.)
-   - Target solution unique name, if not known (never invented). Don't ask for the publisher prefix:
-     `vela solution show <uniquename> --json` reads it (read-only); ask only if that fails.
-   - Definition of done: ask only if it can't be derived from the answers; otherwise state it back.
-   Stop as soon as every branch that changes the registration or the acceptance cases is resolved.
-3. Record answers in the Vela Canvas (`references/build-report-template.md`), each marked as the
-   human's decision; platform facts you relied on go under `assumptions:`. Registration choices use
-   `references/registration-rules.md` and `references/dataverse-gotchas.md`.
-4. Hand back to `vela-plan-review` to finish the Canvas (grilling the plan with the answers), then
-   continue the loop (`vela-scaffold`).
+1. Restate the story and name the entity/message you think it implies.
+2. Ask **one focused question at a time** (multiple choice, one-line answer), roughly in this order,
+   skipping what the story answers. Only **business decisions** go to the human; platform facts are
+   yours (or assumptions). A business value nobody raised (e.g. which Inactive status reason) may take the
+   platform default as an assumption. Ask every edge value that changes an acceptance case (scope,
+   empty/malformed input) before ending; a one-line edge follow-up may ride along, never two independent
+   decisions.
+   - Meaning: which column/table (standard or custom) does each story term mean?
+   - Direction: which record drives the change, which is written, via which lookup/relationship?
+   - Trigger: which message, which attribute? Do **other events** (delete, re-parent, bulk) reach the
+     same outcome - in scope?
+   - Timing: Sync (blocks the user, rolls back together - even at PostOperation) or Async (never blocks,
+     fails on its own)? State each consequence in the question.
+   - Data: exact values read and written; defaults and edge cases.
+   - Security context: calling user (default) or elevated?
+   - Target solution unique name, if unknown (never invented). Not the publisher prefix:
+     `vela solution show <uniquename> --json` reads it; ask only if that fails.
+   - Definition of done: only if not derivable; otherwise state it back.
+   Stop once every branch that changes the registration or the acceptance cases is resolved.
+3. Record answers in the Vela Canvas (`references/build-report-template.md`) as the human's decisions;
+   platform facts (`references/registration-rules.md`, `references/dataverse-gotchas.md`) go under
+   `assumptions:`.
+4. Hand back to `vela-plan-review` to finish the Canvas, then continue (`vela-scaffold`).
 
 ## Rationalizations (excuse → rebuttal)
 
-- "I'll assume and move on." → Assumptions are for `vela-plan-review`'s advisory gate. This
-  skill was invoked because the human needs to decide; ask.
-- "Too many questions annoys the user." → One at a time, each clearly load-bearing. Vague builds
-  annoy more.
+- "I'll assume and move on." → Assumptions belong to `vela-plan-review`; this skill runs because the
+  human must decide. Ask.
+- "Too many questions annoys the user." → One at a time, each load-bearing. Vague builds annoy more.
 
 ## Red flags
 
-- Asking broad open questions instead of load-bearing ones tied to the registration.
+- Broad open questions instead of load-bearing ones tied to the registration.
 - Ending the interview with a branch still unresolved.
 
 ## Verification
 
-- The Vela Canvas has no unresolved branch; every **business decision** came from the human (marked
-  as such); only platform facts are listed as assumptions.
+- The Canvas has no unresolved branch; every **business decision** came from the human (marked as
+  such); only platform facts are assumptions.

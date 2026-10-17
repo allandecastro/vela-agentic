@@ -1,191 +1,116 @@
 # Dataverse & Vela gotchas (battle-tested)
 
-Real failure modes seen in Vela plugins. Skills cite these as Red Flags. Each entry is a
+Real failure modes seen in Vela plugins. Skills cite these as Red Flags. Each entry is
 symptom → cause → fix.
 
 ## Registration & steps
 
-- **Associate / Disassociate steps not firing - or firing for everything.** In Dataverse these
-  messages have a **single message filter: primary entity `none`** (verified on a dev org:
-  `sdkmessagefilters` for Associate = 1, primary `none`); a step matched by a primary entity never runs.
-  Vela (0.34.0) registers `RegisterStep().OnAssociate()` / `OnDisassociate()` **message-level** (step
-  definition `EntityLogicalName` empty), so the step fires - for **every** relationship in the org.
-  Scope it with `.ForRelationship("<schema name>", ...)`: Vela enforces the scope at dispatch (the
-  handler runs only for those relationships). The plugin's `<T>` does not filter the Target: the message
-  is relationship-level, so either side can be the Target - an association made from the account side
-  runs an `EntityPluginBase<Contact>` handler with an `account` Target. Check
-  `ctx.Request.Target.LogicalName` and the related entities' types. (Marketing
-  lists: adding members from the UI may raise `AddMember` / `AddListMembers` rather than Associate -
-  typed `OnAddMemberList()` / `OnAddListMembersList()` triggers exist; confirm which message the story
-  really needs.)
-- **Bulk messages (`CreateMultiple` / `UpdateMultiple`) and single-record steps.** The pipelines are
-  merged: for an UpdateMultiple request Dataverse also runs the Update steps per row (framework doc),
-  and in the harness a single Update fired an UpdateMultiple step. Register the logic on **one** of
-  them (UpdateMultiple for one execution per batch; Update when per-row context is needed) - not both,
-  or it runs twice. A bulk handler iterates `ctx.Request.Targets` and never writes per record.
-- **Create/Update step never triggers on the change you expect.** A filtering attribute
-  excludes the attribute that actually changed. Check the filtering attributes against the
-  attribute being written.
-- **Create/Update step without a filter: build error VELA020.** Every Create/Update(+Multiple) step
-  requires a `FilterOn(...)` (`vela add plugin|step` refuses Create/Update without
-  `--filtering-attributes`). **On Create the filter gates the trigger exactly as on Update** (verified live on a dev org; the Microsoft docs say Create ignores filtering attributes - they do not): a
-  create whose payload has none of the filtered columns does not fire the step (the harness `PluginPipeline`
-  behaves the same). A step meant to fire on every create filters on a column every create sends
-  (business-required) - and the Canvas says what happens to a create without it.
-- **Image is empty at runtime.** The image was not registered for that message/stage, or the
-  requested attributes were not included. With the generated `<Handler>Context`, an uncaptured column
-  does not compile and reading an uncaptured image is VELA017; through the untyped extensions
-  (`GetPreImage<T>()`, an alias) it is still a silent null - verify the registration, not just the code.
-- **A SetState step never fires** (VELA022): `SetStateRequest` and an Update of `statecode` fire the
-  SetStateDynamicEntity and Update steps. Register on Update (filter on `statecode`) and check the new
-  state in the Target (`StateCode == Inactive`) - reactivation fires the same step. `PluginPipeline` runs the
-  Update step for both an Update of `StateCode` and a `SetStateRequest` (verified 0.36.0).
+- **Associate / Disassociate fires for every relationship - or never.** These messages have a single
+  filter, primary entity `none`: a step matched by a primary entity never runs. Vela registers
+  `OnAssociate()` / `OnDisassociate()` message-level, so it fires for **every** relationship in the org.
+  Scope it with `.ForRelationship("<schema name>", ...)` (enforced at dispatch). The plugin's `<T>` does
+  not filter the Target: either side can be the Target (an association made from the account side runs an
+  `EntityPluginBase<Contact>` handler with an `account` Target) - check `ctx.Request.Target.LogicalName` and
+  the related entities' types. Marketing-list members added from the UI may raise `AddMember` /
+  `AddListMembers` instead (`OnAddMemberList()` / `OnAddListMembersList()`) - confirm the message the story needs.
+- **Bulk + single-record steps run twice.** An UpdateMultiple request also runs the Update steps per row
+  (and in the harness a single Update fired an UpdateMultiple step). Register on **one**: UpdateMultiple for
+  one execution per batch, Update for per-row context. A bulk handler iterates `ctx.Request.Targets` and
+  never writes per record.
+- **Create/Update step never triggers on the expected change.** The filtering attributes exclude the
+  column actually written - check them against it.
+- **Every Create/Update(+Multiple) step needs `FilterOn(...)`** (VELA020; `vela add` requires
+  `--filtering-attributes`). **On Create the filter gates the trigger exactly as on Update** (verified
+  live; the Microsoft docs are wrong; `PluginPipeline` matches): a create sending none of the filtered
+  columns does not fire. To fire on every create, filter on a column every create sends (business-required)
+  - and the Canvas says what happens to a create without it.
+- **Image is empty at runtime.** Not registered for that message/stage, or the column not captured. The
+  generated `<Handler>Context` catches this at build (VELA017); the untyped `GetPreImage<T>()` / aliases
+  return a silent null - verify the registration, not just the code.
+- **A SetState step never fires** (VELA022). `SetStateRequest` and an Update of `statecode` fire the
+  Update steps: register on Update filtered on `statecode`, check the new state in the Target
+  (`StateCode == Inactive`); reactivation fires the same step. `PluginPipeline` behaves the same.
 
 ## Runtime: recursion, state, sandbox, transactions, secrets
 
-- **Save fails with a depth/recursion error.** Vela's plugin-level depth guard (`MaxDepth`, default
-  `PluginBase.DefaultMaxDepth` = **8**, the Dataverse limit) throws `InvalidPluginExecutionException` when
-  `ctx.Depth` exceeds it - the user's whole operation fails (the harness `PluginPipeline` reports "stopped
-  at depth 9 (cap 8)"). Cause: the plugin writes something that re-triggers the same step (its `FilterOn`
-  includes the column it writes, or it `Update`s its own record in PostOperation), or two plugins trigger
-  each other. Fix the cause: edit `ctx.Request.Target` in PreOperation instead of a write-back (that edit
-  is part of the same write and re-triggers nothing, so filtering on the column you normalise there is
-  fine); when you must write back, keep the written columns out of the step's filtering attributes; write
-  only when the value actually changes (compare with `ctx.PreImage` / `HasChanged`). **Do not** paper over
-  it with `if (ctx.Depth > 1) return;` **or its declarative form `.SkipWhenDepthAbove(1)`**:
-  `SkipWhenDepthAbove(n)` skips this step's handler (with a trace line) instead of throwing when the depth
-  exceeds `n` - it is runtime-only, not deployed. Verified in the harness: a PostOperation step that
-  updates its own filtered column with `SkipWhenDepthAbove(1)` still writes twice and fires twice (the
-  second run is skipped), and it also skips legitimate calls made by other plugins, flows or child
-  operations (Microsoft advises against logic tied to a `Depth` value). Use either only with a reason
-  recorded in the Canvas. The guard is a backstop, not a design.
-- **Data leaks between executions / random failures under load.** Plugin instances are cached and
-  called concurrently by the sandbox; a writable field is shared across users and requests
-  (**VELA011**). Keep per-execution state in locals or the context; never cache org data in a static.
-  Don't start parallel work either (`Task.Run`, `Parallel.For` - **VELA024**): plugin code runs on the
-  calling thread.
-- **Works locally, fails on the org: "sandbox" / security / timeout errors.** Plugins run in an
-  isolated sandbox: no file system (**VELA019**), registry or local machine APIs; outbound calls over
-  HTTP/HTTPS to DNS names only (no raw IP addresses); and a plugin execution is cut off after
-  **2 minutes**. Keep Sync steps short; move slow or external work to an Async step (outbound HTTP code
-  lives in the Integrations project from `vela init --integrations`, which references `System.Net.Http`;
-  set an explicit timeout, and prove it with a test whose fake transport never answers: the call must fail
-  within the timeout, not after the default 100 s).
-- **Serialization works in tests, fails on the org.** The sandbox runs plugins in **partial trust**: a
-  reflection-based serializer (`DataContractJsonSerializer`, `XmlSerializer`) can only handle **public** types
-  and members - a private or internal payload class throws a security exception on the org while the tests,
-  which run in full trust, pass. Make payload types public (a review finding, **Critical**: every call fails).
-- **An error in a plugin undoes more (or less) than expected.** Sync PreOperation/PostOperation steps
-  run inside the database transaction: throwing rolls back the whole operation, including earlier
-  plugin writes. PreValidation runs before the main transaction. Async steps run after the commit:
-  their failure does not undo the save (it shows as a failed system job). Side effects on external
-  systems are never rolled back - don't make them from a Sync step that may still fail after them.
-- **The user sees "An unexpected error occurred" instead of your message.** Only
-  `InvalidPluginExecutionException` surfaces its message (**VELA012**). Throw it with a message the
-  user can act on; never swallow exceptions; `ctx.Trace(...)` the context you'll need to debug
-  (it lands in the Plugin Trace Log).
-- **A secret shows up in a solution export or the repo.** Unsecure configuration is exported with the
-  solution and readable; code is in git. Never put secrets in either. Use **secure configuration**
-  (not exported with the solution, set per environment, readable by admins only): declare the step with
-  `.WithSecureConfigFrom("Name")` and supply the value at deploy time (`vela plan|apply --secure-config
-  Name=VALUE|Name=@file`, or `VELA_SECURE_CONFIG_Name`); the plugin reads it through `SecureConfig`. Or an
-  external secret store reached with a managed identity (`ctx.AcquireManagedIdentityToken`).
-
-- **"Last one" rollups race.** A rule like "when the last active child is deactivated, deactivate
-  the parent" can miss when two children are deactivated in parallel: each sees the other still
-  active. Record it in the Canvas as an accepted limitation, or use an Async recheck.
-
-- **A "begins with" / "like" query matches far too many rows.** Dataverse translates `BeginsWith`,
-  `Like` (and the Web API's `startswith`/`contains`) to SQL `LIKE`, where `[`, `]`, `%` and `_` are
-  wildcards: `startswith(name,'[vela-eval]')` matched 517 unrelated accounts on a dev org (`[...]` is a
-  character class). Escape them (`[[]`, `[%]`, `[_]`) when the value comes from data or user input.
+- **Save fails with a depth/recursion error.** Vela's depth guard (`MaxDepth`, default 8 = the Dataverse
+  limit) throws when `ctx.Depth` exceeds it and the user's whole operation fails (harness: "stopped at depth
+  9 (cap 8)"). Cause: the plugin re-triggers its own step (its `FilterOn` includes the column it writes, or
+  it `Update`s its own record in PostOperation), or two plugins trigger each other. Fix the cause: edit
+  `ctx.Request.Target` in PreOperation (part of the same write, re-triggers nothing - filtering on that
+  column is fine); for a write-back keep written columns out of the filter; write only on real change
+  (`ctx.PreImage` / `HasChanged`). **Do not** paper over it with `if (ctx.Depth > 1) return;` or
+  `.SkipWhenDepthAbove(1)` (runtime-only skip): the self-triggering step still writes and fires twice, and
+  legitimate nested calls from other plugins/flows are skipped too. Either needs a reason in the Canvas.
+- **Data leaks between executions / random failures under load.** Plugin instances are cached and called
+  concurrently: no writable fields (VELA011), no org data in statics, no parallel work (VELA024).
+- **Works locally, fails on the org.** The sandbox has no file system (VELA019), registry or machine APIs;
+  outbound HTTP/HTTPS to DNS names only (VELA025); a **2-minute** execution cutoff. Keep Sync steps short;
+  put slow/external work in an Async step, outbound code in the Integrations project
+  (`vela init --integrations`), with an explicit timeout (VELA026) proven by a test whose fake transport
+  never answers (it must fail within the timeout, not the 100 s default).
+- **Serialization works in tests, fails on the org.** Partial trust: reflection serializers
+  (`DataContractJsonSerializer`, `XmlSerializer`) handle only **public** types/members; tests run in full
+  trust and pass. Make payload types public (review: **Critical**, every call fails).
+- **An error undoes more (or less) than expected.** Sync Pre/PostOperation run inside the transaction:
+  throwing rolls back everything, including earlier plugin writes. PreValidation runs before it. Async runs
+  after commit (failure = a failed system job, the save stays). External side effects never roll back -
+  don't make them from a Sync step that may still fail after them.
+- **User sees "An unexpected error occurred".** Only `InvalidPluginExecutionException` surfaces its
+  message (VELA012). Throw it with an actionable message, never swallow, `ctx.Trace(...)` what you need.
+- **A secret in a solution export or the repo.** Unsecure config is exported; code is in git. Use secure
+  configuration: `.WithSecureConfigFrom("Name")`, value at deploy time
+  (`vela plan|apply --secure-config Name=VALUE|Name=@file`, or `VELA_SECURE_CONFIG_Name`), read via
+  `SecureConfig` - or a secret store via managed identity (`ctx.AcquireManagedIdentityToken`).
+- **"Last one" rollups race.** "Deactivate the parent when the last active child is deactivated" misses
+  when two children are deactivated in parallel. Record it in the Canvas as accepted, or use an Async recheck.
+- **A "begins with" / "like" query matches far too many rows.** `BeginsWith`, `Like`, `startswith`,
+  `contains` become SQL `LIKE`, where `[`, `]`, `%`, `_` are wildcards (`startswith(name,'[vela-eval]')`
+  matched 517 unrelated accounts). Escape them (`[[]`, `[%]`, `[_]`) for data or user input.
 
 ## Custom APIs
 
-- **Custom API parameter rejected: "can contain only letters, digits and underscores".** Vela 0.34.0's
-  builder rejects a dotted (or otherwise non-identifier) parameter name when the definition is built
-  (harness `Register`, `vela plan`) - not at `dotnet build`. Use plain identifiers (`AccountId`).
-- **Custom API rejected at apply: unique name without the publisher prefix.** Nothing local checks the
-  prefix (`ScoreIt` registers in the harness). Name it `<publisher prefix>_<Name>` - `vela add customapi`
-  does it from `<VelaPublisherPrefix>`; the review is the guard for hand-written names.
-- **Function rejected: "declares no response property".** A Function must return at least one output;
-  add one, or make it an Action.
+- **Parameter rejected: "only letters, digits and underscores".** Dotted names fail when the definition is
+  built (harness `Register`, `vela plan`), not at `dotnet build`. Use plain identifiers (`AccountId`).
+- **Rejected at apply: unique name without the publisher prefix.** Nothing local checks it. Name it
+  `<publisher prefix>_<Name>` (`vela add customapi` does it); review guards hand-written names.
+- **Function rejected: "declares no response property".** Add an output, or make it an Action.
 
 ## Deep insert / relationships
 
-- **Grandchild records in a deep insert are dropped or mis-parented.** Multi-level deep
-  inserts need each level wired correctly; verify the whole tree, not just the first child.
+- **Grandchild records dropped or mis-parented.** Each level of a multi-level deep insert must be wired;
+  verify the whole tree.
 
 ## Codegen & project layout
 
-- **Compiles locally, missing on CI.** A committed source file was named `*.generated.cs`, and the
-  repository's `.gitignore` ignores that pattern (common in .NET templates and in the Vela repo; the
-  0.19.6 scaffold's own `.gitignore` does not - check yours). Never name a committed file
-  `*.generated.cs`; let the CLI name output.
-- **Adding a typed message silently misbehaves.** A modelled plugin message touches several
-  files that must stay in sync (including the CLI's known-messages list). Use `vela add`
-  rather than hand-wiring; regenerate rather than editing generated output.
+- **Compiles locally, missing on CI.** A committed `*.generated.cs` matched a `.gitignore` pattern. Never
+  name a committed file that way; let the CLI name output.
+- **A hand-wired typed message misbehaves.** It spans several files (incl. the CLI's known-messages list).
+  Use `vela add`; regenerate, never edit generated output.
 
 ## Build / smoke
 
-- **You compiled against a stale framework.** Purge the `vela.plugins` / `vela.testing`
-  caches under `~/.nuget` before a smoke build, or you build against an old package.
+- **Stale framework.** Purge the `vela.plugins` / `vela.testing` caches under `~/.nuget` before a smoke build.
 
 ## Execution order / rank
 
-- **Rank "collisions" with Microsoft / managed steps are normal and harmless.** `vela plan` may
-  report that your step shares a rank with other steps on the same message/stage (e.g. MS managed
-  plugins like PredictiveScoring, OpportunityScoring). You do **not** control or truly conflict with
-  managed steps - **do not bump your rank just to dodge them.**
-- What actually matters is deterministic ordering among **your OWN** steps on the same
-  table + message + stage. Use `WithExecutionOrder(n)` only to sequence *your* steps relative to
-  each other when you register more than one; don't set it reactively to avoid managed steps.
+- **Rank shared with Microsoft/managed steps** (reported by `vela plan`) is normal and harmless - don't
+  bump your rank to dodge it. Only ordering among **your own** steps on one table + message + stage
+  matters: use `WithExecutionOrder(n)` for that, never reactively.
 
-## Analyzers (`Vela.Analyzers`, shipped in `Vela.Plugins` 0.34.0)
+## Analyzers (`Vela.Analyzers`)
 
-Treat every VELA diagnostic in authored code as a gate failure. Several are **build errors** (marked
-*error*); the rest are warnings. Each one below was verified by compiling a violation on 0.33.0 (0.34.0 ships the same rule set) unless
-its text is quoted from the analyzer's own description:
-
-- **VELA001** *error* - a column selector (`FilterOn`, images, typed `Select`) targets a member that is
-  not a Dataverse column (e.g. `e => e.Id`).
-- **VELA002** - every `RegisterStep()` chain must end with `.Handle(...)`.
-- **VELA003** *error* - a single-value step modifier (`WithDescription`, `FilterOn`...) set twice on one step.
-- **VELA005** *error* - the same column listed twice in one `FilterOn`/image/`Select`.
-- **VELA008** - two steps on one trigger that differ in no filter, image, relationship scope or step key
-  (they resolve to the same step key): give one a `WithStepKey("...")` or merge them.
-- **VELA009** - `HasChanged` without a registered pre-image (or a column missing from it).
-- **VELA010** - a relationship navigation property used where a column is expected.
-- **VELA011** (warning) - mutable plugin state: plugin instances are reused and called concurrently by
-  the sandbox, so a writable field leaks data between executions. Keep state in locals / the context.
-- **VELA012** (warning) - throw `InvalidPluginExecutionException`; any other exception reaches the
-  caller as a generic error.
-- **VELA013** (warning) - `new ColumnSet(true)` retrieves every column. Prefer an explicit
-  `new ColumnSet("attr1", "attr2")` or the typed `Select(...)`.
-- **VELA014** - a plugin with typed images must be `partial`; in practice the build reports
-  **`CS0260`** (missing partial modifier). The scaffold's classes are already `partial`.
-- **VELA004 / VELA015 / VELA016** - static handler / handler context that does not match the step /
-  one typed-context handler bound to two image-capturing steps.
-- **VELA017** *error* - `ctx.PreImage` / `ctx.PostImage` read on a step that captures no such image.
-- **VELA018** (warning) - an **Async** step's handler writes to the Target, which has no effect (the
-  operation is already committed). Write through `ctx.Service.Update(...)` or make the step Sync.
-- **VELA019** - file-system access (`File`, `Directory`, `FileStream`...): the sandbox denies it.
-- **VELA020** *error* - a Create/Update(+Multiple) step without `FilterOn(...)`.
-- **VELA021** - a typed image projection could not be generated (non-constant capture); code naming it
-  then fails with CS0246.
-- **VELA022** - a step on SetState never fires.
-- **VELA023** *error* - a message with a typed trigger registered through `On<TRequest>()`
-  (e.g. `On<UpdateRequest>()`): use `OnUpdate()`.
-- **VELA024** (warning) - parallel work (`Task.Run`, `Parallel.*`, `new Thread`) or blocking on a task (`.Result`,
-  `.Wait()`, `GetAwaiter().GetResult()`) inside a plugin / Custom API type. Code outside that type (a service, a
-  test) is not checked: the synchronous wrapper over `HttpClient` lives in the outbound service.
-- **VELA025** (warning, 0.37.0) - an HTTP call to an IP address: the sandbox only reaches DNS names.
-- **VELA026** (warning, 0.37.0) - an `HttpClient` that never sets `Timeout` (100 s default, close to the 2-minute cutoff).
-- Read the diagnostic text; don't suppress it.
+Every VELA diagnostic in authored code is a gate failure (several are build errors); read its text, don't
+suppress it. The ids cited by this pack: VELA011 mutable plugin field · VELA012 non-`InvalidPluginExecutionException`
+throw · VELA013 `ColumnSet(true)` · VELA017 uncaptured image read · VELA018 Async handler writes the Target
+(lost) · VELA019 file system · VELA020 Create/Update without `FilterOn` · VELA022 step on SetState ·
+VELA023 `On<TRequest>()` for a typed trigger · VELA024 parallel work / blocking on a task in a plugin type
+(the sync wrapper over `HttpClient` lives in the service) · VELA025 HTTP to an IP address · VELA026
+`HttpClient` without `Timeout`. Non-obvious: a missing `partial` (VELA014) surfaces as **CS0260**; an
+ungenerated typed image projection (VELA021) as **CS0246**.
 
 ## Verification discipline
 
 - Report the **observed** org/build/test state, never the intended one.
-- `models --verify` exits `5` on drift, `plan`/`apply` exit `6` on connection failure and `4` without a
-  resolvable `--solution`, `apply` exits `7` on a partial apply - treat non-zero exit codes as failures to
-  surface, not to swallow.
+- Non-zero exits are failures to surface (`models --verify` 5 = drift; `plan`/`apply` 6 = connection, 4 =
+  no resolvable `--solution`; `apply` 7 = partial).

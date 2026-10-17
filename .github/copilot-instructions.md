@@ -6,51 +6,40 @@ These are generated from `AGENTS.md`. Edit `AGENTS.md`, then run `node scripts/s
 
 # Vela agent guide
 
-Durable rules for any AI agent (Claude Code, GitHub Copilot, or other) that drives
-**Vela** through its command-line interface. This is the shared source of truth;
-tool-specific surfaces (`.github/copilot-instructions.md`, `.github/agents/`) are generated
-from it by `scripts/sync-copilot.mjs`.
+Durable rules for any AI agent (Claude Code, GitHub Copilot, ...) that drives **Vela** through its CLI.
+`.github/copilot-instructions.md` and `.github/agents/` are generated from it by `scripts/sync-copilot.mjs`.
 
 ## What Vela is
 
-Vela is a .NET framework and CLI for building and shipping Dataverse plugins. The `vela`
-CLI is the stable, versioned contract this agentic layer targets. You automate Vela by
-composing `vela` commands, never by reaching around the CLI into internal APIs.
+A .NET framework and CLI for Dataverse plugins. The `vela` CLI is the versioned contract: compose `vela`
+commands, never reach around it into internal APIs.
 
-## The command surface (verified)
+## The command surface
 
-- `vela init` (alias `new`) - scaffold a solution on disk (minimal by default; `--integrations` adds an
-  empty Integrations project for outbound calls; `--samples` adds demos - never for real work).
-  Never connects to Dataverse. It writes Vela's own `AGENTS.md` into the project; where that file
-  differs from this pack (e.g. it shows `vela models --interactive`), this pack's rules govern.
-- `vela add <plugin|customapi|service|test|step|form-script|ribbon-script> <Name>` - add a
-  component to a project. Local only.
-- `vela models` - generate early-bound C# models, or TypeScript form/table models; or
-  `--verify` for drift. **Connects to Dataverse** to read metadata.
-- `vela plan` - preview registration changes. **Never writes.** The safe dry run. Requires
-  `--solution <uniquename>` (it resolves the publisher prefix the package needs).
-- `vela apply` - same inputs as `plan`, but **writes to the org**. Confirmation-gated by
-  the CLI itself (typed `yes` on a TTY; refuses non-interactively without `--auto-approve`).
-- `vela inspect` - compare local packages against the live environment. Read-only.
-- `vela solution show <uniquename>` - print a solution's publisher prefix. Read-only.
-- `vela logs` (alias `trace`) - plug-in trace logs or failed system jobs. Read-only.
-- `vela sign` / `vela logout` / `vela update` / `vela version` / `vela help [--json]`
-  (`vela menu` is an interactive TTY menu - not for agents).
+Exact flags: `vela <command> --help` / `vela help --json`, and `references/cli-surface.md`.
 
-Exit codes: `0` ok, `2` invalid args, `3` file not found, `4` error (incl. `--strict`, a missing
-`--solution`), `5` drift (`models --verify`) or apply not converged, `6` Dataverse connection failure,
-`7` partial apply (fix, re-run `apply`), `8` changes pending (`plan --detailed-exitcode` only). Read them;
-don't ignore them.
+- `vela init` (alias `new`) - scaffold a solution (minimal by default; `--integrations` for outbound
+  calls; `--samples` adds demos - never for real work). Offline. Where the `AGENTS.md` it writes differs
+  from this pack (e.g. `vela models --interactive`), this pack governs.
+- `vela add <kind> <Name>` - add a component. Local only.
+- `vela models` - generate early-bound models; `--verify` for drift. **Reads Dataverse.**
+- `vela plan --solution <uniquename>` - preview registration changes. **Never writes.** `--solution` is
+  required.
+- `vela apply` - same inputs, **writes to the org**; the CLI itself demands a typed `yes` or
+  `--auto-approve`.
+- `vela inspect`, `vela solution show <uniquename>`, `vela logs` (alias `trace`) - read-only.
+- `vela sign` / `logout` / `update` / `version` / `help`. `vela menu` is a TTY menu - not for agents.
+- Exit codes (`references/cli-surface.md`) carry meaning - read them.
 
-References: `cli-surface.md` (exact flags), `plugin-authoring-api.md` + `harness-api.md`
-(verbatim code), `dataverse-gotchas.md` (pitfalls), `registration-rules.md` (legal matrix +
-Sync/Async + reuse/service decisions), `review-checklist.md` (the review axes),
-`build-report-template.md` (the Vela Canvas + Build Report).
+References: `cli-surface.md` (flags, auth, exit codes), `plugin-authoring-api.md` + `harness-api.md`
+(code shapes), `dataverse-gotchas.md` (pitfalls), `registration-rules.md` (legal matrix + Sync/Async +
+reuse/service decisions), `review-checklist.md` (review axes), `build-report-template.md` (Vela Canvas +
+Build Report).
 
 ## The build loop (user story → shipped)
 
-Local and reversible up to the apply gate; the org is only ever touched at `apply`. Two gates:
-an advisory **plan gate** at the front and a blocking **apply gate** at the end.
+Local and reversible up to the apply gate. An advisory **plan gate** at the front, a blocking
+**apply gate** at the end.
 
 ```
 INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED) → IMPLEMENT → VERIFY → REVIEW → PREVIEW ──apply gate── APPLY → REPORT
@@ -58,104 +47,76 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 
 | Step | What | Gate / evidence |
 | --- | --- | --- |
-| CHALLENGE | self-grill, fill the Vela Canvas, declare acceptance cases | plan gate: advisory - flag and continue |
+| CHALLENGE | self-grill, fill the Vela Canvas, declare acceptance cases | advisory - flag and continue |
 | SCAFFOLD / MODEL | `vela solution show` → `vela init` → `vela models --project` → `vela add` | build compiles |
 | TEST (RED) | write the failing harness tests | tests seen to fail |
 | IMPLEMENT | code to green | tests pass |
 | VERIFY | full suite green + analyzers clean | runner summary, 0 VELA00x |
 | REVIEW | code review on spec + standards | no unresolved Critical/Required |
-| PREVIEW | `dotnet build -c Release` (writes `artifacts/*.nupkg`) → `vela sign` (if required) → `vela plan --solution <uniquename>` on that package | plan output + exit code |
-| APPLY | `vela apply` | apply gate: a human approves; only if authorized |
+| PREVIEW | `dotnet build -c Release` (`artifacts/*.nupkg`; not `dotnet pack`) → `vela sign` (if required) → `vela plan --solution <uniquename>` on that package | plan output + exit code |
+| APPLY | `vela apply` | a human approves; only if authorized |
 
-**Test-first is mandatory.** After MODEL, write the harness tests for the declared acceptance
-cases and watch them **fail (RED)** before writing plugin logic; then implement to **green**.
-Tests are not optional and not written after the fact - they are the acceptance criteria and
-the quality signal.
-
-- **Front (plan gate) is advisory**: self-grill the plan (`vela-plan-review`), fill the **Vela
-  Canvas** (a REASONS-adapted spec: Requirements/Entities/Approach/Structure/Operations/Norms/
-  Safeguards - the home for the Sync-vs-Async, reuse-vs-new, service, naming and safeguard
-  decisions), flag assumptions, and **continue** - do not block. A human may interrupt.
-- **The Canvas is a living spec (fix-spec-first).** If the requirement changes mid-build, update
-  the Canvas **before** the code; if you refactor without changing behaviour, update the code then
-  **sync** it back into the Canvas. The Canvas stays an accurate record of the current plugin.
-- **Review before the apply gate**: once tests are green and analyzers clean, the isolated
-  `vela-reviewer` reviews the diff (`vela-code-review`; self-review only when no subagent can be
-  dispatched) on two axes - **spec** (the Vela Canvas's acceptance cases + the
-  `dataverse-gotchas` checklist) and **standards** (analyzer intent + the Dataverse smell
-  baseline). Critical/Required findings block the gate.
-- **Preview on the final package**: after review, `dotnet build -c Release` - the scaffold builds the
-  plugin package into `artifacts/` on build (`dotnet pack` would emit a package without the assembly) -
-  (and `vela sign` when the org
-  requires signed packages), then `vela plan --solution <uniquename>` on that exact package. `plan` never writes, so it always
-  runs; a code change after it invalidates it.
-- **End (apply gate) is blocking**: emit a **Build Report**, stop, let a human run `apply`.
-- Artifacts (see `references/build-report-template.md`) are committed in the target project
-  under `docs/vela-builds/<slug>.md` and reused as the PR body.
+- **Test-first is mandatory.** Tests for the declared acceptance cases, seen to **fail**, then **green** -
+  never written after.
+- **Plan gate (advisory)**: self-grill (`vela-plan-review`), fill the **Vela Canvas** (REASONS-adapted
+  spec; home of the Sync/Async, reuse-vs-new, service, naming and safeguard decisions), flag
+  assumptions, **continue**.
+- **The Canvas is a living spec (fix-spec-first).** A changed requirement updates the Canvas **before**
+  the code; a behaviour-neutral refactor is synced back into it after.
+- **Review**: the isolated `vela-reviewer` (`vela-code-review`; self-review only when no subagent can be
+  dispatched) on **spec** (Canvas cases + `dataverse-gotchas`) and **standards** (analyzer intent +
+  Dataverse smells).
+- **Preview on the final package**: `vela plan` always runs; a later code change invalidates it.
+- **Apply gate (blocking)**: emit a **Build Report**, stop, a human runs `apply`.
+- Artifacts (`references/build-report-template.md`) are committed under `docs/vela-builds/<slug>.md`
+  and reused as the PR body.
 
 ## Golden rules
 
-1. **The CLI is the contract.** Confirm flags with `vela <command> --help` before
-   composing a command. Never invent a flag.
-2. **Check the version.** Run `vela version`. Each skill states its floor in the `compatibility`
-   frontmatter (the verified version is recorded in `references/cli-surface.md`). If the installed
-   CLI is at or above it, proceed. If it is older, tell the user to `vela update`; only **stop** if a
-   *named* feature the skill depends on is genuinely missing. Do not halt merely because the patch
-   version differs (e.g. 0.25.0 vs 0.25.1 is fine).
-3. **Announce the skill.** When you start a skill, say `Using <skill> to <purpose>` so the
-   run is traceable.
-4. **Evidence over claims.** Never say a step passed without the CLI/build/test output that
-   proves it. `dotnet test` green, `vela plan` clean - paste the evidence.
-5. **Quality gate before the apply gate.** The apply gate is unreachable unless: the full
-   harness suite is **green** and covers every declared acceptance case; the **authored code**
-   (your plugin + your tests) has **no analyzer (VELA00x) violations**; **and** the diff has
-   passed **code review** (`vela-code-review`) with no unresolved Critical/Required findings. A
-   happy-path-only test, a red test, an analyzer violation, or an unresolved Critical/Required
-   review finding blocks the gate. The Build Report records all three.
-6. **Stop before `apply`.** `apply` writes to a live org. Do everything up to and including
-   `vela plan` autonomously, then stop and let a human run `apply`. Do not pass
-   `--auto-approve` unless the user explicitly authorized it for this run. An **optional hook**
-   (`hooks/`, dual-target Claude Code + Copilot) can enforce this deterministically - it **denies**
-   `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1` (an inline prefix does not count). The rule holds whether or not the hook is installed.
+1. **The CLI is the contract.** Confirm flags with `vela <command> --help`. Never invent one.
+2. **Check the version.** `vela version` against the skill's `compatibility` floor. Older: tell the
+   user to `vela update`; **stop** only if a *named* feature the skill needs is missing - not over a patch
+   difference.
+3. **Announce the skill.** `Using <skill> to <purpose>`.
+4. **Evidence over claims** - see below.
+5. **Quality gate before the apply gate.** Unreachable unless the full harness suite is **green** and
+   covers every declared acceptance case, the **authored code** (plugin + tests) has **no VELA00x
+   violations**, **and** `vela-code-review` left no unresolved Critical/Required. A happy-path-only test,
+   a red test, an analyzer violation or an open Critical/Required blocks it. The Build Report records
+   all three.
+6. **Stop before `apply`.** Do everything through `vela plan` autonomously, then let a human run
+   `apply`. No `--auto-approve` unless the user explicitly authorized it for this run. An **optional
+   hook** (`hooks/`) **denies** `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1`
+   (an inline prefix does not count); the rule holds without it.
 7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)
 
-"Evidence over claims" is a procedure, not a vibe. For each claim, the proof is mandatory before
-you may state it; skipping the proof is lying, not verifying. Ban "should / probably / seems" -
-confidence is not evidence, and a partial run proves nothing.
+The proof is mandatory before the claim; skipping it is lying, not verifying. No "should / probably /
+seems"; a partial run proves nothing.
 
 | Claim | Required proof |
 | --- | --- |
-| "It builds" | `dotnet build` summary: 0 errors, and 0 analyzer (VELA00x) violations in authored code |
-| "Tests pass" | the test runner's summary line + the runner used, and the green cases equal the declared acceptance cases |
+| "It builds" | `dotnet build` summary: 0 errors, 0 VELA00x in authored code |
+| "Tests pass" | the runner's summary line + the runner used; green cases = declared acceptance cases |
 | "Bug fixed" | the failing repro test (RED) now passes (GREEN) |
-| "Reviewed" | the `vela-code-review` findings list, with no unresolved Critical/Required |
+| "Reviewed" | the `vela-code-review` findings list, no unresolved Critical/Required |
 | "Deploy preview is clean" | the `vela plan --solution` output and exit code (or, when the connection genuinely failed, the exact command and its exit code) |
 
 ## Environment (local, fleet, cloud)
 
-The stop-before-apply boundary holds identically whether run by a human, a fleet worker, or a
-cloud agent. Prerequisites for a non-interactive or remote environment:
+The stop-before-apply boundary holds for a human, a fleet worker or a cloud agent alike.
 
-- **The pack must be reachable.** Locally, point at this repo. On another machine or in the
-  cloud, install it as a plugin marketplace (**requires the repo to be pushed**) or make sure
-  the workspace carries `skills/` + `agents/` + `AGENTS.md`. Each skill bundles the references it
-  cites under `skills/<name>/references/`, so skills installed alone (e.g. `gh skill install`) still
-  have them.
-- **Toolchain present.** Install the `vela` global tool (`dotnet tool install --global Vela.Cli`)
-  and a matching `dotnet` SDK. If missing, stop and say so - do not improvise an alternative.
-- **Non-interactive auth (no browser).** `-i`/`--interactive` needs a screen and won't work
-  headless. Use `DATAVERSE_CONNECTION_STRING`, or `--url` + `--tenant-id` + `--client-id` with
-  the secret via `DATAVERSE_CLIENT_SECRET` / `--client-secret-stdin`, or `DefaultAzureCredential`
-  (managed identity / `az login`). See `references/cli-surface.md`. Never echo a secret to logs.
-- **Test runner by OS.** net48 tests: Windows can `dotnet test`; macOS/Linux have no net48 test host -
-  run the test dll with Mono + xunit console `-parallel none` (see `references/harness-api.md`).
-- **An org connection is part of the loop.** A new scaffold has no models, so MODEL (`vela models`)
-  needs a connection (or an exported solution zip with `--from-solution`); `vela solution show` and
-  `vela plan` read the org too. All three are read-only.
-- **Never auto-`apply`.** Even unattended, stop at the gate; only pass `--auto-approve` if the
-  user explicitly authorized an unattended apply for that run.
+- **The pack must be reachable**: this repo, a plugin marketplace install (**the repo must be pushed**),
+  or a workspace carrying `skills/` + `agents/` + `AGENTS.md`. Skills bundle their references.
+- **Toolchain present**: the `vela` global tool (`dotnet tool install --global Vela.Cli`) and a matching
+  `dotnet` SDK. Missing: stop and say so - don't improvise.
+- **Non-interactive auth**: `-i`/`--interactive` needs a screen. Headless options are in
+  `references/cli-surface.md`. Never echo a secret.
+- **Test runner by OS**: net48 tests run with `dotnet test` on Windows; macOS/Linux use Mono + xunit
+  console `-parallel none` (`references/harness-api.md`).
+- **An org connection is part of the loop**: `vela models` (or `--from-solution` with an exported zip),
+  `vela solution show` and `vela plan` read the org. All read-only.
 
 ## House rules
 
