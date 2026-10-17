@@ -69,7 +69,12 @@ symptom → cause → fix.
   HTTP/HTTPS to DNS names only (no raw IP addresses); and a plugin execution is cut off after
   **2 minutes**. Keep Sync steps short; move slow or external work to an Async step (outbound HTTP code
   lives in the Integrations project from `vela init --integrations`, which references `System.Net.Http`;
-  set an explicit timeout).
+  set an explicit timeout, and prove it with a test whose fake transport never answers: the call must fail
+  within the timeout, not after the default 100 s).
+- **Serialization works in tests, fails on the org.** The sandbox runs plugins in **partial trust**: a
+  reflection-based serializer (`DataContractJsonSerializer`, `XmlSerializer`) can only handle **public** types
+  and members - a private or internal payload class throws a security exception on the org while the tests,
+  which run in full trust, pass. Make payload types public (a review finding, **Critical**: every call fails).
 - **An error in a plugin undoes more (or less) than expected.** Sync PreOperation/PostOperation steps
   run inside the database transaction: throwing rolls back the whole operation, including earlier
   plugin writes. PreValidation runs before the main transaction. Async steps run after the commit:

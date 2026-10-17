@@ -69,7 +69,11 @@ Announce: `Using vela-apply to <purpose>`.
    Canvas does not own (e.g. a step another build deployed in the same assembly) is never waved through:
    record it and make it an open question that blocks the gate. A step with `WithSecureConfigFrom("Name")`
    needs its value at deploy time (`--secure-config Name=@file` or `VELA_SECURE_CONFIG_Name`) - never in the
-   command you paste into the report. Shape in `references/cli-surface.md`. If the connection genuinely fails
+   command you paste into the report. When you don't hold the value (the usual case: ops keeps the
+   secret), preview **without** it: plan then lists "expects the secure configuration 'Name' ... no value was
+   given" in `diagnostics`. Keep that line as evidence and record the value as an open item at the gate;
+   never pass a placeholder or invented value - it silences the diagnostic and previews a configuration
+   nobody will deploy. Shape in `references/cli-surface.md`. If the connection genuinely fails
    (exit `6`), record the exact command and its exit code as `plan_preview: unavailable`.
 7. **Summarise** exactly what `apply` would change in the Build Report's **Gate** section
    (`references/build-report-template.md`): package path + hash, signed or not, the solution, the plan's
@@ -116,6 +120,7 @@ Announce: `Using vela-apply to <purpose>`.
 
 ## Red flags
 
+- A plan run with a placeholder secure-config value (`--secure-config Name=@dummy`) to make a diagnostic go away.
 - Running `apply` without a preceding clean `vela plan` **on the same package** (same hash).
 - A code change, rebuild or re-sign after the `plan` without new tests, review and `plan`.
 - `dotnet pack` for the plugin package, or a package whose `unzip -l` has no `<Prefix>.Plugins.dll`.
