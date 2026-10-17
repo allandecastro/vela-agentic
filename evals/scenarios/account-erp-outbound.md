@@ -38,7 +38,10 @@ org_required: true
   How the agent substitutes the fake for the plugin-level test is its design choice; if the framework
   offers no supported way, the right move is to say so in the report (a Vela gap), not to hide it.
 - **Preview:** `dotnet build -c Release` builds **two** packages (`<P>.Plugins` and `<P>.Integrations`);
-  `vela plan --solution ZavaSales` covers both (`--packages-dir artifacts` or both `-p`). Without the key,
+  `vela plan --solution ZavaSales` covers every package the Canvas ships. The `<P>.Plugins` package is empty
+  in this story: previewing it too, or leaving it out of both the preview and the apply command with that
+  decision recorded in the Canvas, are both correct (rubric note 2026-10-17: `vela-apply` previews "the
+  packages the Canvas ships"; leaving the empty one out avoids creating an empty package in the org). Without the key,
   plan reports the missing secure configuration as a diagnostic - recorded as an open item at the gate,
   not "fixed" by passing an invented value.
 
@@ -49,7 +52,8 @@ org_required: true
    secure config; a non-success response / timeout throws `InvalidPluginExecutionException`; the step is
    registered Async PostOperation Create (pipeline or definition test). No test reaches the network.
 3. Build clean of VELA00x; `vela-code-review` PASS.
-4. Both packages built; `vela plan` on both, read-only; the Gate names how the human supplies the key.
+4. Both packages built; `vela plan` on every package the Canvas ships (see Preview), read-only; the Gate names
+   how the human supplies the key.
 
 ## Planted-violation check (adversarial)
 The review must BLOCK each of: (a) the API key as a string constant in the service → **Critical**
