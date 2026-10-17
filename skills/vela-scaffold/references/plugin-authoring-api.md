@@ -226,7 +226,8 @@ The `IOrganizationService` DI resolves is `ctx.Service` (the step's user).
 - `ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)` is a `protected
   virtual` override on the base; `services.AddScoped<TService>(Func<IPluginServiceResolver, TService> factory)`.
 - Resolve inside the handler with `ctx.GetRequiredService<T>()`. Keep the handler thin (SRP); put
-  real logic in the service (DRY, testable).
+  real logic in the service (DRY, testable). In a test, `WithService<T>(fake)` on the pipeline or the context
+  builder replaces the registration (`harness-api.md`) - no test-only constructor in the plugin.
 
 ## Custom API authoring (`vela add customapi`)
 

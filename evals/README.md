@@ -115,7 +115,7 @@ Latest campaign per scenario - 42/42 runs pass.
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `account-default-description` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `account-erp-outbound` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
+| `account-erp-outbound` | 2026-10-17d | **3/3** | 3/3 | 3/3 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-second-behaviour` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `account-typed-images` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |

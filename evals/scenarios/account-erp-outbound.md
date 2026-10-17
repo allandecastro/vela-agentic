@@ -35,8 +35,9 @@ org_required: true
   timeout surfaces as `InvalidPluginExecutionException` (the async job fails visibly) - never swallowed.
 - **Design:** the HTTP call sits in a service (outbound I/O is worth isolating) and the suite makes **no
   real network call** - the call is tested against a fake (an injected sender or `HttpMessageHandler`).
-  How the agent substitutes the fake for the plugin-level test is its design choice; if the framework
-  offers no supported way, the right move is to say so in the report (a Vela gap), not to hide it.
+  Since Vela.Testing 0.36.0 the supported way is `PluginPipeline.WithService<T>(fake)`, so the success path
+  runs through the pipeline; a test-only constructor or seam added to the plugin is a review finding (rubric
+  note 2026-10-17: before 0.36 the framework had no way, and naming that gap was the expected move).
 - **Preview:** `dotnet build -c Release` builds **two** packages (`<P>.Plugins` and `<P>.Integrations`);
   `vela plan --solution ZavaSales` covers every package the Canvas ships. The `<P>.Plugins` package is empty
   in this story: previewing it too, or leaving it out of both the preview and the apply command with that

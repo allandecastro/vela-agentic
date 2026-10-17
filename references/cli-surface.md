@@ -5,8 +5,8 @@ snapshot, the CLI is the contract. Every command has its own `vela <command> --h
 `vela help <command>`); `vela help --json` prints every command, option, alias and exit code as one
 JSON document (`schemaVersion: 1`) - the machine-readable source to check a flag against.
 
-**Verified against:** `vela 0.26.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.34.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
+**Verified against:** `vela 0.26.1` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.36.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
 
@@ -128,6 +128,9 @@ package id) · `--package-assembly <name.dll>` · **`--solution <uniquename>`** 
   `relationships` (the `ForRelationship` scope of an Associate/Disassociate step, 0.26.0 - verified): check it
   matches the Canvas. On a first deploy `currentAssemblies` is `[]` and
   `info` says "Plugin assembly '<x>' not found in Dataverse (first deployment)" - expected, not a finding.
+  A package with no plugin and no Custom API (e.g. the empty `<P>.Plugins` beside an Integrations-only story)
+  is not created: `info` says "Plugin package '<x>' contains no plugin or Custom API; it is not created in
+  Dataverse until it does" (0.26.1 - verified).
   A rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) in `diagnostics` is not a finding
   about your code. Don't parse the free-text `notes`.
 - **`apply` JSON:** the plan shape plus an **`executed`** block - what was done: `created`, `updated`,

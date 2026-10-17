@@ -1,7 +1,7 @@
 ---
 name: vela-apply
 description: Use when a built, reviewed, tested Vela plugin needs to be packaged, signed, previewed against, or deployed to a Dataverse environment.
-compatibility: "vela CLI >= 0.26.0 (Vela.Plugins >= 0.35.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.1 (Vela.Plugins >= 0.36.0); dotnet SDK."
 ---
 
 # Package, preview and apply to a Dataverse org
@@ -61,8 +61,9 @@ Announce: `Using vela-apply to <purpose>`.
    on **the packages the Canvas ships** (`-p` repeated when there are several). **`--solution` is required**:
    without it `plan` fails with exit `4` ("no solution publisher prefix ... Re-run with --solution"). Don't
    use `--packages-dir artifacts` blindly: it previews whatever is there. A package with nothing of yours in it
-   (e.g. the empty `<P>.Plugins` next to an Integrations-only story) is left out of the preview **and** the
-   apply command, with the decision recorded in the Canvas - applying it only creates an empty package. Exit `8` = changes to apply, `0` =
+   (e.g. the empty `<P>.Plugins` next to an Integrations-only story) is not created by `plan`/`apply` (an
+   `info` line says so); preview it or leave it out of the preview and the apply command - record which in the
+   Canvas. Exit `8` = changes to apply, `0` =
    nothing to do; `--out` keeps the JSON as evidence. Read the changes and every `diagnostics` line (add
    `--strict` to fail on any warning; `info` lines, such as "Plugin assembly ... not found in Dataverse
    (first deployment)", are expected). The JSON's `operations` list is what `apply` would do - a `package`
