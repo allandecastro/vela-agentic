@@ -15,7 +15,9 @@ print(f"""You are the GRADER of one eval run of the Vela skill pack. You did not
 ## Inputs
 - The full scenario, including the sections the acting agent never saw (expected outcome, success
   criteria, planted violations): `{ROOT}/evals/scenarios/{scenario}.md`
-- What the actor produced: `{run}/work/` (project, Canvas / Build Report under `docs/vela-builds/`, logs).
+- What the actor produced: `{run}/work/` (project, Canvas / Build Report under `docs/vela-builds/`, logs;
+  the questions it put to the human and their answers are in `work/logs/human-questions.md` - use it to judge
+  the one-question-at-a-time and ask-vs-assume criteria).
 - The deterministic check report, already computed by the evaluator: `{run}/checks.json`
 - The actor's own final report (a claim, not evidence): `{run}/actor-report.md`
 - The pack's review agent (for planted violations): `{ROOT}/agents/vela-reviewer.agent.md`

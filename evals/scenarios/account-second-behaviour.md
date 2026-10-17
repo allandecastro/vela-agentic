@@ -45,7 +45,8 @@ default 'Created via Vela plugin'."
 Confirm the review would **BLOCK** each of: (a) the defaulting logic copy-pasted into a second
 class (DRY - Required); (b) a hand-created plugin class instead of `vela add step` (Required);
 (c) the step registered **Async** (**Critical**: the Target edit is lost - the default is never saved;
-also a spec/Approach mismatch).
+also a spec/Approach mismatch). Plant it as `.PostOperation().Async()`: PreOperation + Async does not
+compile (Vela.Plugins 0.35 has no `Async()` after `PreOperation()`). (Rubric note 2026-10-17.)
 
 ## Human answers (evaluator only - never shown to the acting agent)
 - "Cleared" = null, "" or whitespace-only; reuse the Create default.

@@ -33,9 +33,10 @@ print(f"""You are the `vela-builder` agent (`{ROOT}/agents/vela-builder.agent.md
 {org_rule}
 - For the review step, dispatch a fresh subagent told to act as `{ROOT}/agents/vela-reviewer.agent.md`
   (read-only), as the review skill says.
-- If you need the human (a question, an approval), end your turn with a message starting with
-  `QUESTION FOR THE HUMAN:` followed by what you would ask; you will be resumed with the answer. Never
-  invent the human's answers.
+- If you need the human (a question, an approval), first append the question verbatim to
+  `{work}/logs/human-questions.md` (one `## Q<n>` section per question), then end your turn with a message
+  starting with `QUESTION FOR THE HUMAN:` followed by what you would ask; you will be resumed with the
+  answer - append it under the same `## Q<n>` as `Answer:`. Never invent the human's answers.
 - When the task is done (or blocked), write a short final report to `{os.path.dirname(work.rstrip('/'))}/actor-report.md`
   (what you did and decided, the evidence - commands and their output lines -, the paths of what you
   produced) and give the same report as your final answer. Do not grade yourself.

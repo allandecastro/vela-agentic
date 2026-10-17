@@ -23,17 +23,20 @@ depends_on: account-default-description
   plugin, not a hand-written step.
 - **Generated handler:** the new handler is `HandleUpdate` (`Handle<Message>`); the agent keeps it and
   keeps `OnExecute` for the Create step - neither is renamed.
-- **Placeholder:** the generated `FilterOn(e => e.Id /* TODO */)` (which fails the build with **VELA001**)
-  is replaced with `e => e.Name` (the column whose change gates the step) - before or after a build that
-  shows VELA001; seeing the error is not required. (Rubric corrected 2026-09-30: it used to require the
+- **Filter:** the Update step is gated on `e => e.Name` (the column whose change gates the step) - either
+  passed up front (`vela add step ... --filtering-attributes Name`, so no placeholder is generated) or by
+  replacing the generated `FilterOn(e => e.Id /* TODO */)` placeholder (VELA001) before or after a build
+  that shows it; seeing the error is not required. (Rubric note 2026-10-17: the flag route is equally valid.) (Rubric corrected 2026-09-30: it used to require the
   error to be seen, which contradicts vela-scaffold's "align the step before building".)
 - **Stage:** PreOperation on `ctx.Request.Target` (same-record column).
 - **Harness:** the plugin is now multi-step, so every test states its trigger (`.OnCreate()` /
-  `.OnUpdate()` + stage); the existing Create tests are updated accordingly and stay green.
+  `.OnUpdate()`, plus `.Stage(...)` only when several steps share the message - `harness-api.md`); the
+  existing Create tests are updated accordingly and stay green. (Rubric note 2026-10-17: "+ stage" on every
+  test was stricter than the pack.)
 
 ## Success criteria (a clean pass)
 1. The Canvas records `reuse: add-step:AccountDefaultDescription` and the Update step.
-2. The placeholder is replaced with the gating column; the build is green with no VELA00x in authored code.
+2. The Update step is gated on the gating column (no placeholder left); the build is green with no VELA00x in authored code.
 3. RED then green: name changed → account number uppercased; name unchanged (filter) → step not run;
    the Create cases still pass.
 4. `vela-code-review` PASS.

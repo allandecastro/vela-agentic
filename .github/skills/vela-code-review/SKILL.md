@@ -34,7 +34,11 @@ Announce: `Using vela-code-review to review the change`.
    `git diff --stat` - they are not reviewed line by line - and the
    rest in full; the scaffold writes CRLF files, so keep CRLF when editing or use
    `git diff --ignore-cr-at-eol`.
-2. Review on **two axes** using `references/review-checklist.md` (harness semantics - e.g. what
+2. **Build the reviewer's prompt from real material:** write the diff, the Canvas and the runner's RED/GREEN
+   lines to files, paste their **contents** into the prompt, then check the prompt contains no placeholder
+   (`<diff>`, `<paste here>`, "see above") before dispatching (see *Who reviews* below). A verdict on a
+   placeholder is void.
+3. Review on **two axes** using `references/review-checklist.md` (harness semantics - e.g. what
    `PluginContext...Execute` auto-derives, why "does not fire" needs `PluginPipeline` - are in
    `references/harness-api.md`; CLI facts - e.g. `plan` needs `--solution` - in `references/cli-surface.md`; handler shapes in
    `references/plugin-authoring-api.md`):
@@ -43,11 +47,11 @@ Announce: `Using vela-code-review to review the change`.
      Canvas without the Canvas being updated first, that itself is a finding (fix-spec-first).
    - **Standards axis** - analyzer intent + the Dataverse smell baseline + **registration legality**
      (`registration-rules.md`) + **SOLID/DRY**.
-3. Emit findings, most severe first: `severity - file:line - what - why - fix`. Severities:
+4. Emit findings, most severe first: `severity - file:line - what - why - fix`. Severities:
    **Critical**, **Required**, **Nit**.
-4. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix and re-verify
+5. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix and re-verify
    (back to `vela-plugin-authoring` / `vela-test-harness`), then review again. Nits are optional.
-5. Record the findings list in the Build Report (`references/build-report-template.md`).
+6. Record the findings list in the Build Report (`references/build-report-template.md`).
 
 ## Who reviews: the isolated reviewer by default
 
