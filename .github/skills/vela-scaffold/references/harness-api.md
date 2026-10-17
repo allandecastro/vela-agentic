@@ -196,6 +196,15 @@ an assembly), `Seed(...)`, write through `pipeline.Service`, inspect `ExecutionL
 `Trace`, `AsyncStepFailures`; configure with `WithManyToMany(...)`, `WithSecureConfig(name, value)` (a step's
 `WithSecureConfigFrom(name)`), `WithMaxDepth(n)`.
 
+**Outbound calls (Vela.Testing 0.35): the pipeline cannot take a fake service or HTTP transport** - it
+registers plugins by type (`Register<T>()` / `Register(Type)`) and builds them itself, so a service set up in
+`ConfigureServices` cannot be swapped for a test. This is a known framework gap, reported upstream. Until it
+is closed: no test may reach the network; prove the call itself (payload, headers, status handling, timeout)
+against a fake transport at the service / handler level, use the pipeline for registration and the paths that
+stop before the call, and **name the gap** in the Build Report so the human sees which path no pipeline test
+covers. The `--integrations` test project does not reference `System.Net.Http` either: add
+`<Reference Include="System.Net.Http" />` to it to fake an `HttpMessageHandler`.
+
 Recursion / cascade recipe - `PluginPipeline` runs every registered plugin on each write made through
 `pipeline.Service`, so a self-triggering plugin actually recurses (verified, 0.34.0):
 ```csharp

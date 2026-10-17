@@ -171,7 +171,7 @@ async function lintEvals() {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.date || "")) errors.push(`${rel}: 'date' must be YYYY-MM-DD`);
     if (!["pass", "fail"].includes(fm.verdict)) errors.push(`${rel}: 'verdict' must be pass | fail`);
     if (fm.campaign !== undefined) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.campaign)) errors.push(`${rel}: 'campaign' must be YYYY-MM-DD`);
+      if (!/^\d{4}-\d{2}-\d{2}[a-z]?$/.test(fm.campaign)) errors.push(`${rel}: 'campaign' must be YYYY-MM-DD (a letter suffix for a re-run the same day)`);
       if (!/^\d+\/\d+$/.test(fm.run || "")) errors.push(`${rel}: campaign run needs 'run: k/N'`);
       for (const k of ["checks", "grader"])
         if (!["pass", "fail"].includes(fm[k])) errors.push(`${rel}: campaign run needs '${k}: pass | fail'`);

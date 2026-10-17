@@ -161,7 +161,9 @@ Never estimate or fill in a value you did not observe (no timings from memory).
 
 ## Gate - human approval required
 Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):
-`vela apply -p <pkg> --solution <uniquename> <the plan's connection, e.g. --url https://<org>>`  - this will: <exact changes from the plan's `operations`>.
+`vela apply -p <pkg> --solution <uniquename> <the plan's connection, e.g. --url https://<org>> [--secure-config <Name>=@<file>]`  - this will: <exact changes from the plan's `operations`>.
+A secure-config value the agent does not hold is an **open question** below (who supplies it, how), and the
+plan's "expects the secure configuration" diagnostic is kept as evidence - never silenced with a placeholder.
 Exit `7` = partial apply (fix the cause, re-run); `5` = not converged (the org still differs) - both are
 reported, never "done".
 
