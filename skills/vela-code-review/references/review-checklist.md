@@ -91,8 +91,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   `.WithSecureConfigFrom("Name")` or a secret store. A secure-config value the behaviour depends on must
   be proven by a test that supplies it (`WithSecureConfig(name, value)`) and asserts it reaches the call;
   only a "missing key" test - **Required** (a hard-coded key would keep the suite green).
-- **Outbound calls:** raw IP [VELA025] or plain HTTP - **Critical**; an outbound call from a **Sync** step
-  without a Canvas reason - **Critical**; no explicit timeout [VELA026; check services by hand] -
+- **Outbound calls:** raw IP [VELA025] or plain HTTP (both analyzers see plugin types only - check services by hand) - **Critical**; an outbound call from a **Sync** step
+  without a Canvas reason - **Critical**; no explicit timeout [VELA026] -
   **Required**; ConsoleApp or `--samples` demo code, or outbound code outside the Integrations project,
   in a real project - **Required**.
 - **Correctness:** null/whitespace guards the spec implies; no swallowed exceptions. A PreOperation edit
