@@ -109,12 +109,13 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 42/42 runs pass.
+Latest campaign per scenario - 50/51 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `account-default-description` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
+| `account-delete-guard` | 2026-10-17 | **1/2** | 2/2 | 1/2 | not ready |
 | `account-erp-outbound` | 2026-10-17d | **3/3** | 3/3 | 3/3 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-second-behaviour` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
@@ -125,6 +126,9 @@ Latest campaign per scenario - 42/42 runs pass.
 | `bulk-update-multiple` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `contact-association` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `debug-filter-miss` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
+| `debug-live-trace` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
+| `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
+| `diagnose-failed-run` | 2026-10-17b | **1/1** | 1/1 | 1/1 | ready |
 | `lead-score-custom-api` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `org-models-and-plan` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 <!-- passrate:end -->
