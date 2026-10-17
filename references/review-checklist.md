@@ -116,8 +116,11 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
 - **Secrets:** none in code or unsecure configuration (`WithUnsecureConfig`) - the step declares
   `.WithSecureConfigFrom("Name")` (value given at deploy time) or uses a secret store. A secret in code
   or unsecure configuration is **Critical**.
-- **Outbound calls:** HTTPS to a DNS name (no raw IP), an explicit timeout, from an Async step unless
-  the Canvas records why it must be Sync - **Required**. Code in a ConsoleApp or demo code from
+- **Outbound calls:** a raw IP address or plain HTTP - **Critical** (the sandbox blocks it: every call
+  fails on the org); an outbound call from a **Sync** step without a reason in the Canvas - **Critical**
+  (the save waits on, and fails with, the other system, and the external side effect is not rolled back
+  with the transaction); no explicit timeout - **Required** (the 2-minute sandbox cutoff is the only
+  bound). Code in a ConsoleApp or demo code from
   `vela init --samples`, or outbound code outside the Integrations project (`vela init --integrations`),
   in a real project - **Required**.
 - **Correctness:** null/whitespace guards where the spec implies them; no swallowed exceptions. A
