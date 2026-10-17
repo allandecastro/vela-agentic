@@ -87,9 +87,8 @@ diagnostic (`#pragma warning disable VELA...`, `<NoWarn>`) is itself **Required*
   Create, Async only at PostOperation (these don't compile); Create/Update has a `FilterOn`
   [analyzer: VELA020]; no step on SetState [analyzer: VELA022].
 - **Async step that edits the Target:** `ctx.Request.Target` written in an Async handler - **Critical**
-  (lost, see Axis 1) [analyzer: VELA018 warning - a warning is still a gate failure]. **Check it by hand
-  anyway:** VELA018 only sees a direct `ctx.Request.Target.X = ...` in the handler - a write through a local
-  alias (`var t = ctx.Request.Target; t.X = ...`) or a helper is not flagged (Vela 0.34).
+  (lost, see Axis 1) [analyzer: VELA018 warning - a warning is still a gate failure; since Vela.Plugins 0.35 it also
+  catches writes through a local alias or a helper - verified].
 - **Execution order:** rank-sharing with Microsoft/managed steps is NOT a finding (normal, harmless).
   Only flag missing/ambiguous ordering among *our own* steps on the same table+message+stage.
 - **SOLID / DRY** (duplicated logic - across plugins or between the steps of one plugin - is

@@ -1,7 +1,7 @@
 ---
 name: vela-test-harness
 description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
-compatibility: "vela CLI >= 0.25.0 (Vela.Plugins / Vela.Testing >= 0.34.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.0 (Vela.Plugins / Vela.Testing >= 0.35.0); dotnet SDK."
 ---
 
 # Verify with the Vela.Testing harness
@@ -52,7 +52,8 @@ Announce: `Using vela-test-harness to <purpose>`.
 
 1. Ensure a `.Tests` project references `Vela.Testing` (`vela init` scaffolds one unless `--no-tests`).
    Add a test class with `vela add test <Name> --kind plugin --entity <Entity> --message <M>`, run
-   **inside the test project**. It generates a `PluginPipeline` test that the step fired
+   **inside the test project**. After `vela add step`, run it again with the new message: it **completes the
+   existing class** with the new step's tests (vela >= 0.26, verified) - no `--force`, which would overwrite. It generates a `PluginPipeline` test that the step fired
    (`Assert.Contains(pipeline.ExecutionLog, e => e.PluginTypeName == ... && e.Message == "<M>")`) and a
    skipped "read back what the plugin wrote" stub: give the filtered column a real value, replace the
    `todo_*` placeholders (Associate: the real relationship), then un-skip and fill the stub. A Custom API
