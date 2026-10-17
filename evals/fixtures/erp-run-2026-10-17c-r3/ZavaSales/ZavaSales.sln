@@ -1,0 +1,45 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zava.Shared", "src\Zava.Shared\Zava.Shared.csproj", "{FD8BA803-7E19-919D-6FFF-79F250991478}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zava.Plugins", "src\Zava.Plugins\Zava.Plugins.csproj", "{3146DDD6-3D1D-07F2-FB33-AA94AE52DEA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zava.Integrations", "src\Zava.Integrations\Zava.Integrations.csproj", "{A36538A0-4573-01A5-DE09-9C5FCADE5096}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zava.Plugins.Tests", "tests\Zava.Plugins.Tests\Zava.Plugins.Tests.csproj", "{11329ADF-B9D3-92BA-AD56-5421791E4B3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zava.Integrations.Tests", "tests\Zava.Integrations.Tests\Zava.Integrations.Tests.csproj", "{68F2D8DA-813C-04DF-6F7D-763D02B5D812}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD8BA803-7E19-919D-6FFF-79F250991478}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD8BA803-7E19-919D-6FFF-79F250991478}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD8BA803-7E19-919D-6FFF-79F250991478}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD8BA803-7E19-919D-6FFF-79F250991478}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3146DDD6-3D1D-07F2-FB33-AA94AE52DEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3146DDD6-3D1D-07F2-FB33-AA94AE52DEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3146DDD6-3D1D-07F2-FB33-AA94AE52DEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3146DDD6-3D1D-07F2-FB33-AA94AE52DEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A36538A0-4573-01A5-DE09-9C5FCADE5096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A36538A0-4573-01A5-DE09-9C5FCADE5096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A36538A0-4573-01A5-DE09-9C5FCADE5096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A36538A0-4573-01A5-DE09-9C5FCADE5096}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11329ADF-B9D3-92BA-AD56-5421791E4B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11329ADF-B9D3-92BA-AD56-5421791E4B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11329ADF-B9D3-92BA-AD56-5421791E4B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11329ADF-B9D3-92BA-AD56-5421791E4B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68F2D8DA-813C-04DF-6F7D-763D02B5D812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68F2D8DA-813C-04DF-6F7D-763D02B5D812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68F2D8DA-813C-04DF-6F7D-763D02B5D812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68F2D8DA-813C-04DF-6F7D-763D02B5D812}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

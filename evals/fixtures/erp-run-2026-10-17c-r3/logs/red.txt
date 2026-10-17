@@ -1,0 +1,105 @@
+﻿﻿xUnit.net Console Runner v2.9.2+82543a6df6 (64-bit .NET Framework 4.7.2, runtime: 4.0.30319.42000)
+  Discovering: Zava.Integrations.Tests
+  Discovered:  Zava.Integrations.Tests
+  Starting:    Zava.Integrations.Tests
+    Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Erp_Failure_Does_Not_Block_The_Save [FAIL]
+      Assert.Single() Failure: The collection was empty
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Erp_Failure_Does_Not_Block_The_Save () [0x00044] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Fires_On_Create_PostOperation [FAIL]
+      Assert.Single() Failure: The collection was empty
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Fires_On_Create_PostOperation () [0x00099] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp(apiKey: null) [FAIL]
+      Assert.Single() Failure: The collection was empty
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp (System.String apiKey) [0x00047] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp(apiKey: "") [FAIL]
+      Assert.Single() Failure: The collection was empty
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp (System.String apiKey) [0x00047] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp(apiKey: "   ") [FAIL]
+      Assert.Single() Failure: The collection was empty
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Plugins.AccountErpNotifyTests.Missing_Api_Key_Fails_The_Job_Without_Calling_The_Erp (System.String apiKey) [0x00047] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException(status: InternalServerError, code: "500") [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(Microsoft.Xrm.Sdk.InvalidPluginExecutionException)
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException (System.Net.HttpStatusCode status, System.String code) [0x0002a] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException(status: Unauthorized, code: "401") [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(Microsoft.Xrm.Sdk.InvalidPluginExecutionException)
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException (System.Net.HttpStatusCode status, System.String code) [0x0002a] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException(status: ServiceUnavailable, code: "503") [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(Microsoft.Xrm.Sdk.InvalidPluginExecutionException)
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Non_Success_Status_Throws_InvalidPluginExecutionException (System.Net.HttpStatusCode status, System.String code) [0x0002a] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Unreachable_Erp_Throws_InvalidPluginExecutionException [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(Microsoft.Xrm.Sdk.InvalidPluginExecutionException)
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Unreachable_Erp_Throws_InvalidPluginExecutionException () [0x00029] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Never_Answering_Erp_Times_Out [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(Microsoft.Xrm.Sdk.InvalidPluginExecutionException)
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Never_Answering_Erp_Times_Out () [0x0002f] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key(status: OK) [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: 1
+      Actual:   0
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key (System.Net.HttpStatusCode status) [0x00040] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key(status: Created) [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: 1
+      Actual:   0
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key (System.Net.HttpStatusCode status) [0x00040] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key(status: NoContent) [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: 1
+      Actual:   0
+      Stack Trace:
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Posts_Id_And_Name_As_Json_With_Api_Key (System.Net.HttpStatusCode status) [0x00040] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+    Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Special_Characters_In_Name_Produce_Valid_Json [FAIL]
+      System.ArgumentNullException : String reference not set to an instance of a String.
+      Parameter name: s
+      Stack Trace:
+          at System.Text.Encoding.GetBytes (System.String s) [0x00012] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Parse (System.String json) [0x00015] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at Zava.Integrations.Tests.Account.Services.ErpAccountSenderTests.Special_Characters_In_Name_Produce_Valid_Json () [0x0003d] in <0a7046142e824a8395bac26fa66d0181>:0 
+          at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+          at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c1d425d6412a434f9a3c24f2eb001614>:0 
+  Finished:    Zava.Integrations.Tests
+=== TEST EXECUTION SUMMARY ===
+   Zava.Integrations.Tests  Total: 18, Errors: 0, Failed: 14, Skipped: 0, Time: 0,108s

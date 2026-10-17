@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Early-bound models and plugin code follow the classic non-nullable Dataverse conventions. -->
+    <Nullable>disable</Nullable>
+    <!-- These projects pin package versions inline. Disable central package management explicitly so the solution
+         builds even if it is created inside a repository that has its own Directory.Packages.props. -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

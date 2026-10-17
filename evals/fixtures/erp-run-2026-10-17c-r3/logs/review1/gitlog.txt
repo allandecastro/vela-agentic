@@ -1,0 +1,5 @@
+1f6de50 feat: AccountErpNotify sends new accounts to the ERP (async, X-Api-Key from secure config, 30 s timeout)
+2117636 test: RED harness tests for AccountErpNotify + ErpAccountSender (scaffolded via vela add plugin/service/test; step registration per Canvas)
+d0e217d feat(models): vela models --entities account into Zava.Shared
+d166a6f docs: Vela Canvas for account-erp-outbound
+a8b2aba chore: vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations (untouched scaffold)

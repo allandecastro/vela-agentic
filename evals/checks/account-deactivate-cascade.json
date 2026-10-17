@@ -1,0 +1,44 @@
+{
+ "min_tests": 7,
+ "steps": [
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PostOperation",
+   "mode": "Synchronous",
+   "filter": ["statecode"]
+  }
+ ],
+ "step_count": 2,
+ "forbid_step_messages": ["SetState", "SetStateDynamicEntity"],
+ "forbid_src": [
+  {
+   "pattern": "new QueryExpression|GetAttributeValue<",
+   "why": "typed query on the generated models"
+  },
+  {
+   "pattern": "SystemService",
+   "why": "writes as the step's user"
+  }
+ ],
+ "require_src": [
+  {
+   "pattern": "Query\\.For<Contact>",
+   "why": "typed query"
+  },
+  {
+   "pattern": "StateCodeOptionSet\\.Inactive",
+   "why": "acts on deactivation only"
+  }
+ ],
+ "require_tests": [
+  {
+   "pattern": "SetStateRequest",
+   "why": "SetState also fires the Update step"
+  }
+ ],
+ "canvas_contains": [
+  "statecode",
+  "SetState"
+ ]
+}

@@ -1,0 +1,10 @@
+ docs/vela-builds/account-erp-outbound.md           |   97 ++
+ .../Account/Plugins/AccountErpNotify.cs            |   41 +
+ .../Account/Services/ErpAccountSender.cs           |  113 ++
+ src/Zava.Shared/Models/Generated/Account.cs        | 1701 ++++++++++++++++++++
+ .../Models/Generated/LookupTargetsAttribute.cs     |   22 +
+ .../Generated/RelationshipSchemaNameAttribute.cs   |   25 +
+ .../Models/Generated/RequiredLevelAttribute.cs     |   23 +
+ .../Account/Plugins/AccountErpNotifyTests.cs       |  151 ++
+ .../Account/Services/ErpAccountSenderTests.cs      |  162 ++
+ 9 files changed, 2335 insertions(+)

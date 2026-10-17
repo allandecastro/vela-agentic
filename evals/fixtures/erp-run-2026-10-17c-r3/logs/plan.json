@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "mode": "plan",
+  "environment": "https://dyn-premium-dev.crm.dynamics.com",
+  "hasChanges": true,
+  "summary": {
+    "added": 1,
+    "removed": 0,
+    "changed": 0
+  },
+  "operations": [
+    {
+      "action": "create",
+      "kind": "package",
+      "type": "zava_Zava.Integrations",
+      "reason": "Plugin package is not in Dataverse; apply will create it."
+    },
+    {
+      "action": "create",
+      "kind": "step",
+      "type": "Zava.Integrations.Account.Plugins.AccountErpNotify",
+      "reason": "Exists locally but not in Dataverse."
+    }
+  ],
+  "diff": {
+    "localAssemblies": [
+      "Zava.Integrations"
+    ],
+    "currentAssemblies": [],
+    "added": [
+      {
+        "kind": "step",
+        "type": "Zava.Integrations.Account.Plugins.AccountErpNotify",
+        "definition": {
+          "pluginTypeName": "Zava.Integrations.Account.Plugins.AccountErpNotify",
+          "message": "Create",
+          "entityLogicalName": "account",
+          "stepKey": "dv-bf29ed0d8c04",
+          "name": "Zava.Integrations.Account.Plugins.AccountErpNotify - PostOpAsync: dv-bf29ed0d8c04",
+          "description": "Sends the new account (id, name) to the ERP.",
+          "stage": 40,
+          "mode": 1,
+          "executionOrder": 1,
+          "filteringAttributes": [
+            "name"
+          ],
+          "preImages": [],
+          "postImages": [],
+          "enabled": true,
+          "unsecureConfig": "",
+          "impersonatingUserId": "",
+          "supportedDeployment": 0,
+          "asyncAutoDelete": true,
+          "secureConfig": ""
+        }
+      }
+    ],
+    "removed": [],
+    "changed": [],
+    "localItems": [
+      {
+        "kind": "step",
+        "type": "Zava.Integrations.Account.Plugins.AccountErpNotify",
+        "definition": {
+          "pluginTypeName": "Zava.Integrations.Account.Plugins.AccountErpNotify",
+          "message": "Create",
+          "entityLogicalName": "account",
+          "stepKey": "dv-bf29ed0d8c04",
+          "name": "Zava.Integrations.Account.Plugins.AccountErpNotify - PostOpAsync: dv-bf29ed0d8c04",
+          "description": "Sends the new account (id, name) to the ERP.",
+          "stage": 40,
+          "mode": 1,
+          "executionOrder": 1,
+          "filteringAttributes": [
+            "name"
+          ],
+          "preImages": [],
+          "postImages": [],
+          "enabled": true,
+          "unsecureConfig": "",
+          "impersonatingUserId": "",
+          "supportedDeployment": 0,
+          "asyncAutoDelete": true,
+          "secureConfig": ""
+        }
+      }
+    ],
+    "currentItems": [],
+    "summary": {
+      "added": 1,
+      "removed": 0,
+      "changed": 0
+    }
+  },
+  "diagnostics": [
+    "Step \u0027Zava.Integrations.Account.Plugins.AccountErpNotify:stepkey:dv-bf29ed0d8c04\u0027 expects the secure configuration \u0027ErpApiKey\u0027, but none is set in the environment and no value was given; pass --secure-config ErpApiKey=VALUE (or set VELA_SECURE_CONFIG_ErpApiKey)."
+  ],
+  "notes": [
+    "Compared local .nupkg plugin metadata with live Dataverse state.",
+    "This is a preview; nothing was written to Dataverse."
+  ],
+  "unmanaged": [],
+  "info": [
+    "Plugin assembly \u0027Zava.Integrations\u0027 not found in Dataverse (first deployment)."
+  ]
+}

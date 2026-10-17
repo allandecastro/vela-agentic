@@ -1,0 +1,17 @@
+{
+  "comment": "Written by \u0060vela init\u0060: the files it generated and their content hash. \u0060vela init --force\u0060 only overwrites or removes a listed file whose content still matches; commit this file.",
+  "tool": "0.26.1",
+  "files": {
+    ".gitignore": "e5d4f4c15829ce5a4e961468a57fea2ef5de2be56b2ff314fb05c2a5d72a3d63",
+    "AGENTS.md": "97f8971cd6c917daccb9a5324ca5e49086a0ca6b18ff977f17b8c59804418477",
+    "Directory.Build.props": "f6939414f97ffdcbec5e168407e44c3a360d667c202a83bbc6d9a30c911dee87",
+    "Directory.Packages.props": "790da07bf556ecab35cd759a33dbc4f95279ad64614e06d054df80a15461d2a3",
+    "README.md": "b02a6f442bf9305275ceb270f7dae55ece95c8b2a1f20b5a27c69ef61fbcb61b",
+    "ZavaSales.sln": "a2fe4d79c0ade1ebac1a5df71ca1e7a1cf3bf49d2cdfed06be4fd94d43c078f4",
+    "src/Zava.Integrations/Zava.Integrations.csproj": "a6ccda24302f8f825ea39a826e0ae714fae4af94f53cf4df0f5485f91ce7d1ea",
+    "src/Zava.Plugins/Zava.Plugins.csproj": "8a9b2b3bdd35569c7c3626abbb8cb95f4142c12038481b43b8ef358bfb0c98ea",
+    "src/Zava.Shared/Zava.Shared.csproj": "626579e349fecae02b171622702ab0648dec91ca93dac93a30aa8608f9833381",
+    "tests/Zava.Integrations.Tests/Zava.Integrations.Tests.csproj": "446255dc10c956c5d9d6f0c67d96bfd0e85c21cdb7c2c89ca0a6548698421e7f",
+    "tests/Zava.Plugins.Tests/Zava.Plugins.Tests.csproj": "008c50d3c6478f67206024908c79cb1c2ed97c92fa55eba497477b7a9a210529"
+  }
+}

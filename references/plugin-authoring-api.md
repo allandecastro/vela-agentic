@@ -187,6 +187,12 @@ message/stage context is VELA015. Generated plugin files don't import `Microsoft
   The builder also has `WhereIn`, `WhereAll`/`WhereAny`, `OrderBy`, `Top`, `Link<T>(...)`, `Distinct`, `Page`;
   `service.RetrieveByKey<T>(key, columns...)` reads by alternate key. A single row by id:
   `ctx.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(...)).ToEntity<Account>()`.
+- **Delete:** the handler gets an `IDelete<Stage>Context<T>`; `ctx.Request.Target` is an **`EntityReference`**
+  (the record is not loaded - no columns): read what you need with a typed query or a pre-image
+  (`WithPreImage(e => e.Attr)`); there is no `FilterOn` and no post-image. To **block** a delete, throw
+  `InvalidPluginExecutionException` from a **Sync PreValidation** step - it runs before the main operation
+  (and before cascades start); an Async step cannot block anything. Verified 0.36.0 with `PluginPipeline`
+  (`p.Service.Delete(Account.EntityLogicalNameValue, id)` runs the step and the throw surfaces).
 - **Depth:** `ctx.Depth` (see the recursion gotcha in `dataverse-gotchas.md`).
 - **Write to the org** (there is no `ctx.OrganizationService`, and **no `ctx.UserService`** any more):
   - `ctx.Service` - the step's user (the "Run in User's Context" user when the step impersonates,

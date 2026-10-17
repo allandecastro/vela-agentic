@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- net48 is consumed by the plugin projects; net10.0 by the ConsoleApp. -->
+    <TargetFrameworks>net48;net10.0</TargetFrameworks>
+    <RootNamespace>Zava.Shared</RootNamespace>
+    <AssemblyName>Zava.Shared</AssemblyName>
+  </PropertyGroup>
+
+  <!-- net48: the plugin sandbox provides the SDK, so these reference assemblies are PrivateAssets. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.59" PrivateAssets="all" />
+    <!-- `vela models` emits [StringLength]/[Range] DataAnnotations by default; on net48 those types live in the
+         System.ComponentModel.DataAnnotations framework assembly, which is not referenced by default. -->
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <!-- Pin the patched System.Security.Cryptography.Xml (a transitive SDK dependency ships an advisory version,
+         NU1903). PrivateAssets so it stays compile-only and is not deployed to the plugin sandbox, which
+         provides its own. -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.5" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- net10.0: the cross-platform client supplies Microsoft.Xrm.Sdk for the ConsoleApp. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.2.10" />
+    <!-- Pin the patched System.Security.Cryptography.Xml and .Pkcs over the client's advisory transitive versions
+         (NU1902/NU1903). -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.5" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
+  </ItemGroup>
+
+  <!-- The On<Message>() step extensions `vela models` writes to Messages/*.Steps.cs need Vela.Plugins: the plugin
+       projects compile them, not this one. -->
+  <ItemGroup>
+    <Compile Remove="Models\Generated\Messages\*.Steps.cs" />
+  </ItemGroup>
+
+  <!-- Vela.Messages holds the SDK-only TypedRequest/TypedResponse base types and multi-targets net462;net10.0, so
+       generated Custom API request/response contracts compile here and can be called from anywhere (plugins on
+       net48, the ConsoleApp / integrations on net10.0). -->
+  <ItemGroup>
+    <PackageReference Include="Vela.Messages" Version="0.36.0" />
+  </ItemGroup>
+
+</Project>

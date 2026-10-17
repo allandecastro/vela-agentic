@@ -37,7 +37,9 @@ symptom → cause → fix.
   does not compile and reading an uncaptured image is VELA017; through the untyped extensions
   (`GetPreImage<T>()`, an alias) it is still a silent null - verify the registration, not just the code.
 - **A SetState step never fires** (VELA022): `SetStateRequest` and an Update of `statecode` fire the
-  SetStateDynamicEntity and Update steps. Register on Update (filter on `statecode`).
+  SetStateDynamicEntity and Update steps. Register on Update (filter on `statecode`) and check the new
+  state in the Target (`StateCode == Inactive`) - reactivation fires the same step. `PluginPipeline` runs the
+  Update step for both an Update of `StateCode` and a `SetStateRequest` (verified 0.36.0).
 
 ## Runtime: recursion, state, sandbox, transactions, secrets
 
