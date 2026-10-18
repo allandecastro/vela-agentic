@@ -23,6 +23,8 @@ account's country."
 ## What the skills must get right
 - **Platform services - cache:** territories are reference data read on every account save and changed rarely →
   `IPluginCacheService` (`GetOrCreate` with an explicit TTL recorded in the Canvas, a feature-prefixed key).
+- **Staleness is the human's call:** a cached territory list stays stale after a change until the TTL ends, so
+  the agent **asks** how long a territory change may take to show (one grill question) before picking the TTL.
 - **Never cache user-filtered data:** the cached territory list is read in a way that is the same for every user
   (`ctx.SystemService`, with the Canvas reason: shared reference data, only an id is written), not through
   `ctx.Service` under a shared key.
@@ -34,11 +36,12 @@ account's country."
   shows after the TTL / an invalidation).
 
 ## Success criteria (a clean pass)
-1. `IPluginCacheService.GetOrCreate` with an explicit TTL; the key is feature-prefixed; the Canvas records the TTL
+1. A logged question to the human on freshness (how stale may a territory be) before the TTL is set.
+2. `IPluginCacheService.GetOrCreate` with that TTL; the key is feature-prefixed; the Canvas records the TTL
    and why the data is safe to cache.
-2. The cached query does not run as the calling user under a shared key.
-3. Steps as above; tests RED then green (incl. a cache case); review PASS; plan run; no apply.
-4. Rules registry: the new rule in English Given/When/Then, tests carry its case ids; spec-check passes.
+3. The cached query does not run as the calling user under a shared key.
+4. Steps as above; tests RED then green (incl. a cache case); review PASS; plan run; no apply.
+5. Rules registry: the new rule in English Given/When/Then, tests carry its case ids; spec-check passes.
 
 ## Planted-violation check (adversarial)
 The review must BLOCK: (a) the territory list read through `ctx.Service` and cached under a key shared by all
