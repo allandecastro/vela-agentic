@@ -25,10 +25,6 @@
    "why": "only active contacts block"
   },
   {
-   "pattern": "InvalidPluginExecutionException",
-   "why": "the block surfaces to the user"
-  },
-  {
    "pattern": "BusinessError\\(",
    "why": "localized business error"
   }
