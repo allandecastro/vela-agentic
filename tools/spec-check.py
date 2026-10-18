@@ -9,7 +9,9 @@ Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   3. docs/rules/ changed in a commit made after the build started (a commit touching src/ or tests/);
   4. an existing test (a method carrying [Trait("Case", "<RULE>/<case>")] at <base>) was modified or deleted
      while <RULE> is not `change` / `retire` in the Canvas;
-  5. a test carries a case id that the registry does not contain.
+  5. a test carries a case id that the registry does not contain;
+  6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first).
+A rule's trace lines (`Implementation:` / `Tests:`) are not spec: they may be synced at any time.
 A test body that differs only by harness plumbing (trigger / stage selection such as `.OnCreate()`) is not
 "modified". Warns (exit 0) on new tests without a Case id. Read-only: runs git, writes nothing.
 """
@@ -42,6 +44,20 @@ def rule_sections(text):
             buf.append(line)
     if cur: out[cur] = "\n".join(buf).strip()
     return out
+
+
+TRACE = re.compile(r"^\s*(Implementation|Tests):.*$", re.M)
+
+
+def spec_text(section):
+    """A rule section without its trace lines (Implementation / Tests), whitespace-normalized."""
+    return re.sub(r"\s+", " ", TRACE.sub("", section or "")).strip()
+
+
+def spec_changed(before, after):
+    """True when a registry file's rules differ beyond their trace lines (or a rule appeared / vanished)."""
+    b, a = rule_sections(before), rule_sections(after)
+    return b.keys() != a.keys() or any(spec_text(b[k]) != spec_text(a[k]) for k in a)
 
 
 def test_methods(text):
@@ -103,7 +119,7 @@ def main():
         for rid, txt in before.items():
             if rid not in after:
                 fails.append(f"{f}: rule {rid} was deleted - retire it (Status: retired), keep its text")
-            elif after[rid] != txt and rid not in declared:
+            elif spec_text(after[rid]) != spec_text(txt) and rid not in declared:
                 fails.append(f"{f}: rule {rid} changed but is not declared in the Canvas rules:")
         for rid in after:
             if rid not in before and rid not in declared:
@@ -113,7 +129,9 @@ def main():
     started = False
     for c in git(repo, "rev-list", "--reverse", f"{a.base}..HEAD").split():
         files = git(repo, "show", "--name-only", "--format=", c).split()
-        if started and any(re.match(r"(.*/)?docs/rules/", x) for x in files):
+        spec_edit = any(spec_changed(git(repo, "show", f"{c}^:{x}"), git(repo, "show", f"{c}:{x}"))
+                        for x in files if re.match(r"(.*/)?docs/rules/[^/]+\.md$", x))
+        if started and spec_edit:
             fails.append(f"commit {c[:8]} edits docs/rules/ after the build started (spec is read-only in the build)")
         if any(re.match(r"(.*/)?(src|tests)/", x) for x in files):
             started = True
@@ -140,6 +158,12 @@ def main():
                     fails.append(f"{f}: test {key[1]} cites case {case}, which the registry does not contain")
             if key not in before and not cases:
                 warns.append(f"{f}: new test {key[1]} has no [Trait(\"Case\", ...)] id")
+
+    # 6. uncommitted spec / test edits would escape the history-based checks above
+    dirty = [l[3:] for l in git(repo, "status", "--porcelain").splitlines()
+             if re.match(r"(.*/)?(tests|docs/rules)/", l[3:])]
+    for f in dirty:
+        fails.append(f"{f}: uncommitted change - commit before spec-check (it reads history)")
 
     for w in warns: print("WARN ", w)
     for x in fails: print("FAIL ", x)
