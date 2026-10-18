@@ -123,7 +123,7 @@ apply: pending
 ## Evidence
 - `dotnet build`: <0 errors, 0 VELA00x in authored code>
 - Acceptance cases (RED→green): [x] empty→defaulted  [x] whitespace→defaulted  [x] non-empty→untouched
-- Harness: <runner summary + runner name>
+- Harness: <runner summary + runner name>; RED run: <summary> + the failing test names, each with its case id
 - Code review: <PASS / BLOCK; findings most-severe first>
 - Solution: `vela solution show <uniquename> --json` → `{"solution": ..., "publisherPrefix": ...}` (exit 0)
 - Package: <path> · sha256 <hash> · signed <yes/no/n/a/unknown>
@@ -189,7 +189,7 @@ Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
 Tests: AccountDeleteGuardTests
 
 ### ACC-001 - ...
-Status: retired · By: <slug> (<date>) - <one-line reason>
+Status: retired · By: <slug> (<date>) - <one-line reason>   # retiring (by <slug>) until the human applies
 <the rule text, unchanged>
 ```
 

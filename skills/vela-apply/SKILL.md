@@ -56,7 +56,7 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
 7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`). The registry is
    not touched here (written at design, read-only in the build); the Gate tells the human to flip the story's
-   rules from `proposed` to `active` with the apply.
+   rules from `proposed` to `active` (and `retiring` to `retired`) with the apply.
 8. **Stop here by default.** No `apply` unless an explicit "go ahead and apply" **for this run**. "Ship
    it", "looks good", "merge it" or a merged PR approve the code, not a write to the org.
 9. If (and only if) authorized: `vela apply -p <pkg> --solution <uniquename> <connection>` - same package
