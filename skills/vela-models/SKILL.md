@@ -1,7 +1,7 @@
 ---
 name: vela-models
 description: Use when a plugin needs typed models for an attribute or entity not yet in the generated model, or when checking whether committed models still match the org.
-compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.3 (Vela.Plugins >= 0.38.0); dotnet SDK."
 ---
 
 # Generate typed models
