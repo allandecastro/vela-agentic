@@ -34,7 +34,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      Async runs after commit). PostOperation + `Update` of the same record needs a written reason.
    - **Recursion:** does a write re-trigger this or another plugin? Fix it in the design;
      `SkipWhenDepthAbove(n)` / `ctx.Depth` is not a fix (recursion gotcha).
-   - **Approach - Sync vs Async:** default Sync; justify Async.
+   - **Approach - Sync vs Async:** default Sync; justify Async. If the story is silent and the choice
+     changes what the user sees (blocking, rollback together), it is a `vela-grill` Timing question.
    - **Approach - reuse vs new:** no class → `vela add plugin`; table already has a plugin → prefer
      `vela add step`. Reuse, never duplicate, never hand-create a class.
    - **Structure - service?** Check the triggers (registration-rules "Service needed vs inline"): a
