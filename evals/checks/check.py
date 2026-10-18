@@ -210,6 +210,13 @@ def main():
         check(f"target solution {solution} exists (vela solution show)", code == 0, out.strip()[-160:])
         out_json = os.path.join(work, "check-plan.json")
         source = f'--packages-dir "{os.path.dirname(pkgs[0])}"' if len(delivered) > 1 else f'-p "{pkgs[0]}"'
+        if exp.get("package_assembly"):
+            # A publisher-prefixed package id (signed packages) is not inferred by `vela plan` (Vela gap, reported):
+            # plan that one package, naming its primary assembly.
+            pa = exp["package_assembly"]
+            one = [p for p in delivered if any(n.endswith(pa) for n in zipfile.ZipFile(p).namelist())] or pkgs
+            asm = next((os.path.basename(n) for n in zipfile.ZipFile(one[0]).namelist() if n.endswith(pa)), None)
+            source = f'-p "{one[0]}"' + (f' --package-assembly "{asm}"' if asm else "")
         code, out = sh(f'perl -e "alarm 300; exec @ARGV" vela plan {source} --solution {solution} --url {org} --out "{out_json}" </dev/null')
         if check("read-only vela plan runs", code == 0 and os.path.exists(out_json), out[-200:]):
             plan = json.load(open(out_json))

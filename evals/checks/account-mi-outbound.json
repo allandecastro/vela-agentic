@@ -1,25 +1,51 @@
 {
  "min_tests": 3,
  "steps": [
-  {"message": "Create", "entity": "account", "stage": "PostOperation", "mode": "Asynchronous", "project": "Integrations"}
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PostOperation",
+   "mode": "Asynchronous",
+   "project": "Integrations"
+  }
  ],
  "step_count": 1,
  "require_src": [
-  {"pattern": "AcquireManagedIdentityToken\\(", "why": "managed identity token"},
-  {"pattern": "api\\.zava-demo\\.com/\\.default", "why": "the scope"},
-  {"pattern": "Timeout", "why": "explicit HTTP timeout"}
+  {
+   "pattern": "AcquireManagedIdentityToken\\(",
+   "why": "managed identity token"
+  },
+  {
+   "pattern": "api\\.zava-demo\\.com/\\.default",
+   "why": "the scope"
+  },
+  {
+   "pattern": "Timeout",
+   "why": "explicit HTTP timeout"
+  }
  ],
  "forbid_src": [
-  {"pattern": "WithSecureConfigFrom|X-Api-Key|ClientSecret", "why": "no secret with a managed identity"}
+  {
+   "pattern": "WithSecureConfigFrom|X-Api-Key|ClientSecret",
+   "why": "no secret with a managed identity"
+  }
  ],
  "require_tests": [
-  {"pattern": "WithManagedIdentityService\\(", "why": "the managed identity is faked the supported way"}
+  {
+   "pattern": "WithManagedIdentityService\\(",
+   "why": "the managed identity is faked the supported way"
+  }
  ],
  "output_contains": [
-  {"glob": "**/artifacts/zava_*Integrations*.nupkg", "pattern": "\\.signature\\.p7s", "why": "signed, under the prefixed id"}
+  {
+   "glob": "**/artifacts/zava_*Integrations*.nupkg",
+   "pattern": "\\.signature\\.p7s",
+   "why": "signed, under the prefixed id"
+  }
  ],
  "canvas_contains": [
   "managed identity",
   "sign"
- ]
+ ],
+ "package_assembly": ".Integrations.dll"
 }
