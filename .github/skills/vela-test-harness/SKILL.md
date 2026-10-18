@@ -61,6 +61,18 @@ Announce: `Using vela-test-harness to <purpose>`.
 5. Run with the **OS-correct runner** (`references/harness-api.md`): Windows `dotnet test`; macOS/Linux
    Mono + xunit console with `-parallel none`. Run every test assembly (`<P>.Integrations.Tests` too).
 
+## Tests carry their functional case
+
+- Every test carries the id of the registry case it proves: `[Trait("Case", "ACC-002/C1")]` (cases are in
+  `docs/rules/<table>.md`, written at design). A test without a case id, or with an id not in the registry, is a
+  review finding.
+- **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code
+  is wrong - fix the code. Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
+  as `change` or `retire`, and keep it faithful to the case's Given/When/Then. Harness plumbing that leaves the
+  case intact - e.g. adding `.OnCreate()` once the plugin gains a second step - is allowed: same data, action
+  and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
+  wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build.
+
 ## Rationalizations (excuse → rebuttal)
 
 - "It builds, that's enough." → A green build proves nothing about behaviour.

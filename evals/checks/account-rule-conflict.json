@@ -37,5 +37,6 @@
   "create step": 0,
   "update step": 0,
   "delete step": 0
- }
+ },
+ "spec_check": true
 }

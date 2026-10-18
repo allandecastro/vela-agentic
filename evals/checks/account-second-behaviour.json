@@ -54,5 +54,6 @@
    "pattern": "\\bWhen\\b[\\s\\S]*\\bThen\\b",
    "why": "Given/When/Then"
   }
- ]
+ ],
+ "spec_check": true
 }

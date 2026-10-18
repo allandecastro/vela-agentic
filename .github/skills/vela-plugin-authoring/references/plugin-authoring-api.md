@@ -25,7 +25,7 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
             .Handle(OnExecute);
     }
 
-    private void OnExecute(IUpdatePreContext<Account> ctx) { /* TODO: ctx.Request.Target */ }
+    private void OnExecute(OnExecuteContext ctx) { /* TODO: ctx.Request.Target */ }
 }
 ```
 
@@ -38,7 +38,7 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 ## Multi-step plugin (`vela add step`)
 
 `vela add step <Plugin> --entity Account --message Update --stage PostOperation --filtering-attributes Telephone1`
-appends a step whose handler is **`Handle<Message>`** (e.g. `HandleUpdate(IUpdatePostContext<Account> ctx)`,
+appends a step whose handler is **`Handle<Message>`** (e.g. `HandleUpdate(HandleUpdateContext ctx)`,
 or the `--handler <Method>` name). `OnExecute` stays the first step's handler; don't rename generated
 handlers. The plugin is now multi-step: harness tests must state the trigger (`.OnUpdate()` ...).
 
@@ -87,7 +87,7 @@ Registered **message-level** (empty entity, as Dataverse requires). Scope it:
 RegisterStep().OnAssociate().PostOperation().Sync()
     .ForRelationship("contact_customer_accounts")     // (schemaName, params additionalSchemaNames)
     .Handle(OnExecute);
-// OnExecute(IAssociatePostContext<Contact> ctx): ctx.Request.Target (EntityReference),
+// OnExecute(OnExecuteContext ctx): ctx.Request.Target (EntityReference),
 // ctx.Request.Relationship.SchemaName, ctx.Request.RelatedEntities
 ```
 
@@ -101,8 +101,9 @@ RegisterStep().OnAssociate().PostOperation().Sync()
 
 Use the generated **`{Handler}Context`** (e.g. `private void OnExecute(OnExecuteContext ctx)`) - Vela's recommended
 signature: it derives from the message context, stays stable when images change, and types `ctx.PreImage` /
-`ctx.PostImage` to the captured columns. `vela add plugin` scaffolds the message context (`ICreatePreContext<T>`...):
-switch it. A context that doesn't match the step is VELA015. Add `using Microsoft.Xrm.Sdk;` for `Money`,
+`ctx.PostImage` to the captured columns. `vela add plugin` / `add step` generate it; keep it (it also applies to
+`On<TRequest>()`, the `On{X}()` extensions from `vela models --messages/--custom-apis` and `OnAsyncOnly<T>()`, not to
+`OnMessage<T>()` - use `On<TRequest>()` there). Hand-written plugins must be `partial` (VELA014). A context that doesn't match the step is VELA015. Add `using Microsoft.Xrm.Sdk;` for `Money`,
 `EntityReference`, `InvalidPluginExecutionException` (generated files don't import it).
 
 - **Target: `ctx.Request.Target`** - a typed `Account` over the live InputParameters: setting a property
@@ -147,7 +148,7 @@ using Vela.DI;
 protected override void ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)
     => services.AddScoped<IAccountDescriptionDefault>(r => new AccountDescriptionDefault(r.GetRequiredService<IOrganizationService>()));
 
-private void HandleUpdate(IUpdatePostContext<Account> ctx)
+private void HandleUpdate(HandleUpdateContext ctx)
     => ctx.GetRequiredService<IAccountDescriptionDefault>().Execute(ctx.Request.Target);
 ```
 

@@ -133,16 +133,21 @@ async function genInstructions() {
 // guard itself (base64 of hooks/bin/guard.sh) instead of pointing at a path. Fails closed and loud
 // if it cannot decode.
 async function genHooks() {
-  const guard = await fs.readFile(path.join(root, "hooks", "bin", "guard.sh"));
-  const b64 = guard.toString("base64");
-  const bash =
-    `g="$(printf %s '${b64}' | base64 -d 2>/dev/null || printf %s '${b64}' | base64 -D 2>/dev/null)"; ` +
-    `[ -n "$g" ] || { echo 'vela apply-guard: cannot decode the embedded guard (base64 missing?)' >&2; exit 2; }; ` +
-    `sh -c "$g" vela-guard cp`;
+  const embed = async (file, label) => {
+    const b64 = (await fs.readFile(path.join(root, "hooks", "bin", file))).toString("base64");
+    return (
+      `g="$(printf %s '${b64}' | base64 -d 2>/dev/null || printf %s '${b64}' | base64 -D 2>/dev/null)"; ` +
+      `[ -n "$g" ] || { echo 'vela ${label}: cannot decode the embedded guard (base64 missing?)' >&2; exit 2; }; ` +
+      `sh -c "$g" vela-${label} cp`
+    );
+  };
+  const hooksList = [
+    { type: "command", bash: await embed("guard.sh", "apply-guard"), timeoutSec: 10 },
+  ];
   const config = (where) => ({
     _generated: `by scripts/sync-copilot.mjs from hooks/bin/guard.sh (${where}) - do not edit by hand`,
     version: 1,
-    hooks: { preToolUse: [{ type: "command", bash, timeoutSec: 10 }] },
+    hooks: { preToolUse: hooksList },
   });
   const write = async (rel, where) => {
     const dst = path.join(root, rel);

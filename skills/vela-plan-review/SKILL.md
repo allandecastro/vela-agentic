@@ -1,7 +1,7 @@
 ---
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
-compatibility: "vela CLI >= 0.26.3 (Vela.Plugins >= 0.38.0); dotnet SDK."
+compatibility: "vela CLI >= 0.27.0 (Vela.Plugins >= 0.39.0); dotnet SDK."
 ---
 
 # Review the plan (self-grilling)
@@ -70,7 +70,10 @@ Announce: `Using vela-plan-review to grill the plan`.
      gotcha; on Update "column not sent" vs "column cleared"; a `PluginPipeline` case when the step must
      (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
-   retire, with ids), acceptance cases,
+   retire, with ids), acceptance cases (the rule's case ids), and **write the rules into the registry now** - this is
+   the design phase, the only one where `docs/rules/` may change (with the human; a new or
+   changed rule is `Status: proposed (by <slug>)`, a retired one keeps its text). Commit the Canvas + registry
+   before any test: that commit is the frozen spec the build is checked against.
    assumptions, open questions - one line per section for a simple story.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,

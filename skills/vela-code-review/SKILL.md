@@ -1,7 +1,7 @@
 ---
 name: vela-code-review
 description: Use once a plugin change's tests are green and analyzers are clean, before the apply gate, to review the diff for correctness, spec-fidelity, and Dataverse pitfalls.
-compatibility: "vela CLI >= 0.26.3 (Vela.Plugins >= 0.38.0); dotnet SDK."
+compatibility: "vela CLI >= 0.27.0 (Vela.Plugins >= 0.39.0); dotnet SDK."
 ---
 
 # Review the change before the apply gate
@@ -42,6 +42,13 @@ Announce: `Using vela-code-review to review the change`.
 5. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix, re-verify
    (`vela-plugin-authoring` / `vela-test-harness`), review again. Nits are optional.
 6. Record the findings in the Build Report (`references/build-report-template.md`).
+
+## Spec check (deterministic, before dispatching the reviewer)
+
+Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/vela-builds/<slug>.md` in the project (the
+pack is the folder holding `skills/`). It fails when the registry changed outside the rules the Canvas declares,
+a rule was deleted instead of retired, or an existing test was modified / deleted for a rule the story does not
+change. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review.
 
 ## Who reviews: the isolated reviewer by default
 
