@@ -234,3 +234,15 @@ public sealed class RecalcAccountRequest : CustomApiRequest
   the publisher prefix is not rejected locally** - review is the guard (`vela apply --solution` rejects it).
 - Callers: `service.Execute(new RecalcAccountRequest { ... }).ToResponse<RecalcAccountResponse>()`
   (`using Vela.Context;`); a bound API needs `Target` set on the request.
+
+## Platform services - decide in the Canvas, read the Vela guide for the API
+
+| Need | Use | Guide |
+| --- | --- | --- |
+| A message the user sees (business error) | a localized key: `throw ctx.BusinessError("KEY", args)` / `ctx.GetMessage`; the source (in-code dictionary, a Dataverse labels table, String (RESX) web resources) is the project's convention - ask the human | [localization](https://raw.githubusercontent.com/allandecastro/vela/main/docs/guides/localization.md) |
+| A value that differs per environment (URL, threshold, id, feature flag) | an environment variable: `ctx.GetEnvironmentVariable("pfx_Name")` / `GetEnvironmentVariableAs<T>` (secrets stay in secure config) | [environment variables](https://raw.githubusercontent.com/allandecastro/vela/main/docs/guides/environment-variables.md) |
+| Reference data read on every execution | `IPluginCacheService` (per-organization, with a TTL recorded in the Canvas); never cache data read as the calling user across users | [caching](https://raw.githubusercontent.com/allandecastro/vela/main/docs/guides/caching.md) |
+| Operational logs (Application Insights + trace log) | `ctx.LogInformation` / `LogWarning` / `LogError`; `ctx.Trace` stays for debug detail | [telemetry](https://raw.githubusercontent.com/allandecastro/vela/main/docs/guides/telemetry.md) |
+| Behaviour that depends on the user's rights | a test with `WithSecurity(...)` (roles, business units, teams) | [security model](https://raw.githubusercontent.com/allandecastro/vela/main/docs/guides/security-model.md) |
+| Harness and org disagree | check what the harness does not model before suspecting the code | [limitations](https://raw.githubusercontent.com/allandecastro/vela/main/docs/reference/limitations.md) |
+
