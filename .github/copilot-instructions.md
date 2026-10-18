@@ -88,7 +88,12 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    `apply`. No `--auto-approve` unless the user explicitly authorized it for this run. An **optional
    hook** (`hooks/`) **denies** `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1`
    (an inline prefix does not count); the rule holds without it.
-7. **Prefer generated code.** Regenerate models; never hand-edit generated files.
+7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
+   tests) changes only in the design phase, with the human; in the build it is read-only, and a failing
+   regression test means the code is wrong. An **optional hook** (`hooks/`, spec-guard) asks the human before
+   any write to `docs/rules/` unless the host was started with `VELA_SPEC_EDIT=1`; `tools/spec-check.py` checks
+   it at review.
+8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)
 
