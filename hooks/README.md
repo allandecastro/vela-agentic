@@ -1,17 +1,8 @@
-# Hooks - apply-guard and spec-guard (optional, dual-target)
+# Hook - apply-guard (optional, dual-target)
 
 A skill *asks* the agent to behave; a **hook is executed by the host, not the model**, so it is a
 deterministic guardrail. This is **optional hardening** - the pack works without it - with one job,
-wired for both **Claude Code** and **GitHub Copilot**. Two guards:
-
-| Guard | Protects | Opened by (env of the host process) |
-| --- | --- | --- |
-| `bin/guard.sh` (apply-guard) | the live org: `vela apply` / `--auto-approve` | `VELA_APPLY_APPROVED=1` |
-| `bin/spec-guard.sh` (spec-guard) | the functional spec of the tests: writes to `docs/rules/**` | `VELA_SPEC_EDIT=1` |
-
-Both read the variable from the environment the host was **started** from, e.g. `VELA_SPEC_EDIT=1 claude`
-or `export VELA_SPEC_EDIT=1` before `copilot`. A prefix the agent types inside its own command does not count.
-The sections below describe the apply-guard; the spec-guard is at the end.
+wired for both **Claude Code** and **GitHub Copilot** from a single script, `bin/guard.sh`.
 
 ## What it does
 
@@ -106,19 +97,3 @@ once: ask the agent to run `vela apply -p x.nupkg` and confirm it is blocked.
 - Copilot: active when the plugin is installed (`hooks.json`) or `.github/hooks/vela.json` is present
   in the repository; set `"disableAllHooks": true` or remove the file to disable.
 - Edit only `bin/guard.sh`, then run `node scripts/sync-copilot.mjs` and `sh hooks/test/guard.test.sh`.
-
-## spec-guard (the functional spec of the tests)
-
-`bin/spec-guard.sh` is a **pre-tool** hook on the file-editing tools and the shell. The rules registry
-(`docs/rules/**`) is the functional spec of the tests: it changes only in the **design** phase, with the human.
-Any write to it - `Write` / `Edit` / `MultiEdit` on a `docs/rules/` path, or a shell command that writes there
-(`>`, `tee`, `sed -i`, `mv`/`cp`/`rm`, `git rm|mv|checkout|restore`, ...) - is:
-
-- **Claude Code:** sent to the human for confirmation (`permissionDecision: "ask"`) - a design change is approved
-  on screen; an unexpected one during the build is visible;
-- **Copilot** (no ask): **denied** (exit 2).
-
-Reads (`cat`, `grep`, `git log`) are allowed. A session started with `VELA_SPEC_EDIT=1` (a design session the
-human runs) passes. Behaviour is pinned by `test/spec-guard.test.sh`. The deterministic counterpart at review
-is `tools/spec-check.py` (registry changes vs the Canvas, regression tests vs their `Case` ids).
-

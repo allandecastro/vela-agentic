@@ -143,10 +143,9 @@ async function genHooks() {
   };
   const hooksList = [
     { type: "command", bash: await embed("guard.sh", "apply-guard"), timeoutSec: 10 },
-    { type: "command", bash: await embed("spec-guard.sh", "spec-guard"), timeoutSec: 10 },
   ];
   const config = (where) => ({
-    _generated: `by scripts/sync-copilot.mjs from hooks/bin/guard.sh + spec-guard.sh (${where}) - do not edit by hand`,
+    _generated: `by scripts/sync-copilot.mjs from hooks/bin/guard.sh (${where}) - do not edit by hand`,
     version: 1,
     hooks: { preToolUse: hooksList },
   });
@@ -160,7 +159,7 @@ async function genHooks() {
   // Copilot CLI 1.0.91 (verified live) does not load .github/hooks/*.json; it loads repo hooks from the
   // `hooks` key of .github/copilot/settings.json - and only in a trusted folder.
   const settings = {
-    _generated: "by scripts/sync-copilot.mjs from hooks/bin/guard.sh + spec-guard.sh (Copilot CLI repo settings) - do not edit by hand",
+    _generated: "by scripts/sync-copilot.mjs from hooks/bin/guard.sh (Copilot CLI repo settings) - do not edit by hand",
     hooks: config("").hooks,
   };
   const dst = path.join(root, ".github", "copilot", "settings.json");

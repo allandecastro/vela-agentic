@@ -71,7 +71,7 @@ Announce: `Using vela-plan-review to grill the plan`.
      (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
    retire, with ids), acceptance cases (the rule's case ids), and **write the rules into the registry now** - this is
-   the design phase, the only one where `docs/rules/` may change (the `spec-guard` hook asks the human; a new or
+   the design phase, the only one where `docs/rules/` may change (with the human; a new or
    changed rule is `Status: proposed (by <slug>)`, a retired one keeps its text). Commit the Canvas + registry
    before any test: that commit is the frozen spec the build is checked against.
    assumptions, open questions - one line per section for a simple story.

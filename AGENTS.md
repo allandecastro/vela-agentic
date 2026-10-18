@@ -84,9 +84,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    (an inline prefix does not count); the rule holds without it.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
    tests) changes only in the design phase, with the human; in the build it is read-only, and a failing
-   regression test means the code is wrong. An **optional hook** (`hooks/`, spec-guard) asks the human before
-   any write to `docs/rules/` unless the host was started with `VELA_SPEC_EDIT=1`; `tools/spec-check.py` checks
-   it at review.
+   regression test means the code is wrong. `tools/spec-check.py` checks it at review (and in CI).
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)
