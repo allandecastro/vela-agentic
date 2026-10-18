@@ -99,12 +99,12 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 40/41 runs pass.
+Latest campaign per scenario - 42/42 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
-| `account-deactivate-cascade` | 2026-10-17c | **0/1** | 1/1 | 0/1 | not ready |
+| `account-deactivate-cascade` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
 | `account-default-description` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `account-delete-guard` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
 | `account-erp-outbound` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
@@ -117,6 +117,7 @@ Latest campaign per scenario - 40/41 runs pass.
 | `apply-gate` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `bulk-update-multiple` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `contact-association` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
+| `contact-shared-default` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
 | `debug-filter-miss` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `debug-live-trace` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
