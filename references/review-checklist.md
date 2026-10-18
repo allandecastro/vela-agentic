@@ -24,7 +24,7 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
   decision is contradicted.
 - **Rules registry:** a rule added / changed / retired by the diff but not reflected in `docs/rules/<table>.md` -
   **Required**; behaviour that contradicts an active rule without a human decision recorded (and the old rule
-  retired) - **Required**.
+  retired) - **Required**; a rule deleted from the file instead of marked `retired` (history lost) - **Required**.
 - **Unconfirmed solution / publisher prefix:** must be an open question blocking the apply gate -
   **Required** if not listed.
 - **Debug fix scope** (`vela-debug-plugin`): a diff touching more than the cause and its repro tests -
