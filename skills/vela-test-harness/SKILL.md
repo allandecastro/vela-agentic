@@ -69,11 +69,15 @@ Announce: `Using vela-test-harness to <purpose>`.
   `docs/rules/<table>.md`, written at design). A test without a case id, or with an id not in the registry, is a
   review finding.
 - **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code
-  is wrong - fix the code. Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
+  is wrong - fix the code, in its own commit, and record it in the Build Report (a regression found, not part
+  of the story). Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
   as `change` or `retire`, and keep it faithful to the case's Given/When/Then. Harness plumbing that leaves the
   case intact - e.g. adding `.OnCreate()` once the plugin gains a second step - is allowed: same data, action
   and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
-  wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build.
+  wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
+  `Implementation:` / `Tests:` trace lines aside).
+- **A removed step** is tested too: through the pipeline, the message no longer runs the handler
+  (`Assert.Empty(p.ExecutionLog)`), and `vela plan` shows the `delete step`.
 
 ## Rationalizations (excuse → rebuttal)
 

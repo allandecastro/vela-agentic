@@ -40,7 +40,8 @@ Announce: `Using vela-code-review to review the change`.
 4. Emit findings, most severe first: `severity - file:line - what - why - fix`, severity **Critical**,
    **Required** or **Nit**.
 5. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix, re-verify
-   (`vela-plugin-authoring` / `vela-test-harness`), review again. Nits are optional.
+   (`vela-plugin-authoring` / `vela-test-harness`), review again. Nits are optional. A finding on a rule's
+   text in `docs/rules/` is not fixed in the build: it goes to the Gate as an open item for the human.
 6. Record the findings in the Build Report (`references/build-report-template.md`).
 
 ## Spec check (deterministic, before dispatching the reviewer)

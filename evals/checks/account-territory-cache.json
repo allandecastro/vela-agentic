@@ -1,0 +1,70 @@
+{
+ "min_tests": 7,
+ "spec_check": true,
+ "package": true,
+ "steps": [
+  {
+   "message": "Create",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "address1_country"
+   ]
+  },
+  {
+   "message": "Update",
+   "entity": "account",
+   "stage": "PreOperation",
+   "mode": "Synchronous",
+   "filter": [
+    "address1_country"
+   ]
+  }
+ ],
+ "step_count": 3,
+ "require_src": [
+  {
+   "pattern": "IPluginCacheService",
+   "why": "reference data is cached"
+  },
+  {
+   "pattern": "GetOrCreate\\(",
+   "why": "read-through cache"
+  },
+  {
+   "pattern": "TimeSpan\\.From",
+   "why": "explicit TTL"
+  },
+  {
+   "pattern": "Query\\.For<Territory>",
+   "why": "typed query on generated models"
+  }
+ ],
+ "forbid_src": [
+  {
+   "pattern": "Service\\.(Update|Create)\\(",
+   "why": "PreOperation edits ctx.Request.Target; no write-back"
+  },
+  {
+   "pattern": "new QueryExpression|GetAttributeValue<",
+   "why": "typed query"
+  }
+ ],
+ "output_contains": [
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "\\bWhen\\b[\\s\\S]*\\bThen\\b",
+   "why": "the new rule, Given/When/Then"
+  },
+  {
+   "glob": "**/logs/human-questions.md",
+   "pattern": "stale|fresh|TTL|cache|how (long|soon)|delay",
+   "why": "the acceptable staleness was asked, not decided alone"
+  }
+ ],
+ "canvas_contains": [
+  "TTL|cache",
+  "SystemService|SYSTEM|same for every user|reference data"
+ ]
+}
