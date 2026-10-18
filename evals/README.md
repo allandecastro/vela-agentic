@@ -35,15 +35,15 @@ The lint warns about any non-meta skill no scenario exercises.
 | `diagnosing-vela` | diagnose-failed-run |
 | `using-vela` | ambiguous-story-grill, apply-gate |
 | `vela-apply` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-rule-conflict, apply-gate, contact-association, debug-live-trace, deployed-plugin-change, org-models-and-plan, regression-test-guard |
-| `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
+| `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, contact-shared-default, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `vela-custom-api` | account-credit-function, lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss, debug-live-trace |
 | `vela-grill` | account-rule-conflict, ambiguous-story-grill, contact-association |
 | `vela-models` | account-credit-function, account-erp-outbound, org-models-and-plan |
-| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, deployed-plugin-change, lead-score-custom-api, regression-test-guard |
-| `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, deployed-plugin-change, org-models-and-plan, regression-test-guard |
-| `vela-scaffold` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
-| `vela-test-harness` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
+| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, contact-shared-default, deployed-plugin-change, lead-score-custom-api, regression-test-guard |
+| `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, debug-filter-miss, deployed-plugin-change, org-models-and-plan, regression-test-guard |
+| `vela-scaffold` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
@@ -99,12 +99,12 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 40/41 runs pass.
+Latest campaign per scenario - 42/42 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
-| `account-deactivate-cascade` | 2026-10-17c | **0/1** | 1/1 | 0/1 | not ready |
+| `account-deactivate-cascade` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
 | `account-default-description` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `account-delete-guard` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
 | `account-erp-outbound` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
@@ -117,6 +117,7 @@ Latest campaign per scenario - 40/41 runs pass.
 | `apply-gate` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `bulk-update-multiple` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `contact-association` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
+| `contact-shared-default` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
 | `debug-filter-miss` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `debug-live-trace` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |

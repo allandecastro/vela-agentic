@@ -18,7 +18,8 @@ behaviour-neutral refactor updates the code, then is **synced** back into the Ca
 business rules on a table (template at the end). The Canvas names the rules the story adds, changes or retires
 (`rules:`). The registry is the **functional spec of the tests**: each rule's cases carry an id (`ACC-002/C1`)
 and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the **design** phase and is
-**read-only during the build** (`tools/spec-check.py` checks it at review).
+**read-only during the build** (`tools/spec-check.py` checks it at review) - except a rule's trace lines
+(`Implementation:` / `Tests:`), which are synced to the code like the Canvas (e.g. logic moved into a service).
 
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
 

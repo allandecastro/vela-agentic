@@ -83,7 +83,9 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   among our own steps on one table+message+stage.
 - **SOLID / DRY:** duplicated logic (across plugins or between one plugin's steps; a shared constant with
   the rule copied into each handler still counts) - **Required**. Handlers stay thin, real logic in a
-  service where it earns it, existing services/plugins reused, no service for a one-liner.
+  service where it earns it, existing services/plugins reused, no service for a one-liner. A service
+  trigger met (second consumer, data access plus decisions, an oversized handler) with logic left inline
+  - **Required** for a second consumer, **Nit** otherwise.
 - **Stage:** a PostOperation `Update` of its own primary record where a PreOperation Target edit would do
   - **Required**, unless the Canvas records why.
 - **Recursion:** a write that re-triggers its own step - **Critical**, even when a `ctx.Depth` check or

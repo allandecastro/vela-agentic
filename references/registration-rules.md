@@ -70,6 +70,14 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
 ### Service needed vs inline (SOLID/DRY)
 - Thin handler (SRP); real logic in a service when reusable or worth isolated tests →
   `vela add service <Name> --entity <E>`, injected via DI. Reuse an existing service first.
+- **Triggers - extract a service when any holds** (record which in the Canvas `service:` reasoning):
+  1. **A second consumer** - another plugin, Custom API or step on another table needs the same logic
+     (in this story or already in the code). Move the logic out of the first plugin into the service;
+     its existing tests stay unchanged and green (a move, not a behaviour change).
+  2. **Data access plus decisions** - the logic queries/writes other tables *and* decides on the result:
+     the service is tested alone, the handler test only checks the wiring.
+  3. **The handler outgrows itself** - more than one business decision, or roughly 30+ lines of logic.
+  4. **An outbound call** - always a service (Integrations, below).
 - No service for a one-line, single-use operation (ceremony). Shared by the steps of **one** plugin → a
   private helper (+ constant); shared **across plugins** → a service. A shared constant alone is not
   shared logic: the rule lives once in the helper; each step's own guard wraps the call.

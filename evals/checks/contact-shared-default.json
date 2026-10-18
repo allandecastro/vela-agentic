@@ -1,0 +1,27 @@
+{
+ "min_tests": 5,
+ "spec_check": true,
+ "package": true,
+ "steps": [
+  {"message": "Create", "entity": "account", "stage": "PreOperation", "mode": "Synchronous", "filter": ["name"]},
+  {"message": "Create", "entity": "contact", "stage": "PreOperation", "mode": "Synchronous"}
+ ],
+ "step_count": 2,
+ "require_src": [
+  {"pattern": "Created via Vela plugin", "why": "the rule lives once (DRY)", "min": 1, "max": 1}
+ ],
+ "forbid_src": [
+  {"pattern": "Service\\.(Update|Create)\\(", "why": "PreOperation edits ctx.Request.Target; no write-back"}
+ ],
+ "output_contains": [
+  {"glob": "**/src/**/Services/*.cs", "pattern": "Created via Vela plugin", "why": "the shared rule sits in a service"},
+  {"glob": "**/docs/rules/contact.md", "pattern": "\\bWhen\\b[\\s\\S]*\\bThen\\b", "why": "the contact rule, Given/When/Then"}
+ ],
+ "require_tests": [
+  {"pattern": "Trait\\(\"Case\", \"CON-\\d+/C", "why": "new tests carry their case id"}
+ ],
+ "canvas_contains": [
+  "service",
+  "second consumer|consumer|both plugins|reuse"
+ ]
+}
