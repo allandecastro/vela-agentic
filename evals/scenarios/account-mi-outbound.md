@@ -51,6 +51,7 @@ identity → **Critical**; (b) the step switched to Sync → **Required** (the s
 ## Human answers (evaluator only - never shown to the acting agent)
 - Target solution / publisher prefix: `ZavaSales` / `zava`.
 - Payload `{"id": "<guid>", "name": "<name>"}`; any 2xx = success; no retry.
+- If asked whether the URL / scope differ per environment: "one API for all environments - keep them in code."
 - The org requires signed packages for managed identity; use the dev certificate for the preview; production
   signing is done by ops with the real certificate.
 - Anything not listed: "Use the skills' defaults and record it as an assumption."
