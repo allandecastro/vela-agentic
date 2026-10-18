@@ -111,7 +111,7 @@ Latest campaign per scenario - 43/43 runs pass.
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-rule-conflict` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
 | `account-second-behaviour` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
-| `account-territory-cache` | 2026-10-18e | **1/1** | 1/1 | 1/1 | ready |
+| `account-territory-cache` | 2026-10-18f | **1/1** | 1/1 | 1/1 | ready |
 | `account-typed-images` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-update-recursion` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `ambiguous-story-grill` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
