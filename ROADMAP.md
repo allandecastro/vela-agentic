@@ -74,27 +74,30 @@ independent of the framework/CLI NuGet releases.
 - [x] The isolated `vela-reviewer` is the default review path; self-review is a labelled fallback
 - [x] `scripts/check.sh` = the CI, run locally by a pre-push hook (`git config core.hooksPath .githooks`)
 
-## Next - from "passes" to "guaranteed"
+## v0.4 (2026-10) - guaranteed runs, lean pack, business rules
 
-- [ ] **Hidden criteria:** the acting agent gets only the story + setup; the scenario's expected outcome
-      and planted violations stay with the evaluator
-- [ ] **Separate grader:** a second agent judges the produced artifacts against the scenario, citing
-      evidence - the actor no longer writes its own verdict
-- [ ] **Deterministic checks** per scenario (`evals/checks/<scenario>.sh`), re-run by the evaluator on the
-      produced project: build, the test suite, the registration (stage, filter, images), forbidden
-      patterns, `plan.json` operations - objective and repeatable
-- [ ] **Repeated runs:** N runs per scenario, a recorded pass rate; "ready" = every run passes
-- [ ] Run records pin the vela CLI, framework and model versions
+- [x] **Guaranteed runs:** hidden criteria, deterministic checks (`evals/checks/`), separate grader, planted
+      violations replayed against a fresh reviewer, N runs per scenario, pass rate generated into
+      `evals/README.md`; run records pin the CLI, framework and model versions
+- [x] Scenarios for outbound calls (Integrations, secure config), typed bound Custom API, Delete, deactivate
+      (Update on `statecode`), debug from the real trace log, changing a deployed plugin, `diagnosing-vela`
+- [x] **Lean pack** (29.8k -> 19.4k words): skills drive Vela; API/CLI detail is discovered (`--help`, the
+      generated code, Vela's `docs/llms.txt`), not copied; no version stamps in running text
+- [x] **Rules registry** (`docs/rules/<table>.md`, English Given/When/Then, read at intake, contradictions
+      asked) and the **test intent guard** (cases as the functional spec of the tests, `[Trait("Case", ...)]`,
+      registry read-only in the build, `tools/spec-check.py`)
+- [x] Every Vela gap found by the evals reported to and fixed in Vela (WithService, typed images on choice
+      columns, `{Handler}Context` in the scaffold, VELA025/026/027, ...) - pack verified on vela 0.27 /
+      Vela.Plugins 0.39
 
+## Next
 
-- [x] Gotcha scenarios (association, typed images, bulk UpdateMultiple) pass blind (association = the
-      agent reports the Vela limit and stops); deep insert is a caller-side gotcha, not a plugin scenario
-- [ ] Skills for relationships / alternate keys; web resources (`form-script`, `ribbon-script`) once supported
-- [ ] When Vela ships the reported fixes (stage flag on `vela add`, `add step` filtering attributes,
-      `Execute` honouring the registration, apply's `summary`, a `vela logs` command, ...): re-verify,
-      drop the workarounds in the skills, re-run the eight scenarios. (Reported upstream by the owner,
-      2026-09-29; this repo does not file upstream issues.)
-- [ ] Compatibility matrix (skill version to CLI version) once the first CLI break lands
-- [ ] Scoped `vela-security-review` (tiered Always/Ask-first/Never for plugins; align with the harness
-      security plan, don't duplicate)
-- [ ] `vela-simplify` gate (behavior-preserving) if plugin diffs start accreting complexity
+- [ ] Omitted Vela features, as decisions + pointers (no API copy): localized messages (`ctx.BusinessError`;
+      source asked to the human), environment variables, cache, telemetry (`ctx.Logger`), `WithSecurity` in
+      tests, the harness limitations page
+- [ ] A concrete trigger to extract a service (second consumer, size, testability) + a scenario
+- [ ] Re-run `account-deactivate-cascade` x3; a managed identity + signing scenario (now unblocked)
+- [ ] Small follow-ups from the graders: failing test names in the Build Report, a pending state for a rule
+      being retired, testing a step removal, a regression fix in its own commit
+- [ ] Later: a dedicated agent to migrate an existing plugin project to Vela
+- [ ] Web resources (`form-script`, `ribbon-script`) - out of scope while in preview

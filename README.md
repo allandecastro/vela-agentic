@@ -107,6 +107,21 @@ target project and reused as the PR body:
 - a **Build Report** at the deploy gate (what was built, evidence, the exact `vela apply` to run),
   which the Canvas grows into. It is a **living spec**: requirement changes update the Canvas first.
 
+### Business rules and the tests that prove them
+
+The agent also keeps a **rules registry** in the target project, `docs/rules/<table>.md` (one file per
+table, the one that triggers the rule): every active business rule written in English as
+**Given / When / Then / Otherwise**, with its numbered cases (`ACC-002/C1`), the plugin that implements it,
+and the history of retired rules. It is read at the start of every story - to reuse what exists and to
+**ask the human** when a story contradicts a rule - and it is the **functional spec of the tests**: each
+test carries its case id (`[Trait("Case", "ACC-002/C1")]`).
+
+The registry is written in the **design** phase only. In the **build** it is read-only: a failing
+regression test means the code is wrong, never the test. `tools/spec-check.py` checks this
+deterministically at review (and in CI): no registry edit after the build started, no undeclared rule
+change, no deleted rule (retired, with its text kept), no regression test bent for a rule the story does
+not change. See [`examples/`](examples/) for a story built end to end (Build Report, plugin, tests).
+
 ## What's inside
 
 | Area | Contents |
@@ -114,7 +129,9 @@ target project and reused as the PR body:
 | `skills/` | 13 portable Agent Skills (`SKILL.md`), read by Claude Code directly. Every skill is model-invoked and can also be run by name (`/vela-grill`) |
 | `agents/` | `vela-builder` (the gated end-to-end build loop) + `vela-reviewer` (isolated read-only code reviewer), as `<name>.agent.md` - loaded by Claude Code and by a Copilot CLI plugin as-is |
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
-| `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills) |
+| `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills): hidden criteria, deterministic checks, separate grader |
+| `examples/` | A story built end to end by the agent: the Build Report, the plugin and its tests, unedited |
+| `tools/` | `spec-check.py` - the deterministic check of the rules registry and the regression tests (run at review / in CI) |
 | `hooks/` | Optional dual-target guard: a pre-tool hook that hard-blocks `vela apply` without approval (Claude Code + Copilot) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |
 | `.claude-plugin/` | Claude Code distribution: plugin marketplace + plugin manifest |
@@ -198,8 +215,9 @@ all copied from tool output, never estimated), so a run is auditable and replaya
 (`hooks/`, one script wired for Claude Code and GitHub Copilot) makes the deploy gate deterministic:
 it **denies `vela apply`** unless a human started the session with `VELA_APPLY_APPROVED=1` (the agent
 cannot approve itself with an inline prefix). See `hooks/README.md` for
-the per-host wiring and caveats. `scripts/check.sh` lints the pack, runs the guard's 78 table tests and
-checks every generated surface is in sync; it runs as a local pre-push hook and in CI (same script).
+the per-host wiring and caveats. `tools/spec-check.py` is the deterministic check of the business rules and
+the regression tests (above). `scripts/check.sh` lints the pack, runs the guard's table tests and checks every
+generated surface is in sync; it runs as a local pre-push hook and in CI (same script).
 
 ## Loop engineering
 
@@ -209,24 +227,25 @@ command or missing guardrail is a **skill defect** to fix, then a loophole to cl
 "ready" only when it passes with no blocking finding. See `evals/README.md` (scenarios, coverage table)
 and `evals/runs/` (every run, failures included).
 
-**Current state (2026-09-29):** 11 scenarios, every skill covered, all passing - one against a real
-Dataverse dev org (real `vela models` and `vela plan`), plus one real `vela apply` verified end to end.
+Each run is graded the hard way: the acting agent only sees the story (**hidden criteria**); the
+evaluator re-builds, re-runs the tests, reads the registration from the compiled dll and runs a read-only
+`vela plan` (**deterministic checks**); a **separate grader** judges the rest and replays **planted
+violations** against a fresh reviewer. Campaigns run each scenario several times; the pass rate per scenario
+is generated into `evals/README.md`. The dev org is used read-only, except a small evaluator-deployed
+fixture (`VelaEvals`) for the scenarios that debug or change a live plugin.
 
-**What that does and doesn't prove** - today a pass means: one run of a fresh agent, which did not read
-earlier run records, reached the expected outcome and recorded its evidence (build and test output,
-plan JSON). It is **not** yet a guarantee: most scenarios hand the agent their own success criteria,
-the verdict is written by the agent that did the work, and each scenario was run once. The roadmap
-tracks the next step: hidden criteria, a separate grader, deterministic checks re-run on the produced
-project, and repeated runs with a pass rate.
+**The pack is kept lean on purpose:** skills teach how to *drive* Vela (process, decisions, gates, red
+flags) and point to `vela <command> --help`, the generated code and Vela's own docs
+([`docs/llms.txt`](https://raw.githubusercontent.com/allandecastro/vela/main/docs/llms.txt)) for API
+detail, instead of copying the framework into the skills.
 
 ## Compatibility
 
 Skills target the public `vela` CLI command surface and discover exact flags at runtime, so
 additive CLI changes do not break them. Each skill states its floor in `compatibility`
-(currently **vela 0.21.0 / Vela.Plugins 0.29.1**, also exercised on 0.29.3); the verified version is in
-`references/cli-surface.md` and CI refuses a floor above it. Known framework limits are documented
-where they matter (e.g. Associate/Disassociate can't be registered at message level yet, so such
-stories are reported as blocked). See [`ROADMAP.md`](ROADMAP.md) for the policy and what is planned.
+(currently **vela 0.27.0 / Vela.Plugins 0.39.0**); the verified version is in `references/cli-surface.md`
+and CI refuses a floor above it. A framework gap found by an eval is reported to the Vela repo, not
+worked around in the skills. See [`ROADMAP.md`](ROADMAP.md) for the policy and what is planned.
 
 ## Contributing
 
