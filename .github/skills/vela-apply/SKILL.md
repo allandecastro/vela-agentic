@@ -26,7 +26,7 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
 2. **Package** - clear `artifacts/` (an earlier build leaves a package under the same name), then
    `dotnet build <Solution>.sln -c Release` (the plugin project packs on build into `artifacts/`).
    **Not `dotnet pack`**: run cold it exits 0 with `NU5128` and a package with **no assembly**. Check it:
-   `unzip -l artifacts/<Prefix>.Plugins.<ver>.nupkg | grep '<Prefix>.Plugins.dll'`, and record path + hash
+   `unzip -l artifacts/<PackageId>.<ver>.nupkg | grep '<Prefix>.Plugins.dll'`, and record path + hash
    (`shasum -a 256 <pkg>`). An `--integrations` project builds a second `<Prefix>.Integrations.<ver>.nupkg`:
    treat it the same way.
    - **Build it last.** Any Release build including the plugin project (tests too) repacks with a **new
@@ -37,6 +37,9 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    --pfx-credential <target>`; secrets via `--pfx-password-env` / `--pfx-base64-env`, never
    `--pfx-password` on a command line. No certificate → don't sign; record "unsigned - a human signs
    before apply". Unknown whether signing is required → `signed: unknown`, an open question at the gate.
+   A signed package is built under its **publisher-prefixed** id (`<prefix>_<Package>`, e.g.
+   `zava_Zava.Integrations`): `apply --solution` adds a missing prefix by rewriting the package, so it refuses a
+   signed one.
 4. **Connection** (`references/cli-surface.md`): headless (connection string, client secret env, or
    `--url` + `az login`); `-i` only with a human at a browser. Never echo a secret.
 5. **Confirm the solution (read-only):** `vela solution show <uniquename> --json <connection>`; its
@@ -48,7 +51,9 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    an Integrations-only story) is not created; include or omit it consistently, recorded in the Canvas.
    - Read every `diagnostics` line. `operations` must be a `package` operation plus **only** what the
      Canvas ships: an extra `create` is something that should not be in the package; an `update`/`delete`
-     on a registration the Canvas does not own is an open question that blocks the gate.
+     on a registration the Canvas does not own is an open question that blocks the gate. A Canvas step
+     **missing** from `operations` (e.g. "contains no plugin", even with exit 0) is not a clean preview:
+     find out why before the gate, or report it as a blocker.
    - `WithSecureConfigFrom("Name")` needs its value at deploy time (`--secure-config Name=@file` or
      `VELA_SECURE_CONFIG_Name`), never in a pasted command. Not holding it (usual) → preview **without**
      it, keep the "expects the secure configuration" diagnostic, record the value as an open item.
