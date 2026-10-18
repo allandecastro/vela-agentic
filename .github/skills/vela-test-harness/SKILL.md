@@ -66,8 +66,9 @@ Announce: `Using vela-test-harness to <purpose>`.
 ## Tests carry their functional case
 
 - Every test carries the id of the registry case it proves: `[Trait("Case", "ACC-002/C1")]` (cases are in
-  `docs/rules/<table>.md`, written at design). A test without a case id, or with an id not in the registry, is a
-  review finding.
+  `docs/rules/<table>.md`, written at design). No test without its functional
+  justification - technical ones included (a generated `Fires_On_*` proves a case's trigger: tag it with that
+  case). A test without a case id, or with an id not in the registry, fails `spec-check`.
 - **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code
   is wrong - fix the code, in its own commit, and record it in the Build Report (a regression found, not part
   of the story). Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
