@@ -43,6 +43,13 @@ Announce: `Using vela-code-review to review the change`.
    (`vela-plugin-authoring` / `vela-test-harness`), review again. Nits are optional.
 6. Record the findings in the Build Report (`references/build-report-template.md`).
 
+## Spec check (deterministic, before dispatching the reviewer)
+
+Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/vela-builds/<slug>.md` in the project (the
+pack is the folder holding `skills/`). It fails when the registry changed outside the rules the Canvas declares,
+a rule was deleted instead of retired, or an existing test was modified / deleted for a rule the story does not
+change. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review.
+
 ## Who reviews: the isolated reviewer by default
 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the pasted diff, the Canvas, the

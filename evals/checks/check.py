@@ -69,6 +69,18 @@ def main():
     if exp.get("no_build"):
         return finish(scenario, work)
 
+    if exp.get("spec_check"):
+        # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.py against the
+        # setup's last commit (<base>), with the story's Canvas (the newest docs/vela-builds file not in <base>).
+        for repo in sorted({os.path.dirname(os.path.dirname(os.path.dirname(g))) for g in files(work, "**/docs/rules/*.md")}):
+            base = sh(f'git -C "{repo}" log --format=%H --grep="^refactor: simplify the empty check$" --grep="^baseline" -n 1')[1].strip() \
+                or sh(f'git -C "{repo}" rev-list --max-parents=0 HEAD')[1].strip()
+            new_docs = [d for d in sh(f'git -C "{repo}" diff --name-only --diff-filter=A {base}...HEAD -- docs/vela-builds')[1].split() if d.endswith(".md")]
+            if not check("story Canvas found for spec-check", new_docs, ", ".join(new_docs)):
+                continue
+            code, out = sh(f'python3 "{os.path.join(ROOT, "tools", "spec-check.py")}" --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
+            check("spec-check passes (registry read-only in the build, regression tests not bent)", code == 0, out.strip()[-400:])
+
     slns = files(work, "**/*.sln")
     if exp.get("expect_no_solution"):
         check("nothing scaffolded (no .sln)", not slns, ", ".join(os.path.relpath(s, work) for s in slns))

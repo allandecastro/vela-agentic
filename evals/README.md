@@ -34,16 +34,16 @@ The lint warns about any non-meta skill no scenario exercises.
 | --- | --- |
 | `diagnosing-vela` | diagnose-failed-run |
 | `using-vela` | ambiguous-story-grill, apply-gate |
-| `vela-apply` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-rule-conflict, apply-gate, contact-association, debug-live-trace, deployed-plugin-change, org-models-and-plan |
-| `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan |
+| `vela-apply` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-rule-conflict, apply-gate, contact-association, debug-live-trace, deployed-plugin-change, org-models-and-plan, regression-test-guard |
+| `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `vela-custom-api` | account-credit-function, lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss, debug-live-trace |
 | `vela-grill` | account-rule-conflict, ambiguous-story-grill, contact-association |
 | `vela-models` | account-credit-function, account-erp-outbound, org-models-and-plan |
-| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, deployed-plugin-change, lead-score-custom-api |
-| `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, deployed-plugin-change, org-models-and-plan |
+| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, deployed-plugin-change, lead-score-custom-api, regression-test-guard |
+| `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, deployed-plugin-change, org-models-and-plan, regression-test-guard |
 | `vela-scaffold` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, lead-score-custom-api, org-models-and-plan |
-| `vela-test-harness` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan |
+| `vela-test-harness` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
@@ -70,6 +70,7 @@ One line each (title of the scenario file); the history lives in git and the lat
 - `scenarios/deployed-plugin-change.md` - change a plugin that is already deployed (a step goes away)
 - `scenarios/diagnose-failed-run.md` - turn a failed builder run into findings against the skills
 - `scenarios/lead-score-custom-api.md` - a callable lead-scoring operation
+- `scenarios/regression-test-guard.md` - a regression test fails - fix the code, not the test
 - `scenarios/org-models-and-plan.md` - real models and a real preview against a dev org
 
 ## Guaranteed runs (hidden criteria, separate grader, deterministic checks, N runs)

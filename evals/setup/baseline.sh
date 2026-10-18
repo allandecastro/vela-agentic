@@ -41,9 +41,9 @@ namespace zava.Plugins.Tests.Account.Plugins
             return target;
         }
 
-        [Fact] public void Null_description_is_defaulted() => Assert.Equal("Created via Vela plugin", Run(null).Description);
-        [Fact] public void Whitespace_description_is_defaulted() => Assert.Equal("Created via Vela plugin", Run("   ").Description);
-        [Fact] public void Given_description_is_untouched() => Assert.Equal("Keep me", Run("Keep me").Description);
+        [Fact, Trait("Case", "ACC-001/C1")] public void Null_description_is_defaulted() => Assert.Equal("Created via Vela plugin", Run(null).Description);
+        [Fact, Trait("Case", "ACC-001/C2")] public void Whitespace_description_is_defaulted() => Assert.Equal("Created via Vela plugin", Run("   ").Description);
+        [Fact, Trait("Case", "ACC-001/C3")] public void Given_description_is_untouched() => Assert.Equal("Keep me", Run("Keep me").Description);
     }
 }
 CS
@@ -85,6 +85,11 @@ Given an account whose Description is empty (null, "" or whitespace only)
 When the account is created
 Then its Description is set to "Created via Vela plugin"
 Otherwise (a non-empty Description) the Description is left as entered
+
+Cases (the functional spec of the tests - each test carries its id as [Trait("Case", "<id>")]):
+  - ACC-001/C1 Given no Description, When the account is created, Then Description = "Created via Vela plugin"
+  - ACC-001/C2 Given a whitespace-only Description, When the account is created, Then it is defaulted
+  - ACC-001/C3 Given a non-empty Description, When the account is created, Then it is left as entered
 
 Exceptions / assumptions:
   - A create that does not send Name does not fire the step (the step filters on Name)

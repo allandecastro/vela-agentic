@@ -1,0 +1,21 @@
+{
+ "min_tests": 5,
+ "spec_check": true,
+ "steps": [
+  {"message": "Create", "entity": "account", "stage": "PreOperation", "mode": "Synchronous", "filter": ["name"]},
+  {"message": "Update", "entity": "account", "stage": "PreOperation", "mode": "Synchronous", "filter": ["description"]}
+ ],
+ "step_count": 2,
+ "require_src": [
+  {"pattern": "IsNullOrWhiteSpace", "why": "the regression is fixed in the code"}
+ ],
+ "require_tests": [
+  {"pattern": "Trait\\(\"Case\", \"ACC-00[2-9]/C", "why": "new tests carry their case id"}
+ ],
+ "output_contains": [
+  {"glob": "**/docs/rules/account.md", "pattern": "ACC-00[2-9]", "why": "the new rule is in the registry"}
+ ],
+ "canvas_contains": [
+  "regression|ACC-001/C2"
+ ]
+}

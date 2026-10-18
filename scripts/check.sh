@@ -17,6 +17,7 @@ for p in evals/checks/check.py evals/tools/brief.py; do python3 -m py_compile "$
 for j in evals/checks/*.json; do node -e "JSON.parse(require('fs').readFileSync('$j','utf8'))" || { echo "invalid JSON: $j"; exit 1; }; done
 
 sh hooks/test/guard.test.sh
+sh hooks/test/spec-guard.test.sh
 
 node scripts/sync-copilot.mjs >/dev/null
 if [ -n "$(git status --porcelain -- .github/skills .github/agents .github/hooks .github/copilot .github/copilot-instructions.md skills hooks.json evals/README.md)" ]; then

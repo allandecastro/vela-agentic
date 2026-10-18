@@ -25,6 +25,10 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 - **Rules registry:** a rule added / changed / retired by the diff but not reflected in `docs/rules/<table>.md` -
   **Required**; behaviour that contradicts an active rule without a human decision recorded (and the old rule
   retired) - **Required**; a rule deleted from the file instead of marked `retired` (history lost) - **Required**.
+- **Tests vs functional cases:** an existing (regression) test modified or deleted while its rule is not
+  `change`/`retire` in the Canvas - **Critical**; a modified test that no longer matches its case's
+  Given/When/Then (data, action, assertion) - **Required**; a test without a `Case` id - **Required**;
+  `docs/rules/` edited after the frozen-spec commit - **Critical** (`spec-check.py` reports these).
 - **Unconfirmed solution / publisher prefix:** must be an open question blocking the apply gate -
   **Required** if not listed.
 - **Debug fix scope** (`vela-debug-plugin`): a diff touching more than the cause and its repro tests -
