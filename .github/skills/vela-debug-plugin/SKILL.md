@@ -68,6 +68,9 @@ instrument → fix → regression-test - not trial and error.
    exact `vela inspect` / `vela plan` / `vela logs` commands against **that** org and aim the apply gate
    at it: an org you can reach does not ship the fix where the fault is.
 
+When the harness and the org disagree, read Vela's limitations page (`references/plugin-authoring-api.md`,
+*Platform services*) before suspecting the code: the harness is a faithful-but-partial model.
+
 ## Rationalizations (excuse → rebuttal)
 
 - "I'll just tweak and re-apply to see." → Guessing against a live org is slow and side-effecting.

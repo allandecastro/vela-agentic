@@ -11,7 +11,9 @@
   }
  ],
  "step_count": 1,
- "extra_packages": ["Integrations"],
+ "extra_packages": [
+  "Integrations"
+ ],
  "forbid_src": [
   {
    "pattern": "http://",
@@ -20,13 +22,13 @@
   {
    "pattern": "https?://\\d{1,3}(\\.\\d{1,3}){3}",
    "why": "the sandbox blocks raw IP addresses"
+  },
+  {
+   "pattern": "\"https://erp\\.zava-demo\\.com",
+   "why": "no environment-specific URL as a constant"
   }
  ],
  "require_src": [
-  {
-   "pattern": "erp\\.zava-demo\\.com",
-   "why": "calls the ERP by its DNS name"
-  },
   {
    "pattern": "WithSecureConfigFrom\\(",
    "why": "the API key comes from secure configuration"
@@ -42,6 +44,10 @@
   {
    "pattern": "InvalidPluginExecutionException",
    "why": "a failed call surfaces (never swallowed)"
+  },
+  {
+   "pattern": "GetEnvironmentVariable",
+   "why": "the per-environment URL comes from an environment variable"
   }
  ],
  "canvas_contains": [

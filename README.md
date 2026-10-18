@@ -236,7 +236,7 @@ fixture (`VelaEvals`) for the scenarios that debug or change a live plugin.
 
 **The pack is kept lean on purpose:** skills teach how to *drive* Vela (process, decisions, gates, red
 flags) and point to `vela <command> --help`, the generated code and Vela's own docs
-([`docs/llms.txt`](https://raw.githubusercontent.com/allandecastro/vela/main/docs/llms.txt)) for API
+([`docs/llms.txt`](https://allandecastro.github.io/vela/llms.txt)) for API
 detail, instead of copying the framework into the skills.
 
 ## Compatibility

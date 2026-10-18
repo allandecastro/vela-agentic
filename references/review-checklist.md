@@ -92,6 +92,10 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Runtime:** mutable plugin fields - **Required** [VELA011]; `InvalidPluginExecutionException`
   [VELA012], nothing swallowed; no slow/external work in a Sync step and no external side effect before a
   step that may still fail.
+- **Platform services** (the Canvas records the choices): a user-facing message hard-coded when the project
+  localizes - **Required**; an environment-specific value (URL, threshold, id) as a constant - **Required**;
+  data read as the calling user put in the shared cache - **Critical** (it leaks across users); behaviour that
+  depends on rights with no `WithSecurity` test - **Required**.
 - **Secrets:** a secret in code or unsecure config (`WithUnsecureConfig`) - **Critical**; use
   `.WithSecureConfigFrom("Name")` or a secret store. A secure-config value the behaviour depends on must
   be proven by a test that supplies it (`WithSecureConfig(name, value)`) and asserts it reaches the call;

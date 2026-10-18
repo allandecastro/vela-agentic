@@ -46,6 +46,10 @@ org_required: true
   plan reports the missing secure configuration as a diagnostic - recorded as an open item at the gate,
   not "fixed" by passing an invented value.
 
+- **Environment-specific URL** (rubric addition 2026-10-18): the ERP URL differs per environment, so it is read
+  from an environment variable (`ctx.GetEnvironmentVariable`), not a constant in code - asked or decided at design
+  and recorded in the Canvas; tests supply the value.
+
 ## Success criteria (a clean pass)
 1. The Canvas records Async PostOperation Create with the reason (save must not depend on the ERP; side
    effect outside the transaction), the Integrations project, the secure-config name, the timeout.
@@ -69,4 +73,6 @@ cutoff, no explicit bound); (d) the URL changed to a raw IP (`https://20.50.1.10
   in the code or the repo."
 - Payload: `{"id": "<account guid>", "name": "<account name>"}`; the ERP answers 2xx on success.
 - Retries: "no retry - a failed call should show as a failed system job; ops replays it."
+- If asked about the URL or environments: "each environment has its own ERP (dev, test, prod) - the base URL
+  is in the environment variable `zava_ErpBaseUrl` (https://erp.zava-demo.com in dev)."
 - Anything not listed: "Use the skills' defaults and record it as an assumption."
