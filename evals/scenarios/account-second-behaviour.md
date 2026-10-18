@@ -40,6 +40,9 @@ default 'Created via Vela plugin'."
    untouched) before implementation, green after.
 4. `vela-code-review` PASS: the SOLID/DRY axis confirms no duplication; the spec axis confirms the
    reuse decision was honoured.
+5. Rules registry: the agent read `docs/rules/account.md` (ACC-001) at intake, and the commit adds a new rule
+   (e.g. ACC-002) in English Given/When/Then with its implementation trace; the Canvas lists it in `rules:`
+   (rubric addition 2026-10-18).
 
 ## Planted-violation check (adversarial)
 Confirm the review would **BLOCK** each of: (a) the defaulting logic copy-pasted into a second
