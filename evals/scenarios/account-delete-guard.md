@@ -32,6 +32,10 @@ can deal with the contacts first."
 - **Tests:** RED then green through `PluginPipeline` (`p.Service.Delete(...)` throws with an active contact;
   succeeds with none, or only inactive ones; a contact of another account does not count).
 
+- **Localized message** (rubric addition 2026-10-18): the error is raised with `ctx.BusinessError("KEY", ...)`
+  from a message source registered in `ConfigureServices` (the project's convention, asked at design), with the
+  English and French templates; a test asserts the message.
+
 ## Success criteria (a clean pass)
 1. Canvas: Delete, PreValidation, Sync with the reason; the error message; what "active" means.
 2. Typed query, no `QueryExpression` / logical-name strings in plugin code.
@@ -45,5 +49,7 @@ compile) → **Critical** (it cannot block the delete); (b) the query without th
 ## Human answers (evaluator only - never shown to the acting agent)
 - "Active contacts" = contacts whose parent customer is the account and whose status is Active.
 - The message should say how many active contacts and to deactivate or move them first.
+- If asked about messages / languages: "our users work in English and French; messages are localized. For now
+  the project keeps them in an in-code dictionary (1033 English, 1036 French)."
 - Target solution / publisher prefix: `ZavaSales` / `zava`.
 - Anything not listed: "Use the skills' defaults and record it as an assumption."
