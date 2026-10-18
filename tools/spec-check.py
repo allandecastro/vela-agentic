@@ -9,11 +9,12 @@ Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   3. docs/rules/ changed in a commit made after the build started (a commit touching src/ or tests/);
   4. an existing test (a method carrying [Trait("Case", "<RULE>/<case>")] at <base>) was modified or deleted
      while <RULE> is not `change` / `retire` in the Canvas;
-  5. a test carries a case id that the registry does not contain;
+  5. a test carries a case id that the registry does not contain, or a new test carries none (every test has
+     its functional justification);
   6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first).
 A rule's trace lines (`Implementation:` / `Tests:`) are not spec: they may be synced at any time.
 A test body that differs only by harness plumbing (trigger / stage selection such as `.OnCreate()`) is not
-"modified". Warns (exit 0) on new tests without a Case id. Read-only: runs git, writes nothing.
+"modified". Read-only: runs git, writes nothing.
 """
 import argparse, os, re, subprocess, sys
 
@@ -157,7 +158,7 @@ def main():
                 if case not in registry:
                     fails.append(f"{f}: test {key[1]} cites case {case}, which the registry does not contain")
             if key not in before and not cases:
-                warns.append(f"{f}: new test {key[1]} has no [Trait(\"Case\", ...)] id")
+                fails.append(f"{f}: new test {key[1]} has no [Trait(\"Case\", ...)] id - every test proves a registry case")
 
     # 6. uncommitted spec / test edits would escape the history-based checks above
     dirty = [l[3:] for l in git(repo, "status", "--porcelain").splitlines()
