@@ -37,5 +37,22 @@
  ],
  "canvas_contains": [
   "add[- ]step|reuse"
+ ],
+ "output_contains": [
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "ACC-00[2-9]",
+   "why": "the new rule is in the registry"
+  },
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "ACC-001",
+   "why": "the existing rule is kept"
+  },
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "\\bWhen\\b[\\s\\S]*\\bThen\\b",
+   "why": "Given/When/Then"
+  }
  ]
 }

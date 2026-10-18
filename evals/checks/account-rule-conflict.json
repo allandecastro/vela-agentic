@@ -1,0 +1,41 @@
+{
+ "min_tests": 1,
+ "forbid_src": [
+  {
+   "pattern": "Created via Vela plugin",
+   "why": "the defaulting behaviour is removed"
+  }
+ ],
+ "output_contains": [
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "ACC-001[\\s\\S]*Status:\\s*retired",
+   "why": "ACC-001 retired, text kept"
+  },
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "ACC-00[2-9]",
+   "why": "the new rule is added"
+  },
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "\\bWhen\\b[\\s\\S]*\\bThen\\b",
+   "why": "Given/When/Then"
+  },
+  {
+   "glob": "**/logs/human-questions.md",
+   "pattern": "ACC-001",
+   "why": "the conflict was asked, not decided alone"
+  }
+ ],
+ "canvas_contains": [
+  "supersedes",
+  "retire"
+ ],
+ "package": true,
+ "plan_ops": {
+  "create step": 0,
+  "update step": 0,
+  "delete step": 0
+ }
+}

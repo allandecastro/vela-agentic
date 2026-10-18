@@ -1,7 +1,7 @@
 ---
 name: vela-scaffold
 description: Use when a new Vela solution is needed, or a component (plugin, custom API, service, step, test) must be added to an existing project.
-compatibility: "vela CLI >= 0.26.2 (Vela.Plugins >= 0.37.0); dotnet SDK."
+compatibility: "vela CLI >= 0.26.3 (Vela.Plugins >= 0.38.0); dotnet SDK."
 ---
 
 # Scaffold Vela projects and components

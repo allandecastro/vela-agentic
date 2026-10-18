@@ -105,7 +105,7 @@ Every VELA diagnostic in authored code is a gate failure (several are build erro
 suppress it. The ids cited by this pack: VELA011 mutable plugin field · VELA012 non-`InvalidPluginExecutionException`
 throw · VELA013 `ColumnSet(true)` · VELA017 uncaptured image read · VELA018 Async handler writes the Target
 (lost) · VELA019 file system · VELA020 Create/Update without `FilterOn` · VELA022 step on SetState ·
-VELA023 `On<TRequest>()` for a typed trigger · VELA024 parallel work / blocking on a task in a plugin type
+VELA023 `On<TRequest>()` for a typed trigger · VELA027 empty `catch` in a plugin · VELA024 parallel work / blocking on a task in a plugin type
 (the sync wrapper over `HttpClient` lives in the service) · VELA025 HTTP to an IP address · VELA026
 `HttpClient` without `Timeout`. Non-obvious: a missing `partial` (VELA014) surfaces as **CS0260**; an
 ungenerated typed image projection (VELA021) as **CS0246**.

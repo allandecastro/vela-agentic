@@ -107,6 +107,9 @@ EstimateValueResponse response = p.Service
 
 ## Replace a service - `WithService<TService>(instance)`
 
+Platform services are not replaced this way (`WithService` rejects them): fake a managed identity with
+`PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`).
+
 On `PluginPipeline` and the context builder, it replaces what `ConfigureServices` registers for `TService`,
 so the plugin runs end to end against a fake - no test-only constructor or seam in the plugin:
 ```csharp

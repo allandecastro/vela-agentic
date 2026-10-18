@@ -14,6 +14,10 @@ new story on an existing plugin gets its **own** slug and file, referencing the 
 **Living spec (fix-spec-first):** a requirement change updates the Canvas **before** the code; a
 behaviour-neutral refactor updates the code, then is **synced** back into the Canvas.
 
+**Rules registry:** the Build Report is the history of one change; `docs/rules/<table>.md` is the current set of
+business rules on a table (template at the end). The Canvas names the rules the story adds, changes or retires
+(`rules:`); the registry is updated in the same commit as the code.
+
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
 
 ```markdown
@@ -42,10 +46,13 @@ service: none             # none | new:<Name> | reuse:<Name>
 solution: <uniquename>    # existing unmanaged solution; passed to plan/apply --solution
 publisher_prefix: <pfx>   # from `vela solution show <uniquename> --json`; = scaffold --publisher-prefix
 namespace_prefix: Zava    # scaffold --prefix (PascalCase namespace, not the publisher prefix)
-acceptance_cases:
-  - "empty Description -> defaulted to 'Created via Vela plugin'"
-  - "whitespace Description -> defaulted"
-  - "non-empty Description -> left untouched"
+rules:                    # rules this story adds / changes / retires in docs/rules/<table>.md
+  - {id: ACC-001, change: add}            # add | change | retire
+supersedes: []            # slugs of earlier stories this one replaces, if any
+acceptance_cases:         # Given / When / Then - each becomes a test
+  - "Given an account with no Description, When it is created, Then Description = 'Created via Vela plugin'"
+  - "Given a whitespace-only Description, When it is created, Then it is defaulted"
+  - "Given a non-empty Description, When it is created, Then it is left untouched"
 decisions:                # business decisions and who made them (vela-grill answers)
   - {by: human, what: "'empty' means null or whitespace"}
 assumptions:              # platform facts relied on, not decided by the human
@@ -88,7 +95,7 @@ Keeps every Canvas front-matter key and adds the build keys below; only `kind` c
 kind: vela-build
 date: 2026-09-25
 slug: account-default-description
-status: awaiting-apply    # awaiting-apply | applied
+status: awaiting-apply    # awaiting-apply | applied (the human, after apply: date + package_sha256)
 entity: account
 message: Create
 vela_cli: 0.25.0
@@ -147,3 +154,36 @@ apply (fix, re-run); `5` = not converged - both reported, never "done".
 ## Open questions
 <anything the human must decide>
 ```
+
+## Rules registry - `docs/rules/<table>.md` (one file per table, written in English)
+
+One file per table, holding the rules **triggered** on it; a rule that also affects another table gets one
+`See also` line in that table's file. Rules are written for the business, in Given / When / Then / Otherwise,
+with the technical trace separate. A retired rule keeps its text, with its status changed.
+
+```markdown
+# Rules - account
+
+### ACC-002 - An account with active contacts cannot be deleted
+Status: active · Since: account-delete-guard (2026-10-17)
+
+Given an account that has at least one active contact (contacts whose parent customer is the account)
+When a user deletes the account
+Then the delete is refused
+  And the message gives the number of active contacts and asks to deactivate or move them first
+Otherwise (no active contact, or only inactive ones) the delete goes ahead
+
+Exceptions / assumptions:
+  - Contacts the user cannot read are not counted (runs as the user - default security context)
+Affects: contact
+
+Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
+Tests: AccountDeleteGuardTests (AC1-AC7)
+
+### ACC-001 - ...
+Status: retired · By: <slug> (<date>) - <one-line reason>
+<the rule text, unchanged>
+```
+
+In the affected table's file: `See also ACC-002 (account) - deleting an account is blocked while it has active contacts.`
+

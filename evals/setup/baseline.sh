@@ -60,6 +60,8 @@ mode: Synchronous
 filtering_attributes: [Name]
 solution: ZavaSales
 publisher_prefix: zava
+rules:
+  - {id: ACC-001, change: add}
 acceptance_cases:
   - "null Description -> 'Created via Vela plugin'"
   - "whitespace Description -> defaulted"
@@ -71,6 +73,24 @@ acceptance_cases:
 
 ## A - Approach
 Sync PreOperation on ctx.Request.Target: the default is part of the same write. New plugin.
+MD
+mkdir -p docs/rules
+cat > docs/rules/account.md <<'MD'
+# Rules - account
+
+### ACC-001 - A new account without a description gets a default one
+Status: active · Since: account-default-description (2026-09-25)
+
+Given an account whose Description is empty (null, "" or whitespace only)
+When the account is created
+Then its Description is set to "Created via Vela plugin"
+Otherwise (a non-empty Description) the Description is left as entered
+
+Exceptions / assumptions:
+  - A create that does not send Name does not fire the step (the step filters on Name)
+
+Implementation: AccountDefaultDescription · Create · PreOperation · Sync
+Tests: AccountDefaultDescriptionTests
 MD
 dotnet build ZavaSales.sln -c Release >/dev/null
 commit "$sol" "baseline: account-default-description (reviewed, green)"
