@@ -37,6 +37,9 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    --pfx-credential <target>`; secrets via `--pfx-password-env` / `--pfx-base64-env`, never
    `--pfx-password` on a command line. No certificate → don't sign; record "unsigned - a human signs
    before apply". Unknown whether signing is required → `signed: unknown`, an open question at the gate.
+   A signed package is built under its **publisher-prefixed** id (`<prefix>_<Package>`, e.g.
+   `zava_Zava.Integrations`): `apply --solution` adds a missing prefix by rewriting the package, so it refuses a
+   signed one.
 4. **Connection** (`references/cli-surface.md`): headless (connection string, client secret env, or
    `--url` + `az login`); `-i` only with a human at a browser. Never echo a secret.
 5. **Confirm the solution (read-only):** `vela solution show <uniquename> --json <connection>`; its
