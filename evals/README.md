@@ -99,7 +99,7 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 41/42 runs pass.
+Latest campaign per scenario - 42/43 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -109,8 +109,8 @@ Latest campaign per scenario - 41/42 runs pass.
 | `account-delete-guard` | 2026-10-17c | **3/3** | 3/3 | 3/3 | ready |
 | `account-erp-outbound` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `account-rule-conflict` | 2026-10-18 | **1/1** | 1/1 | 1/1 | ready |
-| `account-second-behaviour` | 2026-10-18 | **1/1** | 1/1 | 1/1 | ready |
+| `account-rule-conflict` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
+| `account-second-behaviour` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
 | `account-typed-images` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-update-recursion` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `ambiguous-story-grill` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
@@ -123,6 +123,7 @@ Latest campaign per scenario - 41/42 runs pass.
 | `diagnose-failed-run` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
 | `lead-score-custom-api` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `org-models-and-plan` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
+| `regression-test-guard` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
 <!-- passrate:end -->
 
 ## Two tiers of checking
