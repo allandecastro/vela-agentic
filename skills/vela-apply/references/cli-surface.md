@@ -6,7 +6,7 @@ The commands the loop needs and the traps `--help` does not show. A snapshot - t
 confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
 exit code as one JSON document).
 
-**Verified against:** `vela 0.27.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+**Verified against:** `vela 0.27.1` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
 `Vela.Testing` `0.39.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
 `compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
 the floor.
