@@ -10,7 +10,8 @@ Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   4. an existing test (a method carrying [Trait("Case", "<RULE>/<case>")] at <base>) was modified or deleted
      while <RULE> is not `change` / `retire` in the Canvas;
   5. a test carries a case id that the registry does not contain.
-Warns (exit 0) on new tests without a Case id. Read-only: runs git, writes nothing.
+A test body that differs only by harness plumbing (trigger / stage selection such as `.OnCreate()`) is not
+"modified". Warns (exit 0) on new tests without a Case id. Read-only: runs git, writes nothing.
 """
 import argparse, os, re, subprocess, sys
 
@@ -74,6 +75,17 @@ def test_methods(text):
     return out
 
 
+# Harness plumbing that does not change a case's Given/When/Then: trigger / stage selection on a test builder
+# (needed e.g. once a plugin gains a second step). A body that differs only by these is not "modified".
+PLUMBING = re.compile(r"\.(OnCreate|OnUpdate|OnDelete|OnCreateMultiple|OnUpdateMultiple|OnAssociate|OnDisassociate)\(\)"
+                      r"|\.OnMessage\(\s*\"[^\"]*\"\s*\)|\.Stage\([^)]*\)|\.Mode\([^)]*\)|\.(Sync|Async)\(\)")
+
+
+def same_case(a, b):
+    norm = lambda t: re.sub(r"\s+", "", PLUMBING.sub("", t))
+    return norm(a) == norm(b)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", required=True)
@@ -120,7 +132,7 @@ def main():
                     continue
                 if key not in after:
                     fails.append(f"{f}: regression test {key[1]} ({case}) deleted, but {rid} is not changed/retired by the story")
-                elif after[key][1] != body:
+                elif not same_case(after[key][1], body):
                     fails.append(f"{f}: regression test {key[1]} ({case}) modified, but {rid} is not changed/retired by the story")
         for key, (cases, _) in after.items():
             for case in cases:
