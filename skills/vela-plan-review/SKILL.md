@@ -20,7 +20,10 @@ before a wasted build. It is **advisory**: flag unresolved assumptions and conti
 
 Announce: `Using vela-plan-review to grill the plan`.
 
-1. State the interpreted spec: entity, message, stage, mode, attributes read/written.
+1. State the interpreted spec: entity, message, stage, mode, attributes read/written. **Read the rules
+   registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
+   already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
+   (one question) whether the new rule replaces it (then it is retired) or the story changes.
 2. **Grill it** (unanswered → assumption or open question). Decisions and legal matrix:
    `references/registration-rules.md`; traps: `references/dataverse-gotchas.md`.
    - **Step or Custom API?** Reaction to a table event → plugin step. An operation someone *calls* with
@@ -63,10 +66,11 @@ Announce: `Using vela-plan-review to grill the plan`.
      business decision: with a human reachable, ask (one question); record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** generated naming + prefix; SOLID/DRY; secrets → `WithSecureConfigFrom`, never code.
-   - **Acceptance cases:** the DoD as concrete RED tests - primary behaviour, each edge, each applicable
+   - **Acceptance cases:** written as Given / When / Then, the DoD as concrete RED tests - primary behaviour, each edge, each applicable
      gotcha; on Update "column not sent" vs "column cleared"; a `PluginPipeline` case when the step must
      (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.
-3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, acceptance cases,
+3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
+   retire, with ids), acceptance cases,
    assumptions, open questions - one line per section for a simple story.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,

@@ -54,7 +54,10 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
      it, keep the "expects the secure configuration" diagnostic, record the value as an open item.
      **Never a placeholder value** - it silences the diagnostic and previews a config nobody deploys.
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
-7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`).
+7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`), and update the
+   **rules registry** (`docs/rules/<table>.md`, English, Given/When/Then) in the same commit: add or change the
+   rules the Canvas names, mark retired ones `Status: retired` (text kept), add the `See also` line in an affected
+   table's file.
 8. **Stop here by default.** No `apply` unless an explicit "go ahead and apply" **for this run**. "Ship
    it", "looks good", "merge it" or a merged PR approve the code, not a write to the org.
 9. If (and only if) authorized: `vela apply -p <pkg> --solution <uniquename> <connection>` - same package
