@@ -34,7 +34,9 @@ Assert.Equal("changed", row.Name);
 
 It generates a pipeline `Fires_On_*` test (proves only that the step fired) and a skipped
 `Does_What_It_Should`. Give the filtered column a real value (it is `default` + a TODO), then un-skip
-`Does_What_It_Should` and put the acceptance cases there, plus the negative "does not fire" cases.
+`Does_What_It_Should` and put the acceptance cases there, plus the negative "does not fire" cases. A
+generated `Fires_On_*` test carries no case id: tag it with the case it proves, or delete it once a case test
+asserts the step ran - and say so where the Evidence's RED and green totals differ.
 
 ## Easy-to-get-wrong facts
 
