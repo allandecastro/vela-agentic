@@ -124,7 +124,8 @@ apply: pending
 - `dotnet build`: <0 errors, 0 VELA00x in authored code>
 - Acceptance cases (RED→green): [x] empty→defaulted  [x] whitespace→defaulted  [x] non-empty→untouched
 - Harness: <runner summary + runner name>; RED run: <summary> + the failing test names, each with its case id
-- Code review: <PASS / BLOCK; findings most-severe first>
+- Code review: <PASS / BLOCK; findings most-severe first; the Canvas decisions the reviewer checked (Sync/Async,
+  reuse-vs-new, service, ...)> - its output saved verbatim, never paraphrased
 - Solution: `vela solution show <uniquename> --json` → `{"solution": ..., "publisherPrefix": ...}` (exit 0)
 - Package: <path> · sha256 <hash> · signed <yes/no/n/a/unknown>
 - `vela plan --solution <uniquename>` (on that package, after review): <the `operations` apply WOULD run,
