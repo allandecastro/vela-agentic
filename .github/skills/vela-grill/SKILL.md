@@ -35,6 +35,8 @@ Announce: `Using vela-grill to resolve the story`.
      fails on its own)? State each consequence in the question.
    - Data: exact values read and written; defaults and edge cases.
    - Security context: calling user (default) or elevated?
+   - A message the user sees: which languages, and where the texts live (project convention) - never
+     assumed; no default covers it.
    - Target solution unique name, if unknown (never invented). Not the publisher prefix:
      `vela solution show <uniquename> --json` reads it; ask only if that fails.
    - Definition of done: only if not derivable; otherwise state it back.
