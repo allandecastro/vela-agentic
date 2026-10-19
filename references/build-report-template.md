@@ -105,7 +105,7 @@ vela_cli: <vela version>
 framework: <Vela.Plugins version>
 packages: [Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ Zava.Integrations.<ver>.nupkg for an outbound call)
 package_sha256: <sha256 of the previewed package>   # one per package
-signed: no                # yes | no (a human signs before apply) | n/a (not required) | unknown (asked at the gate)
+signed: no                # yes | no (a human signs before apply) | n/a (the human said not required) | unknown (asked at the gate) - `vela plan` does not tell
 harness: pass             # pass | fail  (must be pass)
 analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)

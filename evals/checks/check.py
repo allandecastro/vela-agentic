@@ -132,13 +132,14 @@ def main():
 
     for want in exp.get("steps", []):
         match = [s for s in steps if s["Message"] == want["message"] and s["EntityLogicalName"] == want.get("entity", s["EntityLogicalName"])]
-        desc = f"{want['message']} {want.get('entity','*')!r} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', '*')}" + \
+        desc = f"{want['message']} {want.get('entity','*')!r} {want.get('stage','*')}/{want.get('mode','*')} filter={want.get('filter', ('includes ' + str(want['filter_includes'])) if 'filter_includes' in want else '*')}" + \
                (f" rel={want['relationship']}" if want.get('relationship') else "") + \
                (f" secure_config={want['secure_config']}" if "secure_config" in want else "") + (f" in {want['project']}" if want.get("project") else "")
         ok = False
         for s in match:
             ok = (want.get("stage") in (None, s["Stage"]) and want.get("mode") in (None, s["Mode"]) and
                   (want.get("filter") is None or sorted(s["FilteringAttributes"] or []) == sorted(want["filter"])) and
+                  set(want.get("filter_includes", [])) <= set(s["FilteringAttributes"] or []) and
                   (want.get("pre_image") is None or any(sorted(i["Attributes"]) == sorted(want["pre_image"]) for i in s["PreImages"] or [])) and
                   (want.get("relationship") is None or want["relationship"] in json.dumps(s.get("Relationships"))) and
                   (want.get("secure_config") is None or bool(s.get("SecureConfigName")) == want["secure_config"]) and
