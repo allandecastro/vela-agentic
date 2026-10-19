@@ -118,8 +118,8 @@ async function sourceDocs() {
 }
 
 async function lintNamesAndTerms() {
-  // Also the repo name and the artifact kinds (front-matter `kind: vela-canvas | vela-build`).
-  const known = new Set([...(await skillNames()), ...(await agentNames()), "vela-agentic", "vela-canvas", "vela-build"]);
+  // Also the repo name.
+  const known = new Set([...(await skillNames()), ...(await agentNames()), "vela-agentic"]);
   for (const rel of await sourceDocs()) {
     const md = await fs.readFile(path.join(root, rel), "utf8");
     for (const m of md.matchAll(/`\/?(vela-[a-z-]+)`/g))

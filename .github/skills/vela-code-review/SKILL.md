@@ -46,7 +46,7 @@ Announce: `Using vela-code-review to review the change`.
 
 ## Spec check (deterministic, before dispatching the reviewer)
 
-Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/vela-builds/<slug>.md` in the project (the
+Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/features/<slug>/README.md` in the project (the
 pack is the folder holding `skills/`). It fails when the registry changed outside the rules the Canvas declares,
 a rule was deleted instead of retired, or an existing test was modified / deleted for a rule the story does not
 change. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review.
@@ -56,8 +56,8 @@ change. Paste its output into the reviewer's material; a failure is a **BLOCK** 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the pasted diff, the Canvas, the
   verbatim RED/GREEN lines and the Run trace - **not** the session history, so the author's context does
   not anchor it (in eval runs it caught what self-review passed). After a fix, or a block for missing
-  evidence, fix the material and dispatch a **fresh** reviewer. Save its verbatim output next to the
-  Build Report. Optionally run the two axes as two reviewers. A scoped reviewer is not `vela-builder`
+  evidence, fix the material and dispatch a **fresh** reviewer. Save its verbatim output as
+  `docs/features/<slug>/review.md`. Optionally run the two axes as two reviewers. A scoped reviewer is not `vela-builder`
   orchestrating personas.
 - **Fallback - self-review**, only when no subagent can be dispatched; **say so in the Build Report**
   ("self-review: no subagent available").

@@ -47,10 +47,10 @@ namespace zava.Plugins.Tests.Account.Plugins
     }
 }
 CS
-mkdir -p docs/vela-builds
-cat > docs/vela-builds/account-default-description.md <<'MD'
+mkdir -p docs/features/account-default-description
+cat > docs/features/account-default-description/README.md <<'MD'
 ---
-kind: vela-build
+kind: feature
 slug: account-default-description
 status: approved
 entity: account

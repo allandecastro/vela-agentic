@@ -15,7 +15,7 @@ org_required: true
 
 ## Setup for the run
 - The evaluator provides the `ZavaSales` project (`<work>/ZavaSales`, a git repo, `account` / `contact` models
-  generated, one existing Create plugin with its tests, its Build Report under `docs/vela-builds/` and the rules
+  generated, one existing Create plugin with its tests, its Build Report under `docs/features/<slug>/` and the rules
   registry under `docs/rules/`). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available
   **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never
   `vela apply`.
