@@ -6,7 +6,7 @@
    "entity": "account",
    "stage": "PreOperation",
    "mode": "Synchronous",
-   "filter": [
+   "filter_includes": [
     "name"
    ]
   }

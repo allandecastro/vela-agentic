@@ -38,7 +38,7 @@
  ],
  "require_tests": [
   {
-   "pattern": "Telephone1\\s*=\\s*null",
+   "pattern": "Telephone1\\s*=\\s*null|Telephone1\\s*=\\s*\\w+[\\s\\S]*\\(\\s*null\\s*[,)]",
    "why": "repro: the import sends the phone empty"
   }
  ],

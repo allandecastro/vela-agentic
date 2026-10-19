@@ -92,12 +92,13 @@ independent of the framework/CLI NuGet releases.
 
 ## Next
 
-- [ ] Omitted Vela features, as decisions + pointers (no API copy): localized messages (`ctx.BusinessError`;
-      source asked to the human), environment variables, cache, telemetry (`ctx.Logger`), `WithSecurity` in
-      tests, the harness limitations page
-- [ ] A concrete trigger to extract a service (second consumer, size, testability) + a scenario
-- [ ] Re-run `account-deactivate-cascade` x3; a managed identity + signing scenario (now unblocked)
-- [ ] Small follow-ups from the graders: failing test names in the Build Report, a pending state for a rule
-      being retired, testing a step removal, a regression fix in its own commit
-- [ ] Later: a dedicated agent to migrate an existing plugin project to Vela
+- [x] Omitted Vela features as decisions + pointers (localized messages, environment variables, cache,
+      telemetry, `WithSecurity`, harness limitations)
+- [x] A concrete trigger to extract a service + a scenario (`contact-shared-default`)
+- [x] Re-run `account-deactivate-cascade` x3; a managed identity + signing scenario (`account-mi-outbound`)
+- [x] Small follow-ups from the graders (failing test names, `retiring` state, step removal, regression commit)
+- [ ] Distribution of the pack: through the `vela` CLI in addition to the plugin marketplace, or the CLI
+      installing from the marketplace - to design
+- [ ] A dedicated agent to migrate an existing plugin project to Vela
+- [ ] `debug-live-trace`: refresh the live trace rows before a run (plug-in trace logs expire, often after 24h)
 - [ ] Web resources (`form-script`, `ribbon-script`) - out of scope while in preview
