@@ -34,8 +34,8 @@ Frontmatter: `name` (kebab) and a **trigger-only `description`** - *when* it app
 never a workflow summary (an agent follows the summary instead of the body - observed). Every skill is
 model-invoked; one meant for a human conversation may name its slash command (e.g. `/vela-grill`).
 Never promise a command that does not exist - the end-to-end loop is the `vela-builder` agent.
-**`compatibility`** states the CLI floor (`"vela CLI >= x.y.z ..."`, never above the version verified in
-`references/cli-surface.md`); meta skills say so instead. Body: `Overview → When to use → Process
+**`compatibility`** names the dependency, never a version (`"vela CLI + dotnet SDK."`): the verified version
+lives only in `references/cli-surface.md`; meta skills say so instead. Body: `Overview → When to use → Process
 (announce "Using <skill> to <purpose>") → Rationalizations (excuse → rebuttal) → Red flags →
 Verification (the evidence required)`.
 `node scripts/sync-copilot.mjs` copies every cited reference (and what it cites) into the skill's own

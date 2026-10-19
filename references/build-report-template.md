@@ -101,8 +101,8 @@ slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied (the human, after apply: date + package_sha256)
 entity: account
 message: Create
-vela_cli: 0.25.0
-framework: 0.34.0
+vela_cli: <vela version>
+framework: <Vela.Plugins version>
 packages: [Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ Zava.Integrations.<ver>.nupkg for an outbound call)
 package_sha256: <sha256 of the previewed package>   # one per package
 signed: no                # yes | no (a human signs before apply) | n/a (not required) | unknown (asked at the gate)

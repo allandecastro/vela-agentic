@@ -1,7 +1,7 @@
 ---
 name: vela-plugin-authoring
 description: Use when implementing the logic of a Vela plugin, after scaffolding, models, and the failing (RED) harness tests exist.
-compatibility: "vela CLI >= 0.27.3 (Vela.Plugins >= 0.40.0); dotnet SDK."
+compatibility: "vela CLI + dotnet SDK."
 ---
 
 # Author a Vela plugin
