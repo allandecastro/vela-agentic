@@ -95,7 +95,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   [VELA012], nothing swallowed; no slow/external work in a Sync step and no external side effect before a
   step that may still fail.
 - **Platform services** (the Canvas records the choices): a user-facing message hard-coded when the project
-  localizes - **Required**; an environment-specific value (URL, threshold, id) as a constant - **Required**;
+  localizes, or missing one of the project's languages - **Required**; a message source assumed, not asked -
+  an open item at the Gate; an environment-specific value (URL, threshold, id) as a constant - **Required**;
   data read as the calling user put in the shared cache - **Critical** (it leaks across users); behaviour that
   depends on rights with no `WithSecurity` test - **Required**.
 - **Secrets:** a secret in code or unsecure config (`WithUnsecureConfig`) - **Critical**; use
