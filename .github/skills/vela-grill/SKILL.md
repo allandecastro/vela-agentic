@@ -34,7 +34,8 @@ Announce: `Using vela-grill to resolve the story`.
    - Timing: Sync (blocks the user, rolls back together - even at PostOperation) or Async (never blocks,
      fails on its own)? State each consequence in the question.
    - Data: exact values read and written; defaults and edge cases.
-   - Security context: calling user (default) or elevated?
+   - Security context: calling user (default) or elevated? If the human defers to the defaults while you recommended otherwise, apply the
+     default and list your recommendation as an open question at the gate.
    - A message the user sees: which languages, and where the texts live (project convention) - never
      assumed; no default covers it.
    - Target solution unique name, if unknown (never invented). Not the publisher prefix:

@@ -30,7 +30,7 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 - **Tests vs functional cases:** an existing (regression) test modified or deleted while its rule is not
   `change`/`retire` in the Canvas - **Critical**; a modified test that no longer matches its case's
   Given/When/Then (data, action, assertion) - **Required**; a test without a `Case` id - **Required**;
-  `docs/rules/` edited after the frozen-spec commit - **Critical** (`spec-check.py` reports these).
+  `docs/rules/` edited after the frozen-spec commit (a rule's `Implementation:` / `Tests:` trace lines aside) - **Critical** (`spec-check.py` reports these).
 - **Unconfirmed solution / publisher prefix:** must be an open question blocking the apply gate -
   **Required** if not listed.
 - **Debug fix scope** (`vela-debug-plugin`): a diff touching more than the cause and its repro tests -
@@ -76,7 +76,7 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Service:** writes via `ctx.Service` (the step's user, default) / `ctx.SystemService` (SYSTEM) /
   `ctx.AsUser(id)`. `ctx.SystemService` without a Canvas reason - **Required**; data read as SYSTEM that
   reaches the user (in an error message or output) - **Required**, even with a reason.
-- **Performance / safety:** no `ColumnSet(true)` [VELA013], no unbounded RetrieveMultiple, no slow or
+- **Performance / safety:** no `ColumnSet(true)` [VELA013], no unbounded RetrieveMultiple (Vela's typed `Query...ToList` pages through all rows), no slow or
   unreliable external I/O in a Sync step, no parallel work [VELA024], no file I/O [VELA019].
 - **Registration legality** (`registration-rules.md`): no post-image on Delete, no pre-image
   on Create, Async only at PostOperation (these don't compile); no step on SetState [VELA022].
