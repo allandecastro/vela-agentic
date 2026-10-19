@@ -58,6 +58,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
      `VELA_SECURE_CONFIG_Name`), never in a pasted command. Not holding it (usual) → preview **without**
      it, keep the "expects the secure configuration" diagnostic, record the value as an open item.
      **Never a placeholder value** - it silences the diagnostic and previews a config nobody deploys.
+   - A story that leaves the package with **no plugin** (all removed): `plan` creates nothing and deletes
+     nothing - the deployed steps stay; record them at the Gate for a human to unregister.
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
 7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`). The registry is
    not touched here (written at design, read-only in the build); the Gate tells the human to flip the story's

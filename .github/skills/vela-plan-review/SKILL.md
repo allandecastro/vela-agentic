@@ -66,7 +66,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      single Updates - a scope point for the human, listed at the Gate.
    - **Models:** which tables/columns must `vela-models` generate (a minimal scaffold has none)?
    - **Platform services** (`references/plugin-authoring-api.md`, *Platform services*): a message the user
-     sees → a localized key (the message source is the project's convention: ask once); a value that differs
+     sees → a localized key - its source and languages are the project's convention: with no convention in the
+     project, **ask** (`vela-grill`), never assume (no default covers it); a value that differs
      per environment → an environment variable, not a constant; reference data read on every run → the cache
      with a TTL - how stale a value may be after it changes is the human's call: ask (`vela-grill`), never
      pick the TTL alone; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test.

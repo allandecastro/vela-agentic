@@ -191,7 +191,8 @@ Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
 Tests: AccountDeleteGuardTests
 
 ### ACC-001 - ...
-Status: retired · By: <slug> (<date>) - <one-line reason>   # retiring (by <slug>) until the human applies
+Status: retiring · By: <slug> (<date>) - <one-line reason>   # the build writes this
+Status: retired · By: <slug> (<date>) - <one-line reason>    # the human, at apply
 <the rule text, unchanged>
 ```
 
