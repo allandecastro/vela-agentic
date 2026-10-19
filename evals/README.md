@@ -99,27 +99,27 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 44/44 runs pass.
+Latest campaign per scenario - 52/52 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
-| `account-deactivate-cascade` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
+| `account-deactivate-cascade` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
 | `account-default-description` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
-| `account-delete-guard` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
+| `account-delete-guard` | 2026-10-19b | **1/1** | 1/1 | 1/1 | ready |
 | `account-erp-outbound` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
 | `account-mi-outbound` | 2026-10-18g | **1/1** | 1/1 | 1/1 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `account-rule-conflict` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
-| `account-second-behaviour` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |
-| `account-territory-cache` | 2026-10-18f | **1/1** | 1/1 | 1/1 | ready |
+| `account-rule-conflict` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
+| `account-second-behaviour` | 2026-10-19b | **1/1** | 1/1 | 1/1 | ready |
+| `account-territory-cache` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
 | `account-typed-images` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `account-update-recursion` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
+| `account-update-recursion` | 2026-10-19 | **1/1** | 1/1 | 1/1 | ready |
 | `ambiguous-story-grill` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `apply-gate` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `bulk-update-multiple` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `contact-association` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `contact-shared-default` | 2026-10-18d | **1/1** | 1/1 | 1/1 | ready |
+| `contact-shared-default` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
 | `debug-filter-miss` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `debug-live-trace` | 2026-10-17e | **1/1** | 1/1 | 1/1 | ready |
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |

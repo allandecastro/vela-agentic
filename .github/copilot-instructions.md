@@ -89,7 +89,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    hook** (`hooks/`) **denies** `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1`
    (an inline prefix does not count); the rule holds without it.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
-   tests) changes only in the design phase, with the human; in the build it is read-only, and a failing
+   tests) changes only in the design phase, with the human; in the build it is read-only (a rule's `Implementation:` / `Tests:` trace lines aside), and a failing
    regression test means the code is wrong. `tools/spec-check.py` checks it at review (and in CI).
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
