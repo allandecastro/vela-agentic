@@ -5,9 +5,8 @@ confirm every flag with `vela <command> --help`, or `vela help --json` (every co
 exit code as one JSON document).
 
 **Verified against:** `vela 0.27.3` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.40.0` (scaffold default, resolved by `vela init`). Skills declare this floor in their
-`compatibility` frontmatter; when the CLI moves, re-run `vela help --json`, update this file, then bump
-the floor.
+`Vela.Testing` `0.40.0` (scaffold default, resolved by `vela init`). This is the pack's only version
+record: when the CLI moves, re-run `vela help --json` and update this file.
 
 ## Scaffolding - local only, no Dataverse
 

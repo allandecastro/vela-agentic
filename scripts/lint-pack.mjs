@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Structural lint for the vela-agentic pack (runs in CI).
 // Fails on: missing/!kebab skill/agent frontmatter, name != dir, broken references/*.md links,
-//           missing skill `compatibility`, a CLI floor above the version verified in cli-surface.md,
+//           missing skill `compatibility`, a version number in a skill's `compatibility`,
 //           or a skill citing a reference that is not bundled in its own references/ folder.
 //           Also fails on: a cited `vela-*` skill/agent that does not exist, a forbidden term,
 //           an agent whose name != file name, a README skills table out of step with skills/,
@@ -73,9 +73,8 @@ async function lintSkills() {
     }
     if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
     else {
-      const floor = fm.compatibility.match(/vela CLI >= (\d+\.\d+\.\d+)/)?.[1];
-      if (floor && verifiedCli && newer(floor, verifiedCli))
-        errors.push(`skills/${e.name}: CLI floor ${floor} is above the verified ${verifiedCli} (references/cli-surface.md)`);
+      if (/\d+\.\d+\.\d+/.test(fm.compatibility))
+        errors.push(`skills/${e.name}: 'compatibility' carries a version - the version lives only in references/cli-surface.md`);
     }
   }
 }

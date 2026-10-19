@@ -68,7 +68,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 ## Golden rules
 
 1. **The CLI is the contract.** Confirm flags with `vela <command> --help`. Never invent one.
-2. **Check the version.** `vela version` against the skill's `compatibility` floor. Older: tell the
+2. **Check the version.** `vela version` against the version in `references/cli-surface.md`. Older: tell the
    user to `vela update`; **stop** only if a *named* feature the skill needs is missing - not over a patch
    difference.
 3. **Announce the skill.** `Using <skill> to <purpose>`.
