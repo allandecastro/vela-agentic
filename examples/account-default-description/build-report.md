@@ -1,5 +1,5 @@
 ---
-kind: vela-build
+kind: feature
 slug: account-default-description
 date: 2026-10-17
 status: awaiting-apply

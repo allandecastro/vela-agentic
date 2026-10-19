@@ -58,7 +58,7 @@ vela apply -p Zava.nupkg --solution zava -i
 It will not write until a human approves.
 EOF
 )"'
-allow 'cat > docs/vela-builds/x.md <<EOF
+allow 'cat > docs/features/x/README.md <<EOF
 vela apply -p x --yes
 EOF'
 allow ''

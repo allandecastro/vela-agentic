@@ -49,12 +49,12 @@ or package. That is a correct outcome.
 12. **Report** - a PR, **draft first**:
     - Branch before Scaffold; `gh pr create --draft` once the Canvas exists (after step 3). The body
       grows from the Canvas into the Build Report.
-    - **No repository yet:** write the Canvas to `docs/vela-builds/<slug>.md` under the working
+    - **No repository yet:** write the Canvas to `docs/features/<slug>/README.md` under the working
       directory (so a stop at the plan gate leaves it there); then `vela init` → `git init` → commit the
-      untouched scaffold (review base) → branch → move the Canvas to `<Solution>/docs/vela-builds/<slug>.md`
+      untouched scaffold (review base) → branch → move the folder to `<Solution>/docs/features/<slug>/`
       as the branch's first commit (it is in the reviewed diff).
     - `gh pr ready` only once harness green, analyzers clean and Critical/Required resolved. Body = the
-      Build Report, committed under `docs/vela-builds/<slug>.md`. No AI attribution.
+      Build Report, `docs/features/<slug>/README.md`. No AI attribution.
     - `vela apply` stays a **separate human step**: a ready or merged PR does not mean the org was written.
 
 Keep the **Run trace** current (a row per step) - it is the input for `vela-debug-plugin` /

@@ -98,7 +98,7 @@ flowchart TD
     class PA,BR art
 ```
 
-It emits two artifacts (Markdown + YAML front-matter), committed under `docs/vela-builds/` in the
+It emits two artifacts (Markdown + YAML front-matter), committed in one folder per story, `docs/features/<slug>/`, in the
 target project and reused as the PR body:
 
 - a **Vela Canvas** at the front gate - a REASONS-adapted spec (Requirements, Entities, Approach,

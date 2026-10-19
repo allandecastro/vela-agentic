@@ -11,7 +11,7 @@ namespace Zava.Plugins.Tests.Account.Plugins
     using Zava.Shared.Models.Generated;
 
     /// <summary>
-    /// Acceptance cases of docs/vela-builds/account-default-description.md:
+    /// Acceptance cases of docs/features/account-default-description/README.md:
     /// "When an Account is created, if its Description is empty (null, "" or whitespace-only),
     /// set it to 'Created via Vela plugin'."
     /// </summary>

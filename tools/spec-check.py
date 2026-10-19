@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """spec-check - guard the functional spec of the tests (vela-agentic).
 
-    python3 spec-check.py --base <ref> --canvas docs/vela-builds/<slug>.md [--repo .]
+    python3 spec-check.py --base <ref> --canvas docs/features/<slug>/README.md [--repo .]
 
 Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   1. a rule section in docs/rules/*.md changed but its id is not declared in the Canvas `rules:`;

@@ -8,9 +8,10 @@ single artifact the reviewer reasons about, and the home of the decisions the to
 Markdown + YAML front-matter, reused as the PR body. Keep it **proportional**: one line per section is fine
 for a simple story.
 
-**One file per story:** `docs/vela-builds/<slug>.md` starts as the Canvas and becomes the Build Report
-(`kind: vela-canvas` → `kind: vela-build`). Before a project exists, write it at that path under the working
-directory; after `vela init`, at the same relative path inside the project. Never another path or name. A
+**One folder per story:** `docs/features/<slug>/` holds `README.md` - the Canvas that becomes the Build Report
+(`kind: canvas` → `kind: feature`) and the PR body - plus `review.md` (the reviewer's output, verbatim) and
+`plan.json` (`vela plan --out`). Before a project exists, write it at that path under the working directory;
+after `vela init`, at the same relative path inside the project. Never another path or name. A
 new story on an existing plugin gets its **own** slug and file, referencing the plugin.
 
 **Living spec (fix-spec-first):** a requirement change updates the Canvas **before** the code; a
@@ -27,7 +28,7 @@ and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the
 
 ```markdown
 ---
-kind: vela-canvas
+kind: canvas
 slug: account-default-description
 date: 2026-09-25
 status: proposed          # proposed | approved | blocked | superseded - only a HUMAN sets `approved`;
@@ -97,7 +98,7 @@ Keeps every Canvas front-matter key and adds the build keys below; only `kind` c
 
 ```markdown
 ---
-kind: vela-build
+kind: feature
 date: 2026-09-25
 slug: account-default-description
 status: awaiting-apply    # awaiting-apply | applied (the human, after apply: date + package_sha256)
@@ -112,7 +113,7 @@ harness: pass             # pass | fail  (must be pass)
 analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)
 plan_preview: changes     # changes (exit 8 with --detailed-exitcode) | clean (exit 0) | unavailable (record the command + exit)
-plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out plan.json"
+plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out docs/features/<slug>/plan.json"
 apply: pending
 ---
 
@@ -148,7 +149,7 @@ tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a 
 | 4 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
 | 5 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
 | 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
-| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out plan.json` | 8 | changes: create package + 1 step |
+| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out docs/features/<slug>/plan.json` | 8 | changes: create package + 1 step |
 
 ## Gate - human approval required
 Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):

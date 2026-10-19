@@ -42,7 +42,7 @@ def files(work, pattern):
 
 
 def canvas_text(work):
-    docs = files(work, "**/docs/vela-builds/*.md")
+    docs = files(work, "**/docs/features/*/README.md")
     return docs, "\n".join(open(d, encoding="utf-8", errors="replace").read() for d in docs)
 
 
@@ -57,7 +57,7 @@ def main():
 
     docs, canvas = canvas_text(work)
     if exp.get("canvas", True):
-        check("canvas exists (docs/vela-builds/*.md)", docs, ", ".join(os.path.relpath(d, work) for d in docs))
+        check("canvas exists (docs/features/<slug>/README.md)", docs, ", ".join(os.path.relpath(d, work) for d in docs))
     for needle in exp.get("canvas_contains", []):
         check(f"canvas mentions {needle!r}", re.search(needle, canvas, re.I), "")
 
@@ -71,11 +71,11 @@ def main():
 
     if exp.get("spec_check"):
         # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.py against the
-        # setup's last commit (<base>), with the story's Canvas (the newest docs/vela-builds file not in <base>).
+        # setup's last commit (<base>), with the story's Canvas (the newest docs/features/*/README.md not in <base>).
         for repo in sorted({os.path.dirname(os.path.dirname(os.path.dirname(g))) for g in files(work, "**/docs/rules/*.md")}):
             base = sh(f'git -C "{repo}" log --format=%H --grep="^refactor: simplify the empty check$" --grep="^baseline" -n 1')[1].strip() \
                 or sh(f'git -C "{repo}" rev-list --max-parents=0 HEAD')[1].strip()
-            new_docs = [d for d in sh(f'git -C "{repo}" diff --name-only --diff-filter=A {base}...HEAD -- docs/vela-builds')[1].split() if d.endswith(".md")]
+            new_docs = [d for d in sh(f'git -C "{repo}" diff --name-only --diff-filter=A {base}...HEAD -- docs/features')[1].split() if d.endswith("/README.md")]
             if not check("story Canvas found for spec-check", new_docs, ", ".join(new_docs)):
                 continue
             code, out = sh(f'python3 "{os.path.join(ROOT, "tools", "spec-check.py")}" --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
