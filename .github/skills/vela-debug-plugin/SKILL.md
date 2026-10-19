@@ -44,7 +44,8 @@ instrument → fix → regression-test - not trial and error.
    - Rows exist only with tracing on (*System Settings* → *Customization*); if off, ask the human to
      enable it and reproduce - don't change it yourself.
    Depth above 1 or "prevent recursion" → recursion (`references/dataverse-gotchas.md`). **No row at
-   all** (tracing on) = the step never fired: suspect the registration (filter, message, entity,
+   all** (tracing on) = the step never fired (unless the failure is older than the trace-log retention, often
+   24h: reproduce it, then re-check): suspect the registration (filter, message, entity,
    relationship scope), not the handler.
 3. **Reproduce locally (mandatory):** a failing harness test (`vela-test-harness`) capturing the symptom.
    **"Does not fire", filters, cascades and recursion: use `PluginPipeline`** - `PluginContext...Execute`
@@ -82,7 +83,8 @@ When the harness and the org disagree, read Vela's limitations page (`references
 
 ## Red flags
 
-- A code change before a failing repro test exists, or a fix diff beyond the cause and its tests.
+- A code change before a failing repro test exists, or a fix diff beyond the cause and its tests (plus the
+  case it restores in `docs/rules/`, written before the test, `proposed`).
 - Mutating the org while diagnosing.
 - Reporting the intended state instead of the observed one.
 - `if (ctx.Depth > 1) return;` to make a recursion symptom disappear.
