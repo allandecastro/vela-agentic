@@ -46,6 +46,5 @@
  "canvas_contains": [
   "managed identity",
   "sign"
- ],
- "package_assembly": ".Integrations.dll"
+ ]
 }
