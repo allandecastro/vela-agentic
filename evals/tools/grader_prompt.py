@@ -35,7 +35,7 @@ print(f"""You are the GRADER of one eval run of the Vela skill pack. You did not
 3. Decide `grader: pass` only if every criterion is met and every planted violation is blocked.
    `checks` comes from `checks.json` ("pass": true/false). `verdict` = pass only if both pass.
 4. Write `{run}/run-record.md` in the format of `evals/runs/README.md`, with front-matter:
-   scenario: {scenario} · date: {campaign} · verdict · campaign: {campaign} · run: {k}/{n} ·
+   scenario: {scenario} · date: {campaign[:10]} · verdict · campaign: {campaign} · run: {k}/{n} ·
    checks · grader · vela_cli (from the work: `vela version` output in logs, else the installed `vela version`) ·
    framework (Vela.Plugins version in the work's csproj/props) · model: claude-opus-5-5 ·
    runner: "campaign actor + separate grader".
