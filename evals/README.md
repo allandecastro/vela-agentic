@@ -99,7 +99,7 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 51/54 runs pass.
+Latest campaign per scenario - 53/56 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -110,9 +110,9 @@ Latest campaign per scenario - 51/54 runs pass.
 | `account-erp-outbound` | 2026-10-18c | **1/1** | 1/1 | 1/1 | ready |
 | `account-mi-outbound` | 2026-10-18g | **1/1** | 1/1 | 1/1 | ready |
 | `account-multi-step` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
-| `account-rule-conflict` | 2026-10-19 | **2/2** | 2/2 | 2/2 | ready |
+| `account-rule-conflict` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
 | `account-second-behaviour` | 2026-10-19 | **2/3** | 3/3 | 2/3 | not ready |
-| `account-territory-cache` | 2026-10-19 | **2/2** | 2/2 | 2/2 | ready |
+| `account-territory-cache` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
 | `account-typed-images` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `account-update-recursion` | 2026-10-19 | **1/1** | 1/1 | 1/1 | ready |
 | `ambiguous-story-grill` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
