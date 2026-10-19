@@ -71,7 +71,7 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
 
 ### Service needed vs inline (SOLID/DRY)
 - Thin handler (SRP); real logic in a service when reusable or worth isolated tests →
-  `vela add service <Name> --entity <E>`, injected via DI. Reuse an existing service first.
+  `vela add service <Name> --entity <E>` (no `--entity` for one shared by several tables), injected via DI. Reuse an existing service first.
 - **Triggers - extract a service when any holds** (record which in the Canvas `service:` reasoning):
   1. **A second consumer** - another plugin, Custom API or step on another table needs the same logic
      (in this story or already in the code). Move the logic out of the first plugin into the service;

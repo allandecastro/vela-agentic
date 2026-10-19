@@ -243,7 +243,7 @@ detail, instead of copying the framework into the skills.
 
 Skills target the public `vela` CLI command surface and discover exact flags at runtime, so
 additive CLI changes do not break them. Each skill states its floor in `compatibility`
-(currently **vela 0.27.0 / Vela.Plugins 0.39.0**); the verified version is in `references/cli-surface.md`
+(currently **vela 0.27.3 / Vela.Plugins 0.40.0**); the verified version is in `references/cli-surface.md`
 and CI refuses a floor above it. A framework gap found by an eval is reported to the Vela repo, not
 worked around in the skills. See [`ROADMAP.md`](ROADMAP.md) for the policy and what is planned.
 

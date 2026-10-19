@@ -152,7 +152,8 @@ private void HandleUpdate(HandleUpdateContext ctx)
     => ctx.GetRequiredService<IAccountDescriptionDefault>().Execute(ctx.Request.Target);
 ```
 
-- `vela add service <Name> --entity Account` generates the interface + class (in `Account/Services/`)
+- `vela add service <Name> --entity Account` generates the interface + class (in `Account/Services/`; without
+  `--entity`, a shared service in `Services/`)
   and prints the registration line. Reshape `Execute` to what the Canvas needs; a pure rule may drop the
   `IOrganizationService` parameter.
 - Keep the handler thin; real logic in the service. In a test, `WithService<T>(fake)` **replaces the

@@ -1,7 +1,7 @@
 ---
 name: vela-debug-plugin
 description: Use when a Vela plugin does not fire, fires on the wrong message or entity, throws, or produces unexpected results.
-compatibility: "vela CLI >= 0.27.0 (Vela.Plugins >= 0.39.0); dotnet SDK."
+compatibility: "vela CLI >= 0.27.3 (Vela.Plugins >= 0.40.0); dotnet SDK."
 ---
 
 # Debug a Vela plugin
