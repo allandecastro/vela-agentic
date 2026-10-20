@@ -55,10 +55,13 @@ change. Paste its output into the reviewer's material; a failure is a **BLOCK** 
 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the pasted diff, the Canvas, the
   verbatim RED/GREEN lines and the Run trace - **not** the session history, so the author's context does
-  not anchor it (in eval runs it caught what self-review passed). After a fix, or a block for missing
-  evidence, fix the material and dispatch a **fresh** reviewer. Save its verbatim output as
-  `docs/features/<slug>/review.md`. Optionally run the two axes as two reviewers. A scoped reviewer is not `vela-builder`
-  orchestrating personas.
+  not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes. Save its
+  verbatim output as `docs/features/<slug>/review.md` (later rounds appended).
+- **Proportional re-review** (the review is the costliest step of a build): after fixing its findings, or
+  after a small later change (trace text, comment, wording), dispatch a fresh reviewer with **only** that
+  diff, the findings it must close and the new RED/GREEN lines - not the whole material again. A **full**
+  review again only when the change touches the registration, the security context, data access, an
+  outbound call, or most of the code. A block for missing evidence: fix the material, same scoped round.
 - **Fallback - self-review**, only when no subagent can be dispatched; **say so in the Build Report**
   ("self-review: no subagent available").
 

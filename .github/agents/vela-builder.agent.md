@@ -39,10 +39,11 @@ or package. That is a correct outcome.
    code to **green**.
 8. **Verify** - full suite green (OS-correct runner) **and** no analyzer (VELA00x) violations.
 9. **Review** - commit, then `vela-code-review` (dispatches `vela-reviewer`). Unresolved
-   Critical/Required block: fix, re-verify, re-review with a fresh reviewer.
+   Critical/Required block: fix, re-verify, then a scoped re-review of the fix (full again only when the fix
+   touches registration, security, data access or an outbound call).
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (package in `artifacts/`), `vela sign`
     if required, `vela plan --solution <uniquename>` on **that exact package** (never writes). Last, on
-    the final code: any later change means re-test, re-review, rebuild, re-plan.
+    the final code: any later change means re-test, re-review (scoped to that change), rebuild, re-plan.
 11. **Apply gate** - emit the **Build Report** (harness pass, analyzers clean, review PASS, cases
     checklist, the `vela plan` preview, the **Run trace**: one row per step - command, exit code, gate
     verdict), stop, hand off to a human.
