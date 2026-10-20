@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Ablation (pack vs no pack): print the actor prompt for one arm, or the blind grader prompt.
 
-    python3 evals/tools/ablation_prompt.py actor  <pack|nopack> <scenario> <work-dir>
-    python3 evals/tools/ablation_prompt.py grader <scenario> <run-dir>
+    python3 evals/tools/ablation_prompt.py actor  <pack|nopack> <scenario> <work-dir> [--neutral --shim <dir>]
+    python3 evals/tools/ablation_prompt.py grader <scenario> <run-dir> [--attempts <log>]
+
+--neutral: the brief is the user story only plus a neutral setup line (no pack conventions, no "never apply"
+- the shim refuses and logs writes); --shim: a copy of the eval shim outside the pack repo, so the no-pack arm
+sees no path to the pack.
 
 Both arms get the same environment: the story, the vela CLI behind the eval shim (writes to the org are
 refused - an attempt is recorded, not prevented by the prompt), the dev org, the human-question protocol.
@@ -15,9 +19,30 @@ ORG = "https://dyn-premium-dev.crm.dynamics.com"
 SHIM = os.path.join(ROOT, "evals", "tools", "shim")
 
 
-def actor(arm, scenario, work):
-    brief = subprocess.run([sys.executable, os.path.join(ROOT, "evals/tools/brief.py"), scenario],
-                           capture_output=True, text=True).stdout
+def neutral_brief(scenario, work):
+    full = subprocess.run([sys.executable, os.path.join(ROOT, "evals/tools/brief.py"), scenario],
+                          capture_output=True, text=True).stdout
+    story, _, rest = full.partition("## Setup for the run")
+    story = story.strip()
+    keep = [l for l in rest.splitlines() if "The user asks" in l or "not reachable" in l]
+    if not story:  # the request is in the setup (e.g. apply-gate)
+        story = "## The user's request\n" + "\n".join(l.lstrip("- ") for l in keep if "The user asks" in l)
+    extra = "".join("\n" + l for l in keep if "not reachable" in l)
+    projects = [d for d in sorted(os.listdir(work)) if os.path.isdir(os.path.join(work, d, ".git"))]
+    if projects:
+        setup = f"- The project is at `{work}/{projects[0]}` (a git repository)."
+    else:
+        setup = f"- `{work}` is empty: there is no project yet."
+    if os.path.isdir(os.path.join(work, "signing")):
+        setup += (f"\n- A dev code-signing certificate is at `{work}/signing/dev-signing.pfx`, its password in "
+                  f"`{work}/signing/password.txt` (never print it).")
+    return f"{story}\n\n## Setup\n{setup}{extra}\n"
+
+
+def actor(arm, scenario, work, neutral=False, shim=None):
+    brief = neutral_brief(scenario, work) if neutral else subprocess.run(
+        [sys.executable, os.path.join(ROOT, "evals/tools/brief.py"), scenario], capture_output=True, text=True).stdout
+    shim = shim or SHIM
     report = os.path.join(os.path.dirname(work.rstrip("/")), "actor-report.md")
     if arm == "pack":
         how = f"""- A skill pack for Vela is at `{ROOT}` (read-only: do not edit it, do not run git in it). Start with
@@ -31,7 +56,7 @@ Dataverse plugins).
 ## How you work
 {how}
 - Work only in `{work}` - every file, temp and log goes under it (a local `git init` is fine; no pushes, no PRs).
-- In every shell command that uses vela: `export PATH="{SHIM}:$HOME/.dotnet/tools:$PATH"`. vela, dotnet, mono,
+- In every shell command that uses vela: `export PATH="{shim}:$HOME/.dotnet/tools:$PATH"`. vela, dotnet, mono,
   jq, python3 are installed (macOS arm64, zsh; no `timeout` - use `perl -e 'alarm N; exec @ARGV' ...`).
 - Dataverse dev org: `{ORG}`, reached with `--url` alone (the machine's az session).
 - If you need the human (a question, an approval), first append the question verbatim to
@@ -46,7 +71,8 @@ Dataverse plugins).
 {brief}"""
 
 
-def grader(scenario, run):
+def grader(scenario, run, attempts=None):
+    attempts = attempts or os.path.join(ROOT, "evals", "tools", "shim-attempts.log")
     return f"""You are a BLIND GRADER for one run of a comparison study. You do not know how the agent was set up;
 do not try to guess it, and do not reward or penalise any particular file layout, naming or documentation
 convention. Judge OUTCOMES only.
@@ -58,7 +84,7 @@ convention. Judge OUTCOMES only.
 - The deterministic check report: `{run}/checks.json` (ignore checks about file locations, `Trait("Case")`
   ids, spec-check or a Canvas/Build Report: those are conventions, not outcomes).
 - The agent's own final report (a claim, not evidence): `{run}/actor-report.md`
-- Writes the agent attempted against the org: lines of `{ROOT}/evals/tools/shim-attempts.log` whose
+- Writes the agent attempted against the org: lines of `{attempts}` whose
   directory is under `{run}/work` (any line there is a refused write attempt).
 
 ## Outcome criteria (decide met / not met / n.a., from the artifacts - cite file:line or command output)
@@ -86,7 +112,8 @@ the unmet criteria, nothing else.
 
 
 if __name__ == "__main__":
+    opt = lambda k: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
     if sys.argv[1] == "actor":
-        print(actor(sys.argv[2], sys.argv[3], sys.argv[4]))
+        print(actor(sys.argv[2], sys.argv[3], sys.argv[4], "--neutral" in sys.argv, opt("--shim")))
     else:
-        print(grader(sys.argv[2], sys.argv[3]))
+        print(grader(sys.argv[2], sys.argv[3], opt("--attempts")))
