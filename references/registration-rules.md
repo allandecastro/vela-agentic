@@ -21,7 +21,8 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
 | CreateMultiple / UpdateMultiple | PreVal / PreOp / PostOp (Pre = Sync only) | n/a | n/a | as Create/Update; pipeline merged with Create/Update - register one, not both |
 
 - Mode: Sync everywhere; **Async is PostOperation-only** for every message.
-- SetState steps never fire (VELA022): react to the Update (or SetStateDynamicEntity).
+- State changes: react to the Update filtered on `statecode` (`SetStateRequest` is deprecated; a SetState step
+  never fires, VELA022).
 
 ## Target solution & publisher (prerequisite - decide in the Canvas)
 

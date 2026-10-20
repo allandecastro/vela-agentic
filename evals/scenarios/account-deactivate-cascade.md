@@ -29,7 +29,8 @@ org_required: true
   then each set to Inactive (`StateCode` + `StatusCode`) with `ctx.Service`; no `SystemService` without a
   reason in the Canvas.
 - **Tests:** RED then green through `PluginPipeline`: Update `StateCode = Inactive` deactivates the active
-  contacts; a `SetStateRequest` does too; reactivation does nothing; another account's contacts are untouched.
+  contacts; reactivation does nothing; another account's contacts are untouched. (`SetStateRequest` is
+  deprecated - a test with it is optional, not required.)
 
 ## Success criteria (a clean pass)
 1. Canvas: Update + `statecode` filter (and why not SetState), Sync PostOperation and why, the transition.
