@@ -6,11 +6,16 @@
    "entity": "account",
    "stage": "PostOperation",
    "mode": "Synchronous",
-   "filter": ["statecode"]
+   "filter": [
+    "statecode"
+   ]
   }
  ],
  "step_count": 2,
- "forbid_step_messages": ["SetState", "SetStateDynamicEntity"],
+ "forbid_step_messages": [
+  "SetState",
+  "SetStateDynamicEntity"
+ ],
  "forbid_src": [
   {
    "pattern": "new QueryExpression|GetAttributeValue<",
@@ -29,12 +34,6 @@
   {
    "pattern": "StateCodeOptionSet\\.Inactive",
    "why": "acts on deactivation only"
-  }
- ],
- "require_tests": [
-  {
-   "pattern": "new SetStateRequest",
-   "why": "SetState also fires the Update step"
   }
  ],
  "canvas_contains": [

@@ -27,10 +27,10 @@ symptom → cause → fix.
 - **Image is empty at runtime.** Not registered for that message/stage, or the column not captured. The
   generated `<Handler>Context` catches this at build (VELA017); the untyped `GetPreImage<T>()` / aliases
   return a silent null - verify the registration, not just the code.
-- **A SetState step never fires** (VELA022). `SetStateRequest` and an Update of `statecode` fire the
-  Update steps: register on Update filtered on `statecode`, check the new state in the Target
-  (`StateCode == Inactive`); reactivation fires the same step. `PluginPipeline` behaves the same - test both paths for real (an
-  Update of `StateCode` and `p.Service.Execute(new SetStateRequest { ... })`), not one dressed as the other.
+- **State changes are Updates.** `SetStateRequest` is deprecated: change state with an Update of `statecode`
+  / `statuscode`, and react to it on Update filtered on `statecode`, checking the new state in the Target
+  (`StateCode == Inactive`); reactivation fires the same step. A SetState step never fires (VELA022). Only when
+  known legacy callers still send `SetStateRequest` (it also fires the Update step) add one pipeline test with it.
 
 ## Runtime: recursion, state, sandbox, transactions, secrets
 
