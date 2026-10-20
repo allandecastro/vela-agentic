@@ -110,6 +110,10 @@ def main():
     ap.add_argument("--repo", default=".")
     a = ap.parse_args()
     repo, fails, warns = a.repo, [], []
+    if subprocess.run(["git", "-C", repo, "rev-parse", "--verify", "--quiet", f"{a.base}^{{commit}}"],
+                      capture_output=True).returncode != 0:
+        print(f"spec-check: base '{a.base}' is not a commit in {repo} - nothing was checked")
+        sys.exit(2)
     declared = canvas_rules(os.path.join(repo, a.canvas))
     changed = [f for f in git(repo, "diff", "--name-only", f"{a.base}...HEAD").split() if f]
 
