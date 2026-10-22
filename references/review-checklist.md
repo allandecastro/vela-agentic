@@ -42,7 +42,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 - **Approach honoured:** Sync vs Async fits (Async only for non-blocking work, never validation);
   reuse vs new respected (`vela add step` where it fit; no hand-created class).
 - Edge cases from the spec (empty / null / whitespace / boundary) handled, not just the happy path.
-- No scope creep; a divergence must have updated the Canvas first (fix-spec-first) - flag if not.
+- No scope creep: behaviour that traces to neither the story nor a recorded human answer - **Required**
+  (**Critical** when it drives security or disclosure); a divergence must have updated the Canvas first.
 
 ## Axis 2 - Standards + Dataverse smell baseline
 

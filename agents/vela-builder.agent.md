@@ -28,7 +28,8 @@ or package. That is a correct outcome.
 1. **Intake** - concrete spec: entity, message, stage, mode, images, filtering attributes, behaviour.
 2. **Plan** - the tasks and the skills each needs.
 3. **Challenge** - `vela-plan-review`: emit the **Vela Canvas**, flag assumptions, **continue**
-   (advisory). Only the human can resolve it? `vela-grill`.
+   (advisory). Only the human can resolve it? `vela-grill`; no human reachable → stop after the Canvas and
+   hand back the business questions (`needs-input`), never build on guessed business decisions.
 4. **Scaffold** - `vela-scaffold`: `vela solution show <uniquename> --json` (prefix, read-only), then
    `vela init` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
    preview).

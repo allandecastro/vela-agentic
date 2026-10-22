@@ -33,14 +33,14 @@ The lint warns about any non-meta skill no scenario exercises.
 | Skill | Exercised by |
 | --- | --- |
 | `diagnosing-vela` | diagnose-failed-run |
-| `using-vela` | ambiguous-story-grill, apply-gate |
+| `using-vela` | ambiguous-story-grill, apply-gate, dispatched-no-human |
 | `vela-apply` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-rule-conflict, apply-gate, contact-association, debug-live-trace, deployed-plugin-change, org-models-and-plan, regression-test-guard |
 | `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, contact-shared-default, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `vela-custom-api` | account-credit-function, lead-score-custom-api |
 | `vela-debug-plugin` | debug-filter-miss, debug-live-trace |
-| `vela-grill` | account-rule-conflict, account-territory-cache, ambiguous-story-grill, contact-association |
+| `vela-grill` | account-rule-conflict, account-territory-cache, ambiguous-story-grill, contact-association, dispatched-no-human |
 | `vela-models` | account-credit-function, account-erp-outbound, account-mi-outbound, account-territory-cache, org-models-and-plan |
-| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, contact-shared-default, deployed-plugin-change, lead-score-custom-api, regression-test-guard |
+| `vela-plan-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, ambiguous-story-grill, bulk-update-multiple, contact-association, contact-shared-default, deployed-plugin-change, dispatched-no-human, lead-score-custom-api, regression-test-guard |
 | `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, debug-filter-miss, deployed-plugin-change, org-models-and-plan, regression-test-guard |
 | `vela-scaffold` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, lead-score-custom-api, org-models-and-plan |
 | `vela-test-harness` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, debug-filter-miss, debug-live-trace, deployed-plugin-change, lead-score-custom-api, org-models-and-plan, regression-test-guard |
@@ -99,7 +99,7 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 52/52 runs pass.
+Latest campaign per scenario - 53/53 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -124,6 +124,7 @@ Latest campaign per scenario - 52/52 runs pass.
 | `debug-live-trace` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `diagnose-failed-run` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
+| `dispatched-no-human` | 2026-10-23 | **1/1** | 1/1 | 1/1 | ready |
 | `lead-score-custom-api` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
 | `org-models-and-plan` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `regression-test-guard` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |

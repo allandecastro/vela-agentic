@@ -1,0 +1,6 @@
+{
+ "no_build": true,
+ "output_contains": [
+  {"glob": "**/docs/features/*/README.md", "pattern": "blocked|needs-input", "why": "stopped after the Canvas, waiting for the human"}
+ ]
+}
