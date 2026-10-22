@@ -78,6 +78,8 @@ Announce: `Using vela-test-harness to <purpose>`.
   and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
   `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
+- **CS0118 in tests** (a test folder named after a table makes a `...Tests.<Table>` namespace that hides the
+  model type): refer to the model with an alias (`using Contact = <P>.Shared.Models.Generated.Contact;`).
 - **Never encode a harness divergence** in a test (e.g. a read with no privilege at all hides the row in the harness
   but faults in the org; computed columns such as `fullname` are not computed) - Vela's limitations page.
 - **A removed step** is tested too: through the pipeline, the message no longer runs the handler

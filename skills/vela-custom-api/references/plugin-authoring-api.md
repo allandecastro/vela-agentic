@@ -236,6 +236,14 @@ public sealed class RecalcAccountRequest : CustomApiRequest
 - Callers: `service.Execute(new RecalcAccountRequest { ... }).ToResponse<RecalcAccountResponse>()`
   (`using Vela.Context;`); a bound API needs `Target` set on the request.
 
+## Code documentation (the same in every story)
+- Each plugin / Custom API / service **type**: `/// <summary>` naming the rule(s) it implements (`ACC-002`).
+- Service and interface public members: `<summary>` (+ `<param>` when not obvious); implementations `<inheritdoc />`.
+- Each step handler: named after the behaviour, with one `//` line - the rule/case it serves and why this
+  stage/mode.
+- Inline comments only for the **why** (a Dataverse quirk, the security choice, a cascade, an image) - never
+  narrating the code. Custom API parameters carry a description (Dataverse shows it).
+
 ## Platform services - decide in the Canvas, read the Vela guide for the API
 
 | Need | Use | Guide |

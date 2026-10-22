@@ -58,9 +58,16 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
   `Async(deleteJobOnSuccess: true)` keeps the async queue clean.
 
 ### Reuse vs new registration (same table)
-- **No class exists** → `vela add plugin <Name> --entity <E> --message <M>`. Never hand-create the class.
-- **Another behaviour on a table that already has a plugin** → prefer `vela add step` on it, unless the
-  concern is genuinely separate.
+- **One plugin class per table**, named `<Entity>Plugin` (`AccountPlugin`) - a deterministic name, so isolated or
+  parallel builds converge. No class on the table → `vela add plugin <Entity>Plugin --entity <E> --message <M>`
+  (never hand-create it). The table has one (whatever its name) → each story is a step on it (`vela add step`),
+  never renamed. A separate class only when the Canvas justifies it: its own secure/unsecure config, another
+  package (Integrations), or a Custom API.
+- **Handlers are named after the behaviour** (`OnDeleteGuard`, `OnPhoneNormalize`), never the scaffold's
+  `OnExecute` once the class holds more than one step.
+- **Shared files have fixed names** (parallel builds append to the same file): message keys and texts in
+  `Localization/Messages.cs`, the assembly registrar in `ProjectServices.cs`, rules in `docs/rules/<table>.md`.
+- **Parallel builds** on the same tables: after merging, re-check one class per table and these shared files.
 - **Reuse** existing behaviour (plugin/step/service) - do not duplicate.
 
 ### Outbound integration (calls to another system)
