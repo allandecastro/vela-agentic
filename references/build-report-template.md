@@ -20,7 +20,10 @@ business rules on a table (template at the end). The Canvas names the rules the 
 (`rules:`). The registry is the **functional spec of the tests**: each rule's cases carry an id (`ACC-002/C1`)
 and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the **design** phase and is
 **read-only during the build** (`tools/spec-check.py` checks it at review) - except a rule's trace lines
-(`Implementation:` / `Tests:`), which are synced to the code like the Canvas (e.g. logic moved into a service).
+(`Implementation:` / `Tests:`), synced to the code like the Canvas, and a **review-driven amendment** (a new case
+id, a corrected sentence) listed in the Canvas `amendments:` and recorded in the Sync log with its finding.
+**Project decisions** made once for the solution (default security context, message source and languages, ...)
+live in `docs/rules/README.md`: read before planning, asked once, then reused.
 
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
 
@@ -53,6 +56,7 @@ namespace_prefix: Zava    # scaffold --prefix (PascalCase namespace, not the pub
 rules:                    # rules this story adds / changes / retires in docs/rules/<table>.md
   - {id: ACC-001, change: add}            # add | change | retire
 supersedes: []            # slugs of earlier stories this one replaces, if any
+amendments: []            # rules amended in the build after a review finding (each in the Sync log)
 acceptance_cases:         # the rule's cases, by id - each becomes a test carrying [Trait("Case", "<id>")]
   - "ACC-001/C1 Given an account with no Description, When it is created, Then Description = 'Created via Vela plugin'"
   - "ACC-001/C2 Given a whitespace-only Description, When it is created, Then it is defaulted"
@@ -162,6 +166,9 @@ without the human is one of them>
 
 ## Assumptions taken (FYI)
 <platform facts and low-impact choices made without the human>
+
+## Rule fixes for the human to approve
+<wording or case fixes to `docs/rules/` found during the build and not amended>
 ```
 
 ## Rules registry - `docs/rules/<table>.md` (one file per table, written in English)

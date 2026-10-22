@@ -58,7 +58,8 @@ Announce: `Using vela-test-harness to <purpose>`.
    Single-step plugin: no trigger chain (it auto-derives); multi-step: state the message (`.OnUpdate()`),
    `.Stage(...)` only when several steps share it.
 3. Write the full **Coverage** set.
-4. **RED first (mandatory):** behaviour cases **fail** for the right reason before any logic (guard/no-op
+4. **RED first (mandatory):** behaviour cases **fail** for the right reason before any logic; a no-op case
+   that passes at RED asserts the handler ran (`HandlerInvoked`) or is backed by a mutation check (guard/no-op
    cases may pass - list them). **Commit the RED tests alone** (provable in git), then hand off.
 5. Run with the **OS-correct runner** (`references/harness-api.md`): Windows `dotnet test`; macOS/Linux
    Mono + xunit console with `-parallel none`. Run every test assembly (`<P>.Integrations.Tests` too).
@@ -76,7 +77,9 @@ Announce: `Using vela-test-harness to <purpose>`.
   case intact - e.g. adding `.OnCreate()` once the plugin gains a second step - is allowed: same data, action
   and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
-  `Implementation:` / `Tests:` trace lines aside).
+  `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
+- **Never encode a harness divergence** in a test (e.g. a read with no privilege at all hides the row in the harness
+  but faults in the org; computed columns such as `fullname` are not computed) - Vela's limitations page.
 - **A removed step** is tested too: through the pipeline, the message no longer runs the handler
   (`Assert.Empty(p.ExecutionLog)`), and `vela plan` shows the `delete step`.
 

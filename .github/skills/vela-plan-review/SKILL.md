@@ -24,6 +24,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
+   Read **`docs/rules/README.md`** (project decisions: default security context, message source...) and reuse
+   them; a decision missing there is asked once and added.
    **Scope:** every behaviour in the Canvas traces to the story text or a human answer. A provided draft or
    existing code is material to reuse, not spec: what it adds beyond the story is dropped or becomes a question.
 2. **Grill it** (unanswered → assumption or open question). Decisions and legal matrix:
@@ -77,7 +79,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test.
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
-     business decision: with a human reachable, ask (one question); none reachable → it goes back with the other
+     business decision: with a human reachable, ask (one question); a step that writes another table as the user
+     gets read-denied and write-denied acceptance cases; none reachable → it goes back with the other
      business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** generated naming + prefix; SOLID/DRY; secrets → `WithSecureConfigFrom`, never code.
