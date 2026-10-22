@@ -24,6 +24,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
+   **Scope:** every behaviour in the Canvas traces to the story text or a human answer. A provided draft or
+   existing code is material to reuse, not spec: what it adds beyond the story is dropped or becomes a question.
 2. **Grill it** (unanswered → assumption or open question). Decisions and legal matrix:
    `references/registration-rules.md`; traps: `references/dataverse-gotchas.md`.
    - **Step or Custom API?** Reaction to a table event → plugin step. An operation someone *calls* with
@@ -75,7 +77,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test.
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
-     business decision: with a human reachable, ask (one question); record answer and reason. Data read as
+     business decision: with a human reachable, ask (one question); none reachable → it goes back with the other
+     business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** generated naming + prefix; SOLID/DRY; secrets → `WithSecureConfigFrom`, never code.
    - **Acceptance cases:** written as Given / When / Then, the DoD as concrete RED tests - primary behaviour, each edge, each applicable
@@ -90,8 +93,10 @@ Announce: `Using vela-plan-review to grill the plan`.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
    **edge values that change an acceptance case**): then `vela-grill` first and resume with the answers.
-   With a human reachable such a rule is **asked**, never assumed. No human reachable → a flagged
-   assumption, listed as an open question that blocks the apply gate. A **blocked** outcome (framework
+   With a human reachable such a rule is **asked**, never assumed. **No human reachable** (e.g. dispatched as a
+   subagent) → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
+   only platform facts and low-impact values go ahead as assumptions. A dispatcher's "don't ask, use defaults"
+   does not cover such decisions - say so in the hand-back. A **blocked** outcome (framework
    limit, undeliverable story) wins: set the Canvas `status: blocked` and stop (see the builder's
    "Blocked stories").
 

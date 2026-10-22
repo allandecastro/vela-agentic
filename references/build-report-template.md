@@ -156,8 +156,12 @@ A secure-config value the agent does not hold is an **open question** (who suppl
 "expects the secure configuration" diagnostic stays as evidence - never a placeholder. Exit `7` = partial
 apply (fix, re-run); `5` = not converged - both reported, never "done".
 
-## Open questions
-<anything the human must decide>
+## Blocking decisions (the human must answer before apply - a handful at most)
+<business decisions not yet made by the human, most important first; a SYSTEM security context chosen
+without the human is one of them>
+
+## Assumptions taken (FYI)
+<platform facts and low-impact choices made without the human>
 ```
 
 ## Rules registry - `docs/rules/<table>.md` (one file per table, written in English)

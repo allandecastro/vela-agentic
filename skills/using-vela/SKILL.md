@@ -17,7 +17,8 @@ Local and reversible until the gate; the org is only written at `apply`. One ski
 
 1. **Intake** - concrete spec (entity, message, images, rules).
 2. **Plan** - scaffold or existing project, models, logic.
-3. **Challenge** - `vela-plan-review`: self-grill, fill the **Vela Canvas**, flag assumptions, continue
+3. **Challenge** - `vela-plan-review` (a session that can talk to the human runs `vela-grill` **before**
+   dispatching `vela-builder` on an underspecified story): self-grill, fill the **Vela Canvas**, flag assumptions, continue
    (advisory). Only the human can resolve it? `vela-grill`. A changed requirement updates the Canvas
    before the code.
 4. **Scaffold** - `vela-scaffold`: `vela solution show` → `vela init` (minimal) → models → `vela add`.
