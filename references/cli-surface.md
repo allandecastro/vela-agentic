@@ -4,8 +4,8 @@ The commands the loop needs and the traps `--help` does not show. A snapshot - t
 confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
 exit code as one JSON document).
 
-**Verified against:** `vela 0.27.5` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.41.0` (scaffold default, resolved by `vela init`). This is the pack's only version
+**Verified against:** `vela 0.28.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.41.1` (scaffold default, resolved by `vela init`). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 
 ## Scaffolding - local only, no Dataverse
