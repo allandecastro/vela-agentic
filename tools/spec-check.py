@@ -6,7 +6,8 @@
 Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   1. a rule section in docs/rules/*.md changed but its id is not declared in the Canvas `rules:`;
   2. a rule section was deleted (a rule is retired, never removed);
-  3. docs/rules/ changed in a commit made after the build started (a commit touching src/ or tests/);
+  3. docs/rules/ changed in a commit made after the build started (a commit touching src/ or tests/), unless the
+     rule is listed in the Canvas `amendments:` (a review-driven amendment recorded in the Sync log);
   4. an existing test (a method carrying [Trait("Case", "<RULE>/<case>")] at <base>) was modified or deleted
      while <RULE> is not `change` / `retire` in the Canvas;
   5. a test carries a case id that the registry does not contain, or a new test carries none (every test has
@@ -53,6 +54,18 @@ TRACE = re.compile(r"^\s*(Implementation|Tests):.*$", re.M)
 def spec_text(section):
     """A rule section without its trace lines (Implementation / Tests), whitespace-normalized."""
     return re.sub(r"\s+", " ", TRACE.sub("", section or "")).strip()
+
+
+def changed_ids(before, after):
+    """Rule ids whose spec text differs (added, removed or edited) between two versions of a registry file."""
+    b, a = rule_sections(before), rule_sections(after)
+    return {k for k in set(b) | set(a) if spec_text(b.get(k)) != spec_text(a.get(k))}
+
+
+def canvas_amendments(path):
+    """Rule ids listed in the Canvas `amendments:` - review-driven spec amendments recorded in the Sync log."""
+    m = re.search(r"^amendments:\s*\[([^\]]*)\]", open(path, encoding="utf-8").read(), re.M)
+    return set(re.findall(r"[A-Z]+-\d+", m.group(1))) if m else set()
 
 
 def spec_changed(before, after):
@@ -115,6 +128,7 @@ def main():
         print(f"spec-check: base '{a.base}' is not a commit in {repo} - nothing was checked")
         sys.exit(2)
     declared = canvas_rules(os.path.join(repo, a.canvas))
+    amended = canvas_amendments(os.path.join(repo, a.canvas))
     changed = [f for f in git(repo, "diff", "--name-only", f"{a.base}...HEAD").split() if f]
 
     # 1-2. registry sections
@@ -124,7 +138,7 @@ def main():
         for rid, txt in before.items():
             if rid not in after:
                 fails.append(f"{f}: rule {rid} was deleted - retire it (Status: retired), keep its text")
-            elif spec_text(after[rid]) != spec_text(txt) and rid not in declared:
+            elif spec_text(after[rid]) != spec_text(txt) and rid not in declared and rid not in amended:
                 fails.append(f"{f}: rule {rid} changed but is not declared in the Canvas rules:")
         for rid in after:
             if rid not in before and rid not in declared:
@@ -134,10 +148,12 @@ def main():
     started = False
     for c in git(repo, "rev-list", "--reverse", f"{a.base}..HEAD").split():
         files = git(repo, "show", "--name-only", "--format=", c).split()
-        spec_edit = any(spec_changed(git(repo, "show", f"{c}^:{x}"), git(repo, "show", f"{c}:{x}"))
-                        for x in files if re.match(r"(.*/)?docs/rules/[^/]+\.md$", x))
-        if started and spec_edit:
-            fails.append(f"commit {c[:8]} edits docs/rules/ after the build started (spec is read-only in the build)")
+        ids = set().union(*[changed_ids(git(repo, "show", f"{c}^:{x}"), git(repo, "show", f"{c}:{x}"))
+                            for x in files if re.match(r"(.*/)?docs/rules/[^/]+\.md$", x)] or [set()])
+        unrecorded = ids - amended
+        if started and unrecorded:
+            fails.append(f"commit {c[:8]} edits rule(s) {', '.join(sorted(unrecorded))} after the build started without "
+                         "an `amendments:` entry in the Canvas (spec is read-only in the build)")
         if any(re.match(r"(.*/)?(src|tests)/", x) for x in files):
             started = True
 

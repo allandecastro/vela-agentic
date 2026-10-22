@@ -34,6 +34,8 @@ Announce: `Using vela-grill to resolve the story`.
    - Timing: Sync (blocks the user, rolls back together - even at PostOperation) or Async (never blocks,
      fails on its own)? State each consequence in the question.
    - Data: exact values read and written; defaults and edge cases.
+   - Event or invariant: a reaction to one event, or a rule that must always hold (then which other changes -
+     another lookup, a re-parent - must also enforce it)?
    - Security context: calling user (default) or elevated? If the human defers to the defaults while you recommended otherwise, apply the
      default and list your recommendation as an open question at the gate.
    - A message the user sees: which languages, and where the texts live (project convention) - never
