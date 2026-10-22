@@ -114,6 +114,9 @@ EstimateValueResponse response = p.Service
 Platform services are not replaced this way (`WithService` rejects them): fake a managed identity with
 `PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`). Each
 harness has its own `IPluginCacheService`: test a TTL with `WithClock(() => now)` and move `now` past it.
+A `WithSecurity` test that depends on who can read a child row (e.g. an account's contacts) declares the
+parental relationship (`WithParentalRelationship("account", "contact", "parentcustomerid")`): inherited access
+(the parent's owner reads its children) applies only then - see Vela's security-model guide.
 
 On `PluginPipeline` and the context builder, it replaces what `ConfigureServices` registers for `TService`,
 so the plugin runs end to end against a fake - no test-only constructor or seam in the plugin:
