@@ -137,7 +137,7 @@ def main():
         after = rule_sections(git(repo, "show", f"HEAD:{f}"))
         for rid, txt in before.items():
             if rid not in after:
-                fails.append(f"{f}: rule {rid} was deleted - retire it (Status: retired), keep its text")
+                fails.append(f"{f}: rule {rid} was deleted - retire it (a `Retired by:` line), keep its text")
             elif spec_text(after[rid]) != spec_text(txt) and rid not in declared and rid not in amended:
                 fails.append(f"{f}: rule {rid} changed but is not declared in the Canvas rules:")
         for rid in after:
