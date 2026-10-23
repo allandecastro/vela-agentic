@@ -45,7 +45,7 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
 5. **Confirm the solution (read-only):** `vela solution show <uniquename> --json <connection>`; its
    `publisherPrefix` must equal the scaffold's `--publisher-prefix`. Exit `4` = no such solution (Vela
    does not create it): an open question that blocks the gate.
-6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out docs/features/<slug>/plan.json`
+6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out .vela-runs/<slug>/plan.json`
    on **the packages the Canvas ships** (`-p` repeated; not `--packages-dir artifacts` blindly).
    `--solution` is required (else exit `4`). A package with nothing of yours (empty `<P>.Plugins` beside
    an Integrations-only story) is not created; include or omit it consistently, recorded in the Canvas.

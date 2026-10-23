@@ -56,7 +56,7 @@ change. Paste its output into the reviewer's material; a failure is a **BLOCK** 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the pasted diff, the Canvas, the
   verbatim RED/GREEN lines and the Run trace - **not** the session history, so the author's context does
   not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes. Save its
-  verbatim output as `docs/features/<slug>/review.md` (later rounds appended).
+  verbatim output as `.vela-runs/<slug>/review.md` (untracked; later rounds appended) and quote it in the PR.
 - **Proportional re-review** (the review is the costliest step of a build): after fixing its findings, or
   after a small later change (trace text, comment, wording), dispatch a fresh reviewer with **only** that
   diff, the findings it must close and the new RED/GREEN lines - not the whole material again. A **full**
