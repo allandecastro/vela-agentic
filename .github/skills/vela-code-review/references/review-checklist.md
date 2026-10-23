@@ -84,11 +84,17 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Async step editing the Target** - **Critical** (lost) [VELA018].
 - **Execution order:** rank shared with managed steps is NOT a finding; flag only missing/ambiguous order
   among our own steps on one table+message+stage.
+- **Plugin classes and naming:** a new plugin class on a table that already has one, with no Canvas reason (own
+  config, other package, Custom API) - **Required**; `OnExecute` in a class with several steps, or a shared file
+  (messages, registrar) under another name than the convention - **Nit**.
+- **Documentation:** a plugin/service type without a `<summary>` naming its rule, a handler without its rule/why
+  line, comments narrating the code - **Nit**.
 - **SOLID / DRY:** duplicated logic (across plugins or between one plugin's steps; a shared constant with
   the rule copied into each handler still counts) - **Required**. Handlers stay thin, real logic in a
   service where it earns it, existing services/plugins reused, no service for a one-liner. A service
   trigger met (second consumer, data access plus decisions, an oversized handler) with logic left inline
-  - **Required** for a second consumer, **Nit** otherwise.
+  - **Required** for a second consumer, **Nit** otherwise. The same query or rule definition in two places, a
+  block repeated per column, a service registered twice or outside `ProjectServices` - **Required**.
 - **Stage:** a PostOperation `Update` of its own primary record where a PreOperation Target edit would do
   - **Required**, unless the Canvas records why.
 - **Recursion:** a write that re-triggers its own step - **Critical**, even when a `ctx.Depth` check or

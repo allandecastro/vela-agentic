@@ -158,10 +158,10 @@ Plugin and test projects target **net48**.
 - **macOS / Linux:** `dotnet test` **fails** (no .NET Framework test host). Run under **Mono + xunit console**.
   If `~/.nuget/packages/xunit.runner.console/2.9.2/` is missing, add
   `<PackageReference Include="xunit.runner.console" Version="2.9.2" PrivateAssets="all" />` to the test project once.
+  One command builds and runs every test assembly:
   ```bash
-  dotnet build <Solution>.sln -c Release
-  mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe \
-    tests/<P>.Plugins.Tests/bin/Release/net48/<P>.Plugins.Tests.dll -parallel none
+  dotnet build <Solution>.sln -c Release && for t in tests/*/bin/Release/net48/*.Tests.dll; do
+    mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe "$t" -parallel none || break; done
   ```
   Success is `Total: N, Errors: 0, Failed: 0, Skipped: 0`. **Always pass `-parallel none` on Mono** - a
   `mono-sgen` "Got a segv" without it is an environment crash, **not** a test failure.

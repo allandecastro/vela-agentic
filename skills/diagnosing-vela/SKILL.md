@@ -16,7 +16,7 @@ Turn a run into numbered, line-level findings against the skills, for `writing-v
 
 Announce: `Using diagnosing-vela to analyse the run`.
 
-1. Reconstruct the run against the build loop - from the Build Report's **Run trace** when present,
+1. Reconstruct the run against the build loop - from the **Run trace** (`.vela-runs/<slug>/trace.md`, or the PR body) when present,
    else the transcript.
 2. Per deviation, wrong command or stuck point, a **finding**: the file and what it said; what the agent
    did / the exact error; the correct command/API (from source or `--help`); severity, exactly one of:

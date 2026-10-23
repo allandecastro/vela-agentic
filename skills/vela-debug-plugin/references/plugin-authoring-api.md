@@ -30,7 +30,8 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 ```
 
 - The class is already `sealed partial` (generated step contexts nest in it; non-partial = `CS0260`, VELA014).
-- The handler is **`OnExecute`**; `.Handle(...)` is required and last (VELA002).
+- The scaffold names the handler **`OnExecute`**; rename it after the behaviour (`OnDeleteGuard`) - required once
+  the class holds a second step. `.Handle(...)` is required and last (VELA002).
 - A **single-step** plugin auto-derives its trigger; the harness need not restate it.
 - `Account` resolves only once the model exists: run `vela models --entities account ... --project
   src/<P>.Shared/<P>.Shared.csproj` first (a minimal `vela init` has no models).
@@ -235,6 +236,28 @@ public sealed class RecalcAccountRequest : CustomApiRequest
   the publisher prefix is not rejected locally** - review is the guard (`vela apply --solution` rejects it).
 - Callers: `service.Execute(new RecalcAccountRequest { ... }).ToResponse<RecalcAccountResponse>()`
   (`using Vela.Context;`); a bound API needs `Target` set on the request.
+
+## One registration point per assembly - `ProjectServices`
+Services and message sources are registered once for the whole assembly, not in each plugin:
+```csharp
+[assembly: VelaServiceRegistrar(typeof(Zava.Plugins.ProjectServices))]
+public sealed class ProjectServices : IServiceRegistrar   // runs before every plugin's ConfigureServices
+{
+    public void Register(SimpleServiceResolver services, ILocalPluginContext context)
+    {
+        services.AddScoped<IDescriptionDefault>(r => new DescriptionDefault());
+        context.GetRequiredService<IMessageService>().AddSource(Messages.Source);
+    }
+}
+```
+
+## Code documentation (the same in every story)
+- Each plugin / Custom API / service **type**: `/// <summary>` naming the rule(s) it implements (`ACC-002`).
+- Service and interface public members: `<summary>` (+ `<param>` when not obvious); implementations `<inheritdoc />`.
+- Each step handler: named after the behaviour, with one `//` line - the rule/case it serves and why this
+  stage/mode.
+- Inline comments only for the **why** (a Dataverse quirk, the security choice, a cascade, an image) - never
+  narrating the code. Custom API parameters carry a description (Dataverse shows it).
 
 ## Platform services - decide in the Canvas, read the Vela guide for the API
 

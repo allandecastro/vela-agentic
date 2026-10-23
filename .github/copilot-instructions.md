@@ -68,8 +68,9 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
   Dataverse smells).
 - **Preview on the final package**: `vela plan` always runs; a later code change invalidates it.
 - **Apply gate (blocking)**: emit a **Build Report**, stop, a human runs `apply`.
-- Artifacts (`references/build-report-template.md`) are committed in one folder per story, `docs/features/<slug>/` (`README.md` = Canvas → Build Report,
-  `review.md`, `plan.json`),
+- Artifacts (`references/build-report-template.md`): `docs/features/<slug>/README.md` (Canvas → Build Report,
+  short) is committed; the run trace, review and `plan.json` stay untracked in `.vela-runs/<slug>/` and go into
+  the PR body,
   and reused as the PR body.
 
 ## Golden rules

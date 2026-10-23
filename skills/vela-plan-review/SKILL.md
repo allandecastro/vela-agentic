@@ -83,7 +83,9 @@ Announce: `Using vela-plan-review to grill the plan`.
      gets read-denied and write-denied acceptance cases; none reachable → it goes back with the other
      business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
-   - **Norms:** generated naming + prefix; SOLID/DRY; secrets → `WithSecureConfigFrom`, never code.
+   - **Norms:** one plugin class per table (`<Entity>Plugin`), behaviour-named handlers, fixed shared-file names
+     (registration-rules); the code documentation convention (plugin-authoring-api); SOLID/DRY; secrets →
+     `WithSecureConfigFrom`, never code.
    - **Acceptance cases:** written as Given / When / Then, the DoD as concrete RED tests - primary behaviour, each edge, each applicable
      gotcha; on Update "column not sent" vs "column cleared"; a `PluginPipeline` case when the step must
      (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.

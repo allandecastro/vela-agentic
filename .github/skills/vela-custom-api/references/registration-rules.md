@@ -58,9 +58,17 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
   `Async(deleteJobOnSuccess: true)` keeps the async queue clean.
 
 ### Reuse vs new registration (same table)
-- **No class exists** → `vela add plugin <Name> --entity <E> --message <M>`. Never hand-create the class.
-- **Another behaviour on a table that already has a plugin** → prefer `vela add step` on it, unless the
-  concern is genuinely separate.
+- **One plugin class per table**, named `<Entity>Plugin` (`AccountPlugin`) - a deterministic name, so isolated or
+  parallel builds converge. No class on the table → `vela add plugin <Entity>Plugin --entity <E> --message <M>`
+  (never hand-create it). The table has one (whatever its name) → each story is a step on it (`vela add step`),
+  never renamed. A separate class only when the Canvas justifies it: its own secure/unsecure config, another
+  package (Integrations), or a Custom API.
+- **Handlers are named after the behaviour** (`OnDeleteGuard`, `OnPhoneNormalize`), never the scaffold's
+  `OnExecute` once the class holds more than one step.
+- **Shared files have fixed names** (parallel builds append to the same file): message keys and texts in
+  `Localization/Messages.cs`, the assembly registrar in `ProjectServices.cs`, rules in `docs/rules/<table>.md`.
+- **Parallel builds** on the same tables: after merging, re-check one class per table, these shared files and
+  duplication (the same query or rule definition in two places). Never copy another feature's uncommitted content.
 - **Reuse** existing behaviour (plugin/step/service) - do not duplicate.
 
 ### Outbound integration (calls to another system)
@@ -81,6 +89,14 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
      the service is tested alone, the handler test only checks the wiring.
   3. **The handler outgrows itself** - more than one business decision, or roughly 30+ lines of logic.
   4. **An outbound call** - always a service (Integrations, below).
+  5. **A shared business definition** - a rule other rules reference ("an active contact of an account"):
+     one service from the first story, whatever the consumer count today.
+- **Placement:** a service lives under the table whose data it owns (`Account/Services/`); a cross-table one in
+  `Services/`. Every service is registered once, in the assembly's `ProjectServices` (`IServiceRegistrar`),
+  not in each plugin's `ConfigureServices`. Its constructor takes the service it reads with and its
+  `<summary>` says which (caller or SYSTEM), so the security context is visible where the data is read.
+- **Same rule on N columns or N tables:** one column list per table and one loop or helper, never a block per
+  column or a copied plugin.
 - No service for a one-line, single-use operation (ceremony). Shared by the steps of **one** plugin → a
   private helper (+ constant); shared **across plugins** → a service. A shared constant alone is not
   shared logic: the rule lives once in the helper; each step's own guard wraps the call.

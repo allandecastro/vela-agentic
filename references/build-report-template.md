@@ -6,9 +6,11 @@ single artifact the reviewer reasons about, and the home of the decisions the to
 Markdown + YAML front-matter, reused as the PR body. Keep it **proportional**: one line per section is fine
 for a simple story.
 
-**One folder per story:** `docs/features/<slug>/` holds `README.md` - the Canvas that becomes the Build Report
-(`kind: canvas` → `kind: feature`) and the PR body - plus `review.md` (the reviewer's output, verbatim) and
-`plan.json` (`vela plan --out`). Before a project exists, write it at that path under the working directory;
+**One folder per story:** `docs/features/<slug>/README.md` is the Canvas that becomes the Build Report (`kind:
+canvas` → `kind: feature`) - a short, durable record: decisions, cases, evidence lines, gate. The run's working
+material stays **untracked** in `.vela-runs/<slug>/` (add `/.vela-runs/` to `.gitignore`): `trace.md` (the Run
+trace), `review.md` (the reviewer's output, verbatim) and `plan.json` (`vela plan --out`); the PR body carries
+the README plus the review and trace. Before a project exists, write the README at that path under the working directory;
 after `vela init`, at the same relative path inside the project. Never another path or name. A
 new story on an existing plugin gets its **own** slug and file, referencing the plugin.
 
@@ -115,7 +117,7 @@ harness: pass             # pass | fail  (must be pass)
 analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)
 plan_preview: changes     # changes (exit 8 with --detailed-exitcode) | clean (exit 0) | unavailable (record the command + exit)
-plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out docs/features/<slug>/plan.json"
+plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json"
 apply: pending
 ---
 
@@ -139,7 +141,7 @@ apply: pending
 ## Sync log
 <Canvas changes made during the build (requirement change → Canvas first; refactor → synced back)>
 
-## Run trace
+## Run trace (in `.vela-runs/<slug>/trace.md`, not in this README)
 One row per step, appended as you go; the input for `diagnosing-vela`. Every value is copied from the
 tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a value you did not observe.
 
@@ -151,7 +153,7 @@ tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a 
 | 4 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
 | 5 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
 | 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
-| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out docs/features/<slug>/plan.json` | 8 | changes: create package + 1 step |
+| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json` | 8 | changes: create package + 1 step |
 
 ## Gate - human approval required
 Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):

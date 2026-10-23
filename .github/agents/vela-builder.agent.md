@@ -59,7 +59,7 @@ or package. That is a correct outcome.
       Build Report, `docs/features/<slug>/README.md`. No AI attribution.
     - `vela apply` stays a **separate human step**: a ready or merged PR does not mean the org was written.
 
-Keep the **Run trace** current (a row per step) - it is the input for `vela-debug-plugin` /
+Keep the **Run trace** current in `.vela-runs/<slug>/trace.md` (a row per step; untracked) - it is the input for `vela-debug-plugin` /
 `diagnosing-vela`. Artifacts follow `references/build-report-template.md` (bundled in
 `vela-plan-review`). Something misbehaves: `vela-debug-plugin` (reproduce in the harness first).
 
