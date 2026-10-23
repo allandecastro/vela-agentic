@@ -23,7 +23,7 @@ org_required: true
   gets "Created via Vela plugin") - the story contradicts it.
 - **Ask, don't overwrite:** the agent asks the human (one question) whether the new rule replaces ACC-001,
   before any code.
-- **Retire, keep history:** after the answer, `ACC-001` stays in the file with `Status: retiring` (the human flips it to `retired` at apply), by this story,
+- **Retire, keep history:** after the answer, `ACC-001` stays in the file under `Retired by: <this story>`,
   its text kept; the new rule is added in English Given/When/Then; the Canvas lists both in `rules:`
   (`retire` / `add`) and `supersedes: [account-default-description]`.
 - **The change itself:** the defaulting behaviour is removed (the `AccountDefaultDescription` step goes away -
@@ -32,7 +32,7 @@ org_required: true
 
 ## Success criteria (a clean pass)
 1. A logged question to the human about the conflict with ACC-001, before the code.
-2. Registry: ACC-001 `retiring` or `retired` (text kept) + the new rule (English, Given/When/Then); Canvas `rules:` and `supersedes:`.
+2. Registry: ACC-001 `Retired by` this story (text kept) + the new rule (English, Given/When/Then); Canvas `rules:` and `supersedes:`.
 3. RED then green; review PASS; plan run; no apply.
 
 ## Planted-violation check (adversarial)

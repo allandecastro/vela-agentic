@@ -24,8 +24,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
-   Read the **ADRs** (`docs/adr/`, titles and statuses) and follow every `Accepted` one; a project-wide
-   decision missing there is asked once and written as a `Proposed` ADR. A story that contradicts an ADR is
+   Read the **ADRs** (`docs/adr/`) and follow every one not superseded; a project-wide decision missing there
+   is asked once and written as a new ADR in the story's commit. A story that contradicts an ADR is
    a question, like a rule conflict.
    **Scope:** every behaviour in the Canvas traces to the story text or a human answer. A provided draft or
    existing code is material to reuse, not spec: what it adds beyond the story is dropped or becomes a question.
@@ -93,7 +93,7 @@ Announce: `Using vela-plan-review to grill the plan`.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
    retire, with ids), acceptance cases (the rule's case ids), and **write the rules into the registry now** - this is
    the design phase, the only one where `docs/rules/` may change (with the human; a new or
-   changed rule is `Status: proposed (by <slug>)`, a retired one keeps its text). Commit the Canvas + registry
+   retired rule keeps its text under `Retired by: <slug>`; no status otherwise - merging puts it in force). Commit the Canvas + registry
    before any test: that commit is the frozen spec the build is checked against.
    assumptions, open questions - one line per section for a simple story.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business

@@ -64,8 +64,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
      nothing - the deployed steps stay; record them at the Gate for a human to unregister.
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
 7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`). The registry is
-   not touched here (written at design, read-only in the build except its trace lines); the Gate tells the human to flip the story's
-   rules from `proposed` to `active` (and `retiring` to `retired`) with the apply.
+   not touched here (written at design, read-only in the build except its trace lines); it carries no
+   deploy status - merging the PR puts the rules in force, the Build Report's `apply:` records the deploy.
 8. **Stop here by default.** No `apply` unless an explicit "go ahead and apply" **for this run**. "Ship
    it", "looks good", "merge it" or a merged PR approve the code, not a write to the org.
 9. If (and only if) authorized: `vela apply -p <pkg> --solution <uniquename> <connection>` - same package

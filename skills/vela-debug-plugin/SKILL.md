@@ -84,7 +84,7 @@ When the harness and the org disagree, read Vela's limitations page (`references
 ## Red flags
 
 - A code change before a failing repro test exists, or a fix diff beyond the cause and its tests (plus the
-  case it restores in `docs/rules/`, written before the test, `proposed`).
+  case it restores in `docs/rules/`, written before the test).
 - Mutating the org while diagnosing.
 - Reporting the intended state instead of the observed one.
 - `if (ctx.Depth > 1) return;` to make a recursion symptom disappear.

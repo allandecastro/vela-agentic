@@ -28,8 +28,13 @@ and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the
 id, a corrected sentence) listed in the Canvas `amendments:` and recorded in the Sync log with its finding.
 **Project decisions** (default security context, message languages, a format shared by several rules, ...) are
 **ADRs**, one file each in `docs/adr/NNNN-<title>.md` (template at the end): read before planning, asked once,
-then cited by the Canvas (`{by: adr, what: "0001 - ..."}`) - never re-asked. A new one is written `Proposed`;
-only the human sets `Accepted`. Machine values (publisher prefix, solution) are Vela's, not an ADR.
+then cited by the Canvas (`{by: adr, what: "0001 - ..."}`) - never re-asked. Machine values (publisher prefix,
+solution) are Vela's, not an ADR.
+
+**Lifecycle = git.** Rules and ADRs carry no `proposed` / `active` / `accepted` status: on a branch or in a PR
+they are proposed, merged on the base branch they are in force (the human merges - that is the approval).
+Only a replaced one is marked (`Retired by` / `Superseded by`), its text kept. Whether a story is deployed, and
+where, is the Build Report's `apply:` and the org itself (`vela inspect`) - never the registry.
 
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
 
@@ -38,7 +43,7 @@ only the human sets `Accepted`. Machine values (publisher prefix, solution) are 
 kind: canvas
 slug: account-default-description
 date: 2026-09-25
-status: proposed          # proposed | approved | blocked | superseded - only a HUMAN sets `approved`;
+status: draft             # draft | blocked (needs-input, undeliverable) | superseded - merging approves it;
                           # the Build Report then carries the run status (awaiting-apply).
 entity: account           # table the step is registered on (may differ from the table it writes)
 # Multi-step plugin: a `steps:` list instead of the scalar fields, e.g.
@@ -181,13 +186,14 @@ without the human is one of them>
 
 One file per table, holding the rules **triggered** on it; a rule that also affects another table gets one
 `See also` line in that table's file. Rules are written for the business, in Given / When / Then / Otherwise,
-with the technical trace separate. A retired rule keeps its text, with its status changed.
+with the technical trace separate. A rule in the file on the base branch is in force; a retired rule keeps its
+text under a `Retired by` line.
 
 ```markdown
 # Rules - account
 
 ### ACC-002 - An account with active contacts cannot be deleted
-Status: active · Since: account-delete-guard (2026-10-17)   # proposed (by <slug>) until the human applies
+Since: account-delete-guard (2026-10-17)
 
 Given an account that has at least one active contact (contacts whose parent customer is the account)
 When a user deletes the account
@@ -208,8 +214,7 @@ Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
 Tests: AccountDeleteGuardTests
 
 ### ACC-001 - ...
-Status: retiring · By: <slug> (<date>) - <one-line reason>   # the build writes this
-Status: retired · By: <slug> (<date>) - <one-line reason>    # the human, at apply
+Retired by: <slug> (<date>) - <one-line reason>   # written by the story that replaces it
 <the rule text, unchanged>
 ```
 
@@ -217,12 +222,12 @@ In the affected table's file: `See also ACC-002 (account) - deleting an account 
 
 ## ADR - `docs/adr/NNNN-<title>.md` (one decision per file, written in English)
 
-A decision is never rewritten: a new ADR replaces it, and the old one's status becomes `Superseded by NNNN`.
+A decision is never rewritten: a new ADR replaces it, and the old one gets a `Superseded by: NNNN` line.
 
 ```markdown
 # 0001 - Plugins run as the calling user
 
-Status: Accepted · 2026-10-23 · by: human      # Proposed (by <slug>) until the human accepts it
+Date: 2026-10-23 · by: human
 
 ## Context
 Stories read other tables (contacts of an account); SYSTEM would expose rows the user cannot read.

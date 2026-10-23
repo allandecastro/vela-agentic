@@ -9,8 +9,8 @@
  "output_contains": [
   {
    "glob": "**/docs/rules/account.md",
-   "pattern": "ACC-001[\\s\\S]*Status:\\s*retir(ed|ing)",
-   "why": "ACC-001 retiring/retired, text kept"
+   "pattern": "ACC-001[\\s\\S]*Retired by",
+   "why": "ACC-001 Retired by this story, text kept"
   },
   {
    "glob": "**/docs/rules/account.md",
