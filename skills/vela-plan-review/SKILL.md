@@ -24,8 +24,10 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
-   Read the **ADRs** (`docs/adr/`) and follow every one not superseded; a project-wide decision missing there
-   is asked once and written as a new ADR in the story's commit. A story that contradicts an ADR is
+   Read the **ADRs** (`docs/adr/`) and follow every one not superseded; an architecture decision the story
+   raises and no ADR covers (what qualifies: `references/build-report-template.md`) is asked once and written
+   as a new ADR in the story's commit. A rule id or ADR number is taken from the latest base branch
+   (`git fetch` first); spec-check fails on a duplicate after merge. A story that contradicts an ADR is
    a question, like a rule conflict.
    **Scope:** every behaviour in the Canvas traces to the story text or a human answer. A provided draft or
    existing code is material to reuse, not spec: what it adds beyond the story is dropped or becomes a question.
