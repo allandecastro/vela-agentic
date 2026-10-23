@@ -1,0 +1,39 @@
+name: Version bump
+
+# Every merge to main bumps the plugin's patch version, so `claude plugin update` sees a new release
+# (an unchanged version keeps the cached copy). The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency: version-bump
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump patch in plugin.json and marketplace.json
+        run: |
+          node -e '
+            const fs = require("fs");
+            const p = ".claude-plugin/plugin.json", m = ".claude-plugin/marketplace.json";
+            const plugin = JSON.parse(fs.readFileSync(p)), market = JSON.parse(fs.readFileSync(m));
+            const [a, b, c] = plugin.version.split(".").map(Number);
+            plugin.version = market.metadata.version = `${a}.${b}.${c + 1}`;
+            fs.writeFileSync(p, JSON.stringify(plugin, null, 2) + "\n");
+            fs.writeFileSync(m, JSON.stringify(market, null, 2) + "\n");
+            console.log(plugin.version);
+          '
+
+      - name: Commit
+        run: |
+          v=$(node -p 'require("./.claude-plugin/plugin.json").version')
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(release): vela plugin $v"
+          git push
