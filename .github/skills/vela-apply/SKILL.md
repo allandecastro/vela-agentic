@@ -46,6 +46,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    `publisherPrefix` must equal the scaffold's `--publisher-prefix`. Exit `4` = no such solution (Vela
    does not create it): an open question that blocks the gate.
 6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out .vela-runs/<slug>/plan.json`
+   (first write to `.vela-runs/`: add it to the project's `.gitignore`). An org the human did not name (taken
+   from `~/.vela/config.json` or an earlier run) is recorded as `org: unconfirmed` and asked at the gate.
    on **the packages the Canvas ships** (`-p` repeated; not `--packages-dir artifacts` blindly).
    `--solution` is required (else exit `4`). A package with nothing of yours (empty `<P>.Plugins` beside
    an Integrations-only story) is not created; include or omit it consistently, recorded in the Canvas.
