@@ -26,8 +26,10 @@ and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the
 **read-only during the build** (`tools/spec-check.py` checks it at review) - except a rule's trace lines
 (`Implementation:` / `Tests:`), synced to the code like the Canvas, and a **review-driven amendment** (a new case
 id, a corrected sentence) listed in the Canvas `amendments:` and recorded in the Sync log with its finding.
-**Project decisions** made once for the solution (default security context, message source and languages, ...)
-live in `docs/rules/README.md`: read before planning, asked once, then reused.
+**Project decisions** (default security context, message languages, a format shared by several rules, ...) are
+**ADRs**, one file each in `docs/adr/NNNN-<title>.md` (template at the end): read before planning, asked once,
+then cited by the Canvas (`{by: adr, what: "0001 - ..."}`) - never re-asked. A new one is written `Proposed`;
+only the human sets `Accepted`. Machine values (publisher prefix, solution) are Vela's, not an ADR.
 
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
 
@@ -213,3 +215,21 @@ Status: retired · By: <slug> (<date>) - <one-line reason>    # the human, at ap
 
 In the affected table's file: `See also ACC-002 (account) - deleting an account is blocked while it has active contacts.`
 
+## ADR - `docs/adr/NNNN-<title>.md` (one decision per file, written in English)
+
+A decision is never rewritten: a new ADR replaces it, and the old one's status becomes `Superseded by NNNN`.
+
+```markdown
+# 0001 - Plugins run as the calling user
+
+Status: Accepted · 2026-10-23 · by: human      # Proposed (by <slug>) until the human accepts it
+
+## Context
+Stories read other tables (contacts of an account); SYSTEM would expose rows the user cannot read.
+
+## Decision
+Plugins read and write as the calling user. SYSTEM only when a story justifies it in its Canvas.
+
+## Consequences
+Read-denied and write-denied cases are tested. A count may differ from what an admin sees.
+```

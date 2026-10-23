@@ -24,8 +24,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
-   Read **`docs/rules/README.md`** (project decisions: default security context, message source...) and reuse
-   them; a decision missing there is asked once and added.
+   Read the **ADRs** (`docs/adr/`, titles and statuses) and follow every `Accepted` one; a project-wide
+   decision missing there is asked once and written as a `Proposed` ADR. A story that contradicts an ADR is
+   a question, like a rule conflict.
    **Scope:** every behaviour in the Canvas traces to the story text or a human answer. A provided draft or
    existing code is material to reuse, not spec: what it adds beyond the story is dropped or becomes a question.
 2. **Grill it** (unanswered → assumption or open question). Decisions and legal matrix:

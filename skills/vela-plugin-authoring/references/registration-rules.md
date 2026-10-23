@@ -67,8 +67,12 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
   `OnExecute` once the class holds more than one step.
 - **Shared files have fixed names** (parallel builds append to the same file): message keys and texts in
   `Localization/Messages.cs`, the assembly registrar in `ProjectServices.cs`, rules in `docs/rules/<table>.md`.
-- **Parallel builds** on the same tables: after merging, re-check one class per table, these shared files and
-  duplication (the same query or rule definition in two places). Never copy another feature's uncommitted content.
+- **Parallel builds** (one session dispatches several builders):
+  - **before dispatch**, the dispatcher grills every story, commits the ADRs it needs to the base branch, and
+    gives each builder its rule ids and ADR numbers - two builders never pick the same id;
+  - each builder works **only in its own worktree** - never a checkout or commit in the shared repository;
+  - **after merging**, re-check one class per table, these shared files and duplication (the same query or rule
+    definition in two places). Never copy another feature's uncommitted content.
 - **Reuse** existing behaviour (plugin/step/service) - do not duplicate.
 
 ### Outbound integration (calls to another system)

@@ -25,6 +25,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 - **Rules registry:** a rule added / changed / retired by the diff but not reflected in `docs/rules/<table>.md` -
   **Required**; behaviour that contradicts an active rule without a human decision recorded (and the old rule
   retired) - **Required**; a rule deleted from the file instead of marked `retired` (history lost) - **Required**.
+- **ADRs:** code that contradicts an `Accepted` ADR (`docs/adr/`) - **Required**; a project-wide decision taken
+  in the story but not written as an ADR - **Nit**.
 - **Tests vs functional cases:** an existing (regression) test modified or deleted while its rule is not
   `change`/`retire` in the Canvas - **Critical**; a modified test that no longer matches its case's
   Given/When/Then (data, action, assertion) - **Required**; a test without a `Case` id - **Required**;
