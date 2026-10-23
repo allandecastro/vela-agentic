@@ -12,7 +12,9 @@ Compares <base>...HEAD in a Vela project and fails (exit 1) when:
      while <RULE> is not `change` / `retire` in the Canvas;
   5. a test carries a case id that the registry does not contain, or a new test carries none (every test has
      its functional justification);
-  6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first).
+  6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first);
+  7. a rule id or an ADR number is used twice at HEAD (parallel stories pick ids independently: run it on the
+     merge with the latest base - a PR's CI does - and renumber the newer story).
 A rule's trace lines (`Implementation:` / `Tests:`) are not spec: they may be synced at any time.
 A test body that differs only by harness plumbing (trigger / stage selection such as `.OnCreate()`) is not
 "modified". Read-only: runs git, writes nothing.
@@ -185,6 +187,17 @@ def main():
              if re.match(r"(.*/)?(tests|docs/rules)/", l[3:])]
     for f in dirty:
         fails.append(f"{f}: uncommitted change - commit before spec-check (it reads history)")
+
+    # 7. ids unique across the registry and the ADRs (two branches can add the same id without a git conflict)
+    seen = {}
+    for f in git(repo, "ls-files", "--", "*docs/rules/*.md", "*docs/adr/*.md").split():
+        adr = re.search(r"docs/adr/(\d{4})-", f)
+        ids = [adr.group(1)] if adr else re.findall(r"^###\s+([A-Z]+-\d+)\b", git(repo, "show", f"HEAD:{f}"), re.M)
+        for i in ids:
+            key = ("ADR " if adr else "rule ") + i
+            if key in seen:
+                fails.append(f"{key} is used twice ({seen[key]}, {f}) - renumber the newer story's")
+            seen.setdefault(key, f)
 
     for w in warns: print("WARN ", w)
     for x in fails: print("FAIL ", x)

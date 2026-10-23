@@ -24,10 +24,14 @@ and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the
 **read-only during the build** (`tools/spec-check.py` checks it at review) - except a rule's trace lines
 (`Implementation:` / `Tests:`), synced to the code like the Canvas, and a **review-driven amendment** (a new case
 id, a corrected sentence) listed in the Canvas `amendments:` and recorded in the Sync log with its finding.
-**Project decisions** (default security context, message languages, a format shared by several rules, ...) are
-**ADRs**, one file each in `docs/adr/NNNN-<title>.md` (template at the end): read before planning, asked once,
-then cited by the Canvas (`{by: adr, what: "0001 - ..."}`) - never re-asked. Machine values (publisher prefix,
-solution) are Vela's, not an ADR.
+**Architecture decisions** are **ADRs**, one file each in `docs/adr/NNNN-<title>.md` (template at the end): a
+choice that outlives the story, shapes structure, security, integration or data, and is costly to reverse -
+the execution security context, an external provider and its failure policy (timeout, retry, what the user
+sees), where data migration lives, a caching strategy, plugin vs Custom API vs flow. Written in the design phase
+in the commit of the story that raises it (or by the dispatcher before parallel builds), read before planning,
+cited by the Canvas (`{by: adr, what: "0001 - ..."}`), never re-asked. **Not an ADR:** a business rule
+(`docs/rules/`, even when several rules share it), a choice local to the story (Canvas `decisions:`), a pack
+convention (naming, documentation), a machine value (publisher prefix, solution - Vela's).
 
 **Lifecycle = git.** Rules and ADRs carry no `proposed` / `active` / `accepted` status: on a branch or in a PR
 they are proposed, merged on the base branch they are in force (the human merges - that is the approval).
