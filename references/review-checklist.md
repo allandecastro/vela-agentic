@@ -91,7 +91,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   the rule copied into each handler still counts) - **Required**. Handlers stay thin, real logic in a
   service where it earns it, existing services/plugins reused, no service for a one-liner. A service
   trigger met (second consumer, data access plus decisions, an oversized handler) with logic left inline
-  - **Required** for a second consumer, **Nit** otherwise.
+  - **Required** for a second consumer, **Nit** otherwise. The same query or rule definition in two places, a
+  block repeated per column, a service registered twice or outside `ProjectServices` - **Required**.
 - **Stage:** a PostOperation `Update` of its own primary record where a PreOperation Target edit would do
   - **Required**, unless the Canvas records why.
 - **Recursion:** a write that re-triggers its own step - **Critical**, even when a `ctx.Depth` check or
