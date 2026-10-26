@@ -92,7 +92,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    (an inline prefix does not count); the rule holds without it.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
    tests) changes only in the design phase, with the human; in the build it is read-only (trace lines and recorded review-driven `amendments:` aside), and a failing
-   regression test means the code is wrong. `tools/spec-check.py` checks it at review (and in CI).
+   regression test means the code is wrong. `tools/spec-check.py` checks it at review (a team may copy it into its own CI).
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)
