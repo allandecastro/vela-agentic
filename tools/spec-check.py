@@ -13,8 +13,8 @@ Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   5. a test carries a case id that the registry does not contain, or a new test carries none (every test has
      its functional justification);
   6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first);
-  7. a rule id or an ADR number is used twice at HEAD (parallel stories pick ids independently: run it on the
-     merge with the latest base - a PR's CI does - and renumber the newer story).
+  7. a rule id or an ADR number is used twice at HEAD, or one the story adds is already taken at the tip of
+     <base> (parallel stories pick ids independently: `git fetch`, pass the latest base, renumber this story's).
 A rule's trace lines (`Implementation:` / `Tests:`) are not spec: they may be synced at any time.
 A test body that differs only by harness plumbing (trigger / stage selection such as `.OnCreate()`) is not
 "modified". Read-only: runs git, writes nothing.
@@ -118,6 +118,22 @@ def same_case(a, b):
     return norm(a) == norm(b)
 
 
+def ids_at(repo, ref, fails):
+    """{"rule ACC-010" / "ADR 0001": file} at <ref>; a key seen twice is appended to fails."""
+    seen = {}
+    for f in git(repo, "ls-tree", "-r", "--name-only", ref).split():
+        adr = re.search(r"(?:^|/)docs/adr/(\d{4})-[^/]*\.md$", f)
+        if not adr and not re.search(r"(?:^|/)docs/rules/[^/]+\.md$", f):
+            continue
+        ids = [adr.group(1)] if adr else re.findall(r"^###\s+([A-Z]+-\d+)\b", git(repo, "show", f"{ref}:{f}"), re.M)
+        for i in ids:
+            key = ("ADR " if adr else "rule ") + i
+            if key in seen:
+                fails.append(f"{key} is used twice at {ref} ({seen[key]}, {f}) - renumber the newer story's")
+            seen.setdefault(key, f)
+    return seen
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", required=True)
@@ -188,16 +204,14 @@ def main():
     for f in dirty:
         fails.append(f"{f}: uncommitted change - commit before spec-check (it reads history)")
 
-    # 7. ids unique across the registry and the ADRs (two branches can add the same id without a git conflict)
-    seen = {}
-    for f in git(repo, "ls-files", "--", "*docs/rules/*.md", "*docs/adr/*.md").split():
-        adr = re.search(r"docs/adr/(\d{4})-", f)
-        ids = [adr.group(1)] if adr else re.findall(r"^###\s+([A-Z]+-\d+)\b", git(repo, "show", f"HEAD:{f}"), re.M)
-        for i in ids:
-            key = ("ADR " if adr else "rule ") + i
-            if key in seen:
-                fails.append(f"{key} is used twice ({seen[key]}, {f}) - renumber the newer story's")
-            seen.setdefault(key, f)
+    # 7. ids unique across the registry and the ADRs (two branches can add the same id without a git conflict):
+    #    twice at HEAD, or added by the story while the tip of <base> already has it (read-only: nothing merged)
+    head = ids_at(repo, "HEAD", fails)
+    fork = ids_at(repo, git(repo, "merge-base", a.base, "HEAD").strip(), [])
+    tip = ids_at(repo, a.base, [])
+    for key in sorted(set(head) - set(fork)):
+        if key in tip:
+            fails.append(f"{key} added by this story is already taken on {a.base} ({tip[key]}) - renumber this story's")
 
     for w in warns: print("WARN ", w)
     for x in fails: print("FAIL ", x)
