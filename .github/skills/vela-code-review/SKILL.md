@@ -49,7 +49,7 @@ Announce: `Using vela-code-review to review the change`.
 Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/features/<slug>/README.md` in the project (the
 pack is the folder holding `skills/`), with the **latest** base: `git fetch` then `origin/<main>` when there is a
 remote, else the local main - read-only, never merge it into the branch. It fails when the registry changed outside the rules the Canvas declares,
-a rule was deleted instead of retired, or an existing test was modified / deleted for a rule the story does not
+an existing test was modified / deleted for a rule the story does not
 change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review.
 
 ## Who reviews: the isolated reviewer by default

@@ -66,6 +66,11 @@ def main():
         text = "\n".join(open(f, encoding="utf-8", errors="replace").read() for f in outs)
         check(f"{rule['glob']} mentions /{rule['pattern']}/ ({rule['why']})", outs and re.search(rule["pattern"], text, re.I),
               ", ".join(os.path.relpath(f, work) for f in outs))
+    for rule in exp.get("output_lacks", []):
+        outs = [f for f in glob.glob(os.path.join(work, rule["glob"]), recursive=True) if os.path.isfile(f)]
+        text = "\n".join(open(f, encoding="utf-8", errors="replace").read() for f in outs)
+        check(f"{rule['glob']} no longer has /{rule['pattern']}/ ({rule['why']})", outs and not re.search(rule["pattern"], text, re.I),
+              ", ".join(os.path.relpath(f, work) for f in outs))
     if exp.get("no_build"):
         return finish(scenario, work)
 

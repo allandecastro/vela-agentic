@@ -5,7 +5,7 @@
 
 Compares <base>...HEAD in a Vela project and fails (exit 1) when:
   1. a rule section in docs/rules/*.md changed but its id is not declared in the Canvas `rules:`;
-  2. a rule section was deleted (a rule is retired, never removed);
+  2. a rule section was deleted while the Canvas does not declare it `retire`;
   3. docs/rules/ changed in a commit made after the build started (a commit touching src/ or tests/), unless the
      rule is listed in the Canvas `amendments:` (a review-driven amendment recorded in the Sync log);
   4. an existing test (a method carrying [Trait("Case", "<RULE>/<case>")] at <base>) was modified or deleted
@@ -155,7 +155,8 @@ def main():
         after = rule_sections(git(repo, "show", f"HEAD:{f}"))
         for rid, txt in before.items():
             if rid not in after:
-                fails.append(f"{f}: rule {rid} was deleted - retire it (a `Retired by:` line), keep its text")
+                if declared.get(rid) != "retire":
+                    fails.append(f"{f}: rule {rid} was deleted but is not declared `retire` in the Canvas rules:")
             elif spec_text(after[rid]) != spec_text(txt) and rid not in declared and rid not in amended:
                 fails.append(f"{f}: rule {rid} changed but is not declared in the Canvas rules:")
         for rid in after:

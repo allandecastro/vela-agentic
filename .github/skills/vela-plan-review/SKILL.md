@@ -95,7 +95,7 @@ Announce: `Using vela-plan-review to grill the plan`.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
    retire, with ids), acceptance cases (the rule's case ids), and **write the rules into the registry now** - this is
    the design phase, the only one where `docs/rules/` may change (with the human; a new or
-   retired rule keeps its text under `Retired by: <slug>`; no status otherwise - merging puts it in force). Commit the Canvas + registry
+   retired rule is deleted with its tests - git keeps the history; no status - merging puts it in force). Commit the Canvas + registry
    before any test: that commit is the frozen spec the build is checked against.
    assumptions, open questions - one line per section for a simple story.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business

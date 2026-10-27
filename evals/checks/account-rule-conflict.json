@@ -9,11 +9,6 @@
  "output_contains": [
   {
    "glob": "**/docs/rules/account.md",
-   "pattern": "ACC-001[\\s\\S]*Retired by",
-   "why": "ACC-001 Retired by this story, text kept"
-  },
-  {
-   "glob": "**/docs/rules/account.md",
    "pattern": "ACC-00[2-9]",
    "why": "the new rule is added"
   },
@@ -38,5 +33,12 @@
   "update step": 0,
   "delete step": 0
  },
- "spec_check": true
+ "spec_check": true,
+ "output_lacks": [
+  {
+   "glob": "**/docs/rules/account.md",
+   "pattern": "###\\s+ACC-001\\b",
+   "why": "ACC-001 removed - git keeps its history"
+  }
+ ]
 }
