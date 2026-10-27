@@ -23,7 +23,7 @@ behaviour-neutral refactor updates the code, then is **synced** back into the Ca
 business rules on a table (template at the end). The Canvas names the rules the story adds, changes or retires
 (`rules:`). The registry is the **functional spec of the tests**: each rule's cases carry an id (`ACC-002/C1`)
 and each test carries it (`[Trait("Case", "ACC-002/C1")]`). It is written in the **design** phase and is
-**read-only during the build** (`tools/spec-check.py` checks it at review) - except a rule's trace lines
+**read-only during the build** (`tools/spec-check.cs` checks it at review) - except a rule's trace lines
 (`Implementation:` / `Tests:`), synced to the code like the Canvas, and a **review-driven amendment** (a new case
 id, a corrected sentence) listed in the Canvas `amendments:` and recorded in the Sync log with its finding.
 **Architecture decisions** are **ADRs**, one file each in `docs/adr/NNNN-<title>.md` (template at the end): a

@@ -36,7 +36,7 @@ the red regression test as a code bug: fix the code, keep the test and ACC-001 u
 - **spec-check:** run at review, passing; the review is PASS.
 
 ## Success criteria (a clean pass)
-1. `spec-check.py` passes against the setup commit (registry read-only in the build; regression tests untouched).
+1. `spec-check` passes against the setup commit (registry read-only in the build; regression tests untouched).
 2. All tests green, including ACC-001/C2 - through a code fix.
 3. The Build Report names the regression found and how it was fixed.
 4. Review PASS; plan run; no apply.
