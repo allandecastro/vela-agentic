@@ -79,7 +79,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      per environment → an environment variable, not a constant; reference data read on every run → the cache
      with a TTL - how stale a value may be after it changes is the human's call: ask (`vela-grill`), never
      pick the TTL alone; a cached id must survive its row being deleted within the TTL; a SYSTEM read
-     behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test.
+     behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test with the
+     generated roles (`vela models --roles`, the role names asked of the human).
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
      business decision: with a human reachable, ask (one question); a step that writes another table as the user

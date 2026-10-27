@@ -65,6 +65,9 @@ symptom → cause → fix.
   configuration: `.WithSecureConfigFrom("Name")`, value at deploy time
   (`vela plan|apply --secure-config Name=VALUE|Name=@file`, or `VELA_SECURE_CONFIG_Name`), read via
   `SecureConfig` - or a secret store via managed identity (`ctx.AcquireManagedIdentityToken`).
+- **A role check passes in the root business unit only.** A role is copied into every business unit: the
+  user's `systemuserroles.roleid` is the copy of their BU. Compare the role's `parentrootroleid` to the root id
+  (`Roles.<X>Id`), and count roles held through teams (`teamroles`) when the story says so.
 - **"Last one" rollups race.** "Deactivate the parent when the last active child is deactivated" misses
   when two children are deactivated in parallel. Record it in the Canvas as accepted, or use an Async recheck.
 - **A "begins with" / "like" query matches far too many rows.** `BeginsWith`, `Like`, `startswith`,
