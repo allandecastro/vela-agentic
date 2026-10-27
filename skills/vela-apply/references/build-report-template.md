@@ -37,7 +37,7 @@ convention (naming, documentation), a machine value (publisher prefix, solution 
 
 **Lifecycle = git.** Rules and ADRs carry no `proposed` / `active` / `accepted` status: on a branch or in a PR
 they are proposed, merged on the base branch they are in force (the human merges - that is the approval).
-Only a replaced one is marked (`Retired by` / `Superseded by`), its text kept. Whether a story is deployed, and
+A replaced rule is deleted with its tests, a replaced ADR edited or deleted - git keeps the history. Whether a story is deployed, and
 where, is the Build Report's `apply:` and the org itself (`vela inspect`) - never the registry.
 
 ## Vela Canvas (front gate - produced by `vela-plan-review`)
@@ -190,8 +190,8 @@ without the human is one of them>
 
 One file per table, holding the rules **triggered** on it; a rule that also affects another table gets one
 `See also` line in that table's file. Rules are written for the business, in Given / When / Then / Otherwise,
-with the technical trace separate. A rule in the file on the base branch is in force; a retired rule keeps its
-text under a `Retired by` line.
+with the technical trace separate. A rule in the file on the base branch is in force; a retired rule is deleted with its
+tests (git keeps the history).
 
 ```markdown
 # Rules - account
@@ -217,16 +217,13 @@ Affects: contact
 Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
 Tests: AccountDeleteGuardTests
 
-### ACC-001 - ...
-Retired by: <slug> (<date>) - <one-line reason>   # written by the story that replaces it
-<the rule text, unchanged>
 ```
 
 In the affected table's file: `See also ACC-002 (account) - deleting an account is blocked while it has active contacts.`
 
 ## ADR - `docs/adr/NNNN-<title>.md` (one decision per file, written in English)
 
-A decision is never rewritten: a new ADR replaces it, and the old one gets a `Superseded by: NNNN` line.
+A changed decision is edited in place (or the ADR deleted); git keeps the history.
 
 ```markdown
 # 0001 - Plugins run as the calling user
