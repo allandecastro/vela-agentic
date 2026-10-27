@@ -75,7 +75,7 @@ def main():
         return finish(scenario, work)
 
     if exp.get("spec_check"):
-        # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.py against the
+        # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.cs against the
         # setup's last commit (<base>), with the story's Canvas (the newest docs/features/*/README.md not in <base>).
         for repo in sorted({os.path.dirname(os.path.dirname(os.path.dirname(g))) for g in files(work, "**/docs/rules/*.md")}):
             base = sh(f'git -C "{repo}" log --format=%H --grep="^refactor: simplify the empty check$" --grep="^baseline" -n 1')[1].strip() \
