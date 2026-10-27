@@ -18,3 +18,10 @@ jobs:
 
       - name: Local check (same script as the pre-push hook)
         run: sh scripts/check.sh
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: spec-check fixture tests
+        run: bash tools/spec-check.test.sh

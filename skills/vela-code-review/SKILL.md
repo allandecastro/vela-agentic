@@ -46,8 +46,8 @@ Announce: `Using vela-code-review to review the change`.
 
 ## Spec check (deterministic, before dispatching the reviewer)
 
-Run `python3 <pack>/tools/spec-check.py --base <base> --canvas docs/features/<slug>/README.md` in the project (the
-pack is the folder holding `skills/`), with the **latest** base: `git fetch` then `origin/<main>` when there is a
+Run `dotnet run <pack>/tools/spec-check.cs -- --base <base> --canvas docs/features/<slug>/README.md` in the project
+(the pack is the folder holding `skills/`; after the Release build - it reads the restored Vela.Plugins), with the **latest** base: `git fetch` then `origin/<main>` when there is a
 remote, else the local main - read-only, never merge it into the branch. It fails when the registry changed outside the rules the Canvas declares,
 an existing test was modified / deleted for a rule the story does not
 change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review.

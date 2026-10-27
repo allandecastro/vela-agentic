@@ -83,7 +83,7 @@ def main():
             new_docs = [d for d in sh(f'git -C "{repo}" diff --name-only --diff-filter=A {base}...HEAD -- docs/features')[1].split() if d.endswith("/README.md")]
             if not check("story Canvas found for spec-check", new_docs, ", ".join(new_docs)):
                 continue
-            code, out = sh(f'python3 "{os.path.join(ROOT, "tools", "spec-check.py")}" --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
+            code, out = sh(f'dotnet run "{os.path.join(ROOT, "tools", "spec-check.cs")}" -- --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
             check("spec-check passes (registry read-only in the build, regression tests not bent)", code == 0, out.strip()[-400:])
 
     slns = files(work, "**/*.sln")

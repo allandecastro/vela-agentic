@@ -85,7 +85,7 @@ independent of the framework/CLI NuGet releases.
       generated code, Vela's `docs/llms.txt`), not copied; no version stamps in running text
 - [x] **Rules registry** (`docs/rules/<table>.md`, English Given/When/Then, read at intake, contradictions
       asked) and the **test intent guard** (cases as the functional spec of the tests, `[Trait("Case", ...)]`,
-      registry read-only in the build, `tools/spec-check.py`)
+      registry read-only in the build, `tools/spec-check.cs`)
 - [x] Every Vela gap found by the evals reported to and fixed in Vela (WithService, typed images on choice
       columns, `{Handler}Context` in the scaffold, VELA025/026/027, ...) - pack verified on vela 0.27 /
       Vela.Plugins 0.39

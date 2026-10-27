@@ -5,7 +5,8 @@ confirm every flag with `vela <command> --help`, or `vela help --json` (every co
 exit code as one JSON document).
 
 **Verified against:** `vela 0.28.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.41.1` (scaffold default, resolved by `vela init`). This is the pack's only version
+`Vela.Testing` `0.41.1` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
+(also what `dotnet run tools/spec-check.cs` needs). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 
 ## Scaffolding - local only, no Dataverse

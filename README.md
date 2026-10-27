@@ -117,8 +117,8 @@ and the history of retired rules. It is read at the start of every story - to re
 test carries its case id (`[Trait("Case", "ACC-002/C1")]`).
 
 The registry is written in the **design** phase only. In the **build** it is read-only: a failing
-regression test means the code is wrong, never the test. `tools/spec-check.py` checks this
-deterministically at review (and in CI): no registry edit after the build started, no undeclared rule
+regression test means the code is wrong, never the test. `tools/spec-check.cs` checks this
+deterministically at review (`dotnet run`, no other runtime): no registry edit after the build started, no undeclared rule
 change, no deleted rule (retired, with its text kept), no regression test bent for a rule the story does
 not change. See [`examples/`](examples/) for a story built end to end (Build Report, plugin, tests).
 
@@ -131,7 +131,7 @@ not change. See [`examples/`](examples/) for a story built end to end (Build Rep
 | `references/` | Grounded, verbatim knowledge the skills point to (CLI surface, plugin + harness API, Dataverse gotchas, artifact templates). The source of truth: each skill gets a **generated copy** of what it cites under `skills/<name>/references/`, so a skill is self-contained once installed |
 | `evals/` | Loop-engineering pressure scenarios + protocol (TDD for the skills): hidden criteria, deterministic checks, separate grader |
 | `examples/` | A story built end to end by the agent: the Build Report, the plugin and its tests, unedited |
-| `tools/` | `spec-check.py` - the deterministic check of the rules registry and the regression tests (run at review / in CI) |
+| `tools/` | `spec-check.cs` - the deterministic check of the rules registry and the regression tests (`dotnet run`, at review), with its fixture tests (`spec-check.test.sh`) |
 | `hooks/` | Optional dual-target guard: a pre-tool hook that hard-blocks `vela apply` without approval (Claude Code + Copilot) |
 | `AGENTS.md` | Durable rules every agent follows, plus the build loop and headless/cloud prerequisites |
 | `.claude-plugin/` | Claude Code distribution: plugin marketplace + plugin manifest |
@@ -215,7 +215,7 @@ all copied from tool output, never estimated), so a run is auditable and replaya
 (`hooks/`, one script wired for Claude Code and GitHub Copilot) makes the deploy gate deterministic:
 it **denies `vela apply`** unless a human started the session with `VELA_APPLY_APPROVED=1` (the agent
 cannot approve itself with an inline prefix). See `hooks/README.md` for
-the per-host wiring and caveats. `tools/spec-check.py` is the deterministic check of the business rules and
+the per-host wiring and caveats. `tools/spec-check.cs` is the deterministic check of the business rules and
 the regression tests (above). `scripts/check.sh` lints the pack, runs the guard's table tests and checks every
 generated surface is in sync; it runs as a local pre-push hook and in CI (same script).
 
