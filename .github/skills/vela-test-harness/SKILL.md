@@ -33,6 +33,8 @@ One case for each, from the Canvas's acceptance cases:
   `HandlerInvoked`) and left the value alone - else a broken trigger passes too. "Does not fire" asserts
   `Assert.Empty(p.ExecutionLog)` (filter not matched) or `HandlerInvoked == false` (skipped: out of
   `ForRelationship` scope, depth guard) - plus the effect.
+- what must **not** change is asserted when the story depends on it (the other columns, no extra write) -
+  untested behaviour is unprotected;
 - a "does nothing" case **seeds the state the bug would change** (reactivation: an *active* contact stays
   active) - a start state already equal to the expected one proves nothing;
 

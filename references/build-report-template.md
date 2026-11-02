@@ -172,6 +172,11 @@ Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):
 A secure-config value the agent does not hold is an **open question** (who supplies it, how); the plan's
 "expects the secure configuration" diagnostic stays as evidence - never a placeholder. Exit `7` = partial
 apply (fix, re-run); `5` = not converged - both reported, never "done".
+Rollback: `vela apply` of the package built from the base commit (`<base sha>`) - it removes the steps this story
+added. Limits, stated: a first deployment (no plugin in the base package) leaves its steps registered - a human
+unregisters them; data written meanwhile is not reverted.
+Check on the org (only when the story depends on what the harness does not model - an outbound call, the org's
+real roles, the order among Microsoft steps): <one operation to do, the expected result, `vela logs --type <PluginType> --errors --since 15m --url <org>`>.
 
 ## Blocking decisions (the human must answer before apply - a handful at most)
 <business decisions not yet made by the human, most important first; a SYSTEM security context chosen
