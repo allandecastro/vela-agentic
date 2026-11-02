@@ -18,7 +18,7 @@ org_required: true
   / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## What the skills must get right
-- **Code is justified:** the permission depends on the value (above 50,000), which column security cannot express.
+- **Code is justified:** the permission depends on the value (above 50,000), which role privileges cannot express.
 - **Generated roles:** `vela models --roles "Sales Manager,Salesperson,System Administrator"` into the Shared
   project; tests use `.Role(Roles.XName, Roles.XId, Roles.X)` - no hand-written role, GUID or privilege list.
 - **Root id:** the check compares the caller's roles' `parentrootroleid` to `Roles.SalesManagerId` (a role is
