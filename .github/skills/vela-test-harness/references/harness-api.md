@@ -167,6 +167,7 @@ Plugin and test projects target **net48**.
   dotnet build <Solution>.sln -c Release && for t in tests/*/bin/Release/net48/*.Tests.dll; do
     mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe "$t" -parallel none || break; done
   ```
-  Success is `Total: N, Errors: 0, Failed: 0, Skipped: 0`. **Always pass `-parallel none` on Mono** - a
+  Success is `Total: N, Errors: 0, Failed: 0, Skipped: 0` with **N > 0 in every test assembly and at least the
+  declared cases** - a run over zero tests checked nothing (wrong path, filter, discovery) and is not green. **Always pass `-parallel none` on Mono** - a
   `mono-sgen` "Got a segv" without it is an environment crash, **not** a test failure.
 - Built against a stale package? Purge `vela.testing` under `~/.nuget` and rebuild.
