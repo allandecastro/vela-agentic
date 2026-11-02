@@ -58,8 +58,8 @@ only on Associate/Disassociate); analyzers catch the rest (VELA020, VELA023, VEL
 ### Reuse vs new registration (same table)
 - **One plugin class per table**, named `<Entity>Plugin` (`AccountPlugin`) - a deterministic name, so isolated or
   parallel builds converge. No class on the table → `vela add plugin <Entity>Plugin --entity <E> --message <M>`
-  (never hand-create it). The table has one (whatever its name) → each story is a step on it (`vela add step`),
-  never renamed. A separate class only when the Canvas justifies it: its own secure/unsecure config, another
+  (never hand-create it). The table has one (whatever its name) → each story is a step on it (`vela add step`);
+  the class is never renamed (its scaffold handler is - next bullet). A separate class only when the Canvas justifies it: its own secure/unsecure config, another
   package (Integrations), or a Custom API.
 - **Handlers are named after the behaviour** (`OnDeleteGuard`, `OnPhoneNormalize`), never the scaffold's
   `OnExecute` once the class holds more than one step.

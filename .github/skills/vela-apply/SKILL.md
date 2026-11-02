@@ -63,7 +63,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    - A story that leaves the package with **no plugin** (all removed): `plan` creates nothing and deletes
      nothing - the deployed steps stay; record them at the Gate for a human to unregister.
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
-7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`). The registry is
+7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`): the apply
+   command, the rollback and its limits, and the check on the org when the harness cannot prove the story. The registry is
    not touched here (written at design, read-only in the build except its trace lines); it carries no
    deploy status - merging the PR puts the rules in force, the Build Report's `apply:` records the deploy.
 8. **Stop here by default.** No `apply` unless an explicit "go ahead and apply" **for this run**. "Ship

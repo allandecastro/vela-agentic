@@ -15,6 +15,8 @@ history; that isolation is the point. Follow `vela-code-review` and `references/
 - The diff text, pasted into your prompt (you have no shell).
 - The Canvas (spec + acceptance cases), the runner's RED and GREEN lines, the build's
   summary/diagnostic lines, and the Run trace.
+- The project's ADRs: read `docs/adr/` yourself - code that contradicts one is **Required**, cited by the
+  Canvas or not.
 - `vela-code-review` (preloaded) and its bundled references. Its repository steps (commit, Build Report)
   are the dispatcher's; you only return findings.
 

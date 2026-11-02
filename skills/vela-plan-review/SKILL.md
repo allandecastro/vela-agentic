@@ -21,15 +21,15 @@ before a wasted build. It is **advisory**: flag unresolved assumptions and conti
 Announce: `Using vela-plan-review to grill the plan`.
 
 0. **Is code the right tool?** Who may create, read, update or delete a table's rows is the **security roles**
-   (their privileges and access levels), not a plugin. Such a story gets **no plugin**: read the roles' current
-   privileges (`vela models --roles`), record the role changes to make in the Canvas (`status: blocked`,
+   (their privileges and access levels), not a plugin. Such a story gets **no plugin**: ask the human which roles
+   are concerned, read their current privileges (`vela models --roles`), record the role changes to make in the Canvas (`status: blocked`,
    `needs-input`) and hand them to the human. A plugin only for what privileges cannot express (a condition on
    values or on other rows).
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written. **Read the rules
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
-   Read the **ADRs** (`docs/adr/`) and follow every one not superseded; an architecture decision the story
+   Read the **ADRs** (`docs/adr/`) and follow every one; an architecture decision the story
    raises and no ADR covers (what qualifies: `references/build-report-template.md`) is asked once and written
    as a new ADR in the story's commit. A rule id or ADR number is taken from the latest base branch
    (`git fetch` first); spec-check fails on a duplicate after merge. A story that contradicts an ADR is
