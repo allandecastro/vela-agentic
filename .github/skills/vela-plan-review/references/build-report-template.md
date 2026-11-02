@@ -126,7 +126,7 @@ framework: <Vela.Plugins version>
 packages: [Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ Zava.Integrations.<ver>.nupkg for an outbound call)
 package_sha256: <sha256 of the previewed package>   # one per package
 signed: no                # yes | no (a human signs before apply) | n/a (the human said not required) | unknown (asked at the gate) - `vela plan` does not tell
-harness: pass             # pass | fail  (must be pass)
+harness: pass             # pass | fail  (must be pass; a run over 0 tests is fail - it checked nothing)
 analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)
 plan_preview: changes     # changes (exit 8 with --detailed-exitcode) | clean (exit 0) | unavailable (record the command + exit)
