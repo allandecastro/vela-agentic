@@ -16,6 +16,9 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 
 ## Axis 1 - Spec fidelity (against the Vela Canvas)
 
+- **Code instead of configuration:** a plugin that only enforces who may read or write a table or a column
+  (a role check with no condition on values or other rows) - **Required**: Dataverse security does it (role
+  privileges, column security).
 - Every acceptance case is implemented and has a passing test (an isolated reviewer has no shell: the
   dispatcher pastes the runner summary with the diff).
 - **RED evidence:** the Run trace shows tests failing for the right reason, then passing; each case has a
@@ -110,7 +113,9 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   an open item at the Gate; message texts or a source defined inside a plugin instead of the assembly's shared place
   (`IServiceRegistrar`) - **Required**; an environment-specific value (URL, threshold, id) as a constant - **Required**;
   data read as the calling user put in the shared cache - **Critical** (it leaks across users); behaviour that
-  depends on rights with no `WithSecurity` test - **Required**.
+  depends on rights with no `WithSecurity` test - **Required**; a role name, role GUID or privilege list written by
+  hand (tests or code) instead of the generated `Roles` - **Required**; a role check on `roleid` instead of
+  `parentrootroleid` - **Required** (fails outside the root business unit).
 - **Secrets:** a secret in code or unsecure config (`WithUnsecureConfig`) - **Critical**; use
   `.WithSecureConfigFrom("Name")` or a secret store. A secure-config value the behaviour depends on must
   be proven by a test that supplies it (`WithSecureConfig(name, value)`) and asserts it reaches the call;

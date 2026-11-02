@@ -114,6 +114,10 @@ EstimateValueResponse response = p.Service
 Platform services are not replaced this way (`WithService` rejects them): fake a managed identity with
 `PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`). Each
 harness has its own `IPluginCacheService`: test a TTL with `WithClock(() => now)` and move `now` past it.
+`WithSecurity` uses the **generated roles** (`vela models --roles`): `.Role(Roles.SalespersonName,
+Roles.SalespersonId, Roles.Salesperson)` then `.User(alice, bu, Roles.SalespersonName)` - the org's real privileges
+and root id, never a hand-written grant list. A hand-built role only for a deliberately missing privilege (a
+read-denied case), named for what it lacks.
 A `WithSecurity` test that depends on who can read a child row (e.g. an account's contacts) declares the
 parental relationship (`WithParentalRelationship("account", "contact", "parentcustomerid")`): inherited access
 (the parent's owner reads its children) applies only then - see Vela's security-model guide.

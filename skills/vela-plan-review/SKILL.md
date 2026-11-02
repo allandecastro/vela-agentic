@@ -20,6 +20,11 @@ before a wasted build. It is **advisory**: flag unresolved assumptions and conti
 
 Announce: `Using vela-plan-review to grill the plan`.
 
+0. **Is code the right tool?** Who may read or change a table or a column is Dataverse security, not a plugin:
+   role privileges, column security (field security profiles), business units, teams, sharing. A required
+   column, a default or a show/hide is a column setting or a business rule. Such a story gets **no plugin**:
+   the Canvas records the configuration to make (`status: blocked`, `needs-input`) and hands it to the human.
+   A plugin only for what configuration cannot express (a condition on values or on other rows).
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written. **Read the rules
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
@@ -79,7 +84,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      per environment → an environment variable, not a constant; reference data read on every run → the cache
      with a TTL - how stale a value may be after it changes is the human's call: ask (`vela-grill`), never
      pick the TTL alone; a cached id must survive its row being deleted within the TTL; a SYSTEM read
-     behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test.
+     behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test with the
+     generated roles (`vela models --roles`, the role names asked of the human).
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
      business decision: with a human reachable, ask (one question); a step that writes another table as the user

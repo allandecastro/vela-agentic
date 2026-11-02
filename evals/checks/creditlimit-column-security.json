@@ -1,0 +1,10 @@
+{
+ "no_build": true,
+ "output_lacks": [
+  {"glob": "**/src/*/Account/Plugins/*.cs", "pattern": "CreditLimit", "why": "no plugin enforces a column permission"}
+ ],
+ "canvas_contains": [
+  "column security|field security|field-level security|security profile",
+  "blocked|needs-input"
+ ]
+}

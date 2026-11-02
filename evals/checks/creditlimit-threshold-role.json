@@ -1,0 +1,25 @@
+{
+ "min_tests": 5,
+ "spec_check": true,
+ "package": true,
+ "steps": [
+  {"message": "Create", "entity": "account", "mode": "Synchronous", "filter_includes": ["creditlimit"]},
+  {"message": "Update", "entity": "account", "mode": "Synchronous", "filter_includes": ["creditlimit"]}
+ ],
+ "require_src": [
+  {"pattern": "parentrootroleid|ParentRootRoleId", "why": "roles compared on their root id (BU copies)", "min": 1},
+  {"pattern": "Roles\\.SalesManagerId", "why": "the generated root id, not a hand-written GUID", "min": 1}
+ ],
+ "output_contains": [
+  {"glob": "**/src/**/Roles.cs", "pattern": "SalesManagerId", "why": "roles generated with vela models --roles"}
+ ],
+ "require_tests": [
+  {"pattern": "Roles\\.SalesManager", "why": "tests seed the generated Sales Manager role"},
+  {"pattern": "Roles\\.Salesperson", "why": "and the generated Salesperson role"},
+  {"pattern": "Trait\\(\"Case\", \"ACC-\\d+/C", "why": "each test carries its case id"}
+ ],
+ "canvas_contains": [
+  "Sales Manager",
+  "team"
+ ]
+}

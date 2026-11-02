@@ -32,6 +32,9 @@ Announce: `Using vela-models to <purpose>`. Flags and scopes: `vela models --hel
    - `--project` = the **Shared** project (its namespace, its `Models/Generated`), not Plugins.
    - Custom APIs from the org, excluding your typed ones: `--custom-apis --package
      artifacts/<Prefix>.Plugins.<ver>.nupkg` (repeat `--package` for the Integrations package).
+   - **Security roles** a story depends on (its `WithSecurity` tests, or a role check in code):
+     `vela models --roles "<Role A>,<Role B>" --project <Shared>` - names from the human, never guessed. The
+     generated `Roles` (name, root id, real privileges) is the only role source for tests and code.
 5. **Verify** (no write): `vela models --verify ...` - exit `5` = drift.
 6. **Probe an absent table/attribute** (is an AC buildable?): `vela models --entities <name>`. A missing
    entity prints `Could not find an entity` with exit possibly `0` - **check the text, not just the exit
