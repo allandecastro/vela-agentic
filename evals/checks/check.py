@@ -74,6 +74,13 @@ def main():
     if exp.get("no_build"):
         return finish(scenario, work)
 
+    if exp.get("min_new_canvases"):
+        # A feature split into stories: one new Canvas per story since the setup's base, on any branch.
+        for repo in sorted({os.path.dirname(os.path.dirname(os.path.dirname(g))) for g in files(work, "**/docs/rules/*.md")}):
+            base = sh(f'git -C "{repo}" log --format=%H --grep="^refactor: simplify the empty check$" --grep="^baseline" -n 1')[1].strip() \
+                or sh(f'git -C "{repo}" rev-list --max-parents=0 HEAD')[1].strip()
+            new_docs = [d for d in sh(f'git -C "{repo}" log --all --name-only --diff-filter=A --format= ^{base} -- docs/features')[1].split() if d.endswith("/README.md")]
+            check(f">= {exp['min_new_canvases']} story Canvases (feature split)", len(set(new_docs)) >= exp["min_new_canvases"], ", ".join(sorted(set(new_docs))))
     if exp.get("spec_check"):
         # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.cs against the
         # setup's last commit (<base>), with the story's Canvas (the newest docs/features/*/README.md not in <base>).

@@ -86,8 +86,9 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Registration legality** (`registration-rules.md`): no post-image on Delete, no pre-image
   on Create, Async only at PostOperation (these don't compile); no step on SetState [VELA022].
 - **Async step editing the Target** - **Critical** (lost) [VELA018].
-- **Execution order:** rank shared with managed steps is NOT a finding; flag only missing/ambiguous order
-  among our own steps on one table+message+stage.
+- **Execution order:** rank shared with managed steps is NOT a finding. Our own steps sharing a rank on one
+  table+message+stage (`vela plan` reports it) - **Required** when one reads or writes what another does (order
+  is undefined), else **Nit**; the fix is one plugin per table or an explicit `WithExecutionOrder(n)`.
 - **Plugin classes and naming:** a new plugin class on a table that already has one, with no Canvas reason (own
   config, other package, Custom API) - **Required**; `OnExecute` in a class with several steps, or a shared file
   (messages, registrar) under another name than the convention - **Nit**.

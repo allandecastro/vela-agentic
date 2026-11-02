@@ -30,6 +30,10 @@ No raw Web API calls around the CLI. Flags: `vela <cmd> --help`, `references/cli
 Announce: `Using vela-debug-plugin to <purpose>`. Loop: reproduce → minimize → hypothesize →
 instrument → fix → regression-test - not trial and error.
 
+0. **Triage - bug or change?** Find the rule in `docs/rules/` the behaviour falls under. The code breaks it →
+   a bug: this skill, the rule unchanged. The code follows it and the human wants otherwise → a **change
+   request**: stop, the rule changes with the human first (`vela-plan-review`, fix-spec-first) - never bend
+   code and tests to the complaint. No rule covers it → ask the human which it is.
 1. **State the symptom:** message/entity/stage/mode from the code; from the human only what they did,
    expected vs observed (one question if missing).
 2. **Runtime evidence when the fault is on a live org.**
