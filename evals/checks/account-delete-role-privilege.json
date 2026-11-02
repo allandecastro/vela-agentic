@@ -1,0 +1,11 @@
+{
+ "no_build": true,
+ "output_lacks": [
+  {"glob": "**/src/*/Account/Plugins/*.cs", "pattern": "OnDelete|IDelete", "why": "no plugin enforces a delete permission"}
+ ],
+ "canvas_contains": [
+  "Salesperson",
+  "privilege|security role",
+  "blocked|needs-input"
+ ]
+}

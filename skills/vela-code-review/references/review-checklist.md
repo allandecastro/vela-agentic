@@ -16,9 +16,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 
 ## Axis 1 - Spec fidelity (against the Vela Canvas)
 
-- **Code instead of configuration:** a plugin that only enforces who may read or write a table or a column
-  (a role check with no condition on values or other rows) - **Required**: Dataverse security does it (role
-  privileges, column security).
+- **Code instead of security roles:** a plugin that only enforces who may create, read, update or delete rows (a
+  role check with no condition on values or other rows) - **Required**: the roles' privileges do it.
 - Every acceptance case is implemented and has a passing test (an isolated reviewer has no shell: the
   dispatcher pastes the runner summary with the diff).
 - **RED evidence:** the Run trace shows tests failing for the right reason, then passing; each case has a
