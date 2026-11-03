@@ -20,8 +20,7 @@ takes its account's website."
 ## What the skills must get right
 - **One story, two rules:** one Canvas (`docs/features/<slug>/README.md`), one branch, declaring a new `ACC-` and a
   new `CON-` rule in `rules:` (ids free on the base), each with its own cases. Not split into two stories.
-- **Dependency order:** the contact rule relies on the account's stored (normalised) website; the account rule is
-  built first.
+- **Dependency stated:** the contact rule relies on the account's stored (normalised) website, and its Given says so.
 - **Grilled up front:** the human questions for both rules come before any code.
 - **No layer split:** RED tests then implementation per rule, never a "tests" task apart.
 - Existing rules untouched; `spec-check` clean.
