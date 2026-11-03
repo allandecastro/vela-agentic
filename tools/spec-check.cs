@@ -67,7 +67,7 @@ string fork = Git("merge-base", baseRef, "HEAD").Trim();
 string canvas = File.ReadAllText(Path.Combine(repo, canvasPath));
 var declared = Regex.Matches(canvas, @"\{\s*id:\s*([A-Z]+-\d+)\s*,\s*change:\s*(add|change|retire)\s*\}")
     .ToDictionary(m => m.Groups[1].Value, m => m.Groups[2].Value);
-var am = Regex.Match(canvas, @"^amendments:\s*\[([^\]]*)\]", RegexOptions.Multiline);
+var am = Regex.Match(canvas, @"^amendments:[ \t]*(\[[^\]]*\]|(\r?\n[ \t]*-.*)+)", RegexOptions.Multiline);   // inline or block list
 var amended = am.Success ? Regex.Matches(am.Groups[1].Value, @"[A-Z]+-\d+").Select(m => m.Value).ToHashSet() : [];
 
 // --- Registry ---------------------------------------------------------------------------------------------------

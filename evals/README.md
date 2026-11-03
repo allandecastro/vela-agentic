@@ -69,6 +69,7 @@ One line each (title of the scenario file); the history lives in git and the lat
 - `scenarios/debug-live-trace.md` - a deployed plugin fails in the org - diagnose from the real trace log
 - `scenarios/deployed-plugin-change.md` - change a plugin that is already deployed (a step goes away)
 - `scenarios/diagnose-failed-run.md` - turn a failed builder run into findings against the skills
+- `scenarios/feature-multi-rule.md` - one requirement, two rules on two tables
 - `scenarios/lead-score-custom-api.md` - a callable lead-scoring operation
 - `scenarios/regression-test-guard.md` - a regression test fails - fix the code, not the test
 - `scenarios/org-models-and-plan.md` - real models and a real preview against a dev org
@@ -99,7 +100,7 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 53/53 runs pass.
+Latest campaign per scenario - 55/55 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -127,6 +128,7 @@ Latest campaign per scenario - 53/53 runs pass.
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `diagnose-failed-run` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
 | `dispatched-no-human` | 2026-10-23 | **1/1** | 1/1 | 1/1 | ready |
+| `feature-multi-rule` | 2026-11-02 | **2/2** | 2/2 | 2/2 | ready |
 | `lead-score-custom-api` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
 | `org-models-and-plan` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `regression-test-guard` | 2026-10-18b | **1/1** | 1/1 | 1/1 | ready |

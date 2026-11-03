@@ -86,6 +86,11 @@ new_repo; canvas "{id: ACC-002, change: add}" "ACC-002"; printf '\n### ACC-002 -
 echo "class Q {}" > src/P/Q.cs; commit code
 sed -i.b 's/ACC-002\/C1 x/ACC-002\/C1 y/' docs/rules/account.md; rm docs/rules/account.md.b; commit late
 expect 0 "3 recorded amendment"
+new_repo; printf -- "---\nkind: canvas\nrules: [{id: ACC-002, change: add}]\namendments:\n  - ACC-002   # review finding\n---\n" > docs/features/s/README.md; commit canvas
+printf '\n### ACC-002 - New\nCases:\n  - ACC-002/C1 x\n' >> docs/rules/account.md; commit spec
+echo "class Q {}" > src/P/Q.cs; commit code
+sed -i.b 's/ACC-002\/C1 x/ACC-002\/C1 y/' docs/rules/account.md; rm docs/rules/account.md.b; commit late
+expect 0 "3 amendment as a block list"
 
 # 4. regression test modified / deleted; plumbing-only and whitespace changes are not modifications
 new_repo; canvas ""; sed -i.b 's/Equal("x"/Equal("y"/' tests/T/AccountTests.cs; rm tests/T/AccountTests.cs.b; commit weaken

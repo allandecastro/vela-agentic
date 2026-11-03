@@ -3,13 +3,13 @@
  "output_contains": [
   {
    "glob": "**/docs/rules/account.md",
-   "pattern": "###\\s+ACC-0(0[2-9]|1[2-9]|2[1-9]|3[1-9]|[4-9]\\d)\\b[^\\n]*(?i:website|https)",
-   "why": "a new account website rule with a free id"
+   "pattern": "###\\s+ACC-0(0[2-9]|[1-9]\\d)\\b[^\\n]*(website|https)",
+   "why": "a new account website rule (ACC-001 is taken)"
   },
   {
    "glob": "**/docs/rules/contact.md",
-   "pattern": "###\\s+CON-0(0[3-9]|1[1-9]|2[1-9]|[3-9]\\d)\\b[^\\n]*(?i:website)",
-   "why": "a new contact website rule with a free id"
+   "pattern": "###\\s+CON-\\d+\\b[^\\n]*website",
+   "why": "a new contact website rule"
   },
   {
    "glob": "**/logs/human-questions.md",
@@ -18,7 +18,8 @@
   }
  ],
  "canvas_contains": [
-  "websiteurl"
+  "websiteurl",
+  "ACC-\\d+[\\s\\S]*CON-\\d+|CON-\\d+[\\s\\S]*ACC-\\d+"
  ],
  "require_src": [
   {
@@ -27,6 +28,5 @@
   }
  ],
  "package": true,
- "spec_check": false,
- "min_new_canvases": 2
+ "spec_check": true
 }
