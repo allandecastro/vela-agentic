@@ -69,6 +69,7 @@ namespace_prefix: Zava    # scaffold --prefix (PascalCase namespace, not the pub
 rules:                    # rules this story adds / changes / retires in docs/rules/<table>.md
   - {id: ACC-001, change: add}            # add | change | retire
 supersedes: []            # slugs of earlier stories this one replaces, if any
+depends_on: []            # slugs of stories of the same feature this one builds on (its branch starts from theirs)
 amendments: []            # rules amended in the build after a review finding (each in the Sync log)
 acceptance_cases:         # the rule's cases, by id - each becomes a test carrying [Trait("Case", "<id>")]
   - "ACC-001/C1 Given an account with no Description, When it is created, Then Description = 'Created via Vela plugin'"

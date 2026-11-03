@@ -14,8 +14,7 @@ org_required: true
 takes its account's website."
 
 ## Setup for the run
-- The evaluator provides the `ZavaSales` project (`<work>/ZavaSales`, a git repo, models generated, rules under
-  `docs/rules/`, ADRs under `docs/adr/`). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available
+- The evaluator provides the `ZavaSales` project (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available
   **read-only**; never `vela apply`.
 
 ## What the skills must get right

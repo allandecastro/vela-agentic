@@ -18,7 +18,9 @@ Local and reversible until the gate; the org is only written at `apply`. One ski
 1. **Intake** - concrete spec (entity, message, images, rules).
 2. **Plan** - scaffold or existing project, models, logic.
    **A feature, not a story** (several rules, or several tables): split it into stories, one rule each, with
-   their dependencies; grill them together, then build them in order or in parallel (`references/registration-rules.md`
+   their dependencies; grill them together, then build them - one branch (and Canvas, PR) per story, a dependent
+   story branched from its prerequisite and naming it in `depends_on:` - in order or in parallel; each story is
+   reviewed and gets its Build Report on its own branch, `vela plan` runs on the top of the stack's package (`references/registration-rules.md`
    "Parallel builds"). Never split one story into layer tasks (service, tests): test-first and review need it whole.
    **Small story** (one step on one table, no outbound call, no security or message decision open): the same
    gates on a short track - a front-matter-only Canvas with its cases, one full review (a fix gets only a
