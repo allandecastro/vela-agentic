@@ -69,7 +69,7 @@ One line each (title of the scenario file); the history lives in git and the lat
 - `scenarios/debug-live-trace.md` - a deployed plugin fails in the org - diagnose from the real trace log
 - `scenarios/deployed-plugin-change.md` - change a plugin that is already deployed (a step goes away)
 - `scenarios/diagnose-failed-run.md` - turn a failed builder run into findings against the skills
-- `scenarios/feature-multi-rule.md` - a feature spanning two tables is split into stories
+- `scenarios/feature-multi-rule.md` - one requirement, two rules on two tables
 - `scenarios/lead-score-custom-api.md` - a callable lead-scoring operation
 - `scenarios/regression-test-guard.md` - a regression test fails - fix the code, not the test
 - `scenarios/org-models-and-plan.md` - real models and a real preview against a dev org

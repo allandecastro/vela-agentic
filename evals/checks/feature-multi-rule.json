@@ -18,7 +18,8 @@
   }
  ],
  "canvas_contains": [
-  "websiteurl"
+  "websiteurl",
+  "ACC-\\d+[\\s\\S]*CON-\\d+|CON-\\d+[\\s\\S]*ACC-\\d+"
  ],
  "require_src": [
   {
@@ -27,6 +28,5 @@
   }
  ],
  "package": true,
- "spec_check": false,
- "min_new_canvases": 2
+ "spec_check": true
 }
