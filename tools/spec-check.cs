@@ -66,7 +66,7 @@ string fork = Git("merge-base", baseRef, "HEAD").Trim();
 
 // --- Canvas declarations --------------------------------------------------------------------------------------
 string canvas = File.ReadAllText(Path.Combine(repo, canvasPath));
-var declared = Regex.Matches(canvas, @"\{\s*id:\s*([A-Z]+-\d+)\s*,\s*change:\s*(add|change|retire)\s*\}")
+var declared = Regex.Matches(canvas, @"\{\s*id:\s*([A-Z]+-\d+)\s*,\s*change:\s*(add|change|retire|tests)\s*\}")
     .ToDictionary(m => m.Groups[1].Value, m => m.Groups[2].Value);
 var am = Regex.Match(canvas, @"^amendments:[ \t]*(\[[^\]]*\]|(\r?\n[ \t]*-.*)+)", RegexOptions.Multiline);   // inline or block list
 var amended = am.Success ? Regex.Matches(am.Groups[1].Value, @"[A-Z]+-\d+").Select(m => m.Value).ToHashSet() : [];
@@ -103,8 +103,9 @@ foreach (var f in changed.Where(IsRules))
     {
         if (!after.ContainsKey(rid))
         { if (declared.GetValueOrDefault(rid) != "retire") fails.Add($"{f}: rule {rid} was deleted but is not declared `retire` in the Canvas rules:"); }
-        else if (after[rid] != txt && !declared.ContainsKey(rid) && !amended.Contains(rid))
-            fails.Add($"{f}: rule {rid} changed but is not declared in the Canvas rules:");
+        else if (after[rid] != txt && !amended.Contains(rid) && declared.GetValueOrDefault(rid) is null or "tests")
+            fails.Add($"{f}: rule {rid} changed but is not declared in the Canvas rules:" +
+                (declared.ContainsKey(rid) ? " (`tests` rewires its tests only)" : ""));
     }
     foreach (var rid in after.Keys.Where(k => !before.ContainsKey(k) && !declared.ContainsKey(k)))
         fails.Add($"{f}: rule {rid} added but is not declared in the Canvas rules:");
@@ -137,6 +138,12 @@ foreach (var f in changed.Where(x => x.EndsWith(".cs") && Regex.IsMatch(x, @"(^|
         {
             string rid = cse.Split('/')[0];
             if (declared.GetValueOrDefault(rid) is "change" or "retire") continue;
+            if (declared.GetValueOrDefault(rid) == "tests")   // rewired (e.g. to PluginPipeline): each case still proven
+            {
+                if (!after.Values.Any(a => a.Cases.Contains(cse)))
+                    fails.Add($"{f}: case {cse} is no longer cited by a test after rewiring {rid}");
+                continue;
+            }
             if (!after.TryGetValue(key, out var now))
                 fails.Add($"{f}: regression test {key.Method} ({cse}) deleted, but {rid} is not changed/retired by the story");
             else if (now.Body != body)

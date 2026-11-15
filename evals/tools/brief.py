@@ -19,4 +19,5 @@ for block in re.split(r"(?m)^(?=## )", md):
     head = block.splitlines()[0][3:].strip().lower() if block.startswith("## ") else ""
     if head.startswith(VISIBLE):
         out.append(block.rstrip())
-print("\n\n".join(out))
+# The setup command is the evaluator's: the actor is told never to open evals/.
+print(re.sub(r" ?\(`sh evals/[^`]*`[^)]*\)", "", "\n\n".join(out)))

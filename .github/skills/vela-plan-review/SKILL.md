@@ -24,7 +24,7 @@ Announce: `Using vela-plan-review to grill the plan`.
    (their privileges and access levels), not a plugin. Such a story gets **no plugin**: ask the human which roles
    are concerned, read their current privileges (`vela models --roles`), record the role changes to make in the Canvas (`status: blocked`,
    `needs-input`) and hand them to the human. A plugin only for what privileges cannot express (a condition on
-   values or on other rows).
+   values or on other rows) - say which in the Canvas `decisions:`.
 1. State the interpreted spec: entity, message, stage, mode, attributes read/written. **Read the rules
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
@@ -88,8 +88,9 @@ Announce: `Using vela-plan-review to grill the plan`.
      generated roles (`vela models --roles`, the role names asked of the human).
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
-     business decision: with a human reachable, ask (one question); a step that writes another table as the user
-     gets read-denied and write-denied acceptance cases; none reachable → it goes back with the other
+     business decision: with a human reachable, ask (one question); a step that reads or writes another table as the
+     user gets read-denied (no Read privilege at all, and a row out of scope) and write-denied acceptance cases -
+     ask what each must do; none reachable → it goes back with the other
      business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** one plugin class per table (`<Entity>Plugin`), behaviour-named handlers, fixed shared-file names

@@ -104,6 +104,12 @@ new_repo; canvas ""; sed -i.b 's/Pipeline.For<AccountPlugin>()/Pipeline.For<Acco
 expect 1 "4 a non-plumbing call is a modification" "modified"
 new_repo; canvas "{id: ACC-001, change: change}"; sed -i.b 's/Equal("x"/Equal("y"/' tests/T/AccountTests.cs; rm tests/T/AccountTests.cs.b; commit change
 expect 0 "4 test changed with its rule declared"
+new_repo; canvas "{id: ACC-001, change: tests}"; sed -i.b 's/Pipeline.For<AccountPlugin>()/PluginPipeline.Empty().Register<AccountPlugin>()/' tests/T/AccountTests.cs; rm tests/T/AccountTests.cs.b; commit rewire
+expect 0 "4 tests rewired, case still cited"
+new_repo; canvas "{id: ACC-001, change: tests}"; git rm -q tests/T/AccountTests.cs; add_test Other ""; commit drop
+expect 1 "4 tests rewired but a case dropped" "no longer cited"
+new_repo; canvas "{id: ACC-001, change: tests}"; sed -i.b 's/defaulted$/set to x/' docs/rules/account.md; rm docs/rules/account.md.b; commit spec
+expect 1 "1 tests-only declaration does not allow a rule change" "rewires its tests only"
 
 # 5. case ids
 new_repo; canvas ""; add_test NoCase ""; commit t; expect 1 "5 new test without case" "has no [Trait"

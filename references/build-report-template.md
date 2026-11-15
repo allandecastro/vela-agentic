@@ -65,7 +65,7 @@ reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
 namespace_prefix: Zava    # scaffold --prefix (PascalCase namespace, not the publisher prefix)
 rules:                    # rules this story adds / changes / retires in docs/rules/<table>.md
-  - {id: ACC-001, change: add}            # add | change | retire
+  - {id: ACC-001, change: add}            # add | change | retire | tests (its tests rewired, text unchanged)
 supersedes: []            # slugs of earlier stories this one replaces, if any
 amendments: []            # rules amended in the build after a review finding (each in the Sync log)
 acceptance_cases:         # the rule's cases, by id - each becomes a test carrying [Trait("Case", "<id>")]

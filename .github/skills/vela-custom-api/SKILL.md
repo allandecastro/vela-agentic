@@ -41,7 +41,8 @@ Announce: `Using vela-custom-api to <purpose>`.
    the Canvas. Rename or replace the typed form's placeholder `Result` property. Never convert global ↔
    typed by hand.
 4. **Tests first (RED)** (`vela-test-harness`): `vela add test <Name> --kind customapi` (set the inputs,
-   remove `Skip`), then one test per acceptance case - outputs for valid inputs, each edge, each invalid
+   remove `Skip`), one test that pins the definition (kind, binding, parameters - a flow breaks when they change),
+   then one test per acceptance case - outputs for valid inputs, each edge, each invalid
    input throwing `InvalidPluginExecutionException` (`references/harness-api.md`). A missing **required**
    input is rejected by the harness itself - validate values, not presence. Watch them fail.
 5. **Implement** to green (`references/plugin-authoring-api.md`). Typed form: a property per parameter
