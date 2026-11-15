@@ -13,6 +13,7 @@
 //   5. a test cites a case the registry does not contain, or a new test cites none (every test proves a case);
 //   6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first);
 //   7. a rule id or an ADR number is used twice at HEAD, or one the story adds is already taken at the tip of <base>
+//      (a duplicate already on the base is printed as a NOTE: not this story's)
 //      (`git fetch` first and pass the latest base; renumber this story's).
 // Only for projects with a docs/rules/ registry (none: nothing to check, exit 0). A rule's trace lines
 // (`Implementation:` / `Tests:`) are not spec. Test bodies are compared as syntax (whitespace and comments ignored);
@@ -156,11 +157,18 @@ foreach (var l in Git("status", "--porcelain").Split('\n').Where(l => l.Length >
         fails.Add($"{l[3..]}: uncommitted change - commit before spec-check (it reads history)");
 
 // 7. ids unique: twice at HEAD, or added by the story while the tip of <base> already has it (nothing is merged)
-var head = IdsAt("HEAD", fails); var atFork = IdsAt(fork, []); var tip = IdsAt(baseRef, []);
+// A duplicate already on the base came from two merged stories: noted, not this story's to fail or fix.
+var dupHead = new List<string>(); var dupFork = new List<string>(); var notes = new List<string>();
+var head = IdsAt("HEAD", dupHead); var atFork = IdsAt(fork, dupFork); var tip = IdsAt(baseRef, []);
+string Key(string msg) => msg[..msg.IndexOf(" is used twice")];
+foreach (var d in dupHead)
+    if (dupFork.Any(f => Key(f) == Key(d))) notes.Add($"{Key(d)} is used twice on the base already (not this story's) - report it, renumber it in a separate change");
+    else fails.Add(d);
 foreach (var key in head.Keys.Except(atFork.Keys).Order())
     if (tip.TryGetValue(key, out var where))
         fails.Add($"{key} added by this story is already taken on {baseRef} ({where}) - renumber this story's");
 
+foreach (var x in notes) Console.WriteLine("NOTE  " + x);
 foreach (var x in fails) Console.WriteLine("FAIL  " + x);
 Console.WriteLine($"spec-check: {fails.Count} failure(s)");
 return fails.Count > 0 ? 1 : 0;

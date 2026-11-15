@@ -50,7 +50,9 @@ Run `dotnet run <pack>/tools/spec-check.cs -- --base <base> --canvas docs/featur
 (the pack is the folder holding `skills/`; after the Release build - it reads the restored Vela.Plugins), with the **latest** base: `git fetch` then `origin/<main>` when there is a
 remote, else the local main - read-only, never merge it into the branch. It fails when the registry changed outside the rules the Canvas declares,
 an existing test was modified / deleted for a rule the story does not
-change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review. "nothing to check" (no
+change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review. A `NOTE` (an id
+already duplicated on the base, by two merged stories) does not block: report it to the human for a separate
+renumbering change, never renumber it in this story. "nothing to check" (no
 registry) is recorded as **not checked**, never as a pass.
 
 ## Who reviews: the isolated reviewer by default

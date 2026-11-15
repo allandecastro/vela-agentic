@@ -121,6 +121,8 @@ git checkout -q main; printf '### ACC-002 - Email\n' > docs/rules/email.md; comm
 expect 1 "7 id already taken on the base tip" "already taken on main"
 new_repo; canvas ""; printf '# 0001 - Other\n' > docs/adr/0001-other.md; commit adr
 expect 1 "7 ADR number twice" "ADR 0001 is used twice"
+new_repo; git checkout -q main; printf '# 0001 - Other\n' > docs/adr/0001-other.md; commit adr; git checkout -q story; git merge -q main
+canvas ""; expect 0 "7 duplicate already on the base is a note" "not this story's"
 
 # no registry, bad base
 new_repo; git rm -q -r docs/rules; commit norules; canvas ""; expect 0 "no registry: nothing to check" "nothing to check"
