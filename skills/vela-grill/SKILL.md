@@ -41,7 +41,7 @@ Announce: `Using vela-grill to resolve the story`.
      default and list your recommendation as an open question at the gate.
    - A message the user sees: which languages, and where the texts live (project convention) - never
      assumed; no default covers it.
-   - Target solution unique name, if unknown (never invented). Not the publisher prefix:
+   - Target solution unique name, if `PROJECT.md` does not give it (never invented). Not the publisher prefix:
      `vela solution show <uniquename> --json` reads it; ask only if that fails.
    - Definition of done: only if not derivable; otherwise state it back.
    Stop once every branch that changes the registration or the acceptance cases is resolved.

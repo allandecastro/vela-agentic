@@ -35,8 +35,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
   `change`/`retire` in the Canvas - **Critical**; a modified test that no longer matches its case's
   Given/When/Then (data, action, assertion) - **Required**; a test without a `Case` id - **Required**;
   `docs/rules/` edited after the frozen-spec commit and not listed in the Canvas `amendments:` (trace lines aside) - **Critical** (`spec-check` reports these).
-- **Unconfirmed solution / publisher prefix:** must be an open question blocking the apply gate -
-  **Required** if not listed.
+- **Unconfirmed solution / publisher prefix** (`PROJECT.md` against `vela solution show`): must be an open
+  question blocking the apply gate - **Required** if not listed.
 - **Debug fix scope** (`vela-debug-plugin`): a diff touching more than the cause and its repro tests -
   **Required** (split out as a follow-up).
 - **Drift** (behaviour, write or decision the Canvas does not record) - **Required** (Canvas first, then
@@ -90,8 +90,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   table+message+stage (`vela plan` reports it) - **Required** when one reads or writes what another does (order
   is undefined), else **Nit**; the fix is one plugin per table or an explicit `WithExecutionOrder(n)`.
 - **Plugin classes and naming:** a new plugin class on a table that already has one, with no Canvas reason (own
-  config, other package, Custom API) - **Required**; `OnExecute` in a class with several steps, or a shared file
-  (messages, registrar) under another name than the convention - **Nit**.
+  config, other package, Custom API) - **Required**; a handler not named after its behaviour (`Handle<Message>`),
+  or messages/services registered outside the generated `ProjectServices.cs` / `Messages.cs` - **Nit**.
 - **Documentation:** a plugin/service type without a `<summary>` naming its rule, a handler without its rule/why
   line, comments narrating the code - **Nit**.
 - **SOLID / DRY:** duplicated logic (across plugins or between one plugin's steps; a shared constant with
@@ -114,8 +114,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   (`IServiceRegistrar`) - **Required**; an environment-specific value (URL, threshold, id) as a constant - **Required**;
   data read as the calling user put in the shared cache - **Critical** (it leaks across users); behaviour that
   depends on rights with no `WithSecurity` test - **Required**; a role name, role GUID or privilege list written by
-  hand (tests or code) instead of the generated `Roles` - **Required**; a role check on `roleid` instead of
-  `parentrootroleid` - **Required** (fails outside the root business unit).
+  hand (tests or code) instead of the generated `Roles` - **Required**; a role check on `systemuserroles.roleid` instead of
+  `parentrootroleid` / `roletemplateid` - **Required** (fails outside the root business unit).
 - **Secrets:** a secret in code or unsecure config (`WithUnsecureConfig`) - **Critical**; use
   `.WithSecureConfigFrom("Name")` or a secret store. A secure-config value the behaviour depends on must
   be proven by a test that supplies it (`WithSecureConfig(name, value)`) and asserts it reaches the call;

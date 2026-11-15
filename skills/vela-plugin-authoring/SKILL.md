@@ -27,8 +27,8 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 2. **Model first.** Every table/column the story touches is in the generated model (`vela-models`)
    before the RED tests - no magic strings, never hand-edit `Models/Generated`. No org →
    `vela models --from-solution`, or surface the blocker.
-3. Keep the generated handler name: `OnExecute` (`vela add plugin`) or `Handle<Message>` / the
-   `--handler` name (`vela add step`). No parallel class or handler by hand.
+3. Keep the generated handler name (the `--handler` passed to `vela add plugin` / `add step`, named after the
+   behaviour). No parallel class or handler by hand.
 4. Read through the typed context: `ctx.Request.Target` (PreOperation: set properties on it to change what
    is written; Async: a Target write is lost, VELA018), `ctx.PreImage` / `ctx.PostImage` for registered
    images.
@@ -53,17 +53,17 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 - "A second plugin class for another message." → `vela add step` on the existing plugin.
 - "Target is enough, images are overkill." → Update/Delete often need prior values; register and read
   the image.
-- "I'll copy the logic from the other plugin." / "Everything in OnExecute is simpler." → DRY/SRP:
+- "I'll copy the logic from the other plugin." / "Everything in one handler is simpler." → DRY/SRP:
   extract or reuse a service.
 
 ## Red flags
 
 - Magic-string attribute names where a generated model exists (or should).
 - `ctx.OrganizationService` / `ctx.UserService`, a hand-written plugin class, or a renamed generated
-  handler (`OnExecute` and `Handle<Message>` are both legitimate).
+  handler.
 - An Associate/Disassociate step without `ForRelationship(...)` (runs for every association).
 - A custom API parameter name that is not a plain identifier.
-- Duplicated logic across plugins, or a fat `OnExecute` that should delegate to a service.
+- Duplicated logic across plugins, or a fat handler that should delegate to a service.
 - A PostOperation `ctx.Service.Update` of the triggering record (use PreOperation + Target), or a
   write-back whose column is in the step's `FilterOn` (recursion). A PreOperation Target edit is not a
   write-back: filtering on the column you normalise there is correct.

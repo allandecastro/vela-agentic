@@ -6,7 +6,7 @@ set -e
 . "$(dirname "$0")/lib.sh"
 sol=$(new_solution "$1" DescNorm zava)
 cd "$sol"
-vela add plugin AccountNormalizeDescription --entity Account --message Update --stage PreOperation --mode Sync --filtering-attributes Name \
+vela add plugin AccountNormalizeDescription --entity Account --message Update --stage PreOperation --mode Sync --filtering-attributes Name --handler OnDescriptionNormalize \
   --project src/zava.Plugins/zava.Plugins.csproj >/dev/null
 python3 - <<'PY'
 import re

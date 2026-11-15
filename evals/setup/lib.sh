@@ -11,7 +11,7 @@ DEV_ORG="${VELA_EVAL_ORG:-https://dyn-premium-dev.crm.dynamics.com}"
 # generated from the dev org (read-only). <prefix> is used for both the namespace and the publisher prefix.
 new_solution() {
   mkdir -p "$1"
-  vela init --name "$2" --prefix "$3" --publisher-prefix "$3" --output "$1" >/dev/null
+  vela init --name "$2" --prefix "$3" --publisher-prefix "$3" --solution "$2" --output "$1" >/dev/null
   sol="$1/$2"
   ( cd "$sol" && vela models --entities account,contact --project "src/$3.Shared/$3.Shared.csproj" \
       --url "$DEV_ORG" --overwrite >/dev/null )

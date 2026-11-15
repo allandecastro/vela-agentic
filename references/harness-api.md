@@ -8,9 +8,8 @@ failing build or probe test tells you.
 
 | Test must prove | Use | Why |
 | --- | --- | --- |
-| what the handler does with a given target/images | `PluginContext.For<T>()...Execute(...)` | fast, single step |
-| **whether the step fires at all** (filtering attributes, message/stage matching, relationship scope) | **`PluginPipeline`** | `Execute` runs the handler **regardless of `FilterOn`, the registered stage/mode and the registered images** (an Async handler runs inline; an unregistered pre-image you pass is still there); only the pipeline honours the registration |
-| what is actually **saved**, cascades, recursion, async steps | **`PluginPipeline`** | runs every registered step around each write, commits, then runs async steps |
+| **the default** - what is saved, whether the step fires (filters, message/stage, relationship scope), images, ranks, several plugins, cascades, rollback, async | **`PluginPipeline`** | runs the registration as Dataverse does; a class with several steps on one trigger is tested here (there is no per-step selector) |
+| an edge the pipeline cannot set up: `Depth` ≥ 2, a built `ParentContext`, `SharedVariables`, an invalid Custom API input, one precise error branch | `PluginContext.For<T>()...Execute(...)` | single handler, ignores the registration |
 
 A "does not fire when an unrelated column changes" test written with `Execute` passes **and proves
 nothing**. Write it with the pipeline:
@@ -113,8 +112,11 @@ Platform services are not replaced this way (`WithService` rejects them): fake a
 `PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`). Each
 harness has its own `IPluginCacheService`: test a TTL with `WithClock(() => now)` and move `now` past it.
 `WithSecurity` uses the **generated roles** (`vela models --roles`): `.Role(Roles.SalespersonName,
-Roles.SalespersonId, Roles.Salesperson)` then `.User(alice, bu, Roles.SalespersonName)` - the org's real privileges
-and root id, never a hand-written grant list. A hand-built role only for a deliberately missing privilege (a
+Roles.SalespersonId, Roles.Salesperson)` (a system role: `.Role(Roles.XName, Roles.XId, Roles.XTemplateId, Roles.X)`)
+then `.User(alice, bu, Roles.SalespersonName)` - the org's real privileges and ids, never a hand-written grant list.
+Like Dataverse, the harness copies each role per business unit (`systemuserroles` / `teamroles` hold the BU copy),
+faults a read without Read privilege on any table it touches - link-entities and `role` included (`0x80040220`) -
+and a Retrieve out of scope (`0x80048306`): grant the Read, or read as SYSTEM when production must. A hand-built role only for a deliberately missing privilege (a
 read-denied case), named for what it lacks.
 A `WithSecurity` test that depends on who can read a child row (e.g. an account's contacts) declares the
 parental relationship (`WithParentalRelationship("account", "contact", "parentcustomerid")`): inherited access

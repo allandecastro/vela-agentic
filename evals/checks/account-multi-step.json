@@ -23,12 +23,12 @@
  "step_count": 2,
  "require_src": [
   {
-   "pattern": "HandleUpdate",
-   "why": "add step handler kept"
+   "pattern": "OnDescriptionDefault",
+   "why": "first handler kept"
   },
   {
-   "pattern": "OnExecute",
-   "why": "first handler kept"
+   "pattern": "\\.Handle\\(On(?!DescriptionDefault)\\w+\\)",
+   "why": "the new step's handler is named after its behaviour"
   }
  ],
  "require_tests": [

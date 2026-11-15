@@ -38,9 +38,10 @@ One case for each, from the Canvas's acceptance cases:
 - a "does nothing" case **seeds the state the bug would change** (reactivation: an *active* contact stays
   active) - a start state already equal to the expected one proves nothing;
 
-**Runner per case:** `PluginContext...Execute` for what the handler does; **`PluginPipeline`** for
-whether the step fires, what is saved, images and async - `Execute` ignores `FilterOn`, stage/mode and
-registered images, so a "does not fire" case with it proves nothing.
+**Runner per case:** **`PluginPipeline` by default** - it runs the registration as Dataverse does (filters,
+images, ranks, cascades, async); a class with several steps on one trigger is tested through it, on their combined
+effect. `PluginContext...Execute` only for an edge the pipeline cannot set up (`references/harness-api.md`) - it
+ignores `FilterOn`, stage/mode and registered images, so a "does not fire" case with it proves nothing.
 
 ## Process
 
@@ -52,13 +53,11 @@ Announce: `Using vela-test-harness to <purpose>`.
    `--kind customapi`: set the inputs, remove `Skip`.
 2. Write the tests in the real shape (`references/harness-api.md`), e.g.
    ```csharp
-   var crm = new InMemoryOrganizationService();
-   PluginContext.For<Account>().WithTarget(new Account { Id = Guid.NewGuid() })
-       .WithOrganizationService(crm)
-       .Execute(new AccountDefaultDescription(string.Empty, string.Empty));   // assert by reading crm back
+   var p = PluginPipeline.Empty().Register<AccountPlugin>();
+   var id = p.Service.Create(new Account { Name = "Zava" });
+   var saved = p.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(true)).ToEntity<Account>();
+   Assert.Equal("Created via Vela plugin", saved.Description);                       // what was saved
    ```
-   Single-step plugin: no trigger chain (it auto-derives); multi-step: state the message (`.OnUpdate()`),
-   `.Stage(...)` only when several steps share it.
 3. Write the full **Coverage** set.
 4. **RED first (mandatory):** behaviour cases **fail** for the right reason before any logic; a no-op case
    that passes at RED asserts the handler ran (`HandlerInvoked`) or is backed by a mutation check (guard/no-op
@@ -80,8 +79,8 @@ Announce: `Using vela-test-harness to <purpose>`.
   and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
   `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
-- **CS0118 in tests** (a test folder named after a table makes a `...Tests.<Table>` namespace that hides the
-  model type): refer to the model with an alias (`using Contact = <P>.Shared.Models.Generated.Contact;`).
+- **CS0118** (a `...Tests.<Table>` namespace hides the model type): keep the usings inside the namespace, as the
+  scaffold's `.editorconfig` asks.
 - **Never encode a harness divergence** in a test (e.g. a read with no privilege at all hides the row in the harness
   but faults in the org; computed columns such as `fullname` are not computed) - Vela's limitations page.
 - **A removed step** is tested too: through the pipeline, the message no longer runs the handler

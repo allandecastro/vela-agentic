@@ -5,7 +5,7 @@ set -e
 . "$(dirname "$0")/lib.sh"
 sol=$(new_solution "$1" ZavaSales zava)
 cd "$sol"
-vela add plugin AccountDefaultDescription --entity Account --message Create --stage PreOperation --mode Sync --filtering-attributes Name \
+vela add plugin AccountDefaultDescription --entity Account --message Create --stage PreOperation --mode Sync --filtering-attributes Name --handler OnDescriptionDefault \
   --project src/zava.Plugins/zava.Plugins.csproj >/dev/null
 python3 - <<'PY'
 import re

@@ -36,8 +36,8 @@ Announce: `Using vela-custom-api to <purpose>`.
    - **Exposure:** `.Private()` if only your code calls it; `.ExecutePrivilege(...)` if callers need a
      privilege; `.AllowedCustomProcessingSteps(CustomApiAllowedCustomProcessingStepType.None)` unless
      others must hook plugins on it (`AsyncOnly` / `SyncAndAsync`).
-3. **Scaffold** (`vela-scaffold`): `vela add customapi <Name> [--entity <E> | --global] [--action|--function]`.
-   `--prefix` only when the project has no `<VelaPublisherPrefix>`; check the generated unique name against
+3. **Scaffold** (`vela-scaffold`): `vela add customapi <Name> --prefix <publisherPrefix> [--entity <E> | --global] [--action|--function]`
+   (prefix from `PROJECT.md`); check the generated unique name against
    the Canvas. Rename or replace the typed form's placeholder `Result` property. Never convert global ↔
    typed by hand.
 4. **Tests first (RED)** (`vela-test-harness`): `vela add test <Name> --kind customapi` (set the inputs,

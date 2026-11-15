@@ -27,16 +27,17 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
 (`references/cli-surface.md`).
 
 1. `vela version`.
-2. **Confirm the solution and its publisher prefix (read-only):** `vela solution show <uniquename>
-   --json <connection>`. The unique name comes from the story or the human (`vela-grill`), the prefix
-   from this command - never guessed. Exit `4` = no such solution (Vela does not create it): an open
+2. **The solution and its publisher prefix:** an existing project → `PROJECT.md` (front matter
+   `publisherPrefix`, `packages:` → solution). A new one → the unique name from the story or the human
+   (`vela-grill`), the prefix from `vela solution show <uniquename> --json <connection>` (read-only) - never guessed. Exit `4` = no such solution (Vela does not create it): an open
    question that blocks the apply gate. Exit `6`: record the command + exit code; carry the prefix as a
    flagged assumption.
-3. **New solution?** `vela init <Name> --prefix <Prefix> --publisher-prefix <publisherPrefix> -o <dir>` -
-   lands in `<dir>/<Name>/`, minimal (Shared, Plugins, Plugins.Tests; no demos, no models).
+3. **New solution?** `vela init <Name> --prefix <Prefix> --publisher-prefix <publisherPrefix> --solution <uniquename> -o <dir>` -
+   lands in `<dir>/<Name>/`, minimal (Shared, Plugins, Plugins.Tests; no demos, no models), with `PROJECT.md` (the
+   prefix and the package → solution map; Vela never rewrites it), `ProjectServices.cs`, `Messages.cs`, `.editorconfig`.
    - `--prefix` = namespace/assembly prefix, used verbatim: pass it **PascalCase** (`zava` →
-     `zava.Plugins`). `--publisher-prefix` = the Dataverse prefix from step 2; `vela add customapi`
-     names APIs `<publisherPrefix>_<Name>` with it (`references/registration-rules.md`).
+     `zava.Plugins`). `--publisher-prefix` = the Dataverse prefix from step 2 (`vela add customapi
+     --prefix` takes it from `PROJECT.md`; `references/registration-rules.md`).
    - `--integrations` when the Canvas records an outbound call: an empty Integrations project with its
      own package - outbound code goes there. **Never `--samples`** (demos + ConsoleApp) and **never
      `--no-tests`** (tests are the acceptance criteria).
@@ -52,9 +53,9 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
    - Behaviour already there → reuse, don't duplicate.
 6. **Add the component** - always `--project <path>.csproj` (else "No .csproj found", exit `2`); read
    the "Created"/"Added" line (or `--json`'s `created`):
-   - `vela add plugin <Name> --entity <ModelType> --message <Msg> --stage <Stage> --mode <Sync|Async> --filtering-attributes <A,B> --project src/<Prefix>.Plugins/<Prefix>.Plugins.csproj`
+   - `vela add plugin <Entity>Plugin --entity <ModelType> --message <Msg> --stage <Stage> --mode <Sync|Async> --filtering-attributes <A,B> --handler <OnBehaviour> --project src/<Prefix>.Plugins/<Prefix>.Plugins.csproj`
      (outbound: the Integrations csproj). Create/Update(+Multiple) without a filter exits `2`.
-   - `vela add step <PluginName> ...` (same options); `vela add customapi <Name> ...` (design it with
+   - `vela add step <PluginName> ...` (same options, `--handler` named after the behaviour); `vela add customapi <Name> --prefix <publisherPrefix> ...` (design it with
      `vela-custom-api` first); `vela add test <PluginName> --kind plugin|customapi --project tests/<Prefix>.Plugins.Tests/<Prefix>.Plugins.Tests.csproj`
      (stubs `vela-test-harness` fills).
 7. **Pass the registration the Canvas decided** (`--stage`, `--mode`, `--filtering-attributes`; the

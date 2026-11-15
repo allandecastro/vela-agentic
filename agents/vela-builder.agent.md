@@ -30,8 +30,8 @@ or package. That is a correct outcome.
 3. **Challenge** - `vela-plan-review`: emit the **Vela Canvas**, flag assumptions, **continue**
    (advisory). Only the human can resolve it? `vela-grill`; no human reachable → stop after the Canvas and
    hand back the business questions (`needs-input`), never build on guessed business decisions.
-4. **Scaffold** - `vela-scaffold`: `vela solution show <uniquename> --json` (prefix, read-only), then
-   `vela init` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
+4. **Scaffold** - `vela-scaffold`: an existing project's `PROJECT.md` (prefix, solutions); a new one: `vela solution
+   show <uniquename> --json` (prefix, read-only), then `vela init --publisher-prefix --solution` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
    preview).
 5. **Model** - `vela-models` **before** `vela add plugin` (no models, no compile); then `vela add`, build.
 6. **Test (RED)** - `vela-test-harness`: the Canvas's acceptance cases, seen to **fail**. Mandatory.
