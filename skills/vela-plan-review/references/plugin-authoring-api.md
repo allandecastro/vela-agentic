@@ -22,16 +22,16 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
             .Sync()
             .FilterOn(e => e.Name)
             .WithDescription("Update Account handler.")
-            .Handle(OnExecute);
+            .Handle(OnNameNormalize);
     }
 
-    private void OnExecute(OnExecuteContext ctx) { /* TODO: ctx.Request.Target */ }
+    private void OnNameNormalize(OnNameNormalizeContext ctx) { /* TODO: ctx.Request.Target */ }
 }
 ```
 
 - The class is already `sealed partial` (generated step contexts nest in it; non-partial = `CS0260`, VELA014).
-- The scaffold names the handler **`OnExecute`**; rename it after the behaviour (`OnDeleteGuard`) - required once
-  the class holds a second step. `.Handle(...)` is required and last (VELA002).
+- The handler is named by `--handler` after the behaviour (default `Handle<Message>`); never rename a generated
+  handler. `.Handle(...)` is required and last (VELA002).
 - A **single-step** plugin auto-derives its trigger; the harness need not restate it.
 - `Account` resolves only once the model exists: run `vela models --entities account ... --project
   src/<P>.Shared/<P>.Shared.csproj` first (a minimal `vela init` has no models).
@@ -39,9 +39,9 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 ## Multi-step plugin (`vela add step`)
 
 `vela add step <Plugin> --entity Account --message Update --stage PostOperation --filtering-attributes Telephone1`
-appends a step whose handler is **`Handle<Message>`** (e.g. `HandleUpdate(HandleUpdateContext ctx)`,
-or the `--handler <Method>` name). `OnExecute` stays the first step's handler; don't rename generated
-handlers. The plugin is now multi-step: harness tests must state the trigger (`.OnUpdate()` ...).
+(with `--handler <Method>`) appends a step whose handler is that name (`OnPhoneNormalize(OnPhoneNormalizeContext ctx)`);
+without it, `Handle<Message>` - a duplicate error when the message already has a step. Don't rename generated
+handlers. The plugin is now multi-step: test it through `PluginPipeline` (`harness-api.md`).
 
 ## RegisterStep() fluent surface
 
@@ -87,8 +87,8 @@ Registered **message-level** (empty entity, as Dataverse requires). Scope it:
 ```csharp
 RegisterStep().OnAssociate().PostOperation().Sync()
     .ForRelationship("contact_customer_accounts")     // (schemaName, params additionalSchemaNames)
-    .Handle(OnExecute);
-// OnExecute(OnExecuteContext ctx): ctx.Request.Target (EntityReference),
+    .Handle(OnContactLinked);
+// OnContactLinked(OnContactLinkedContext ctx): ctx.Request.Target (EntityReference),
 // ctx.Request.Relationship.SchemaName, ctx.Request.RelatedEntities
 ```
 
@@ -100,7 +100,7 @@ RegisterStep().OnAssociate().PostOperation().Sync()
 
 ## Handler context
 
-Use the generated **`{Handler}Context`** (e.g. `private void OnExecute(OnExecuteContext ctx)`) - Vela's recommended
+Use the generated **`{Handler}Context`** (e.g. `private void OnDeleteGuard(OnDeleteGuardContext ctx)`) - Vela's recommended
 signature: it derives from the message context, stays stable when images change, and types `ctx.PreImage` /
 `ctx.PostImage` to the captured columns. `vela add plugin` / `add step` generate it; keep it (it also applies to
 `On<TRequest>()`, the `On{X}()` extensions from `vela models --messages/--custom-apis` and `OnAsyncOnly<T>()`, not to
@@ -162,9 +162,8 @@ private void HandleUpdate(HandleUpdateContext ctx)
 
 ## Custom API authoring (`vela add customapi`)
 
-Unique name `<publisher prefix>_<Name>`: the prefix comes from `--prefix`, else the project's
-`<VelaPublisherPrefix>` (from `vela init --publisher-prefix`), else the project prefix.
-`vela add customapi <Name>` (no `--entity`) generates the untyped global form (`GlobalCustomApis/`):
+Unique name `<publisher prefix>_<Name>`, the prefix from the required `--prefix` (`PROJECT.md`'s `publisherPrefix`).
+`vela add customapi <Name> --prefix <pfx>` (no `--entity`) generates the untyped global form (`GlobalCustomApis/`):
 
 ```csharp
 public sealed class ScoreLead(string unsecureConfig, string secureConfig)
@@ -195,7 +194,7 @@ public sealed class ScoreLead(string unsecureConfig, string secureConfig)
   property**. The kind can't change after creation. No HTTP status codes: signal errors with
   `InvalidPluginExecutionException` (VELA012).
 
-### Bound / typed form (`vela add customapi <Name> --entity <E>`)
+### Bound / typed form (`vela add customapi <Name> --prefix <pfx> --entity <E>`)
 
 Generates a typed API in `<Entity>/CustomApis/` with request/response classes in the same file
 (`CustomApiRequest` / `CustomApiResponse`, `using Vela.Messages;`):
@@ -238,7 +237,8 @@ public sealed class RecalcAccountRequest : CustomApiRequest
   (`using Vela.Context;`); a bound API needs `Target` set on the request.
 
 ## One registration point per assembly - `ProjectServices`
-Services and message sources are registered once for the whole assembly, not in each plugin:
+`vela init` generates it (and `Messages.cs`, class `ProjectMessages`); services and message sources are registered
+there once for the whole assembly, not in each plugin:
 ```csharp
 [assembly: VelaServiceRegistrar(typeof(Zava.Plugins.ProjectServices))]
 public sealed class ProjectServices : IServiceRegistrar   // runs before every plugin's ConfigureServices
@@ -246,7 +246,7 @@ public sealed class ProjectServices : IServiceRegistrar   // runs before every p
     public void Register(SimpleServiceResolver services, ILocalPluginContext context)
     {
         services.AddScoped<IDescriptionDefault>(r => new DescriptionDefault());
-        context.GetRequiredService<IMessageService>().AddSource(Messages.Source);
+        context.GetRequiredService<IMessageService>().AddSource(ProjectMessages.Source);
     }
 }
 ```
@@ -267,6 +267,6 @@ public sealed class ProjectServices : IServiceRegistrar   // runs before every p
 | A value that differs per environment (URL, threshold, id, feature flag) | an environment variable: `ctx.GetEnvironmentVariable("pfx_Name")` / `GetEnvironmentVariableAs<T>` (secrets stay in secure config) | [environment variables](https://allandecastro.github.io/vela/guides/environment-variables) |
 | Reference data read on every execution | `IPluginCacheService` (per-organization, with a TTL the human accepted - a change shows only after it - recorded in the Canvas); never cache data read as the calling user across users | [caching](https://allandecastro.github.io/vela/guides/caching) |
 | Operational logs (Application Insights + trace log) | `ctx.LogInformation` / `LogWarning` / `LogError`; `ctx.Trace` stays for debug detail | [telemetry](https://allandecastro.github.io/vela/guides/telemetry) |
-| Behaviour that depends on the user's rights | a test with `WithSecurity(...)` (roles, business units, teams) with the generated `Roles`; a role check in code compares `Roles.<X>Id` (the root id, carried by the solution that ships the role - the same in every org that has it) to the user's (and teams') roles' `parentrootroleid` - never a role name or a hard-coded GUID | [security model](https://allandecastro.github.io/vela/guides/security-model) |
+| Behaviour that depends on the user's rights | a test with `WithSecurity(...)` (roles, business units, teams) with the generated `Roles`; a role check in code compares the user's (and teams') roles' `parentrootroleid` to `Roles.<X>Id` (the root id - the same in every org only for a role a solution ships), or for a system role their `roletemplateid` to `Roles.<X>TemplateId` (stable across orgs) - never `systemuserroles.roleid`, a role name or a hard-coded GUID | [security model](https://allandecastro.github.io/vela/guides/security-model) |
 | Harness and org disagree | check what the harness does not model before suspecting the code | [limitations](https://allandecastro.github.io/vela/reference/limitations) |
 

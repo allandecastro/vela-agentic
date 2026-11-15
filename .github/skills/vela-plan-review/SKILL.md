@@ -58,9 +58,9 @@ Announce: `Using vela-plan-review to grill the plan`.
      (`vela init --integrations`, never `--samples`), usually Async PostOperation (rules: registration-rules
      "Outbound integration"). Record it in Structure, with the secure-config name the deployer must supply.
    - **Structure - target solution & publisher:** the existing **unmanaged solution** unique name and its
-     **publisher prefix** (Vela doesn't create them). With an org, confirm read-only:
-     `vela solution show <uniquename> --json`. `--publisher-prefix` must equal that prefix; `--prefix` is
-     only the namespace. **Unknown and no org?** Ask the human once (`vela-grill`) if reachable; otherwise
+     **publisher prefix** (Vela doesn't create them): read from `PROJECT.md`, never copied into the Canvas. A new
+     project: confirm read-only with `vela solution show <uniquename> --json` - `--publisher-prefix` must equal
+     that prefix; `--prefix` is only the namespace. **Unknown and no org?** Ask the human once (`vela-grill`) if reachable; otherwise
      scaffold with an obvious placeholder (`--publisher-prefix tbd`), list it as an open question, and state
      in the Gate that apply is blocked until confirmed.
    - **"When X changes" on Update:** the filter fires whenever the column is *sent*, even unchanged.

@@ -28,7 +28,7 @@ Local and reversible until the gate; the org is only written at `apply`. One ski
    "Parallel builds" first): self-grill, fill the **Vela Canvas**, flag assumptions, continue
    (advisory). Only the human can resolve it? `vela-grill`. A changed requirement updates the Canvas
    before the code.
-4. **Scaffold** - `vela-scaffold`: `vela solution show` → `vela init` (minimal) → models → `vela add`.
+4. **Scaffold** - `vela-scaffold`: `PROJECT.md` (or `vela solution show` → `vela init`, minimal) → models → `vela add`.
 5. **Model** - `vela-models`, before the first plugin (no models, no compile).
 6. **Test (RED)** - `vela-test-harness`: failing tests for the acceptance cases, seen to fail. Mandatory.
 7. **Implement** - `vela-plugin-authoring` until **green**.

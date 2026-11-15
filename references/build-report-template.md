@@ -50,8 +50,8 @@ status: draft             # draft | blocked (needs-input, undeliverable) | super
 entity: account           # table the step is registered on (may differ from the table it writes)
 # Multi-step plugin: a `steps:` list instead of the scalar fields, e.g.
 #   steps:
-#     - {message: Create, stage: PreOperation, mode: Synchronous, filter: [name], handler: OnExecute, images: []}
-#     - {message: Update, stage: PreOperation, mode: Synchronous, filter: [description], handler: HandleUpdate,
+#     - {message: Create, stage: PreOperation, mode: Synchronous, filter: [name], handler: OnDescriptionDefault, images: []}
+#     - {message: Update, stage: PreOperation, mode: Synchronous, filter: [description], handler: OnDescriptionCheck,
 #        images: [{pre: [accountnumber]}]}
 message: Create
 stage: PreOperation
@@ -63,8 +63,6 @@ images: []                # e.g. [{pre: [statecode]}, {post: [statecode, parentc
 #                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
 reuse: new-plugin         # new-plugin | add-step:<PluginName> | reuse:<name>
 service: none             # none | new:<Name> | reuse:<Name>
-solution: <uniquename>    # existing unmanaged solution; passed to plan/apply --solution
-publisher_prefix: <pfx>   # from `vela solution show <uniquename> --json`; = scaffold --publisher-prefix
 namespace_prefix: Zava    # scaffold --prefix (PascalCase namespace, not the publisher prefix)
 rules:                    # rules this story adds / changes / retires in docs/rules/<table>.md
   - {id: ACC-001, change: add}            # add | change | retire

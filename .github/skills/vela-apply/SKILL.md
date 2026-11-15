@@ -42,8 +42,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    signed one.
 4. **Connection** (`references/cli-surface.md`): headless (connection string, client secret env, or
    `--url` + `az login`); `-i` only with a human at a browser. Never echo a secret.
-5. **Confirm the solution (read-only):** `vela solution show <uniquename> --json <connection>`; its
-   `publisherPrefix` must equal the scaffold's `--publisher-prefix`. Exit `4` = no such solution (Vela
+5. **Confirm the solution (read-only):** the package's solution from `PROJECT.md` (`packages:`), then `vela solution
+   show <uniquename> --json <connection>`; its `publisherPrefix` must equal `PROJECT.md`'s. Exit `4` = no such solution (Vela
    does not create it): an open question that blocks the gate.
 6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out .vela-runs/<slug>/plan.json`
    (first write to `.vela-runs/`: add it to the project's `.gitignore`). An org the human did not name (taken

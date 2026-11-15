@@ -21,8 +21,8 @@ depends_on: account-default-description
 ## What the skills must get right
 - **Reuse:** `vela add step AccountDefaultDescription --entity Account --message Update` - not a new
   plugin, not a hand-written step.
-- **Generated handler:** the new handler is `HandleUpdate` (`Handle<Message>`); the agent keeps it and
-  keeps `OnExecute` for the Create step - neither is renamed.
+- **Handler named after the behaviour:** `vela add step ... --handler <OnBehaviour>` (e.g.
+  `OnAccountNumberUpper`), not the default `Handle<Message>`; `OnDescriptionDefault` keeps its name.
 - **Filter:** the Update step is gated on `e => e.Name` (the column whose change gates the step) - either
   passed up front (`vela add step ... --filtering-attributes Name`, so no placeholder is generated) or by
   replacing the generated `FilterOn(e => e.Id /* TODO */)` placeholder (VELA001) before or after a build

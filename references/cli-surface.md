@@ -4,23 +4,27 @@ The commands the loop needs and the traps `--help` does not show. A snapshot - t
 confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
 exit code as one JSON document).
 
-**Verified against:** `vela 0.28.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.41.2` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
+**Verified against:** `vela 0.29.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.42.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
 (also what `dotnet run tools/spec-check.cs` needs). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 
 ## Scaffolding - local only, no Dataverse
 
 ### `vela init <Name>` (alias `vela new`)
-`vela init <Name> --output <dir> --prefix <Prefix> --publisher-prefix <pfx> [--integrations]`
+`vela init <Name> --output <dir> --prefix <Prefix> --publisher-prefix <pfx> --solution <uniquename> [--integrations]`
 - Lands in `<dir>/<Name>/` (nested). **Minimal by default**: empty `<Prefix>.Shared` (models + shared
   services, `net48;net10.0`), `<Prefix>.Plugins` (`net48`, builds the plugin package into `artifacts/`),
-  `tests/<Prefix>.Plugins.Tests`, plus `AGENTS.md`, `README.md`, `.vela/scaffold-manifest.json`. No models.
+  `tests/<Prefix>.Plugins.Tests`, plus `PROJECT.md`, `AGENTS.md`, `README.md`, `.editorconfig` (usings inside the
+  namespace - no CS0118), `ProjectServices.cs` + `Messages.cs` (`ProjectMessages`) in the Plugins project, XML docs on
+  (CS1591: a `<summary>` per public type), `.vela/scaffold-manifest.json`. No models.
+- **`PROJECT.md`** - front matter `publisherPrefix` and `packages: {<package id>: <solution>}`: the project's only
+  record of the prefix and of each package's solution. Written once by `init` (`--publisher-prefix`, `--solution`),
+  **never read by the CLI** - read it and pass the values as flags. The body belongs to the team.
 - `--prefix` is the **namespace / assembly prefix**, used verbatim (`zava` → `zava.Plugins`): pass it
   PascalCase. Omitted → the solution name.
-- `--publisher-prefix` is the **Dataverse publisher prefix** (2-8 chars), recorded as `<VelaPublisherPrefix>`
-  and used by `vela add customapi` for `<prefix>_<Name>`. Omitted → Custom APIs fall back to the
-  lower-cased `--prefix`.
+- `--publisher-prefix` is the **Dataverse publisher prefix** (2-8 chars) and `--solution` the target solution:
+  both go to `PROJECT.md` only.
 - `--integrations` adds an **empty** Integrations plugin project (`src/<Prefix>.Integrations`, references
   `System.Net.Http`) + its tests, building its own package - the home for outbound calls.
   `--managed-identity`/`--mi` adds package signing and implies it.
@@ -31,17 +35,20 @@ record: when the CLI moves, re-run `vela help --json` and update this file.
 Kinds: `plugin | customapi | service | test | step | form-script | ribbon-script`; one file into an existing
 project, namespaces from its `RootNamespace`. **Always pass `--project <csproj>`** (else "No .csproj found",
 exit `2`) and check the "Created"/"Added" line (or `created` in `--json`).
-- `add plugin <Name> --entity <ModelType> --message <M> --stage <S> --mode <Sync|Async> --filtering-attributes a,b`
-  - a **single-step** plugin, handler `OnExecute`. Defaults are Create / PostOperation / Sync - pass the
+- `add plugin [<Name>] --entity <ModelType> --message <M> --stage <S> --mode <Sync|Async> --filtering-attributes a,b --handler <Method>`
+  - a **single-step** plugin (Name default `<Entity>Plugin`; handler default `Handle<Message>` - pass `--handler`
+  named after the behaviour). Defaults are Create / PostOperation / Sync - pass the
   Canvas values. Create/Update(+Multiple) **require** `--filtering-attributes` (else exit `2`); logical names
   map to model properties.
-- `add step <PluginName> --entity ... [--handler <Method>] ...` - adds a second `RegisterStep()` + handler
-  (default `Handle<Message>`); the plugin becomes **multi-step**. Same filter rule.
-- `add customapi <Name> [--entity <ModelType>] [--function|--action]` - default action; no `--entity` = global.
+- `add step <PluginName> --entity ... --handler <Method> ...` - adds a `RegisterStep()` + handler; the plugin
+  becomes **multi-step**. A second step on the same message without `--handler` is a duplicate error. Same filter rule.
+- `add customapi <Name> --prefix <publisherPrefix> [--entity <ModelType>] [--function|--action]` - `--prefix`
+  **required** (from `PROJECT.md`; named `<prefix>_<Name>`); default action; no `--entity` = global.
 - `add service <Name> --entity <ModelType>` - table-scoped interface + implementation (`<Table>/Services/`);
   without `--entity`, a shared one in `Services/` (logic used by several tables).
 - `add test <PluginName> [--kind plugin|customapi] [--entity ...] [--message ...]` - run in the test project;
-  on an existing test class it **adds the tests of the steps it lacks** (`--force` overwrites).
+  on an existing test class it **adds the tests of the steps it lacks** - every step of `--message` (`--force`
+  overwrites). `--kind customapi` needs `--prefix` when the unique name is not readable from the code.
 - `form-script` / `ribbon-script` - TS web resources (preview; **not covered by this pack yet**).
 
 ## `vela models` - connects to Dataverse (reads metadata)
@@ -52,7 +59,8 @@ exit `2`) and check the "Created"/"Added" line (or `created` in `--json`).
   `--project` or `--namespace` nothing is generated ("Could not infer a namespace", exit `2`) - check the
   "Generated N file(s)" line as well as the exit code.
 - Offline: `--from-solution <solution.zip> --namespace <ns>` (only what the zip contains).
-- `--verify` - no write; **exit 5** on drift.
+- `--verify` - no write; **exit 5** on drift, of the models and, with `--roles` / `--solution-roles`, of the
+  `Roles` class (ids, template ids, privileges) - run it before a deployment.
 
 ## Read-only org commands - `vela solution`, `vela logs`
 - **`vela solution show <uniquename> --json <connection>`** → `{"solution","publisherPrefix"}`, exit `0`;
@@ -105,8 +113,8 @@ Resolution order:
 4. `--url` alone → ambient Azure credential (`az login` / managed identity) - headless.
 
 ## Exit codes
-`0` success · `2` invalid arguments · `3` file not found · `4` error (incl. `--strict`, a missing
-`--solution`, a missing solution on `solution show`) · `5` drift (`models --verify`) or apply not converged ·
+`0` success · `2` invalid arguments (incl. `plan`/`apply` without `--solution`, before connecting) · `3` file not found · `4` error (incl. `--strict`, a missing
+a missing solution on `solution show`) · `5` drift (`models --verify`) or apply not converged ·
 `6` Dataverse connection failure (any network error on any Dataverse call; `models` stops rather than
 skipping) · `7` partial apply (fix, re-run `apply`) · `8` changes pending (`plan --detailed-exitcode` only).
 

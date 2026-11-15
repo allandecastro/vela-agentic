@@ -15,7 +15,9 @@ Exact flags: `vela <command> --help` / `vela help --json`, and `references/cli-s
 - `vela init` (alias `new`) - scaffold a solution (minimal by default; `--integrations` for outbound
   calls; `--samples` adds demos - never for real work). Offline. Where the `AGENTS.md` it writes differs
   from this pack (e.g. `vela models --interactive`), this pack governs.
-- `vela add <kind> <Name>` - add a component. Local only.
+- `vela add <kind> <Name>` - add a component (`--handler` after the behaviour; `customapi` needs `--prefix`). Local only.
+- `PROJECT.md` (written once by `vela init`, never read by the CLI) - the publisher prefix and each package's
+  solution; pass them as flags, never copy them.
 - `vela models` - generate early-bound models; `--verify` for drift. **Reads Dataverse.**
 - `vela plan --solution <uniquename>` - preview registration changes. **Never writes.** `--solution` is
   required.
@@ -42,7 +44,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 | Step | What | Gate / evidence |
 | --- | --- | --- |
 | CHALLENGE | self-grill, fill the Vela Canvas, declare acceptance cases | advisory - flag and continue |
-| SCAFFOLD / MODEL | `vela solution show` → `vela init` → `vela models --project` → `vela add` | build compiles |
+| SCAFFOLD / MODEL | `PROJECT.md` (new: `vela solution show` → `vela init`) → `vela models --project` → `vela add` | build compiles |
 | TEST (RED) | write the failing harness tests | tests seen to fail |
 | IMPLEMENT | code to green | tests pass |
 | VERIFY | full suite green + analyzers clean | runner summary, 0 VELA00x |

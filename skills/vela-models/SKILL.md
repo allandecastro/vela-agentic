@@ -34,8 +34,10 @@ Announce: `Using vela-models to <purpose>`. Flags and scopes: `vela models --hel
      artifacts/<Prefix>.Plugins.<ver>.nupkg` (repeat `--package` for the Integrations package).
    - **Security roles** a story depends on (its `WithSecurity` tests, or a role check in code):
      `vela models --roles "<Role A>,<Role B>" --project <Shared>` - names from the human, never guessed. The
-     generated `Roles` (name, root id, real privileges) is the only role source for tests and code.
-5. **Verify** (no write): `vela models --verify ...` - exit `5` = drift.
+     generated `Roles` (name, root id, template id for a system role, real privileges) is the only role source for
+     tests and code.
+5. **Verify** (no write): `vela models --verify ...` (with the same `--roles` / `--solution-roles` when there is a
+   `Roles` class) - exit `5` = drift. Run it before the preview of a story that depends on roles.
 6. **Probe an absent table/attribute** (is an AC buildable?): `vela models --entities <name>`. A missing
    entity prints `Could not find an entity` with exit possibly `0` - **check the text, not just the exit
    code**. An absent dependency excludes its AC from v1 (recorded in the Canvas), never invented.
