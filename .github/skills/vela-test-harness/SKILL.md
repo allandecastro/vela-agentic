@@ -55,7 +55,7 @@ Announce: `Using vela-test-harness to <purpose>`.
    ```csharp
    var p = PluginPipeline.Empty().Register<AccountPlugin>();
    var id = p.Service.Create(new Account { Name = "Zava" });
-   var saved = p.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(true)).ToEntity<Account>();
+   var saved = p.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet("description")).ToEntity<Account>();
    Assert.Equal("Created via Vela plugin", saved.Description);                       // what was saved
    ```
 3. Write the full **Coverage** set.
@@ -76,7 +76,9 @@ Announce: `Using vela-test-harness to <purpose>`.
   of the story). Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
   as `change` or `retire`, and keep it faithful to the case's Given/When/Then. Harness plumbing that leaves the
   case intact - e.g. adding `.OnCreate()` once the plugin gains a second step - is allowed: same data, action
-  and assertion; record it in the Canvas (`spec-check` ignores that plumbing). If you believe the spec itself is
+  and assertion; record it in the Canvas (`spec-check` ignores that plumbing). A `PluginContext` test that breaks
+  because its class gains a step on the same trigger moves to `PluginPipeline` (same data, action, assertion,
+  case id): declare its rule `{id: ..., change: tests}` - the rule text stays, every case keeps a test. If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
   `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
 - **CS0118** (a `...Tests.<Table>` namespace hides the model type): keep the usings inside the namespace, as the

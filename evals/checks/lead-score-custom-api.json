@@ -16,8 +16,8 @@
  "step_count": 0,
  "require_src": [
   {
-   "pattern": "InvalidPluginExecutionException",
-   "why": "invalid input throws"
+   "pattern": "InvalidPluginExecutionException|\\.BusinessError\\(",
+   "why": "invalid input throws (a localized ctx.BusinessError is the pack's way)"
   }
  ],
  "canvas_contains": [

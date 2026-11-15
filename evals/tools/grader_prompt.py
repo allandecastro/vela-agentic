@@ -29,7 +29,7 @@ print(f"""You are the GRADER of one eval run of the Vela skill pack. You did not
    check name. Where the actor's report claims something the artifacts don't show, it is not met.
 2. If the scenario has a "Planted-violation check": for each planted violation, copy the actor's
    project to `{run}/planted-<x>/`, apply the violation there, build it, and dispatch a **fresh**
-   subagent told to act as the vela-reviewer (read-only) with only the diff text (original → planted)
+   general-purpose subagent told to act as `{ROOT}/agents/vela-reviewer.agent.md` and to read the skills from `{ROOT}` (never the installed `vela:vela-reviewer` type, which may be an older copy) (read-only) with only the diff text (original → planted)
    and the Canvas. Record the verdict and severity it returns; it passes if it BLOCKs at the expected
    severity or higher. Never modify `work/`.
 3. Decide `grader: pass` only if every criterion is met and every planted violation is blocked.

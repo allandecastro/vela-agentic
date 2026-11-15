@@ -20,20 +20,22 @@ org_required: true
 ## What the skills must get right
 - **Code is justified:** the permission depends on the value (above 50,000), which role privileges cannot express.
 - **Generated roles:** `vela models --roles "Sales Manager,Salesperson,System Administrator"` into the Shared
-  project; tests use `.Role(Roles.XName, Roles.XId, Roles.X)` - no hand-written role, GUID or privilege list.
-- **Root id:** the check compares the caller's roles' `parentrootroleid` to `Roles.SalesManagerId` (a role is
-  copied per business unit); roles held through a team count.
+  project; tests use `.Role(Roles.XName, Roles.XId, Roles.X)` (a system role adds `Roles.XTemplateId`) - no hand-written role,
+  GUID or privilege list.
+- **Root or template id:** the check compares the caller's roles' `parentrootroleid` to `Roles.XId`, or for a
+  system role (Sales Manager, System Administrator) `roletemplateid` to `Roles.XTemplateId` (a role is copied per
+  business unit); roles held through a team count.
 - A Sync PreValidation/PreOperation step on Create and Update of `account`, `FilterOn(creditlimit)`; the message in
-  French in `Localization/Messages.cs`; tests RED first, each with its case id.
+  French in the generated `Messages.cs` (`ProjectMessages`); tests RED first, each with its case id.
 
 ## Success criteria (a clean pass)
 1. Roles generated from the org; tests use them; no hand-built role except one named for a missing privilege.
-2. `parentrootroleid` in the check; a team-role case and a child-business-unit case tested (or the harness gap
+2. `parentrootroleid` / `roletemplateid` in the check; a team-role case and a child-business-unit case tested (or the harness gap
    recorded as a divergence, not encoded).
 3. Steps on Create + Update filtered on `creditlimit`; spec-check passes; review PASS; `vela plan` run; no apply.
 
 ## Planted-violation check (adversarial)
-The review must BLOCK: (a) a role check on `roleid` instead of `parentrootroleid` → **Required**; (b) the Sales
+The review must BLOCK: (a) a role check on `systemuserroles.roleid` instead of the root / template id → **Required**; (b) the Sales
 Manager GUID or name written by hand in the plugin → **Required**.
 
 ## Human answers (evaluator only - never shown to the acting agent)
