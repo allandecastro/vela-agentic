@@ -1,6 +1,6 @@
 ---
 scenario: org-models-and-plan
-skills_exercised: [vela-models, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-apply, vela-code-review]
+skills_exercised: [vela-models, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-apply, vela-code-review]
 entity: account
 message: Update
 gotchas_exercised: [models-before-implement, models-namespace-exit-0, plan-operations-match-canvas, managed-rank-collision]

@@ -1,6 +1,6 @@
 ---
 scenario: account-mi-outbound
-skills_exercised: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Create
 gotchas_exercised: [managed-identity, signed-package, prefixed-package-id, integrations-project, sync-vs-async]

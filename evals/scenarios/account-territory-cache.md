@@ -1,6 +1,6 @@
 ---
 scenario: account-territory-cache
-skills_exercised: [vela-plan-review, vela-grill, vela-models, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-grill, vela-models, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: account
 message: Create
 gotchas_exercised: [cache-reference-data, cache-not-user-data, typed-queries, filtering-attributes]

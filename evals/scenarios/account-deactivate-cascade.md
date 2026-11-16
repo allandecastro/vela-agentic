@@ -1,6 +1,6 @@
 ---
 scenario: account-deactivate-cascade
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Update
 gotchas_exercised: [setstate-never-fires-vela022, statecode-transition, transaction-all-or-nothing, typed-query, per-record-writes]

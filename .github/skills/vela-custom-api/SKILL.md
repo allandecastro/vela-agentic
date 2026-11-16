@@ -40,7 +40,7 @@ Announce: `Using vela-custom-api to <purpose>`.
    (prefix from `PROJECT.md`); check the generated unique name against
    the Canvas. Rename or replace the typed form's placeholder `Result` property. Never convert global ↔
    typed by hand.
-4. **Tests first (RED)** (`vela-test-harness`): `vela add test <Name> --kind customapi` (set the inputs,
+4. **Tests first (RED)** (`vela-plugin-testing`): `vela add test <Name> --kind customapi` (set the inputs,
    remove `Skip`), one test that pins the definition (kind, binding, parameters - a flow breaks when they change),
    then one test per acceptance case - outputs for valid inputs, each edge, each invalid
    input throwing `InvalidPluginExecutionException` (`references/harness-api.md`). A missing **required**

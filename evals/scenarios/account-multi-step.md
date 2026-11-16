@@ -1,6 +1,6 @@
 ---
 scenario: account-multi-step
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: account
 message: Create + Update
 gotchas_exercised: [add-step-handler-naming, vela001-placeholder, multi-step-harness-trigger, stage-choice]

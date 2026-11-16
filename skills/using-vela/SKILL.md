@@ -30,7 +30,7 @@ Local and reversible until the gate; the org is only written at `apply`. One ski
    before the code.
 4. **Scaffold** - `vela-scaffold`: `PROJECT.md` (or `vela solution show` → `vela init`, minimal).
 5. **Model** - `vela-models`, then `vela add` (no models, no compile).
-6. **Test (RED)** - `vela-test-harness`: failing tests for the acceptance cases, seen to fail. Mandatory.
+6. **Test (RED)** - `vela-plugin-testing`: failing tests for the acceptance cases, seen to fail. Mandatory.
 7. **Implement** - `vela-plugin-authoring` until **green**.
 8. **Verify** - suite green **and** no analyzer (VELA00x) violations.
 9. **Review** - `vela-code-review` via the isolated `vela-reviewer`; open Critical/Required block.

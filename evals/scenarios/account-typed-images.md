@@ -1,6 +1,6 @@
 ---
 scenario: account-typed-images
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: account
 message: Update
 gotchas_exercised: [typed-image-partial-cs0260, pre-image-compare, value-actually-differs]

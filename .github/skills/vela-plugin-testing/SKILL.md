@@ -1,5 +1,5 @@
 ---
-name: vela-test-harness
+name: vela-plugin-testing
 description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
 compatibility: "vela CLI + dotnet SDK."
 ---
@@ -45,7 +45,7 @@ ignores `FilterOn`, stage/mode and registered images, so a "does not fire" case 
 
 ## Process
 
-Announce: `Using vela-test-harness to <purpose>`.
+Announce: `Using vela-plugin-testing to <purpose>`.
 
 1. `vela init` scaffolds a `.Tests` project (unless `--no-tests`). Run `vela add test <Name> --kind plugin --entity <Entity> --message <M>` **inside the test project**; after
    `vela add step`, re-run it with the new message (it completes the class; no `--force`). Fill the

@@ -51,7 +51,7 @@ instrument → fix → regression-test - not trial and error.
    all** (tracing on) = the step never fired (unless the failure is older than the trace-log retention, often
    24h: reproduce it, then re-check): suspect the registration (filter, message, entity,
    relationship scope), not the handler.
-3. **Reproduce locally (mandatory):** a failing harness test (`vela-test-harness`) capturing the symptom.
+3. **Reproduce locally (mandatory):** a failing harness test (`vela-plugin-testing`) capturing the symptom.
    **"Does not fire", filters, cascades and recursion: use `PluginPipeline`** - `PluginContext...Execute`
    ignores `FilterOn`. No org is the normal path: reproduce from the description. An unexpectedly green
    repro is not exercising the registration - switch to the pipeline. Write a small-story Canvas

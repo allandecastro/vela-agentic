@@ -1,6 +1,6 @@
 ---
 scenario: debug-filter-miss
-skills_exercised: [vela-debug-plugin, vela-test-harness, vela-plugin-authoring]
+skills_exercised: [vela-debug-plugin, vela-plugin-testing, vela-plugin-authoring]
 entity: account
 message: Update
 gotchas_exercised: [filtering-attributes, repro-before-fix, no-org-debugging]

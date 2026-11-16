@@ -30,7 +30,7 @@ assumptions:
   - "No security elevation: the plugin only edits the Target (no service call)."
 open_questions:
   - "Signing: does dyn-premium-dev require signed plugin packages? The package is unsigned (no certificate held); if required, a human runs `vela sign` and re-runs `vela plan` before apply."
-skills: [vela-plan-review, vela-grill, vela-scaffold, vela-models, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
+skills: [vela-plan-review, vela-grill, vela-scaffold, vela-models, vela-plugin-testing, vela-plugin-authoring, vela-code-review, vela-apply]
 vela_cli: 0.26.2
 framework: 0.37.0
 packages: [Zava.Plugins.1.0.0.nupkg]
@@ -106,11 +106,11 @@ Legal: Create/PreOp/Sync, no images. No recursion (Target edit in PreOp). No org
 | 4 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --overwrite --url https://dyn-premium-dev.crm.dynamics.com` | 0 | Generated 4 file(s) |
 | 5 | scaffold | vela-scaffold | `vela add plugin AccountDefaultDescription --entity Account --message Create --stage PreOperation --mode Sync --filtering-attributes name --project src/Zava.Plugins/Zava.Plugins.csproj` | 0 | Created plugin (name -> Name) |
 | 6 | build | vela-scaffold | `dotnet build ZavaSales.sln -c Release` | 0 | 0 errors, 0 warnings |
-| 7 | test-red | vela-test-harness | `vela add test AccountDefaultDescription --kind plugin --entity Account --message Create`; `mono .../xunit.console.exe .../Zava.Plugins.Tests.dll -parallel none` | 1 | RED 6 fail / 10 (4 guard cases pass) |
-| 8 | verify | vela-test-harness | `dotnet build ZavaSales.sln -c Release`; `mono .../xunit.console.exe ... -parallel none` | 0 | GREEN 10/10, 0 warnings, 0 VELA |
+| 7 | test-red | vela-plugin-testing | `vela add test AccountDefaultDescription --kind plugin --entity Account --message Create`; `mono .../xunit.console.exe .../Zava.Plugins.Tests.dll -parallel none` | 1 | RED 6 fail / 10 (4 guard cases pass) |
+| 8 | verify | vela-plugin-testing | `dotnet build ZavaSales.sln -c Release`; `mono .../xunit.console.exe ... -parallel none` | 0 | GREEN 10/10, 0 warnings, 0 VELA |
 | 9 | review | vela-code-review | fresh `vela-reviewer` subagent | - | PASS, 3 Nits |
 | 10 | package | vela-apply | `rm -rf artifacts; dotnet build ZavaSales.sln -c Release` (-> `artifacts/Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok, sha256 6dad4299...5021 |
-| 11 | verify | vela-test-harness | `mono .../xunit.console.exe ... -parallel none` (final build, no rebuild) | 0 | GREEN 10/10 |
+| 11 | verify | vela-plugin-testing | `mono .../xunit.console.exe ... -parallel none` (final build, no rebuild) | 0 | GREEN 10/10 |
 | 12 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` | 8 | changes: create package + 1 step, 0 diagnostics |
 
 ## Gate - human approval required

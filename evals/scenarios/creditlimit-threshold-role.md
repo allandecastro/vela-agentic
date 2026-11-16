@@ -1,6 +1,6 @@
 ---
 scenario: creditlimit-threshold-role
-skills_exercised: [vela-plan-review, vela-models, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-models, vela-plugin-testing, vela-plugin-authoring, vela-code-review, vela-apply]
 entity: account
 message: Create, Update
 gotchas_exercised: [generated-roles, role-root-id, team-roles, configuration-over-code]

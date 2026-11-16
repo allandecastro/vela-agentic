@@ -1,6 +1,6 @@
 ---
 scenario: debug-live-trace
-skills_exercised: [vela-debug-plugin, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-debug-plugin, vela-plugin-testing, vela-code-review, vela-apply]
 entity: contact
 message: Create
 gotchas_exercised: [read-the-trace-first, repro-before-fix, minimal-fix, null-in-target]

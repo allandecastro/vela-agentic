@@ -1,6 +1,6 @@
 ---
 scenario: account-rule-conflict
-skills_exercised: [vela-plan-review, vela-grill, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-grill, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Create
 gotchas_exercised: [rules-registry-read, contradiction-asked-not-overwritten, retire-rule-delete, fix-spec-first]

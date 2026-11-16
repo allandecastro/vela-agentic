@@ -1,6 +1,6 @@
 ---
 scenario: regression-test-guard
-skills_exercised: [vela-plan-review, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Update
 gotchas_exercised: [regression-test-not-bent, spec-read-only-in-build, fix-the-code-not-the-test, case-ids-on-tests]
