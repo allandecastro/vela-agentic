@@ -75,7 +75,7 @@ runs the affected scenarios once each (the table shows N per scenario). Each run
    violations (mutated copy → fresh `vela-reviewer` → expected severity). The actor never grades itself.
 
 Campaign helpers: `evals/tools/actor_prompt.py` (the actor's prompt), `evals/tools/after_actor.sh` (checks +
-the grader's prompt from `grader_prompt.py`). The dev org defaults to the maintainer's; set `VELA_EVAL_ORG`.
+the grader's prompt from `grader_prompt.py`). The dev org is never committed: set `VELA_EVAL_ORG` to its URL (the docs write `https://<dev-org>.crm.dynamics.com`).
 
 A run **passes** only if the checks pass **and** the grader passes. Its record
 (`runs/<date>-<scenario>.r<k>.md`) pins `campaign`, `run`, `checks`, `grader`, `vela_cli`, `framework`

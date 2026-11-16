@@ -20,7 +20,7 @@
 
 ## Evidence
 - `vela version` returned `vela 0.26.1`.
-- `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` returned `{"solution":"ZavaSales","publisherPrefix":"zava"}` (exit 0).
+- `vela solution show ZavaSales --json --url https://<dev-org>.crm.dynamics.com` returned `{"solution":"ZavaSales","publisherPrefix":"zava"}` (exit 0).
 - `vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations -o .` exited 0 and used Vela.Plugins 0.36.0.
 - `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url <org>` exited 0 with "Generated 4 file(s)".
 - `vela add plugin AccountErpNotify ... --stage PostOperation --mode Async --filtering-attributes name --project src/Zava.Integrations/...`, `vela add service ErpAccountSender`, and `vela add test AccountErpNotify` all exited 0.
@@ -31,7 +31,7 @@
   - The `Zava.Plugins.Tests` project has nothing for this story: `Total: 0`.
 - **Review:** an isolated `vela-reviewer` subagent returned **PASS** with 0 Critical, 0 Required and 7 Nits. I did not apply the Nits; they are listed in the Build Report.
 - **Package:** `rm -rf artifacts && dotnet build -c Release` produced `artifacts/Zava.Integrations.1.0.0.nupkg`, which contains `lib/net48/Zava.Integrations.dll`. Its sha256 is `5f31628c6adfb5bdda3e8790b395d7cdae8f95be24a802641b5c8e7fa3b4790d`.
-- **Preview:** `vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` exited **8** (changes pending).
+- **Preview:** `vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://<dev-org>.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` exited **8** (changes pending).
   - Operations: `create package zava_Zava.Integrations` and `create step Zava.Integrations.Account.Plugins.AccountErpNotify` (Create, account, stage 40, async, filter `name`, asyncAutoDelete true).
   - Diagnostic: "...expects the secure configuration 'ErpApiKey', but none is set ... and no value was given". I kept this as evidence because I don't hold the key, and I did not use a placeholder value.
   - Info: "Plugin assembly 'Zava.Integrations' not found in Dataverse (first deployment)."
@@ -40,7 +40,7 @@
 ## Gate (for a human)
 Check `shasum -a 256 artifacts/Zava.Integrations.1.0.0.nupkg` against the hash above, then run:
 
-`vela apply -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --secure-config ErpApiKey=@<keyfile>`
+`vela apply -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://<dev-org>.crm.dynamics.com --secure-config ErpApiKey=@<keyfile>`
 
 Open questions that block the gate:
 - Who supplies the `ErpApiKey` value?

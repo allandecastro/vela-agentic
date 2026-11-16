@@ -47,7 +47,7 @@ The scenario has no "Planted-violation check" section; none applied.
 ## Findings against the skills
 1. minor - `skills/vela-apply/SKILL.md` (gate: the apply reuses the plan's connection) combined with
    `skills/vela-debug-plugin/SKILL.md` (no rule for "the bug is in an org you cannot reach; preview on a proxy org").
-   The Build Report Gate (l.138) offers `vela apply -p ... --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com`
+   The Build Report Gate (l.138) offers `vela apply -p ... --solution ZavaSales --url https://<dev-org>.crm.dynamics.com`
    as "the previewed target", although the dev org is the read-only proxy where the plugin was never deployed, and the
    fix belongs in the customer org. The actor did add the correct customer-org inspect -> plan -> apply sequence below it,
    but the first apply command a human sees deploys to the wrong environment. The debug skill should say: when the

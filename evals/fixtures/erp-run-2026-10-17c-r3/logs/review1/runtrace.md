@@ -2,9 +2,9 @@
 |---|------|-------|---------|------|---------|
 | 1 | version | using-vela | `vela version` | 0 | vela 0.26.1 |
 | 2 | grill | vela-grill | Q1-Q3 to the human (solution, ERP-down behaviour, JSON body) | - | answered |
-| 3 | solution | vela-scaffold | `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` | 0 | {"solution":"ZavaSales","publisherPrefix":"zava"} |
+| 3 | solution | vela-scaffold | `vela solution show ZavaSales --json --url https://<dev-org>.crm.dynamics.com` | 0 | {"solution":"ZavaSales","publisherPrefix":"zava"} |
 | 4 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations -o .` | 0 | 11 files, Vela.Plugins 0.36.0 |
-| 5 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url https://dyn-premium-dev.crm.dynamics.com` | 0 | Generated 4 file(s) |
+| 5 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url https://<dev-org>.crm.dynamics.com` | 0 | Generated 4 file(s) |
 | 6 | add | vela-scaffold | `vela add plugin AccountErpNotify --entity Account --message Create --stage PostOperation --mode Async --filtering-attributes name --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created plugin |
 | 7 | add | vela-scaffold | `vela add service ErpAccountSender --entity Account --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created service |
 | 8 | add | vela-scaffold | `vela add test AccountErpNotify --kind plugin --entity Account --message Create --project Zava.Integrations.Tests.csproj` (in tests/Zava.Integrations.Tests) | 0 | Created test |

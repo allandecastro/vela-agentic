@@ -18,7 +18,7 @@ JSON). The API trusts our Dataverse environment's managed identity - no secret t
 - The evaluator gives you an **empty** work dir (`sh evals/setup/signing.sh <work>`): there is no project yet.
   `vela` and `dotnet` on PATH. A throwaway dev code-signing certificate is at `<work>/signing/dev-signing.pfx`,
   its password in `<work>/signing/password.txt` (never print it). The dev org
-  `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` /
+  `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` /
   `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 - The API is not reachable from this machine; nothing in the run may call it.
 

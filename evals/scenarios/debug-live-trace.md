@@ -15,7 +15,7 @@ occurred'. The plugins in the VelaEvals solution were deployed from this repo. F
 
 ## Setup for the run
 - The evaluator gives you `<work>/VelaEvalsLive` (`sh evals/setup/live.sh <work>`): the plugin project **deployed** in the dev org
-  `https://dyn-premium-dev.crm.dynamics.com`, solution `VelaEvals` (a git repo, tests green). The org is
+  `https://<dev-org>.crm.dynamics.com`, solution `VelaEvals` (a git repo, tests green). The org is
   available **read-only** (`vela logs` / `vela inspect` / `vela plan` / `vela solution show` / `vela models`);
   never `vela apply`.
 

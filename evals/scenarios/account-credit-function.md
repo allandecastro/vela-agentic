@@ -17,7 +17,7 @@ reserved. The button only reads; it must never change the account."
 ## Setup for the run
 - The evaluator gives you the `ZavaSales` project (`<work>/ZavaSales`, a git repo, scaffolded with
   `vela init`, `account` / `contact` models generated, one existing Create plugin). `vela` and `dotnet`
-  on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only**
+  on PATH. The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only**
   (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## What the skills must get right

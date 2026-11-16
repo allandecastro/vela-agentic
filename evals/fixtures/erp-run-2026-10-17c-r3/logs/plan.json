@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mode": "plan",
-  "environment": "https://dyn-premium-dev.crm.dynamics.com",
+  "environment": "https://<dev-org>.crm.dynamics.com",
   "hasChanges": true,
   "summary": {
     "added": 1,

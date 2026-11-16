@@ -13,7 +13,7 @@ org_required: true
 "When an Account's account number is set or changed, store it in upper case."
 
 ## Setup for the run
-- Dev org: `https://dyn-premium-dev.crm.dynamics.com`, reached with `--url` alone (the `az login` session
+- Dev org: `https://<dev-org>.crm.dynamics.com`, reached with `--url` alone (the `az login` session
   is picked up by `DefaultAzureCredential`). Target unmanaged solution `VelaEvals`, publisher prefix
   `veval` - both exist.
 - Read-only use of the org: `vela models` and `vela plan` only. **Never `vela apply`**, never

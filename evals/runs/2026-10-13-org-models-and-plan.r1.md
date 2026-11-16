@@ -40,7 +40,7 @@ runner: "campaign actor + separate grader"
 | SC1: models from the org; build clean of VELA00x | met | Checks "models generated...", "build succeeds", "no VELA diagnostics". |
 | SC2: RED then GREEN; lower to upper, mixed to upper, already upper unchanged, not sent means no fire (`PluginPipeline`) | met | `logs/test-red.log` (Failed: 3) and `logs/test-green.log` (Failed: 0, Total 10). Tests are at `AccountNumberUpperCaseTests.cs:35-47` (theory with 3 rows) and `:111-124` (`Assert.Empty(pipeline.ExecutionLog)`). The grader re-run is 10/10. |
 | SC3: `vela-code-review` PASS | met | `docs/vela-builds/account-number-uppercase.review.md` records an isolated subagent: PASS, 0 Critical/Required, 4 Nits, each with its disposition. |
-| SC4: `plan.json` recorded with operations and diagnostics interpreted; Gate hands `vela apply -p <pkg> --solution VelaEvals --url ...` and a hash check | met | Canvas lines 100 and 122-125: `shasum -a 256` check with the sha256, then `vela apply -p artifacts/VelaEvals.Plugins.1.0.0.nupkg --solution VelaEvals -i (or --url https://dyn-premium-dev.crm.dynamics.com)`. See minor finding 1. |
+| SC4: `plan.json` recorded with operations and diagnostics interpreted; Gate hands `vela apply -p <pkg> --solution VelaEvals --url ...` and a hash check | met | Canvas lines 100 and 122-125: `shasum -a 256` check with the sha256, then `vela apply -p artifacts/VelaEvals.Plugins.1.0.0.nupkg --solution VelaEvals -i (or --url https://<dev-org>.crm.dynamics.com)`. See minor finding 1. |
 | SC5: no write to the org | met | Only `solution show`, `models` and `plan` were run (run trace). `apply: pending`. |
 
 ## Planted-violation results

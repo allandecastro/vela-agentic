@@ -15,7 +15,7 @@ org_required: true
 ## Setup for the run
 - The evaluator provides the `ZavaSales` project (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`, a
   git repo, `account` / `contact` models generated, one existing Create plugin). The dev org
-  `https://dyn-premium-dev.crm.dynamics.com` is available **read-only**; never `vela apply`.
+  `https://<dev-org>.crm.dynamics.com` is available **read-only**; never `vela apply`.
 - The dispatching session says: "Don't ask questions mid-run; pick sensible defaults and list them. Here is my
   draft: the error message lists up to 3 of the active contacts' names."
 

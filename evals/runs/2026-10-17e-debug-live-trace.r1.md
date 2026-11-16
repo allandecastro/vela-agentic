@@ -47,7 +47,7 @@ runner: "campaign actor + separate grader"
 | SC1: the Build Report cites the `vela logs` evidence (type, message, exception) and the command | met | Build Report L48-52, L79-81 |
 | SC2: RED then green; existing tests stay green | met | `evidence.txt` RED 1/7 failed, then GREEN 7/7; the 3 pre-existing tests are included; check "tests re-run green" |
 | SC3: the diff touches only ContactPhoneNormalize.cs, the tests and the Build Report | met | diff stat above |
-| SC4: plan has no step operation; Gate with the exact apply command; no apply run | met | checks "plan has 0 x create/update/delete step"; Build Report L117 (`vela apply -p artifacts/Veval.Plugins.1.0.0.nupkg --solution VelaEvals --url https://dyn-premium-dev.crm.dynamics.com`); `apply: pending` |
+| SC4: plan has no step operation; Gate with the exact apply command; no apply run | met | checks "plan has 0 x create/update/delete step"; Build Report L117 (`vela apply -p artifacts/Veval.Plugins.1.0.0.nupkg --solution VelaEvals --url https://<dev-org>.crm.dynamics.com`); `apply: pending` |
 | Ask-vs-assume / one question at a time | met | No questions were asked. The single assumption ("null telephone1 means no phone: leave it null") is recorded in Canvas L24-25 and matches the evaluator's human answer. The solution came from the story and was confirmed by `vela solution show`. |
 
 ## Planted-violation results
