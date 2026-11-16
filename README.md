@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="branding/vela-chevron.svg" alt="Vela" width="110" height="110" />
+  <img src="branding/vela-chevron.svg" alt="Vela" width="120" height="120" />
 </p>
 
 <h1 align="center">Vela Agentic</h1>
@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/allandecastro/vela-agentic/actions/workflows/ci.yml"><img src="https://github.com/allandecastro/vela-agentic/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/status-preview-orange" alt="Status: preview" />
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License: MIT" />
+  <a href="https://github.com/allandecastro/vela-agentic/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/allandecastro/vela-agentic/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+  <a href="https://www.nuget.org/packages/Vela.Cli"><img src="https://img.shields.io/nuget/v/Vela.Cli?logo=nuget&label=Vela.Cli" alt="Vela.Cli on NuGet" /></a>
 </p>
 
 <p align="center">
@@ -22,7 +22,19 @@
   <img src="https://img.shields.io/badge/Microsoft_Dataverse-107C10?style=for-the-badge&logo=microsoft&logoColor=white" alt="Microsoft Dataverse" />
 </p>
 
----
+Vela Agentic is the AI layer of [Vela](https://github.com/allandecastro/vela): Agent Skills and two agents that drive
+the `vela` CLI to build, test, review and preview Dataverse plugins, and stop before anything is written to an org.
+
+> **Status** - Preview, actively developed alongside Vela. Every merge to `main` publishes a new plugin version;
+> the Vela version the pack is verified against is recorded in
+> [`references/cli-surface.md`](references/cli-surface.md).
+
+## 📖 Documentation
+
+- **This pack:** [How it works](#how-it-works), [`AGENTS.md`](AGENTS.md) (the rules every agent follows) and the
+  [`references/`](references/) the skills read.
+- **Vela itself:** the [Vela documentation](https://allandecastro.github.io/vela/) (guides, CLI reference,
+  limitations) and [`llms.txt`](https://allandecastro.github.io/vela/llms.txt) for agents.
 
 ## Overview
 
@@ -49,7 +61,6 @@ writes to an org on its own.
 - [Repository layout](#repository-layout)
 - [Compatibility](#compatibility)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Quick start
 
@@ -222,6 +233,17 @@ reported to Vela, not worked around in the skills. Plans are in [`ROADMAP.md`](R
 
 CI runs the same check, the `spec-check` tests and gitleaks on every pull request.
 
-## License
+## Acknowledgments
 
-[MIT](LICENSE). Built for [Vela](https://github.com/allandecastro/vela) by Allan De Castro.
+Built for [Vela](https://github.com/allandecastro/vela). Skill format from the open
+[Agent Skills](https://agentskills.io) standard (`SKILL.md`, `AGENTS.md`).
+
+---
+
+<p align="center">
+  Crafted with ❤️ and AI by Allan De Castro
+</p>
+
+<p align="center">
+  License: <a href="LICENSE">MIT</a>
+</p>
