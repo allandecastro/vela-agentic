@@ -73,6 +73,16 @@ async function lintSkills() {
   }
 }
 
+// Every hook script carries its own version (CI bumps it when the script changes), like a skill's metadata.version.
+async function lintHooks() {
+  const base = path.join(root, "hooks", "bin");
+  for (const f of await fs.readdir(base)) {
+    if (!f.endsWith(".sh")) continue;
+    const head = (await fs.readFile(path.join(base, f), "utf8")).split("\n").slice(0, 3).join("\n");
+    if (!/^# version: \d+\.\d+\.\d+$/m.test(head)) errors.push(`hooks/bin/${f}: '# version: x.y.z' missing in its first lines`);
+  }
+}
+
 async function lintAgents() {
   const base = path.join(root, "agents");
   for (const f of await fs.readdir(base)) {
@@ -202,6 +212,7 @@ async function lintReferenceLinks() {
 
 await lintSkills();
 await lintAgents();
+await lintHooks();
 await lintReferenceLinks();
 await lintNamesAndTerms();
 await lintReadmeTable();

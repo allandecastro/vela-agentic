@@ -1,7 +1,7 @@
 name: Version bump
 
 # Every merge to main bumps the plugin's patch version, so `claude plugin update` sees a new release
-# (an unchanged version keeps the cached copy). The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
+# (an unchanged version keeps the cached copy), and the `# version:` line of every hook script that changed. The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
 on:
   push:
     branches: [main]
@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main   # the latest main, so a queued run includes the previous bump
+          fetch-depth: 0   # the hook bump diffs against the push's previous tip
 
       - name: Bump patch in plugin.json and marketplace.json
         run: |
@@ -32,10 +33,27 @@ jobs:
             console.log(plugin.version);
           '
 
+      - name: Bump the version of the changed hook scripts
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          git cat-file -e "$BEFORE^{commit}" 2>/dev/null || { echo "no previous tip: hooks left as they are"; exit 0; }
+          for f in $(git diff --name-only "$BEFORE" HEAD -- hooks/bin/ | grep '\.sh$'); do
+            [ -f "$f" ] || continue
+            node -e '
+              const fs = require("fs"), f = process.argv[1], sh = fs.readFileSync(f, "utf8");
+              const out = sh.replace(/^(# version: )(\d+)\.(\d+)\.(\d+)$/m, (_, k, a, b, c) => `${k}${a}.${b}.${+c + 1}`);
+              if (out === sh) { console.error(`${f}: no version line`); process.exit(1); }
+              fs.writeFileSync(f, out);
+            ' "$f"
+            echo "$f: $(grep -m1 '^# version:' "$f")"
+          done
+          node scripts/sync-copilot.mjs   # re-embed the bumped scripts in the Copilot hook configs
+
       - name: Commit
         run: |
           v=$(node -p 'require("./.claude-plugin/plugin.json").version')
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore(release): vela plugin $v"
+          git add -A hooks hooks.json .github && git commit -am "chore(release): vela plugin $v"
           git push

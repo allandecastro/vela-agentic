@@ -13,7 +13,7 @@
 //   - .github/skills/<name>/SKILL.md      copy of each skill for Copilot discovery
 //   - .github/agents/<name>.agent.md      repository-level Copilot custom agents
 //   - .github/copilot-instructions.md     pointer to AGENTS.md
-//   - hooks.json, .github/hooks/vela.json Copilot hook configs embedding hooks/bin/guard.sh
+//   - hooks.json, .github/hooks/vela.json, .github/copilot/settings.json  Copilot hook configs embedding hooks/bin/*.sh
 //   - the coverage table in evals/README.md (from each scenario's skills_exercised)
 //
 // Run:  node scripts/sync-copilot.mjs
@@ -129,24 +129,33 @@ async function genInstructions() {
 
 // Copilot does not document how a hook script path is resolved (plugin dir? cwd?), and a hook that
 // exits non-zero (e.g. script not found) DENIES every tool call. So the Copilot configs embed the
-// guard itself (base64 of hooks/bin/guard.sh) instead of pointing at a path. Fails closed and loud
-// if it cannot decode.
+// scripts themselves (base64 of hooks/bin/*.sh) instead of pointing at a path. bash: decodes with base64
+// (fails closed and loud if it cannot); powershell (Windows): decodes natively and runs it with the bash of
+// Git for Windows - without one it warns and allows (a guard that denied every tool would block the agent).
 async function genHooks() {
-  const embed = async (file, label) => {
+  const embed = async (file, label, arg) => {
     const b64 = (await fs.readFile(path.join(root, "hooks", "bin", file))).toString("base64");
-    return (
-      `g="$(printf %s '${b64}' | base64 -d 2>/dev/null || printf %s '${b64}' | base64 -D 2>/dev/null)"; ` +
-      `[ -n "$g" ] || { echo 'vela ${label}: cannot decode the embedded guard (base64 missing?)' >&2; exit 2; }; ` +
-      `sh -c "$g" vela-${label} cp`
-    );
+    return {
+      bash:
+        `g="$(printf %s '${b64}' | base64 -d 2>/dev/null || printf %s '${b64}' | base64 -D 2>/dev/null)"; ` +
+        `[ -n "$g" ] || { echo 'vela ${label}: cannot decode the embedded script (base64 missing?)' >&2; exit 2; }; ` +
+        `sh -c "$g" vela-${label} ${arg}`,
+      powershell:
+        `$g = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')); ` +
+        `if (-not (Get-Command bash -ErrorAction SilentlyContinue)) { [Console]::Error.WriteLine('vela ${label}: bash not found (install Git for Windows) - not checked'); exit 0 }; ` +
+        `[Console]::In.ReadToEnd() | bash -c $g vela-${label} ${arg}; exit $LASTEXITCODE`,
+    };
   };
-  const hooksList = [
-    { type: "command", bash: await embed("guard.sh", "apply-guard"), timeoutSec: 10 },
-  ];
+  const verified = (await fs.readFile(path.join(root, "references", "cli-surface.md"), "utf8"))
+    .match(/Verified against:\*\* `vela (\d+\.\d+\.\d+)/)[1];
+  const hooksList = {
+    preToolUse: [{ type: "command", ...(await embed("guard.sh", "guard", "cp")), timeoutSec: 10 }],
+    sessionStart: [{ type: "command", ...(await embed("session.sh", "session", verified)), timeoutSec: 10 }],
+  };
   const config = (where) => ({
-    _generated: `by scripts/sync-copilot.mjs from hooks/bin/guard.sh (${where}) - do not edit by hand`,
+    _generated: `by scripts/sync-copilot.mjs from hooks/bin/*.sh (${where}) - do not edit by hand`,
     version: 1,
-    hooks: { preToolUse: hooksList },
+    hooks: hooksList,
   });
   const write = async (rel, where) => {
     const dst = path.join(root, rel);
@@ -158,7 +167,7 @@ async function genHooks() {
   // Copilot CLI 1.0.91 (verified live) does not load .github/hooks/*.json; it loads repo hooks from the
   // `hooks` key of .github/copilot/settings.json - and only in a trusted folder.
   const settings = {
-    _generated: "by scripts/sync-copilot.mjs from hooks/bin/guard.sh (Copilot CLI repo settings) - do not edit by hand",
+    _generated: "by scripts/sync-copilot.mjs from hooks/bin/*.sh (Copilot CLI repo settings) - do not edit by hand",
     hooks: config("").hooks,
   };
   const dst = path.join(root, ".github", "copilot", "settings.json");
