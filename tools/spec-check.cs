@@ -14,7 +14,9 @@
 //   6. tests/ or docs/rules/ hold uncommitted changes (the check reads history - commit first);
 //   7. a rule id or an ADR number is used twice at HEAD, or one the story adds is already taken at the tip of <base>
 //      (a duplicate already on the base is printed as a NOTE: not this story's)
-//      (`git fetch` first and pass the latest base; renumber this story's).
+//      (`git fetch` first and pass the latest base; renumber this story's);
+//   8. an ADR the story adds or changes has no `Scope:` line (agents list ADRs by title + scope and open only
+//      the ones that touch the story, so the scope is required).
 // Only for projects with a docs/rules/ registry (none: nothing to check, exit 0). A rule's trace lines
 // (`Implementation:` / `Tests:`) are not spec. Test bodies are compared as syntax (whitespace and comments ignored);
 // harness plumbing - the trigger, stage and mode calls of Vela.Plugins' step API, read from the Vela.Plugins.dll
@@ -187,6 +189,14 @@ foreach (var d in dupHead)
 foreach (var key in head.Keys.Except(atFork.Keys).Order())
     if (tip.TryGetValue(key, out var where))
         fails.Add($"{key} added by this story is already taken on {baseRef} ({where}) - renumber this story's");
+
+// 8. an ADR the story adds or changes carries its scope (older ADRs without one are opened every time - not failed)
+foreach (var f in changed.Where(x => Regex.IsMatch(x, @"(^|/)docs/adr/\d{4}-[^/]*\.md$")))
+{
+    string text = Show("HEAD", f);
+    if (text.Length > 0 && !Regex.IsMatch(text, @"^Scope:[ \t]*\S", RegexOptions.Multiline))
+        fails.Add($"{f}: an ADR this story adds or changes needs a `Scope:` line (the tables and areas it governs, or `all`)");
+}
 
 foreach (var x in notes) Console.WriteLine("NOTE  " + x);
 foreach (var x in fails) Console.WriteLine("FAIL  " + x);

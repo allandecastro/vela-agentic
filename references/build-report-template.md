@@ -224,12 +224,19 @@ In the affected table's file: `See also ACC-002 (account) - deleting an account 
 
 ## ADR - `docs/adr/NNNN-<title>.md` (one decision per file, written in English)
 
-A changed decision is edited in place (or the ADR deleted); git keeps the history.
+A changed decision is edited in place (or the ADR deleted); git keeps the history. **`Scope:`** names the tables
+and the areas it governs (`security`, `messages`, `data-access`, `integrations`, `registration`, `testing`,
+`deployment`), or `all`: agents list the ADRs by title and scope and open only those that touch the story, so the
+list stays cheap as it grows. `spec-check` fails an ADR a story adds or changes without one.
+
+**Reading them:** `grep -m2 -E '^(# |Scope:)' docs/adr/*.md` lists every ADR's title and scope; open each one whose
+scope names a table the story touches or an area it involves, every `all` one, and any ADR without a `Scope:` line.
 
 ```markdown
 # 0001 - Plugins run as the calling user
 
 Date: 2026-10-23 · by: human
+Scope: all · security · data-access
 
 ## Context
 Stories read other tables (contacts of an account); SYSTEM would expose rows the user cannot read.

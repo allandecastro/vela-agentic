@@ -131,6 +131,11 @@ new_repo; git checkout -q main; printf '# 0001 - Other\n' > docs/adr/0001-other.
 canvas ""; expect 0 "7 duplicate already on the base is a note" "not this story's"
 
 # no registry, bad base
+# 8. ADR scope
+new_repo; canvas ""; printf '# 0002 - Provider\n\nDate: x\n' > docs/adr/0002-provider.md; commit adr; expect 1 "8 new ADR without Scope" "needs a \`Scope:\` line"
+new_repo; canvas ""; printf '# 0002 - Provider\n\nDate: x\nScope: account · integrations\n' > docs/adr/0002-provider.md; commit adr; expect 0 "8 new ADR with Scope"
+new_repo; canvas ""; expect 0 "8 an untouched ADR without Scope is not failed"
+
 new_repo; git rm -q -r docs/rules; commit norules; canvas ""; expect 0 "no registry: nothing to check" "nothing to check"
 new_repo; canvas ""; BASE=nope expect 2 "bad base" "not a commit"
 
