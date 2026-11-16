@@ -37,19 +37,19 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    --pfx-credential <target>`; secrets via `--pfx-password-env` / `--pfx-base64-env`, never
    `--pfx-password` on a command line. No certificate → don't sign; record "unsigned - a human signs
    before apply". Unknown whether signing is required → `signed: unknown`, an open question at the gate.
-   A signed package is built under its **publisher-prefixed** id (`<prefix>_<Package>`, e.g.
-   `zava_Zava.Integrations`): `apply --solution` adds a missing prefix by rewriting the package, so it refuses a
-   signed one.
+   Sign only a package whose id already carries the publisher prefix (`<prefix>_<Package>`, e.g.
+   `zava_Zava.Integrations`): `apply --solution` adds a missing prefix by rewriting the package, which would
+   break the signature, so it refuses a signed package without one.
 4. **Connection** (`references/cli-surface.md`): headless (connection string, client secret env, or
    `--url` + `az login`); `-i` only with a human at a browser. Never echo a secret.
 5. **Confirm the solution (read-only):** the package's solution from `PROJECT.md` (`packages:`), then `vela solution
    show <uniquename> --json <connection>`; its `publisherPrefix` must equal `PROJECT.md`'s. Exit `4` = no such solution (Vela
    does not create it): an open question that blocks the gate.
 6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out .vela-runs/<slug>/plan.json`
-   (first write to `.vela-runs/`: add it to the project's `.gitignore`). An org the human did not name (taken
-   from `~/.vela/config.json` or an earlier run) is recorded as `org: unconfirmed` and asked at the gate.
    on **the packages the Canvas ships** (`-p` repeated; not `--packages-dir artifacts` blindly).
-   `--solution` is required (else exit `4`). A package with nothing of yours (empty `<P>.Plugins` beside
+   `--solution` is required (else exit `2`, before connecting). First write to `.vela-runs/`: add it to the
+   project's `.gitignore`. An org the human did not name (taken from `~/.vela/config.json` or an earlier run)
+   is recorded as `org: unconfirmed` and asked at the gate. A package with nothing of yours (empty `<P>.Plugins` beside
    an Integrations-only story) is not created; include or omit it consistently, recorded in the Canvas.
    - Read every `diagnostics` line. `operations` must be a `package` operation plus **only** what the
      Canvas ships: an extra `create` is something that should not be in the package; an `update`/`delete`

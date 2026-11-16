@@ -65,9 +65,8 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 - **Preview on the final package**: `vela plan` always runs; a later code change invalidates it.
 - **Apply gate (blocking)**: emit a **Build Report**, stop, a human runs `apply`.
 - Artifacts (`references/build-report-template.md`): `docs/features/<slug>/README.md` (Canvas → Build Report,
-  short) is committed; the run trace, review and `plan.json` stay untracked in `.vela-runs/<slug>/` and go into
-  the PR body,
-  and reused as the PR body.
+  short) is committed and is the PR body; the run trace, review and `plan.json` stay untracked in
+  `.vela-runs/<slug>/` and are pasted into the PR body.
 
 ## Golden rules
 
@@ -87,8 +86,9 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    hook** (`hooks/`) **denies** `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1`
    (an inline prefix does not count); the rule holds without it.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
-   tests) changes only in the design phase, with the human; in the build it is read-only (trace lines and recorded review-driven `amendments:` aside), and a failing
-   regression test means the code is wrong. `tools/spec-check.cs` (`dotnet run`) checks it at review (a team may copy it into its own CI).
+   tests) changes only in the design phase, with the human. In the build it is read-only, except its trace
+   lines and the review-driven `amendments:` recorded in the Canvas. A failing regression test means the code
+   is wrong. `tools/spec-check.cs` (`dotnet run`) checks this at review; a team may copy it into its CI.
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)

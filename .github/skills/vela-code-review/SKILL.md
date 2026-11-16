@@ -47,18 +47,19 @@ Announce: `Using vela-code-review to review the change`.
 ## Spec check (deterministic, before dispatching the reviewer)
 
 Run `dotnet run <pack>/tools/spec-check.cs -- --base <base> --canvas docs/features/<slug>/README.md` in the project
-(the pack is the folder holding `skills/`; after the Release build - it reads the restored Vela.Plugins), with the **latest** base: `git fetch` then `origin/<main>` when there is a
+(the pack is the folder holding `skills/`; after any `dotnet build` - it reads the restored Vela.Plugins.dll), with the **latest** base: `git fetch` then `origin/<main>` when there is a
 remote, else the local main - read-only, never merge it into the branch. It fails when the registry changed outside the rules the Canvas declares,
 an existing test was modified / deleted for a rule the story does not
-change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review. A `NOTE` (an id
+change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review. Exit `2`
+(cannot check: bad base, project not restored) is fixed and re-run, never recorded as a pass. A `NOTE` (an id
 already duplicated on the base, by two merged stories) does not block: report it to the human for a separate
 renumbering change, never renumber it in this story. "nothing to check" (no
 registry) is recorded as **not checked**, never as a pass.
 
 ## Who reviews: the isolated reviewer by default
 
-- **Default - `vela-reviewer` agent** (read-only, no shell), given only the pasted diff, the Canvas, the
-  verbatim RED/GREEN lines and the Run trace - **not** the session history, so the author's context does
+- **Default - `vela-reviewer` agent** (read-only, no shell), given only the material of step 2 and the
+  spec-check output - **not** the session history, so the author's context does
   not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes. Save its
   verbatim output as `.vela-runs/<slug>/review.md` (untracked; later rounds appended) and quote it in the PR.
 - **Proportional re-review** (the review is the costliest step of a build): after fixing its findings, or

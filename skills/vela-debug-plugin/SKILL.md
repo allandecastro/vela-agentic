@@ -54,8 +54,8 @@ instrument → fix → regression-test - not trial and error.
 3. **Reproduce locally (mandatory):** a failing harness test (`vela-test-harness`) capturing the symptom.
    **"Does not fire", filters, cascades and recursion: use `PluginPipeline`** - `PluginContext...Execute`
    ignores `FilterOn`. No org is the normal path: reproduce from the description. An unexpectedly green
-   repro is not exercising the registration - switch to the pipeline. Write the light Canvas (symptom,
-   hypothesis, repro cases, the one-line change) **before** the fix.
+   repro is not exercising the registration - switch to the pipeline. Write a small-story Canvas
+   (`using-vela`: front matter + cases; record the symptom and hypothesis in `decisions:`) **before** the fix.
 4. **Minimize** to the smallest failing input; add only the repro and directly related regressions.
 5. **Hypothesize** from registration + evidence against `references/dataverse-gotchas.md`: a filter
    excluding the changed attribute; a missing or incomplete image (`ctx.PreImage` null); wrong stage
@@ -87,8 +87,8 @@ When the harness and the org disagree, read Vela's limitations page (`references
 
 ## Red flags
 
-- A code change before a failing repro test exists, or a fix diff beyond the cause and its tests (plus the
-  case it restores in `docs/rules/`, written before the test).
+- A code change before a failing repro test exists, or a fix diff beyond the cause and its tests (a repro case added
+  to `docs/rules/` is listed in the Canvas `amendments:`).
 - Mutating the org while diagnosing.
 - Reporting the intended state instead of the observed one.
 - `if (ctx.Depth > 1) return;` to make a recursion symptom disappear.

@@ -28,8 +28,8 @@ Local and reversible until the gate; the org is only written at `apply`. One ski
    "Parallel builds" first): self-grill, fill the **Vela Canvas**, flag assumptions, continue
    (advisory). Only the human can resolve it? `vela-grill`. A changed requirement updates the Canvas
    before the code.
-4. **Scaffold** - `vela-scaffold`: `PROJECT.md` (or `vela solution show` → `vela init`, minimal) → models → `vela add`.
-5. **Model** - `vela-models`, before the first plugin (no models, no compile).
+4. **Scaffold** - `vela-scaffold`: `PROJECT.md` (or `vela solution show` → `vela init`, minimal).
+5. **Model** - `vela-models`, then `vela add` (no models, no compile).
 6. **Test (RED)** - `vela-test-harness`: failing tests for the acceptance cases, seen to fail. Mandatory.
 7. **Implement** - `vela-plugin-authoring` until **green**.
 8. **Verify** - suite green **and** no analyzer (VELA00x) violations.
@@ -59,10 +59,9 @@ are agents; there is no build or apply slash command.
 - **Evidence over claims.** Paste the build/test/plan output.
 - **Stop before `apply`.** No live-org write without explicit human go-ahead; no `--auto-approve`
   unless told for this run.
-- **This pack governs.** Where the `AGENTS.md` that `vela init` writes differs (e.g. `vela models
-  --interactive`), the skills win.
 
 ## References
 
 - `references/cli-surface.md` - exact commands and flags.
 - `references/dataverse-gotchas.md` - the real failure modes.
+- `references/registration-rules.md` - the legal matrix and the Sync/Async, reuse and service decisions.

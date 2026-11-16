@@ -185,9 +185,9 @@ def main():
         ipk = [pk for pk in delivered if re.search(rf"\.{proj}\.[^/]*\.nupkg$", pk)]
         ok = bool(ipk) and any(n.endswith(f".{proj}.dll") and n.startswith("lib/") for n in zipfile.ZipFile(ipk[0]).namelist())
         check(f"{proj} package holds the {proj} dll", ok, ", ".join(os.path.relpath(p, work) for p in ipk))
-        if exp.get("report_hash_matches") and pkgs:
-            sha = hashlib.sha256(open(pkgs[0], "rb").read()).hexdigest()
-            check("Build Report sha256 = package on disk", sha in canvas, sha[:16])
+    if exp.get("report_hash_matches") and pkgs:
+        sha = hashlib.sha256(open(pkgs[0], "rb").read()).hexdigest()
+        check("Build Report sha256 = package on disk", sha in canvas, sha[:16])
 
     # Source patterns (authored code only).
     src = [f for f in files(sol, "src/**/*.cs") if "/Models/Generated/" not in f and os.path.basename(f)[:-3] not in DEMO_TYPES]

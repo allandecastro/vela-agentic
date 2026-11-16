@@ -82,7 +82,7 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Service:** writes via `ctx.Service` (the step's user, default) / `ctx.SystemService` (SYSTEM) /
   `ctx.AsUser(id)`. `ctx.SystemService` without a Canvas reason - **Required**; data read as SYSTEM that
   reaches the user (in an error message or output) - **Required**, even with a reason.
-- **Performance / safety:** no `ColumnSet(true)` [VELA013], no unbounded RetrieveMultiple (Vela's typed `Query...ToList` pages through all rows), no slow or
+- **Performance / safety:** no `ColumnSet(true)` [VELA013], no unbounded RetrieveMultiple (`Query...ToList` pages through every matching row: bound it with `.Top(n)` or a selective filter), no slow or
   unreliable external I/O in a Sync step, no parallel work [VELA024], no file I/O [VELA019].
 - **Registration legality** (`registration-rules.md`): no post-image on Delete, no pre-image
   on Create, Async only at PostOperation (these don't compile); no step on SetState [VELA022].
@@ -99,7 +99,7 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   the rule copied into each handler still counts) - **Required**. Handlers stay thin, real logic in a
   service where it earns it, existing services/plugins reused, no service for a one-liner. A service
   trigger met (second consumer, data access plus decisions, an oversized handler) with logic left inline
-  - **Required** for a second consumer, **Nit** otherwise. The same query or rule definition in two places, a
+  - **Required** for a second consumer, an outbound call or a shared business definition; **Nit** otherwise. The same query or rule definition in two places, a
   block repeated per column, a service registered twice or outside `ProjectServices` - **Required**.
 - **Stage:** a PostOperation `Update` of its own primary record where a PreOperation Target edit would do
   - **Required**, unless the Canvas records why.

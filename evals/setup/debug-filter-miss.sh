@@ -20,6 +20,7 @@ s = s.replace("            // TODO: implement your logic.", """            var t
                 target.Description = System.Text.RegularExpressions.Regex.Replace(target.Description.Trim(), " {2,}", " ");
             }
             // TODO: implement your logic.""", 1)
+assert "var target = ctx.Request.Target;" in s and ".FilterOn(e => e.Name)" in s, "scaffold template changed - update this setup"
 open(p, "w", encoding="utf-8").write(s)
 PY
 mkdir -p tests/zava.Plugins.Tests/Account/Plugins

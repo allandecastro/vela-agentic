@@ -60,5 +60,5 @@ Announce: `Using vela-models to <purpose>`. Flags and scopes: `vela models --hel
 
 ## Verification
 
-- Exit `0` and the files exist where reported.
+- Exit `0`, the "Generated N file(s)" line (N > 0), and the files exist where reported.
 - Drift checks: `vela models --verify` exits `0`; a `5` must be resolved, a `6` surfaced.

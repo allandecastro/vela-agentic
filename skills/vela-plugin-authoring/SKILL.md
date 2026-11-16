@@ -69,7 +69,7 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
   write-back: filtering on the column you normalise there is correct.
 - A mutable plugin field (VELA011), a secret in code or unsecure config, or `ctx.Depth` /
   `.SkipWhenDepthAbove(n)` without a recorded reason (`references/dataverse-gotchas.md`).
-- An illegal registration attempted (post-image on Delete, Async off PostOperation).
+- An illegal registration attempted (post-image on Delete, Async on a stage other than PostOperation).
 
 ## Verification
 

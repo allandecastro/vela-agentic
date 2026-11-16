@@ -15,7 +15,7 @@ A "does not fire when an unrelated column changes" test written with `Execute` p
 nothing**. Write it with the pipeline:
 ```csharp
 var id = Guid.NewGuid();
-var p = PluginPipeline.Empty().Register<AccountNormalize>().Seed(new Account { Id = id, Name = "orig" });
+var p = PluginPipeline.Empty().Register<AccountPlugin>().Seed(new Account { Id = id, Name = "orig" });
 p.Service.Update(new Account { Id = id, Revenue = new Money(2m) });   // filtered column (Name) not sent
 Assert.Empty(p.ExecutionLog);                                          // the step did not fire
 p.Service.Update(new Account { Id = id, Name = "changed" });
@@ -31,7 +31,7 @@ Assert.Equal("changed", row.Name);
 
 It generates a pipeline `Fires_On_*` test (proves only that the step fired) and a skipped
 `Does_What_It_Should`. Give the filtered column a real value (it is `default` + a TODO), then un-skip
-`Does_What_It_Should` and put the acceptance cases there, plus the negative "does not fire" cases.  Every
+`Does_What_It_Should` and put the acceptance cases there, plus the negative "does not fire" cases. Every
 test needs its functional justification: tag the generated `Fires_On_*` test with the case whose trigger it
 proves (e.g. the Create case) - never leave it untagged, never delete it to dodge the rule.
 
@@ -62,7 +62,7 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
 - **Images:** `.WithPreImage(preImage)` (alias optional). The pipeline builds the pre-image from the seeded
   row **only if the step registers it** - so an image-dependent case also needs a pipeline test:
   ```csharp
-  var p = PluginPipeline.Empty().Register<AccountRevenueGuard>().Seed(new Account { Id = id, Revenue = new Money(10m) });
+  var p = PluginPipeline.Empty().Register<AccountPlugin>().Seed(new Account { Id = id, Revenue = new Money(10m) });
   Assert.Throws<InvalidPluginExecutionException>(() => p.Service.Update(new Account { Id = id, Revenue = new Money(5m) }));
   Assert.Equal(10m, p.GetAll(Account.EntityLogicalNameValue).Single().ToEntity<Account>().Revenue.Value);   // rolled back
   ```
@@ -71,8 +71,8 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
   and the triggering write stays saved. Assert `run.Mode == ExecutionMode.Asynchronous` (`using Vela.Steps;`)
   and `Assert.Empty(p.AsyncStepFailures)` (or `Single` for a failure case).
 - Assert by reading records back (`GetAll`, `Retrieve`), not by counting calls.
-- **PreOperation (a column of the same record):** assert on the `target` you passed - the edit of
-  `ctx.Request.Target` lands on it - and that `crm` received no extra write (`Assert.Empty(crm.GetAll("account"))`).
+- **PreOperation (a column of the same record):** through the pipeline, read the row back (the edit of
+  `ctx.Request.Target` is what was saved); `Assert.Single(p.ExecutionLog)` proves no second write re-fired the step.
 - "Already correct → nothing re-set" in PreOperation is not observable: don't assert on trace text; cover it
   by design review and record it as a Canvas note.
 - **A handler that writes by `ctx.PrimaryEntityId`:** in a `PluginContext` test it follows the Target's id,
@@ -106,7 +106,7 @@ EstimateValueResponse response = p.Service
   `Assert.Throws<FaultException<OrganizationServiceFault>>(() => p.Service.Execute(new EstimateValueRequest()))`
   (`using System.ServiceModel;`). `.Build()` + `api.Execute(context.ServiceProvider)` skips that validation.
 
-## Replace a service - `WithService<TService>(instance)`
+## Platform services and security
 
 Platform services are not replaced this way (`WithService` rejects them): fake a managed identity with
 `PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`). Each
@@ -122,7 +122,9 @@ A `WithSecurity` test that depends on who can read a child row (e.g. an account'
 parental relationship (`WithParentalRelationship("account", "contact", "parentcustomerid")`): inherited access
 (the parent's owner reads its children) applies only then - see Vela's security-model guide.
 
-On `PluginPipeline` and the context builder, it replaces what `ConfigureServices` registers for `TService`,
+## Replace a service - `WithService<TService>(instance)`
+
+On `PluginPipeline` and the context builder, `WithService<T>` replaces what `ConfigureServices` registers for `TService`,
 so the plugin runs end to end against a fake - no test-only constructor or seam in the plugin:
 ```csharp
 var p = PluginPipeline.Empty()
@@ -153,19 +155,19 @@ Associate/Disassociate; QueryExpression, QueryByAttribute, FetchExpression). Con
 - An `Update` needs the record to exist: `Seed` it (with its id) first, or it throws "... Does Not Exist".
   (Seeding the record a Create plugin just created so it can update it → the step should probably be
   PreOperation - see `registration-rules.md`.)
-- For anything it can't model, inject your own `IOrganizationService` via `WithOrganizationService`.
+- For anything it can't model, inject your own `IOrganizationService` via the context builder's `WithOrganizationService` (not on `PluginPipeline`).
 
 ## Running the tests
 
 Plugin and test projects target **net48**.
 - **Windows:** `dotnet test <path>.Tests.csproj -c Release`.
 - **macOS / Linux:** `dotnet test` **fails** (no .NET Framework test host). Run under **Mono + xunit console**.
-  If `~/.nuget/packages/xunit.runner.console/2.9.2/` is missing, add
-  `<PackageReference Include="xunit.runner.console" Version="2.9.2" PrivateAssets="all" />` to the test project once.
+  If `~/.nuget/packages/xunit.runner.console/<ver>/` is missing, add
+  `<PackageReference Include="xunit.runner.console" Version="<ver>" PrivateAssets="all" />` to the test project once.
   One command builds and runs every test assembly:
   ```bash
   dotnet build <Solution>.sln -c Release && for t in tests/*/bin/Release/net48/*.Tests.dll; do
-    mono ~/.nuget/packages/xunit.runner.console/2.9.2/tools/net472/xunit.console.exe "$t" -parallel none || break; done
+    mono ~/.nuget/packages/xunit.runner.console/<ver>/tools/net472/xunit.console.exe "$t" -parallel none || break; done
   ```
   Success is `Total: N, Errors: 0, Failed: 0, Skipped: 0` with **N > 0 in every test assembly and at least the
   declared cases** - a run over zero tests checked nothing (wrong path, filter, discovery) and is not green. **Always pass `-parallel none` on Mono** - a

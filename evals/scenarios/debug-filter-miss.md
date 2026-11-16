@@ -11,7 +11,7 @@ org_required: false
 
 ## Setup for the run
 - The evaluator provides the project (`sh evals/setup/debug-filter-miss.sh <work>` → `<work>/DescNorm`,
-  a git repo). The plugin runs in the **customer's** org, which you cannot reach; The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. (the plugin is not deployed there).
+  a git repo). The plugin runs in the **customer's** org, which you cannot reach. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply` (the plugin is not deployed there).
 - A user reports: "When I edit the description, nothing happens."
 
 ## Planted bug (evaluator only)

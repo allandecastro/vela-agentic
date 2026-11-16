@@ -31,7 +31,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 string Arg(string name, string? fallback = null)
 {
     int i = Array.IndexOf(args, name);
-    return i >= 0 && i + 1 < args.Length ? args[i + 1] : fallback ?? throw new ArgumentException($"{name} is required");
+    if (i >= 0 && i + 1 < args.Length) return args[i + 1];
+    if (fallback != null) return fallback;
+    Console.WriteLine($"spec-check: {name} <value> is required");
+    Environment.Exit(2);
+    return "";
 }
 
 string repo = Arg("--repo", "."), baseRef = Arg("--base"), canvasPath = Arg("--canvas");
@@ -65,6 +69,11 @@ if (!headFiles.Any(IsRules))
 string fork = Git("merge-base", baseRef, "HEAD").Trim();
 
 // --- Canvas declarations --------------------------------------------------------------------------------------
+if (!File.Exists(Path.Combine(repo, canvasPath)))
+{
+    Console.WriteLine($"spec-check: Canvas {canvasPath} not found");
+    return 2;
+}
 string canvas = File.ReadAllText(Path.Combine(repo, canvasPath));
 var declared = Regex.Matches(canvas, @"\{\s*id:\s*([A-Z]+-\d+)\s*,\s*change:\s*(add|change|retire|tests)\s*\}")
     .ToDictionary(m => m.Groups[1].Value, m => m.Groups[2].Value);
@@ -126,7 +135,11 @@ foreach (var c in Lines(Git("rev-list", "--reverse", $"{baseRef}..HEAD")))
 
 // 4-5. tests
 var plumbing = Plumbing();
-if (plumbing == null) return 2;
+if (plumbing == null)
+{
+    foreach (var x in fails) Console.WriteLine("FAIL  " + x);
+    return 2;
+}
 var cases = headFiles.Where(IsRules).SelectMany(f => Regex.Matches(Show("HEAD", f), @"\b[A-Z]+-\d+/C\d+\b").Select(m => m.Value)).ToHashSet();
 var forkFiles = Lines(Git("ls-tree", "-r", "--name-only", fork)).ToHashSet();
 foreach (var f in changed.Where(x => x.EndsWith(".cs") && Regex.IsMatch(x, @"(^|/)tests/")))

@@ -30,14 +30,15 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
 2. **The solution and its publisher prefix:** an existing project → `PROJECT.md` (front matter
    `publisherPrefix`, `packages:` → solution). A new one → the unique name from the story or the human
    (`vela-grill`), the prefix from `vela solution show <uniquename> --json <connection>` (read-only) - never guessed. Exit `4` = no such solution (Vela does not create it): an open
-   question that blocks the apply gate. Exit `6`: record the command + exit code; carry the prefix as a
-   flagged assumption.
+   question that blocks the apply gate. Unknown and no org (exit `6`, or none reachable): record the command +
+   exit code, scaffold with the obvious placeholder `--publisher-prefix tbd`, list it as an open question;
+   apply stays blocked until it is confirmed.
 3. **New solution?** `vela init <Name> --prefix <Prefix> --publisher-prefix <publisherPrefix> --solution <uniquename> -o <dir>` -
    lands in `<dir>/<Name>/`, minimal (Shared, Plugins, Plugins.Tests; no demos, no models), with `PROJECT.md` (the
    prefix and the package → solution map; Vela never rewrites it), `ProjectServices.cs`, `Messages.cs`, `.editorconfig`.
    - `--prefix` = namespace/assembly prefix, used verbatim: pass it **PascalCase** (`zava` →
-     `zava.Plugins`). `--publisher-prefix` = the Dataverse prefix from step 2 (`vela add customapi
-     --prefix` takes it from `PROJECT.md`; `references/registration-rules.md`).
+     `zava.Plugins`). `--publisher-prefix` = the Dataverse prefix from step 2 (read it from `PROJECT.md` and
+     pass it to `vela add customapi --prefix`; `references/registration-rules.md`).
    - `--integrations` when the Canvas records an outbound call: an empty Integrations project with its
      own package - outbound code goes there. **Never `--samples`** (demos + ConsoleApp) and **never
      `--no-tests`** (tests are the acceptance criteria).
@@ -85,13 +86,12 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
 - The Canvas says PreOperation but the scaffolded step still says `.PostOperation()`.
 - `vela init --samples` for a project headed for `vela apply`, or outbound code outside the
   `--integrations` project.
-- A lower-case `--prefix`, or a `--publisher-prefix` not confirmed with `vela solution show`.
-- A committed file named `*.generated.cs` (often gitignored).
+- A lower-case `--prefix`, or a `--publisher-prefix` not confirmed with `vela solution show` (other than a recorded `tbd`).
 - A guessed flag instead of `--help`; `--interactive` on `vela init`/`vela add` (a TTY wizard).
 - A generated `FilterOn` accepted unchecked: a column the Canvas did not choose ships a wrong registration.
 - Following the scaffold's `AGENTS.md` where it contradicts the pack.
 - **Build fails right after `vela models`** in generated code (an incompatible auto-resolved framework):
-  pin a known-good core with `vela init --core-version <v>` and report the regression.
+  stop and report the regression with the version - a gap for the Vela owner, not worked around.
 
 ## Verification
 

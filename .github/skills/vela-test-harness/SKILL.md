@@ -55,7 +55,7 @@ Announce: `Using vela-test-harness to <purpose>`.
    ```csharp
    var p = PluginPipeline.Empty().Register<AccountPlugin>();
    var id = p.Service.Create(new Account { Name = "Zava" });
-   var saved = p.Service.Retrieve<Account>(id, a => a.Description);
+   var saved = p.Service.Retrieve<Account>(id, a => a.Description);                 // using Vela.Context;
    Assert.Equal("Created via Vela plugin", saved.Description);                       // what was saved
    ```
 3. Write the full **Coverage** set.
@@ -74,17 +74,15 @@ Announce: `Using vela-test-harness to <purpose>`.
 - **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code
   is wrong - fix the code, in its own commit, and record it in the Build Report (a regression found, not part
   of the story). Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
-  as `change` or `retire`, and keep it faithful to the case's Given/When/Then. Harness plumbing that leaves the
-  case intact - e.g. adding `.OnCreate()` once the plugin gains a second step - is allowed: same data, action
-  and assertion; record it in the Canvas (`spec-check` ignores that plumbing). A `PluginContext` test that breaks
+  as `change` or `retire`, and keep it faithful to the case's Given/When/Then. A `PluginContext` test that breaks
   because its class gains a step on the same trigger moves to `PluginPipeline` (same data, action, assertion,
   case id): declare its rule `{id: ..., change: tests}` - the rule text stays, every case keeps a test. If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
   `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
 - **CS0118** (a `...Tests.<Table>` namespace hides the model type): keep the usings inside the namespace, as the
   scaffold's `.editorconfig` asks.
-- **Never encode a harness divergence** in a test (e.g. a read with no privilege at all hides the row in the harness
-  but faults in the org; computed columns such as `fullname` are not computed) - Vela's limitations page.
+- **Never encode a harness divergence** in a test (e.g. computed columns such as `fullname` are not computed) -
+  Vela's [limitations](https://allandecastro.github.io/vela/reference/limitations) page.
 - **A removed step** is tested too: through the pipeline, the message no longer runs the handler
   (`Assert.Empty(p.ExecutionLog)`), and `vela plan` shows the `delete step`.
 
@@ -100,7 +98,6 @@ Announce: `Using vela-test-harness to <purpose>`.
 ## Red flags
 
 - Claiming success from `dotnet build` alone, or from a partial/crashed run.
-- A trigger restated on a single-step plugin, or none on a multi-step one.
 - The generated "fires" test as the only assertion, or `Does_What_It_Should` left skipped.
 - A "does not fire" / filtering case written with `Execute` instead of `PluginPipeline`.
 - A Mono segv (missing `-parallel none`) reported as a test failure.

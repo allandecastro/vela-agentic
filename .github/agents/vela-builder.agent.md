@@ -31,7 +31,7 @@ or package. That is a correct outcome.
    (advisory). Only the human can resolve it? `vela-grill`; no human reachable → stop after the Canvas and
    hand back the business questions (`needs-input`), never build on guessed business decisions.
 4. **Scaffold** - `vela-scaffold`: an existing project's `PROJECT.md` (prefix, solutions); a new one: `vela solution
-   show <uniquename> --json` (prefix, read-only), then `vela init --publisher-prefix --solution` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
+   show <uniquename> --json` (prefix, read-only), then `vela init <Name> --prefix <Prefix> --publisher-prefix <pfx> --solution <uniquename>` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
    preview).
 5. **Model** - `vela-models` **before** `vela add plugin` (no models, no compile); then `vela add`, build.
 6. **Test (RED)** - `vela-test-harness`: the Canvas's acceptance cases, seen to **fail**. Mandatory.
@@ -40,8 +40,7 @@ or package. That is a correct outcome.
    code to **green**.
 8. **Verify** - full suite green (OS-correct runner) **and** no analyzer (VELA00x) violations.
 9. **Review** - commit, then `vela-code-review` (dispatches `vela-reviewer`). Unresolved
-   Critical/Required block: fix, re-verify, then a scoped re-review of the fix (full again only when the fix
-   touches registration, security, data access or an outbound call).
+   Critical/Required block: fix, re-verify, re-review as `vela-code-review` says.
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (package in `artifacts/`), `vela sign`
     if required, `vela plan --solution <uniquename>` on **that exact package** (never writes). Last, on
     the final code: any later change means re-test, re-review (scoped to that change), rebuild, re-plan.
@@ -49,7 +48,8 @@ or package. That is a correct outcome.
     checklist, the `vela plan` preview, the **Run trace**: one row per step - command, exit code, gate
     verdict), stop, hand off to a human.
 12. **Report** - a PR, **draft first**:
-    - Branch before Scaffold; `gh pr create --draft` once the Canvas exists (after step 3). The body
+    - Branch before Scaffold; `gh pr create --draft` once the Canvas exists (after step 3, or,
+      with no repository yet, right after the scaffold-move commit). The body
       grows from the Canvas into the Build Report.
     - **No repository yet:** write the Canvas to `docs/features/<slug>/README.md` under the working
       directory (so a stop at the plan gate leaves it there); then `vela init` → `git init` → commit the

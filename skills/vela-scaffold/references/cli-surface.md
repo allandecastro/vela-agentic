@@ -29,14 +29,14 @@ record: when the CLI moves, re-run `vela help --json` and update this file.
   both go to `PROJECT.md` only.
 - `--integrations` adds an **empty** Integrations plugin project (`src/<Prefix>.Integrations`, references
   `System.Net.Http`) + its tests, building its own package - the home for outbound calls.
-  `--managed-identity`/`--mi` adds package signing and implies it.
+  `--managed-identity`/`--mi` adds the signing step to the Integrations package and implies `--integrations`.
 - `--samples` adds demos - never for real work. `--force` regenerates only files Vela wrote and you did not
   edit (tracked in `.vela/scaffold-manifest.json` - commit it). `--interactive` needs a TTY - never from an agent.
 
 ### `vela add <kind> <Name>`
 Kinds: `plugin | customapi | service | test | step | form-script | ribbon-script`; one file into an existing
-project, namespaces from its `RootNamespace`. **Always pass `--project <csproj>`** (else "No .csproj found",
-exit `2`) and check the "Created"/"Added" line (or `created` in `--json`).
+project, namespaces from its `RootNamespace`. Run it **inside the project directory or pass `--project <csproj>`**
+(else "No .csproj found", exit `2`) and check the "Created"/"Added" line (or `created` in `--json`).
 - `add plugin [<Name>] --entity <ModelType> --message <M> --stage <S> --mode <Sync|Async> --filtering-attributes a,b --handler <Method>`
   - a **single-step** plugin (Name default `<Entity>Plugin`; handler default `Handle<Message>` - pass `--handler`
   named after the behaviour). Defaults are Create / PostOperation / Sync - pass the
@@ -55,7 +55,7 @@ exit `2`) and check the "Created"/"Added" line (or `created` in `--json`).
 
 ## `vela models` - connects to Dataverse (reads metadata)
 - Scope is REQUIRED: `--solution <name>` and/or `--entities a,b` (also `--custom-apis`, `--messages`, `--roles`,
-  `--intersect` - see `--help`). Bare `--custom-apis` takes every Custom API: add `--package <nupkg>` to
+  `--solution-roles`; `--intersect` adds the N:N tables of the scoped ones - see `--help`). Bare `--custom-apis` takes every Custom API: add `--package <nupkg>` to
   exclude the ones you authored.
 - C#: **`--project src/<Prefix>.Shared/<Prefix>.Shared.csproj`** (its namespace, `Models/Generated`). Without
   `--project` or `--namespace` nothing is generated ("Could not infer a namespace", exit `2`) - check the
@@ -77,11 +77,11 @@ via `--fingerprint`, `--pfx-credential` or the `*-env` forms - never `--pfx-pass
 command line.
 
 ## Deploy - `plan` (safe) vs `apply` (writes) vs `inspect` (read)
-`vela plan --package artifacts/<P>.Plugins.<ver>.nupkg --solution <uniquename> <connection>` (or
+`vela plan --package artifacts/<pfx>_<P>.Plugins.<ver>.nupkg --solution <uniquename> <connection>` (or
 `--packages-dir`; `--strict`, `--detailed-exitcode` in `--help`).
 - **`--solution` is required on `plan` and `apply`** (resolves the publisher prefix; `apply` adds every
-  component to it). Without it: exit `4`, "... has no solution publisher prefix ... Re-run with --solution".
-  The solution + publisher must already exist.
+  component to it). Without it: exit `2` before connecting, "vela plan requires --solution <uniquename>".
+  The solution + publisher must already exist (else exit `4`).
 - `--secure-config <NAME=@file>` (one trailing line ending is dropped) or env `VELA_SECURE_CONFIG_<NAME>` - never
   `NAME=VALUE` on a command line.
 - `vela plan` never writes; run it on the exact package you will apply.
@@ -98,7 +98,7 @@ command line.
   - Each step's `definition` carries its `relationships` (`ForRelationship` scope): check it matches the Canvas.
   - First deploy: `currentAssemblies` is `[]` and `info` says "... not found in Dataverse (first deployment)" -
     expected. A package with no plugin and no Custom API is not created (`info` says so) - expected.
-  - A rank collision with a Microsoft managed step (e.g. `ActivityFeeds.*`) is not a finding about your code.
+  - A rank collision with a Microsoft managed step: `dataverse-gotchas.md` (Execution order).
 - **`apply` JSON:** the plan shape plus **`executed`** (`created`, `updated`, `deleted`, `packageRepublished`,
   `addedToSolution`, `byKind`). `summary` is the diff remaining *after* the apply: report from `executed` +
   the exit code, never from `summary`.
@@ -116,7 +116,7 @@ Resolution order:
 
 ## Exit codes
 `0` success · `2` invalid arguments (incl. `plan`/`apply` without `--solution`, before connecting) · `3` file not found · `4` error (incl. `--strict`, a missing
-a missing solution on `solution show`) · `5` drift (`models --verify`) or apply not converged ·
+solution on `solution show`) · `5` drift (`models --verify`) or apply not converged ·
 `6` Dataverse connection failure (any network error on any Dataverse call; `models` stops rather than
 skipping) · `7` partial apply (fix, re-run `apply`) · `8` changes pending (`plan --detailed-exitcode` only).
 

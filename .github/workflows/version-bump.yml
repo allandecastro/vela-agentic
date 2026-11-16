@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # the latest main, so a queued run includes the previous bump
 
       - name: Bump patch in plugin.json and marketplace.json
         run: |

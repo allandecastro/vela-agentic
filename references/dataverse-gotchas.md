@@ -61,7 +61,7 @@ symptom → cause → fix.
   message (VELA012). Throw it with an actionable message, never swallow, `ctx.Trace(...)` what you need.
 - **A secret in a solution export or the repo.** Unsecure config is exported; code is in git. Use secure
   configuration: `.WithSecureConfigFrom("Name")`, value at deploy time
-  (`vela plan|apply --secure-config Name=VALUE|Name=@file`, or `VELA_SECURE_CONFIG_Name`), read via
+  (`vela plan|apply --secure-config Name=@file`, or `VELA_SECURE_CONFIG_Name`), read via
   `SecureConfig` - or a secret store via managed identity (`ctx.AcquireManagedIdentityToken`).
 - **A role check passes in the root business unit only.** A role is copied into every business unit: the
   user's `systemuserroles.roleid` is the copy of their BU. Compare the role's `parentrootroleid` to the root id
@@ -92,10 +92,6 @@ symptom → cause → fix.
 - **A hand-wired typed message misbehaves.** It spans several files (incl. the CLI's known-messages list).
   Use `vela add`; regenerate, never edit generated output.
 
-## Build / smoke
-
-- **Stale framework.** Purge the `vela.plugins` / `vela.testing` caches under `~/.nuget` before a smoke build.
-
 ## Execution order / rank
 
 - **Rank shared with Microsoft/managed steps** (reported by `vela plan`) is normal and harmless - don't
@@ -105,16 +101,16 @@ symptom → cause → fix.
 ## Analyzers (`Vela.Analyzers`)
 
 Every VELA diagnostic in authored code is a gate failure (several are build errors); read its text, don't
-suppress it. The ids cited by this pack: VELA011 mutable plugin field · VELA012 non-`InvalidPluginExecutionException`
+suppress it. The runtime and safety ids: VELA011 mutable plugin field · VELA012 non-`InvalidPluginExecutionException`
 throw · VELA013 `ColumnSet(true)` · VELA017 uncaptured image read · VELA018 Async handler writes the Target
 (lost) · VELA019 file system · VELA020 Create/Update without `FilterOn` · VELA022 step on SetState ·
-VELA023 `On<TRequest>()` for a typed trigger · VELA027 empty `catch` in a plugin · VELA024 parallel work / blocking on a task in a plugin type
+VELA023 `On<TRequest>()` for a typed trigger · VELA024 parallel work / blocking on a task in a plugin type
 (the sync wrapper over `HttpClient` lives in the service) · VELA025 HTTP to an IP address · VELA026
-`HttpClient` without `Timeout`. Non-obvious: a missing `partial` (VELA014) surfaces as **CS0260**; an
+`HttpClient` without `Timeout` · VELA027 empty `catch` in a plugin. Non-obvious: a missing `partial` (VELA014) surfaces as **CS0260**; an
 ungenerated typed image projection (VELA021) as **CS0246**.
 
 ## Verification discipline
 
 - Report the **observed** org/build/test state, never the intended one.
-- Non-zero exits are failures to surface (`models --verify` 5 = drift; `plan`/`apply` 6 = connection, 4 =
-  no resolvable `--solution`; `apply` 7 = partial).
+- Non-zero exits are failures to surface (`models --verify` 5 = drift; `plan`/`apply` 2 = `--solution` missing,
+  4 = solution or publisher not found, 6 = connection; `apply` 7 = partial).

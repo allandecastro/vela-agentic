@@ -14,7 +14,7 @@ org_required: true
 occurred'. The plugins in the VelaEvals solution were deployed from this repo. Find out why and fix it."
 
 ## Setup for the run
-- The evaluator gives you `<work>/VelaEvalsLive`: the plugin project **deployed** in the dev org
+- The evaluator gives you `<work>/VelaEvalsLive` (`sh evals/setup/live.sh <work>`): the plugin project **deployed** in the dev org
   `https://dyn-premium-dev.crm.dynamics.com`, solution `VelaEvals` (a git repo, tests green). The org is
   available **read-only** (`vela logs` / `vela inspect` / `vela plan` / `vela solution show` / `vela models`);
   never `vela apply`.
