@@ -19,6 +19,10 @@ jobs:
         with:
           ref: main   # the latest main, so a queued run includes the previous bump
 
+      - uses: actions/setup-node@v4   # the self-hosted runner image has no node
+        with:
+          node-version: "20"
+
       - name: Bump patch in plugin.json and marketplace.json
         run: |
           node -e '
