@@ -5,7 +5,7 @@ set -e
 export PATH="$HOME/.dotnet/tools:$PATH"
 
 # The dev org the evaluator reads models from (read-only); every campaign run gets it read-only too.
-DEV_ORG="${VELA_EVAL_ORG:-https://dyn-premium-dev.crm.dynamics.com}"
+DEV_ORG="${VELA_EVAL_ORG:?set VELA_EVAL_ORG to the dev org URL (https://<dev-org>.crm.dynamics.com)}"
 
 # new_solution <dir> <Name> <prefix>  -> minimal scaffold (vela >= 0.24: no demos) + account/contact models
 # generated from the dev org (read-only). <prefix> is used for both the namespace and the publisher prefix.

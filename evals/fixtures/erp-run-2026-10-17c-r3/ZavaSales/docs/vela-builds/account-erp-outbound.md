@@ -12,7 +12,7 @@ harness: pass
 analyzers: clean
 review: pass
 plan_preview: changes
-plan_command: "vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json"
+plan_command: "vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://<dev-org>.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json"
 apply: pending
 entity: account
 message: Create
@@ -152,9 +152,9 @@ Never `vela apply` - stop at the gate; the ErpApiKey value is supplied by the de
 |---|------|-------|---------|------|---------|
 | 1 | version | using-vela | `vela version` | 0 | vela 0.26.1 |
 | 2 | grill | vela-grill | Q1-Q3 to the human (solution, ERP-down behaviour, JSON body) | - | answered |
-| 3 | solution | vela-scaffold | `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` | 0 | {"solution":"ZavaSales","publisherPrefix":"zava"} |
+| 3 | solution | vela-scaffold | `vela solution show ZavaSales --json --url https://<dev-org>.crm.dynamics.com` | 0 | {"solution":"ZavaSales","publisherPrefix":"zava"} |
 | 4 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava --integrations -o .` | 0 | 11 files, Vela.Plugins 0.36.0 |
-| 5 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url https://dyn-premium-dev.crm.dynamics.com` | 0 | Generated 4 file(s) |
+| 5 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url https://<dev-org>.crm.dynamics.com` | 0 | Generated 4 file(s) |
 | 6 | add | vela-scaffold | `vela add plugin AccountErpNotify --entity Account --message Create --stage PostOperation --mode Async --filtering-attributes name --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created plugin |
 | 7 | add | vela-scaffold | `vela add service ErpAccountSender --entity Account --project src/Zava.Integrations/Zava.Integrations.csproj` | 0 | Created service |
 | 8 | add | vela-scaffold | `vela add test AccountErpNotify --kind plugin --entity Account --message Create --project Zava.Integrations.Tests.csproj` | 0 | Created test |
@@ -165,13 +165,13 @@ Never `vela apply` - stop at the gate; the ErpApiKey value is supplied by the de
 | 13 | verify | vela-test-harness | same mono runner, Zava.Plugins.Tests.dll | 0 | Total: 0 |
 | 14 | review | vela-code-review | isolated vela-reviewer subagent on `git diff a8b2aba...HEAD` | - | PASS, 7 Nits |
 | 15 | package | vela-apply | `rm -rf artifacts && dotnet build ZavaSales.sln -c Release` (dll checked with `unzip -l`) | 0 | Zava.Integrations.1.0.0.nupkg sha256 5f31628c...4790d |
-| 16 | plan | vela-apply | `vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` | 8 | changes: create package + 1 step; secure-config diagnostic |
+| 16 | plan | vela-apply | `vela plan -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://<dev-org>.crm.dynamics.com --detailed-exitcode --out ../logs/plan.json` | 8 | changes: create package + 1 step; secure-config diagnostic |
 
 ## Gate - human approval required
 Not applied. After `shasum -a 256 artifacts/Zava.Integrations.1.0.0.nupkg` matches
 `5f31628c6adfb5bdda3e8790b395d7cdae8f95be24a802641b5c8e7fa3b4790d` (and after signing + re-plan, if the org requires
 signed packages), a human runs:
-`vela apply -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://dyn-premium-dev.crm.dynamics.com --secure-config ErpApiKey=@<file holding the key>`
+`vela apply -p artifacts/Zava.Integrations.1.0.0.nupkg --solution ZavaSales --url https://<dev-org>.crm.dynamics.com --secure-config ErpApiKey=@<file holding the key>`
 - this will: create plugin package `zava_Zava.Integrations` and the step `AccountErpNotify` (Create of account,
 PostOperation, Async, auto-delete on success, filtering `name`, secure config ErpApiKey), both added to ZavaSales.
 `Zava.Plugins.1.0.0.nupkg` is deliberately not in the command (empty package). Exit `7` = partial apply (fix, re-run);

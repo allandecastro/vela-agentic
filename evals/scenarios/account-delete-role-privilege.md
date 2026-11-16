@@ -14,7 +14,7 @@ org_required: true
 
 ## Setup for the run
 - The evaluator provides the `ZavaSales` project (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`). The dev
-  org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show`
+  org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show`
   / `vela inspect`); never `vela apply`.
 
 ## What the skills must get right

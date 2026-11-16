@@ -16,7 +16,7 @@ org_required: true
 
 ## Setup for the run
 - The evaluator gives you an **empty** work dir: there is no project yet. `vela` and `dotnet` on PATH.
-  The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` /
+  The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` /
   `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 - The ERP is not reachable from this machine; nothing in the run may call it.
 

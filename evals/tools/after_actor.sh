@@ -1,11 +1,12 @@
 #!/bin/sh
 # After an actor finishes: deterministic checks + the grader's prompt.
 #   sh evals/tools/after_actor.sh <campaign-dir> <scenario> <k> <N> <campaign-id> [--org <url>]
-# The org defaults to the read-only dev org (every run has it since vela 0.24); pass --no-org to skip.
+# The org is the read-only dev org, VELA_EVAL_ORG (every run has it since vela 0.24); pass --no-org to skip.
 set -e
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 run="$1/$2/r$3"
-ORG="--org ${VELA_EVAL_ORG:-https://dyn-premium-dev.crm.dynamics.com}"; [ "$6" = "--org" ] && ORG="--org $7"; [ "$6" = "--no-org" ] && ORG=""
+ORG="--org $VELA_EVAL_ORG"; [ "$6" = "--org" ] && ORG="--org $7"; [ "$6" = "--no-org" ] && ORG=""
+[ "$ORG" = "--org " ] && { echo "set VELA_EVAL_ORG to the dev org URL, or pass --org <url> / --no-org" >&2; exit 2; }
 python3 "$ROOT/evals/checks/check.py" "$2" "$run/work" $ORG > "$run/checks.json" || echo "check.py failed - see $run/checks.json" >&2
 python3 "$ROOT/evals/tools/grader_prompt.py" "$2" "$run" "$3" "$4" "$5" > "$run/grader-prompt.md"
 python3 - "$run/checks.json" "$2 r$3" <<'PY'

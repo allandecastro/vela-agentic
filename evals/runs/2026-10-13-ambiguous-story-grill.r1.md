@@ -23,7 +23,7 @@ PostOperation, parentcustomerid/Company Name; nothing scaffolded).
 - 7 questions, one per turn, each multiple choice: direction (B) -> status meaning (A, statecode) -> rule
   (B, deactivate only) -> link (A, parentcustomerid) -> other events in scope (A, deactivation only) ->
   timing Sync vs Async with consequences explained (A, Sync, race accepted) -> target solution (ZavaSales).
-- `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` ->
+- `vela solution show ZavaSales --json --url https://<dev-org>.crm.dynamics.com` ->
   `{"solution":"ZavaSales","publisherPrefix":"zava"}`, exit=0.
 - Final Canvas `work/docs/vela-builds/account-status-sync-contacts.md`, `status: proposed`,
   `open_questions: []`. No scaffold, no `vela apply`.
