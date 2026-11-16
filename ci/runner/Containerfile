@@ -1,0 +1,22 @@
+# A self-hosted GitHub Actions runner for this repo, as a Linux container (Apple `container` or Docker).
+# The CI jobs install node and dotnet themselves (setup-node / setup-dotnet); this image holds the rest.
+FROM ubuntu:24.04
+
+ARG RUNNER_VERSION=2.338.2
+ARG TARGETARCH=arm64
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl git jq sudo python3 unzip libicu74 libssl3 libkrb5-3 zlib1g \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -s /bin/bash runner \
+    && echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner
+
+USER runner
+WORKDIR /home/runner/actions-runner
+RUN arch=$([ "$TARGETARCH" = "amd64" ] && echo x64 || echo arm64) \
+    && curl -sSfL "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${arch}-${RUNNER_VERSION}.tar.gz" | tar -xz \
+    && sudo ./bin/installdependencies.sh >/dev/null
+
+COPY --chown=runner:runner entrypoint.sh /home/runner/entrypoint.sh
+ENTRYPOINT ["/home/runner/entrypoint.sh"]
