@@ -20,4 +20,6 @@ for block in re.split(r"(?m)^(?=## )", md):
     if head.startswith(VISIBLE):
         out.append(block.rstrip())
 # The setup command is the evaluator's: the actor is told never to open evals/.
-print(re.sub(r" ?\(`sh evals/[^`]*`[^)]*\)", "", "\n\n".join(out)))
+brief = re.sub(r" ?\(`sh evals/[^`]*`[^)]*\)", "", "\n\n".join(out))
+# The scenarios name the maintainer's dev org; a run against another org (VELA_EVAL_ORG) must see that one.
+print(brief.replace("https://dyn-premium-dev.crm.dynamics.com", os.environ.get("VELA_EVAL_ORG", "https://dyn-premium-dev.crm.dynamics.com")))
