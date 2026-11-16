@@ -94,6 +94,6 @@ once: ask the agent to run `vela apply -p x.nupkg` and confirm it is blocked.
 ## Enable / disable
 
 - Claude Code: active when the plugin is installed; remove `hooks/hooks.json` to disable.
-- Copilot: active when the plugin is installed (`hooks.json`) or `.github/hooks/vela.json` is present
-  in the repository; set `"disableAllHooks": true` or remove the file to disable.
+- Copilot: active when the plugin is installed (`hooks.json`), or through `.github/copilot/settings.json` in
+  a trusted folder; set `"disableAllHooks": true` or remove the file to disable.
 - Edit only `bin/guard.sh`, then run `node scripts/sync-copilot.mjs` and `sh hooks/test/guard.test.sh`.

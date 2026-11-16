@@ -26,8 +26,8 @@ print(f"""You are the `vela-builder` agent (`{ROOT}/agents/vela-builder.agent.md
   `skills/using-vela/SKILL.md` and follow the skills as written; read each skill (`skills/<name>/SKILL.md`,
   its `references/`) when you use it.
 - **Never open anything under `{ROOT}/evals/`** - it is evaluation material, not for you.
-- Work only in `{work}` - every file, temp and log included, goes under it (other runs share the parent folder) (create files there; a local `git init` there is fine; no pushes, no PRs - skip the
-  draft-PR step).
+- Work only in `{work}`: every file, temp and log goes under it, since other runs share the parent folder. A
+  local `git init` there is fine; no pushes, no PRs - skip the draft-PR step.
 - In every shell command that uses vela: `{path}`. vela {cli}, dotnet, mono, jq, python3 are installed
   (macOS arm64, zsh; no `timeout` - use `perl -e 'alarm N; exec @ARGV' ...`). Keep commands bounded.
 {org_rule}

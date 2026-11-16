@@ -29,7 +29,7 @@ PostOperation, parentcustomerid/Company Name; nothing scaffolded).
   `open_questions: []`. No scaffold, no `vela apply`.
 
 Evidence of the interview comes from the actor's session transcript
-(`~/.claude/projects/-Users-allandecastro-orca-vela-agentic/b50066f1-28b6-4f90-a5d4-51dfd5137426/subagents/agent-a6f2c1c79d9ed47c3.jsonl`),
+(the actor session transcript, not committed),
 since `work/` holds only the Canvas.
 
 ## Criteria

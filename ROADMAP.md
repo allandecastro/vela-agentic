@@ -7,15 +7,14 @@ independent of the framework/CLI NuGet releases.
 
 - Skills target the **public `vela` CLI command surface**, which is the stable,
   versioned contract.
-- Every skill declares a **minimum CLI version** in its `compatibility` frontmatter; the version the
-  references were verified against is recorded at the top of `references/cli-surface.md` (CI checks
-  that no skill claims a floor above it). Agents run `vela version`, ask for `vela update` if older,
-  and stop only if a named feature is genuinely missing (see `AGENTS.md`, golden rule 2).
-- On a CLI release: re-run each command's `--help`, update `references/cli-surface.md` + the
-  verified version, then bump the skills' floor.
-- Skills discover exact flags at runtime via `vela --help`, so additive CLI changes do
-  not break them. Breaking CLI changes are matched by a skill update and a bumped
-  minimum version.
+- The version the pack is verified against lives in **one place**, the top of `references/cli-surface.md`.
+  Skills carry no version (their `compatibility` is `vela CLI + dotnet SDK.`; the lint rejects a version
+  there). Agents run `vela version`, ask for `vela update` if older, and stop only if a named feature is
+  genuinely missing (`AGENTS.md`, golden rule 2).
+- On a CLI or framework release: diff `vela help --json`, update `references/cli-surface.md` and any skill
+  whose guidance changed, smoke-test a fresh `vela init` + `vela add`, and rerun the affected evals.
+- Skills discover exact flags at runtime via `vela <command> --help`, so additive CLI changes do not break
+  them. A breaking CLI change is matched by a skill update.
 
 ## v0.1 (initial)
 
@@ -40,29 +39,29 @@ independent of the framework/CLI NuGet releases.
 
 ## v0.2 (audit follow-up, 2026-09)
 
-- [x] Verified against `vela` 0.19.6 / `Vela.Plugins` 0.28.2; `compatibility` floor per skill, capped by CI
+- [x] Verified against `vela` 0.19.6 / `Vela.Plugins` 0.28.2 (a per-skill version floor at the time, since removed)
 - [x] Skills self-contained once installed: cited references bundled into each skill
 - [x] Agents declare their tools; `vela-reviewer` read-only by construction; `<name>.agent.md` for
       Claude Code + Copilot CLI, `.github/agents/` generated (chat modes dropped)
 - [x] Apply-guard parses commands (quoted text and heredocs are data), fails closed without `jq`,
-      pinned by 78 table tests; embedded in the generated Copilot hook configs
-- [x] Loop: preview (`dotnet pack` → `vela sign` → `vela plan`) after review, on the final package
+      pinned by table tests; embedded in the generated Copilot hook configs
+- [x] Loop: preview (package → `vela sign` → `vela plan`) after review, on the final package
 - [x] PreOperation on `ctx.Request.Target` as the default for same-record columns; runtime gotchas
       (recursion guard, plugin state, sandbox, transactions, secrets)
 - [x] `vela-custom-api`; `sign` / `inspect` in `vela-apply`; `vela-debug-plugin` evidence discipline
 - [x] Lint catches phantom skills, renamed terms, README drift, eval metadata; tiered eval rule, run
       records, generated coverage table
 
-## Doing
+## v0.2 iterations (2026-09)
 
 - [x] Iteration 1 (2026-09-28): the five new scenarios run by fresh agents, all **fail** - 6 distinct
       blockers (Execute ignores FilterOn, dotnet pack emits no assembly, no sanctioned stage edit, the
       review blocked the no-org stand-in, Function for a flow-called API) fixed; records in `evals/runs/`
 - [x] Iteration 2 (2026-09-28/29): the five scenarios **pass** blind (no blocking finding); their minor
-      findings fixed; records in `evals/runs/*.iter2.md`
+      findings fixed
 - [x] 2026-09-29: `ambiguous-story-grill` and the two baseline scenarios pass blind; their minors fixed
       (all seven scenarios now pass)
-- [x] Dev org for evals (DYN-PREMIUM-DEV, solution `VelaEvals`, prefix `veval`, read-only use):
+- [x] Dev org for evals (solution `VelaEvals`, prefix `veval`, read-only use):
       `org-models-and-plan` passes - every skill now has a passing scenario
 - [x] Re-verified against vela CLI 0.21.0 / Vela.Plugins 0.29.1 (help surface unchanged; `models`
       without `--namespace` now exits 2)
@@ -72,7 +71,7 @@ independent of the framework/CLI NuGet releases.
 - [x] Every skill has a passing blind scenario (8 scenarios, one against a dev org); a real `vela apply`
       to the dev org verified end to end
 - [x] The isolated `vela-reviewer` is the default review path; self-review is a labelled fallback
-- [x] `scripts/check.sh` = the CI, run locally by a pre-push hook (`git config core.hooksPath .githooks`)
+- [x] `scripts/check.sh` replays the CI locally, run by a pre-push hook (`git config core.hooksPath .githooks`)
 
 ## v0.4 (2026-10) - guaranteed runs, lean pack, business rules
 
@@ -90,6 +89,16 @@ independent of the framework/CLI NuGet releases.
       columns, `{Handler}Context` in the scaffold, VELA025/026/027, ...) - pack verified on vela 0.27 /
       Vela.Plugins 0.39
 
+## v0.5 (2026-11) - Vela 0.43 / CLI 0.31, one requirement per story, repo hygiene
+
+- [x] `PROJECT.md` as the only source of the publisher prefix and solutions; `--solution` required on plan/apply
+- [x] One plugin class per table with behaviour-named handlers; `PluginPipeline` as the default test runner;
+      `change: tests` when tests are rewired without changing a rule
+- [x] One requirement = one story (one Canvas, branch and PR), however many rules
+- [x] Security-role models (`vela models --roles`) and read-denied cases; typed `Retrieve<T>` / `RetrieveByKey<T>`
+- [x] Campaign 2026-11-15: five scenarios pass on checks and grader
+- [x] Secret scan (gitleaks) in CI and the local check; the spec-check tests in CI
+
 ## Next
 
 - [x] Omitted Vela features as decisions + pointers (localized messages, environment variables, cache,
@@ -101,4 +110,6 @@ independent of the framework/CLI NuGet releases.
       installing from the marketplace - to design
 - [ ] A dedicated agent to migrate an existing plugin project to Vela
 - [ ] `debug-live-trace`: refresh the live trace rows before a run (plug-in trace logs expire, often after 24h)
+- [ ] Run a few scenarios with GitHub Copilot CLI as the actor (the pack targets it; evaluated on Claude Code only so far)
+- [ ] Mutation checks in the evals: plant behaviour bugs after a run and require the tests to fail
 - [ ] Web resources (`form-script`, `ribbon-script`) - out of scope while in preview

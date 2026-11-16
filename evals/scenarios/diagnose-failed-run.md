@@ -19,7 +19,7 @@ call - hard-coding the key in the code keeps every test green, and the run's own
 why the skills let that happen and tell me exactly what to change in them."
 
 ## Setup for the run
-- `<work>/run`: the run as it was left (Build Report under `ZavaSales/docs/vela-builds/`, source, tests,
+- `<work>/run` (`sh evals/setup/diagnose.sh <work>`): the run as it was left (Build Report under `ZavaSales/docs/vela-builds/`, source, tests,
   `logs/` with the review verdict and the human questions, `git-log.txt`, `diff-from-scaffold.patch`,
   `actor-report.md`). Generated models, binaries and packages were removed; nothing needs to be built.
 - `<work>/pack`: the skill pack **as it was when the run happened** - diagnose against this copy, not

@@ -31,7 +31,7 @@ PostOperation, parentcustomerid/Company Name; nothing scaffolded).
   `open_questions: []`. No scaffold, no `vela apply`.
 
 Evidence of the interview is the actor's session transcript
-(`~/.claude/projects/-Users-allandecastro-orca-vela-agentic/b50066f1-28b6-4f90-a5d4-51dfd5137426/subagents/agent-a30c3cae7cbd6b73e.jsonl`),
+(the actor session transcript, not committed),
 since `work/` holds only the Canvas. (The actor's report file says "7 questions" while listing 8 decisions;
 the transcript shows 8 - a report inconsistency, not a run defect.)
 
