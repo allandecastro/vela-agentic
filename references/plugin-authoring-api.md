@@ -123,7 +123,9 @@ signature: it derives from the message context, stays stable when images change,
       .Where(c => c.ParentCustomerId, ConditionOperator.Equal, accountId)
       .ToList(ctx.Service);   // or .FirstOrDefault(svc), .CountScalar(svc, c => c.ContactId), .Top(n)
   ```
-  By id: `ctx.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet(...)).ToEntity<Account>()`.
+  One way per case (`using Vela.Context;`): by id `ctx.Service.Retrieve<Account>(id, a => a.Name, a => a.Telephone1)` (a
+  real Retrieve: Retrieve steps run, a missing row faults; at least one column); by alternate key
+  `ctx.Service.RetrieveByKey<Account>(key, a => a.Name)`; by criteria `Query.For<T>()`. Always name the columns.
 - **Delete:** `ctx.Request.Target` is an **`EntityReference`** (no columns) - read what you need with a
   typed query or `WithPreImage`; no `FilterOn`, no post-image. To **block** a delete, throw
   `InvalidPluginExecutionException` from a **Sync PreValidation** step (before the operation and its
