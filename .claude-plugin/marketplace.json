@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Agentic layer for Vela: skills and agents that drive the Vela CLI.",
-    "version": "0.1.17"
+    "version": "0.1.18"
   },
   "plugins": [
     {
