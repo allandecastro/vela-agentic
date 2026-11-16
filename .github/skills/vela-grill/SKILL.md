@@ -20,7 +20,8 @@ Interview the human until no branch of a vague story is unresolved. Interactive 
 
 Announce: `Using vela-grill to resolve the story`.
 
-1. Read `docs/adr/` and the `docs/rules/` files of the tables involved: never ask what an ADR or a rule already
+1. Read the ADRs that touch the story (`docs/adr/`, listed by their frontmatter) and the `docs/rules/` files of
+   the tables involved: never ask what an ADR or a rule already
    answers. Restate the story and name the entity/message you think it implies.
 2. Ask **one focused question at a time** (multiple choice, one-line answer), roughly in this order,
    skipping what the story answers. Only **business decisions** go to the human; platform facts are

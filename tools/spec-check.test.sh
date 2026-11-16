@@ -131,6 +131,30 @@ new_repo; git checkout -q main; printf '# 0001 - Other\n' > docs/adr/0001-other.
 canvas ""; expect 0 "7 duplicate already on the base is a note" "not this story's"
 
 # no registry, bad base
+# 8. ADR frontmatter
+adr() {  # adr <frontmatter lines> - a new ADR 0002
+    printf -- '---\n%s\n---\n# 0002 - Provider\n' "$1" > docs/adr/0002-provider.md; commit adr
+}
+OK='date: 2026-10-23
+decision-makers: [human]
+applies-to: scoped
+tables: [account]
+areas: [integrations]'
+new_repo; canvas ""; printf '# 0002 - Provider\n' > docs/adr/0002-provider.md; commit adr; expect 1 "8 new ADR without frontmatter" "needs its frontmatter"
+new_repo; canvas ""; adr "$OK"; expect 0 "8 new ADR with a valid scope"
+new_repo; canvas ""; adr "${OK/account/acount}"; expect 1 "8 unknown table" "table \`acount\`"
+new_repo; canvas ""; mkdir -p src/P/Models; echo 'class Lead { const string EntityLogicalNameValue = "lead"; }' > src/P/Models/Lead.cs
+  adr "${OK/account/lead}"; expect 0 "8 a table known from its generated model"
+new_repo; canvas ""; adr "${OK/integrations/network}"; expect 1 "8 area outside the closed list" "area \`network\`"
+new_repo; canvas ""; adr "$(printf 'date: 2026-10-23\ndecision-makers: [human]\napplies-to: scoped\ntables: []\nareas: []')"; expect 1 "8 scoped ADR naming nothing" "at least one table or area"
+new_repo; canvas ""; adr "$(printf 'date: 2026-10-23\ndecision-makers: [human]\napplies-to: all\ntables: []\nareas: []')"; expect 0 "8 an all ADR may name nothing"
+new_repo; canvas ""; adr "${OK/scoped/maybe}"; expect 1 "8 applies-to outside scoped|all" "scoped or all"
+new_repo; canvas ""; expect 0 "8 an untouched ADR without frontmatter is not failed"
+new_repo; printf -- '---\n%s\n---\n# 0002 - Provider\n' "$OK" > docs/adr/0002-provider.md; git add -A; git commit -qm a2; git branch -f main; canvas ""
+  echo "Decision changed." >> docs/adr/0002-provider.md; commit edit; expect 1 "8 changed ADR keeps its date" "date\` unchanged"
+new_repo; printf -- '---\n%s\n---\n# 0002 - Provider\n' "$OK" > docs/adr/0002-provider.md; git add -A; git commit -qm a2; git branch -f main; canvas ""
+  sed -i.bak 's/2026-10-23/2026-11-16/' docs/adr/0002-provider.md; rm docs/adr/*.bak; echo "Decision changed." >> docs/adr/0002-provider.md; commit edit; expect 0 "8 changed ADR with a new date"
+
 new_repo; git rm -q -r docs/rules; commit norules; canvas ""; expect 0 "no registry: nothing to check" "nothing to check"
 new_repo; canvas ""; BASE=nope expect 2 "bad base" "not a commit"
 
