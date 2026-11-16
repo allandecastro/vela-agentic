@@ -1,6 +1,6 @@
 ---
 scenario: account-credit-function
-skills_exercised: [vela-plan-review, vela-custom-api, vela-scaffold, vela-models, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-custom-api, vela-scaffold, vela-models, vela-plugin-testing, vela-code-review]
 entity: account
 message: <pfx>_<Name> (bound Custom API; names are the agent's choice)
 gotchas_exercised: [step-vs-custom-api, action-vs-function, bound-vs-global, typed-request-response-mapping, function-no-side-effects, ipe-errors]

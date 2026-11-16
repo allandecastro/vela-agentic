@@ -34,7 +34,7 @@ or package. That is a correct outcome.
    show <uniquename> --json` (prefix, read-only), then `vela init <Name> --prefix <Prefix> --publisher-prefix <pfx> --solution <uniquename>` (minimal; `--integrations` when the Canvas records an outbound call - a second package to
    preview).
 5. **Model** - `vela-models` **before** `vela add plugin` (no models, no compile); then `vela add`, build.
-6. **Test (RED)** - `vela-test-harness`: the Canvas's acceptance cases, seen to **fail**. Mandatory.
+6. **Test (RED)** - `vela-plugin-testing`: the Canvas's acceptance cases, seen to **fail**. Mandatory.
 7. **Implement** - `vela-plugin-authoring` (Custom API: `vela-custom-api`): generated models, `ctx.Service`
    (the step's user) to write - `ctx.SystemService` / `ctx.AsUser(id)` only when the Canvas says so;
    code to **green**.

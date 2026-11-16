@@ -1,6 +1,6 @@
 ---
 scenario: contact-shared-default
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: contact
 message: Create
 gotchas_exercised: [service-trigger-second-consumer, dry-service, regression-test-not-bent, reuse-vs-new]

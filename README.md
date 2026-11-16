@@ -161,7 +161,7 @@ A story built end to end, unedited, is in [`examples/`](examples/).
 | `vela-grill` | Interviews the human when a story is too ambiguous to build (also `/vela-grill`) |
 | `vela-scaffold` | Creates a solution or component with `vela init` and `vela add` |
 | `vela-models` | Generates typed models from the org, or checks them for drift |
-| `vela-test-harness` | Writes the failing tests with `Vela.Testing` and runs them |
+| `vela-plugin-testing` | Writes the failing tests with `Vela.Testing` and runs them |
 | `vela-plugin-authoring` | Implements the plugin until the tests pass |
 | `vela-custom-api` | Designs, tests and implements a Custom API |
 | `vela-code-review` | Reviews the change against the spec and the standards |

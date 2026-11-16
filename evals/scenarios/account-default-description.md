@@ -1,6 +1,6 @@
 ---
 scenario: account-default-description
-skills_exercised: [vela-plan-review, vela-scaffold, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-testing, vela-plugin-authoring, vela-code-review, vela-apply]
 entity: account
 message: Create
 gotchas_exercised: [filtering-attributes, model-before-implement]
@@ -19,7 +19,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Success criteria (a clean pass)
 1. `vela init` + `vela add plugin` exit 0, following `vela-scaffold`; tests live in the scaffold's `.Tests`
-   project (`vela add test` only when none exists - `vela-test-harness` step 1). (Rubric note, campaign
+   project (`vela add test` only when none exists - `vela-plugin-testing` step 1). (Rubric note, campaign
    2026-10-02: `vela add test` was required here but the pack never asks for it when the scaffold has a test project.)
 2. The handler is implemented per `vela-plugin-authoring` (real `EntityPluginBase` /
    `OnExecute` / `ctx.Request.Target` surface), no magic strings where a model exists.

@@ -1,6 +1,6 @@
 ---
 scenario: account-erp-outbound
-skills_exercised: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Create
 gotchas_exercised: [integrations-project, outbound-sandbox, secure-config, sync-vs-async, external-side-effect-not-rolled-back]

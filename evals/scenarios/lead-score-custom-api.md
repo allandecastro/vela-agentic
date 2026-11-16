@@ -1,6 +1,6 @@
 ---
 scenario: lead-score-custom-api
-skills_exercised: [vela-plan-review, vela-custom-api, vela-scaffold, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-custom-api, vela-scaffold, vela-plugin-testing, vela-code-review]
 entity: none (global)
 message: <pfx>_<Name> (Custom API; names are the agent's choice)
 gotchas_exercised: [step-vs-custom-api, custom-api-dot-free-naming, action-vs-function, ipe-errors]

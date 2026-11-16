@@ -1,6 +1,6 @@
 ---
 scenario: deployed-plugin-change
-skills_exercised: [vela-plan-review, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Update
 gotchas_exercised: [change-a-deployed-registration, plan-delete-operation, inspect-live-vs-local, fix-spec-first]

@@ -1,6 +1,6 @@
 ---
 scenario: account-delete-guard
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: account
 message: Delete
 gotchas_exercised: [delete-target-is-reference, prevalidation-to-block, async-cannot-block, typed-query, ipe-errors]

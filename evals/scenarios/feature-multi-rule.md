@@ -1,6 +1,6 @@
 ---
 scenario: feature-multi-rule
-skills_exercised: [using-vela, vela-plan-review, vela-grill, vela-test-harness, vela-plugin-authoring, vela-code-review, vela-apply]
+skills_exercised: [using-vela, vela-plan-review, vela-grill, vela-plugin-testing, vela-plugin-authoring, vela-code-review, vela-apply]
 entity: account, contact
 message: Create, Update
 gotchas_exercised: [one-story-several-rules, rule-per-behaviour, rule-dependency-order]

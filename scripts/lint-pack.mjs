@@ -99,6 +99,9 @@ const FORBIDDEN = [
   [/`\/vela-(build|apply)`/, "no such slash command - the loop is the vela-builder agent"],
 ];
 
+// Former skill names: run records keep the name the skill had when the run happened; anywhere else they fail.
+const RETIRED = new Set(["vela-test-harness"]);   // renamed vela-plugin-testing
+
 // Sources an agent reads (generated copies and the forward-looking ROADMAP excluded).
 async function sourceDocs() {
   const out = ["AGENTS.md", "README.md", "hooks/README.md"];
@@ -117,7 +120,7 @@ async function lintNamesAndTerms() {
   for (const rel of await sourceDocs()) {
     const md = await fs.readFile(path.join(root, rel), "utf8");
     for (const m of md.matchAll(/`\/?(vela-[a-z-]+)`/g))
-      if (!known.has(m[1])) errors.push(`${rel}: cites \`${m[1]}\`, which is neither a skill nor an agent`);
+      if (!known.has(m[1]) && !(RETIRED.has(m[1]) && rel.startsWith("evals/runs/"))) errors.push(`${rel}: cites \`${m[1]}\`, which is neither a skill nor an agent`);
     for (const [re, hint] of FORBIDDEN) if (re.test(md)) errors.push(`${rel}: forbidden term ${re} - ${hint}`);
   }
 }

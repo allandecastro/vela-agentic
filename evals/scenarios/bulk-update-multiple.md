@@ -1,6 +1,6 @@
 ---
 scenario: bulk-update-multiple
-skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: account
 message: UpdateMultiple
 gotchas_exercised: [bulk-multiple, bulk-targets, per-record-vs-bulk]

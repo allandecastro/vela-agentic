@@ -16,7 +16,7 @@ code** - it has the shape; this is the workflow.
 ## When to use
 
 - Scaffold, models and the **failing (RED) harness tests** exist; you now implement to **green**. Not
-  before the tests are written and seen to fail (`vela-test-harness`).
+  before the tests are written and seen to fail (`vela-plugin-testing`).
 
 ## Process
 
@@ -74,4 +74,4 @@ Announce: `Using vela-plugin-authoring to <purpose>`.
 ## Verification
 
 - `dotnet build` green with no VELA diagnostic in authored code (warnings fail the gate too).
-- A `vela-test-harness` test covers the new behaviour and passes; not "done" until the harness proves it.
+- A `vela-plugin-testing` test covers the new behaviour and passes; not "done" until the harness proves it.

@@ -79,7 +79,7 @@ decisions:                # business decisions and who made them (vela-grill ans
 assumptions:              # platform facts relied on, not decided by the human
   - "Create PreOperation edits of ctx.Request.Target are persisted with the record."
 open_questions: []
-skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-test-harness, vela-code-review]
+skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 ---
 
 ## R - Requirements & DoD
@@ -160,8 +160,8 @@ tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a 
 |---|------|-------|---------|------|---------|
 | 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava --solution ZavaSales` | 0 | ok |
 | 2 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url <org>` | 0 | Generated <N> file(s) |
-| 3 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
-| 4 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
+| 3 | test-red | vela-plugin-testing | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
+| 4 | verify | vela-plugin-testing | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
 | 5 | review | vela-code-review | `vela-reviewer` | - | PASS 2 Nits |
 | 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/zava_Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
 | 7 | plan | vela-apply | `vela plan -p artifacts/zava_Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json` | 8 | changes: create package + 1 step |

@@ -1,6 +1,6 @@
 ---
 scenario: contact-association
-skills_exercised: [vela-plan-review, vela-grill, vela-scaffold, vela-plugin-authoring, vela-test-harness, vela-code-review, vela-apply]
+skills_exercised: [vela-plan-review, vela-grill, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review, vela-apply]
 entity: contact
 message: Associate
 gotchas_exercised: [associate-matched-by-message, relationship-scope, either-side-target, pipeline-for-firing]
