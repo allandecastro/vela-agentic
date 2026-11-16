@@ -16,7 +16,7 @@ depends_on: account-default-description   # the Account Create plugin already ho
 ## Setup for the run
 - The evaluator provides the `ZavaSales` project (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`, a
   git repo, `account` / `contact` models generated, the `AccountDefaultDescription` Create plugin, its tests, its Build Report and the rules registry). The dev org
-  `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show`
+  `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show`
   / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## What the skills must get right

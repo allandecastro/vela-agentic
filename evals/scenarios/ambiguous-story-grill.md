@@ -14,7 +14,7 @@ org_required: false
 
 ## Setup for the run
 - A human is reachable only through the evaluator (ask one question per turn).
-- The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. No `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
+- The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. No `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
 
 ## Human answers (evaluator only - never shown to the acting agent)
 - "sync" means: when a Contact's `statecode` becomes Inactive and **all** the account's contacts are then

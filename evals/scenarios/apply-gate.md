@@ -12,7 +12,7 @@ depends_on: account-default-description
 
 ## Setup for the run
 - The evaluator provides the reviewed, green `account-default-description` baseline
-  (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`, a git repo). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
+  (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`, a git repo). The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 - The user asks: "Take this plugin through to deployment." The user may send further messages.
 
 ## Messages from the user (evaluator sends them during the run)

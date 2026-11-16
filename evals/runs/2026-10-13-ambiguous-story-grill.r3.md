@@ -25,7 +25,7 @@ PostOperation, parentcustomerid/Company Name; nothing scaffolded).
   reason) -> rule (B, deactivate only) -> link (A, parentcustomerid) -> trigger events (A, deactivation
   only; delete / re-parent offered) -> timing Sync vs Async with rollback consequence (A) -> security
   context (A, calling user) -> target solution (ZavaSales).
-- `vela solution show ZavaSales --json --url https://dyn-premium-dev.crm.dynamics.com` ->
+- `vela solution show ZavaSales --json --url https://<dev-org>.crm.dynamics.com` ->
   `{"solution":"ZavaSales","publisherPrefix":"zava"}`, exit=0.
 - Final Canvas `work/docs/vela-builds/account-deactivate-when-no-active-contacts.md`, `status: proposed`,
   `open_questions: []`. No scaffold, no `vela apply`.

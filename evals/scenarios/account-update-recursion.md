@@ -21,7 +21,7 @@ execution stopped to prevent recursion") and the user's save fails. The skills m
 **Sync PreOperation, editing `ctx.Request.Target`**, which changes the value inside the same write.
 
 ## Setup for the run
-- The evaluator gives you a work dir. `vela` and `dotnet` on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
+- The evaluator gives you a work dir. `vela` and `dotnet` on PATH. The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## Success criteria (a clean pass)
 1. The Canvas's Approach records **Sync PreOperation** with the reason (same-record column; no extra

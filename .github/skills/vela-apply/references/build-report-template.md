@@ -226,12 +226,26 @@ In the affected table's file: `See also ACC-002 (account) - deleting an account 
 
 ## ADR - `docs/adr/NNNN-<title>.md` (one decision per file, written in English)
 
-A changed decision is edited in place (or the ADR deleted); git keeps the history.
+A changed decision is edited in place (or the ADR deleted); git keeps the history. The frontmatter is
+[MADR](https://adr.github.io/madr/)'s, without `status` (acceptance = the merge, in git) plus the scope:
+`date` (last updated - a story that changes the ADR changes it), `decision-makers` (who decided: `human`, or
+`agent (<story slug>)`), `applies-to: all` (every story) or `scoped` with `tables` (logical names) and `areas`
+(`security`, `messages`, `data-access`, `integrations`, `registration`, `testing`, `deployment`). Agents open only
+the ADRs that touch the story, so the list stays cheap as it grows. `spec-check` validates the frontmatter of an
+ADR a story adds or changes.
+
+**Reading them:** `head -8 docs/adr/*.md` shows every ADR's frontmatter and title; open each `all` one, each one
+whose `tables` names a table the story touches or whose `areas` it involves, and any ADR without a frontmatter.
 
 ```markdown
+---
+date: 2026-10-23
+decision-makers: [human]
+applies-to: all
+tables: []
+areas: [security, data-access]
+---
 # 0001 - Plugins run as the calling user
-
-Date: 2026-10-23 · by: human
 
 ## Context
 Stories read other tables (contacts of an account); SYSTEM would expose rows the user cannot read.
