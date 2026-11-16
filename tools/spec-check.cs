@@ -15,8 +15,9 @@
 //   7. a rule id or an ADR number is used twice at HEAD, or one the story adds is already taken at the tip of <base>
 //      (a duplicate already on the base is printed as a NOTE: not this story's)
 //      (`git fetch` first and pass the latest base; renumber this story's);
-//   8. an ADR the story adds or changes has no `Scope:` line (agents list ADRs by title + scope and open only
-//      the ones that touch the story, so the scope is required).
+//   8. an ADR the story adds or changes lacks a valid frontmatter: `date`, `decision-makers`, `applies-to` (scoped |
+//      all), `tables` (each a table with a docs/rules file or a generated model) and `areas` (from the closed list);
+//      a scoped ADR names at least one table or area; `date` (YYYY-MM-DD, MADR: last updated) changes with the ADR (agents open only the ADRs whose scope touches the story).
 // Only for projects with a docs/rules/ registry (none: nothing to check, exit 0). A rule's trace lines
 // (`Implementation:` / `Tests:`) are not spec. Test bodies are compared as syntax (whitespace and comments ignored);
 // harness plumbing - the trigger, stage and mode calls of Vela.Plugins' step API, read from the Vela.Plugins.dll
@@ -190,12 +191,35 @@ foreach (var key in head.Keys.Except(atFork.Keys).Order())
     if (tip.TryGetValue(key, out var where))
         fails.Add($"{key} added by this story is already taken on {baseRef} ({where}) - renumber this story's");
 
-// 8. an ADR the story adds or changes carries its scope (older ADRs without one are opened every time - not failed)
+// 8. an ADR the story adds or changes carries a valid scope (older ADRs without one are opened every time - not failed)
+string[] areas = ["security", "messages", "data-access", "integrations", "registration", "testing", "deployment"];
+var tables = Lines(Git("ls-tree", "-r", "--name-only", "HEAD")).Where(IsRules).Select(Path.GetFileNameWithoutExtension).OfType<string>()
+    .Concat(Regex.Matches(Git("grep", "-h", "-E", "EntityLogicalName(Value)? *= *\"", "HEAD", "--", "*.cs"), "EntityLogicalName(?:Value)? *= *\"([a-z0-9_]+)\"")
+        .Select(m => m.Groups[1].Value))
+    .ToHashSet();
 foreach (var f in changed.Where(x => Regex.IsMatch(x, @"(^|/)docs/adr/\d{4}-[^/]*\.md$")))
 {
     string text = Show("HEAD", f);
-    if (text.Length > 0 && !Regex.IsMatch(text, @"^Scope:[ \t]*\S", RegexOptions.Multiline))
-        fails.Add($"{f}: an ADR this story adds or changes needs a `Scope:` line (the tables and areas it governs, or `all`)");
+    if (text.Length == 0) continue;   // deleted
+    var fm = Regex.Match(text, @"\A---\r?\n(.*?)\r?\n---", RegexOptions.Singleline);
+    if (!fm.Success) { fails.Add($"{f}: an ADR this story adds or changes needs its frontmatter (date, decision-makers, applies-to, tables, areas)"); continue; }
+    string? Field(string k) { var m = Regex.Match(fm.Groups[1].Value, $@"^{k}:[ \t]*(.*?)[ \t]*(#.*)?$", RegexOptions.Multiline); return m.Success ? m.Groups[1].Value : null; }
+    List<string>? List(string k) => Field(k) is string v && Regex.Match(v, @"^\[(.*)\]$") is { Success: true } l
+        ? l.Groups[1].Value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList() : null;
+    var bad = new List<string>();
+    string? date = Field("date"), before = Regex.Match(Show(fork, f), @"^date:[ \t]*(\S+)", RegexOptions.Multiline) is { Success: true } d ? d.Groups[1].Value : null;
+    if (date == null || !Regex.IsMatch(date, @"^\d{4}-\d{2}-\d{2}$")) bad.Add("`date: YYYY-MM-DD` missing");
+    else if (before == date) bad.Add("`date` unchanged - an ADR this story changes takes the date of the change");
+    if (List("decision-makers") is not { Count: > 0 }) bad.Add("`decision-makers: [...]` missing or empty");
+    string? applies = Field("applies-to");
+    if (applies is not ("scoped" or "all")) bad.Add("`applies-to` must be scoped or all");
+    var t = List("tables"); var a = List("areas");
+    if (t == null) bad.Add("`tables: [...]` missing ([] when none)");
+    if (a == null) bad.Add("`areas: [...]` missing ([] when none)");
+    foreach (var x in t ?? []) if (!tables.Contains(x)) bad.Add($"table `{x}` has no docs/rules file and no generated model");
+    foreach (var x in a ?? []) if (!areas.Contains(x)) bad.Add($"area `{x}` is not one of {string.Join(", ", areas)}");
+    if (applies == "scoped" && t is { Count: 0 } && a is { Count: 0 }) bad.Add("a scoped ADR names at least one table or area");
+    foreach (var b in bad) fails.Add($"{f}: {b}");
 }
 
 foreach (var x in notes) Console.WriteLine("NOTE  " + x);

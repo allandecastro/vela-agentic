@@ -29,7 +29,7 @@ Announce: `Using vela-plan-review to grill the plan`.
    registry first** (`docs/rules/<table>.md` for each table involved, when it exists): an active rule that
    already does this → reuse it; one the story **contradicts** → do not overwrite it silently - ask the human
    (one question) whether the new rule replaces it (then it is retired) or the story changes.
-   Read the **ADRs** that touch the story (`docs/adr/`, listed by title and `Scope:` - `references/build-report-template.md`)
+   Read the **ADRs** that touch the story (`docs/adr/`, listed by their frontmatter - `references/build-report-template.md`)
    and follow every one; an architecture decision the story
    raises and no ADR covers (what qualifies: `references/build-report-template.md`) is asked once and written
    as a new ADR in the story's commit. A rule id or ADR number is taken from the latest base branch
