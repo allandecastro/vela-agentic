@@ -1,6 +1,6 @@
 #!/bin/sh
 # Deterministic starting point: the reviewed account-default-description baseline, committed.
-#   sh evals/setup/baseline.sh <work-dir>      -> <work-dir>/ZavaSales (git repo, green)
+#   sh evals/setup/baseline.sh <work-dir>      -> <work-dir>/ZavaSales (git repo, builds)
 set -e
 . "$(dirname "$0")/lib.sh"
 sol=$(new_solution "$1" ZavaSales zava)
@@ -19,6 +19,7 @@ s = s.replace("            // TODO: implement your logic.", """            var t
                 target.Description = "Created via Vela plugin";
             }
             // TODO: implement your logic.""", 1)
+assert "var target = ctx.Request.Target;" in s and ".FilterOn(e => e.Name)" in s, "scaffold template changed - update this setup"
 open(p, "w", encoding="utf-8").write(s)
 PY
 mkdir -p tests/zava.Plugins.Tests/Account/Plugins

@@ -8,7 +8,7 @@ import os, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 scenario, work = sys.argv[1], sys.argv[2]
 # Every campaign run gets the dev org READ-ONLY (vela >= 0.24 scaffolds no models; plan needs --solution).
-DEV_ORG = "https://dyn-premium-dev.crm.dynamics.com"
+DEV_ORG = os.environ.get("VELA_EVAL_ORG", "https://dyn-premium-dev.crm.dynamics.com")
 org = None if "--no-org" in sys.argv else (sys.argv[sys.argv.index("--org") + 1] if "--org" in sys.argv else DEV_ORG)
 shim = sys.argv[sys.argv.index("--shim") + 1] if "--shim" in sys.argv else (os.path.join(ROOT, "evals", "tools", "shim") if org else None)
 cli = subprocess.run([os.path.expanduser("~/.dotnet/tools/vela"), "version"], capture_output=True, text=True).stdout.split()[-1]

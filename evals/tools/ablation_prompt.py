@@ -15,7 +15,7 @@ Only the `pack` arm is pointed at the skill pack. The grader is not told the arm
 import os, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ORG = "https://dyn-premium-dev.crm.dynamics.com"
+ORG = os.environ.get("VELA_EVAL_ORG", "https://dyn-premium-dev.crm.dynamics.com")
 SHIM = os.path.join(ROOT, "evals", "tools", "shim")
 
 

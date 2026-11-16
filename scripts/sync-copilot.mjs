@@ -99,7 +99,6 @@ function frontmatter(md) {
 async function genAgents() {
   const src = path.join(root, "agents");
   const dst = path.join(root, ".github", "agents");
-  await rmrf(path.join(root, ".github", "chatmodes"));   // superseded by custom agents
   await rmrf(dst);
   await fs.mkdir(dst, { recursive: true });
   const files = (await fs.readdir(src)).filter((f) => f.endsWith(".agent.md"));
@@ -228,5 +227,5 @@ const modes = await genAgents();
 await genInstructions();
 await genHooks();
 console.log(
-  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} custom agent(s), 1 instructions file, 2 hooks files.`,
+  `Bundled ${refs} reference cop(ies) into skills. Synced Copilot surface: ${skills} skill(s), ${modes} custom agent(s), 1 instructions file, 3 hooks files.`,
 );

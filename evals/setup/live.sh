@@ -1,9 +1,10 @@
 #!/bin/sh
 # The plugin project that is DEPLOYED in the dev org (solution VelaEvals, publisher veval) - the starting
 # point of the scenarios that work on a live registration (debug-live-trace, deployed-plugin-change).
-#   sh evals/setup/live.sh <work-dir>      -> <work-dir>/VelaEvalsLive (git repo, green)
+#   sh evals/setup/live.sh <work-dir>      -> <work-dir>/VelaEvalsLive (git repo, builds)
 # ContactPhoneNormalize carries a planted bug (a null phone throws); AccountRegionStamp has a Create and an
-# Update step. evals/setup/deploy-live.sh deploys exactly this project (an evaluator action, approved).
+# Update step. The evaluator deploys exactly this project with `vela apply --solution VelaEvals` (an approved
+# evaluator action, never an actor's).
 set -e
 . "$(dirname "$0")/lib.sh"
 LIVE="$(cd "$(dirname "$0")" && pwd)/live"

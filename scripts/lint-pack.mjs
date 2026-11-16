@@ -33,12 +33,6 @@ function frontmatter(md) {
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-const semver = (v) => v.split(".").map(Number);
-const newer = (a, b) => {
-  const [x, y] = [semver(a), semver(b)];
-  for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0);
-  return false;
-};
 const cliSurface = await fs.readFile(path.join(root, "references", "cli-surface.md"), "utf8");
 const verifiedCli = cliSurface.match(/Verified against:\*\*\s*`vela (\d+\.\d+\.\d+)`/)?.[1];
 if (!verifiedCli) errors.push("references/cli-surface.md: missing '**Verified against:** `vela x.y.z`' line");
@@ -130,7 +124,7 @@ async function lintNamesAndTerms() {
 
 async function lintReadmeTable() {
   const md = await fs.readFile(path.join(root, "README.md"), "utf8");
-  const table = md.match(/^#{2,3} Skills\n([\s\S]*?)(?=^## )/m)?.[1] || "";
+  const table = md.match(/^#{2,3} Skills\n([\s\S]*?)(?=^## |(?![\s\S]))/m)?.[1] || "";
   const listed = new Set([...table.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]));
   const skills = new Set(await skillNames());
   for (const s of skills) if (!listed.has(s)) errors.push(`README.md: skill '${s}' missing from the Skills table`);
@@ -149,6 +143,8 @@ async function lintEvals() {
     const fm = frontmatter(await fs.readFile(path.join(dir, f), "utf8"));
     if (!fm) { errors.push(`${rel}: no frontmatter`); continue; }
     if (fm.scenario !== path.basename(f, ".md")) errors.push(`${rel}: scenario '${fm.scenario}' != file name`);
+    try { await fs.access(path.join(root, "evals", "checks", f.replace(/\.md$/, ".json"))); }
+    catch { errors.push(`${rel}: no evals/checks/${f.replace(/\.md$/, ".json")}`); }
     scenarios.add(fm.scenario);
     for (const k of ["skills_exercised", "gotchas_exercised", "org_required"])
       if (!fm[k]) errors.push(`${rel}: frontmatter missing '${k}'`);
