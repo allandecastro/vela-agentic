@@ -27,8 +27,8 @@ Announce: `Using vela-code-review to review the change`.
    repository? `git init` + commit right after scaffolding; no git? `diff -ruN` against a post-scaffold
    copy. Say which. Generated models as `git diff --stat`, the rest in full (the scaffold writes
    CRLF: keep it when editing, or `git diff --ignore-cr-at-eol`).
-2. **Real material in the reviewer's prompt** (plus the path of `docs/adr/`, which it reads itself): write diff, Canvas and RED/GREEN lines to files, paste
-   their **contents**, check for placeholders (`<diff>`, `<paste here>`, "see above"). A verdict on a
+2. **Real material in the reviewer's prompt** (plus the path of `docs/adr/`, which it reads itself): write diff, Canvas, RED/GREEN lines, the build's
+   summary/diagnostic lines and the Run trace to files, paste their **contents**, check for placeholders (`<diff>`, `<paste here>`, "see above"). A verdict on a
    placeholder is void.
 3. Review on **two axes** with `references/review-checklist.md` (also `references/harness-api.md`,
    `references/cli-surface.md`, `references/plugin-authoring-api.md`):
