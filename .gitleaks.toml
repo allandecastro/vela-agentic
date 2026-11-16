@@ -1,0 +1,9 @@
+# Secret scan for this repo: gitleaks' default rules, plus the known test values below.
+# Local: `gitleaks git --redact` (also run by scripts/check.sh when gitleaks is installed). CI: the gitleaks job.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Fake API key used by the ERP integration tests of an eval fixture"
+regexTarget = "match"
+regexes = ['''test-api-key-[0-9a-f]{4}''']
