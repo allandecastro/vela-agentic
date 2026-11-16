@@ -13,7 +13,7 @@ concurrency: version-bump
 
 jobs:
   bump:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.RUNS_ON || '"ubuntu-latest"') }}   # see ci.yml
     steps:
       - uses: actions/checkout@v4
         with:
