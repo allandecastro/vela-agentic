@@ -130,13 +130,13 @@ async function lintNamesAndTerms() {
 
 async function lintReadmeTable() {
   const md = await fs.readFile(path.join(root, "README.md"), "utf8");
-  const table = md.split("### Skills")[1]?.split("\n\n>")[0] || "";
+  const table = md.match(/^#{2,3} Skills\n([\s\S]*?)(?=^## )/m)?.[1] || "";
   const listed = new Set([...table.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]));
   const skills = new Set(await skillNames());
   for (const s of skills) if (!listed.has(s)) errors.push(`README.md: skill '${s}' missing from the Skills table`);
   for (const s of listed) if (!skills.has(s)) errors.push(`README.md: Skills table lists '${s}', which does not exist`);
-  const count = md.match(/\| `skills\/` \| (\d+) portable/)?.[1];
-  if (count && Number(count) !== skills.size) errors.push(`README.md: says ${count} skills, there are ${skills.size}`);
+  for (const [, count] of md.matchAll(/\b(\d+) (?:\[Agent Skills\]|skills\b)/gi))
+    if (Number(count) !== skills.size) errors.push(`README.md: says ${count} skills, there are ${skills.size}`);
 }
 
 async function lintEvals() {
