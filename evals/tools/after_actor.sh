@@ -7,6 +7,13 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 run="$1/$2/r$3"
 ORG="--org ${VELA_EVAL_ORG:-https://dyn-premium-dev.crm.dynamics.com}"; [ "$6" = "--org" ] && ORG="--org $7"; [ "$6" = "--no-org" ] && ORG=""
 python3 "$ROOT/evals/checks/check.py" "$2" "$run/work" $ORG > "$run/checks.json" || echo "check.py failed - see $run/checks.json" >&2
+# Mutation: do the actor's tests catch planted bugs? (VELA_EVAL_MUTATION=0 to skip; restores the sources.)
+sln="$(find "$run/work" -name '*.sln' -not -path '*/bin/*' -not -path '*/obj/*' 2>/dev/null | head -1)"
+if [ -n "$sln" ] && [ "${VELA_EVAL_MUTATION:-1}" = 1 ]; then
+  dotnet run "$ROOT/evals/tools/mutate.cs" -- --solution "$(dirname "$sln")" --json "$run/mutation.json" > "$run/mutation.txt" 2>&1 \
+    || echo "mutate: not run - see $run/mutation.txt" >&2
+  tail -1 "$run/mutation.txt"
+fi
 python3 "$ROOT/evals/tools/grader_prompt.py" "$2" "$run" "$3" "$4" "$5" > "$run/grader-prompt.md"
 python3 - "$run/checks.json" "$2 r$3" <<'PY'
 import json, sys
