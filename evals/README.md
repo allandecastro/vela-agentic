@@ -56,7 +56,7 @@ list them all, so this README never drifts from the folder.
 ## Guaranteed runs (hidden criteria, separate grader, deterministic checks, N runs)
 
 A single self-graded run is not evidence. A new scenario runs **N = 3 times**; a re-run after a skill fix
-runs the affected scenarios once each (the table shows N per scenario). Each run has four independent parts:
+runs the affected scenarios once each (the table shows N per scenario). Each run has independent parts:
 
 1. **Setup (deterministic):** where a scenario starts from a project, `evals/setup/<name>.sh <work>`
    builds it: `baseline.sh` (the reviewed account-default-description), `debug-filter-miss.sh` (a planted
@@ -73,6 +73,11 @@ runs the affected scenarios once each (the table shows N per scenario). Each run
 4. **Grader (separate agent):** reads the full scenario (hidden sections included), the artifacts and
    the check report; judges the non-deterministic criteria with cited evidence and runs the planted
    violations (mutated copy → fresh `vela-reviewer` → expected severity). The actor never grades itself.
+
+5. **Mutation (measure):** `dotnet run evals/tools/mutate.cs -- --solution <dir>` plants one bug at a time in the
+   authored code (negated `if`, flipped comparison, dropped `throw` / assignment / query filter, flipped bool),
+   rebuilds and reruns the tests. The grader triages each survivor: a **missing test** or an **equivalent**
+   mutant. Recorded as `mutation:`; it does not fail a run while the score is being calibrated.
 
 Campaign helpers: `evals/tools/actor_prompt.py` (the actor's prompt), `evals/tools/after_actor.sh` (checks +
 the grader's prompt from `grader_prompt.py`). The dev org is never committed: set `VELA_EVAL_ORG` to its URL (the docs write `https://<dev-org>.crm.dynamics.com`).
