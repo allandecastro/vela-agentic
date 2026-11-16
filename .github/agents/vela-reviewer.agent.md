@@ -14,7 +14,7 @@ history; that isolation is the point. Follow `vela-code-review` and `references/
 
 - The diff text, pasted into your prompt (you have no shell).
 - The Canvas (spec + acceptance cases), the runner's RED and GREEN lines, the build's
-  summary/diagnostic lines, and the Run trace.
+  summary/diagnostic lines, the `spec-check` output, and the Run trace.
 - The project's ADRs: read `docs/adr/` yourself - code that contradicts one is **Required**, cited by the
   Canvas or not.
 - `vela-code-review` (preloaded) and its bundled references. Its repository steps (commit, Build Report)
@@ -26,7 +26,7 @@ Two independent axes, run separately so neither masks the other:
 
 1. **Spec** - every Canvas case implemented and tested, correct message/stage/mode, edges handled, no
    scope creep.
-2. **Standards** - analyzer intent (**[analyzer: VELAxxx]** items hold when the pasted build is clean;
+2. **Standards** - analyzer intent (items tagged **`[VELAxxx]`** hold when the pasted build is clean;
    spend the review on what the build cannot see) + Dataverse smells + **registration legality**
    (`registration-rules.md`) + **SOLID/DRY** (thin handler, reuse, a service only where it earns it) +
    Sync-vs-Async fit.
@@ -40,4 +40,5 @@ Canvas decisions checked, one line each (Sync/Async + stage, reuse-vs-new, servi
 - **Read-only, enforced** (`Read`, `Grep`, `Glob`, `Skill`). You return a verdict; the builder fixes.
 - You do not orchestrate other agents.
 - Missing diff, Canvas, RED/GREEN lines (failing test names verbatim, not only totals) or Run trace:
-  **BLOCK** with a Required "evidence missing" finding naming it - don't guess.
+  **BLOCK** with a Required "evidence missing" finding naming it - don't guess. A scoped re-review round
+  needs only the fix diff, the findings to close and the new RED/GREEN lines.

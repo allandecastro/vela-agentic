@@ -6,7 +6,7 @@ IntelliSense - a failing build tells you the rest.
 
 ## Generated plugin shape
 
-`vela add plugin <Name> --entity Account --message Update --stage PreOperation --filtering-attributes Name`
+`vela add plugin <Name> --entity Account --message Update --stage PreOperation --filtering-attributes Name --handler OnNameNormalize`
 (`--filtering-attributes` is **required** for Create/Update(+Multiple), else exit 2) generates:
 
 ```csharp
@@ -100,15 +100,16 @@ RegisterStep().OnAssociate().PostOperation().Sync()
 
 Use the generated **`{Handler}Context`** (e.g. `private void OnDeleteGuard(OnDeleteGuardContext ctx)`) - Vela's recommended
 signature: it derives from the message context, stays stable when images change, and types `ctx.PreImage` /
-`ctx.PostImage` to the captured columns. `vela add plugin` / `add step` generate it; keep it (it also applies to
-`On<TRequest>()`, the `On{X}()` extensions from `vela models --messages/--custom-apis` and `OnAsyncOnly<T>()`, not to
-`OnMessage<T>()` - use `On<TRequest>()` there). Hand-written plugins must be `partial` (VELA014). A context that doesn't match the step is VELA015. Add `using Microsoft.Xrm.Sdk;` for `Money`,
-`EntityReference`, `InvalidPluginExecutionException` (generated files don't import it).
+`ctx.PostImage` to the captured columns. `vela add plugin` / `add step` generate it; keep it. It also exists for `On<TRequest>()`,
+`OnAsyncOnly<T>()` and the `On{X}()` extensions from `vela models --messages/--custom-apis`; not for
+`OnMessage<T>()`, so prefer `On<TRequest>()`. Hand-written plugins must be `partial` (VELA014). A context that
+doesn't match the step is VELA015. Generated files don't import `Microsoft.Xrm.Sdk`: add it for `Money`,
+`EntityReference` and `InvalidPluginExecutionException`.
 
 - **Target: `ctx.Request.Target`** - a typed `Account` over the live InputParameters: setting a property
   in PreOperation changes the record being written. In an **Async** step a Target write has no effect
-  (VELA018). `ctx.GetTarget<Account>()` / `TryGetTarget` / `GetTargetRef` are for `ILocalPluginContext`
-  handlers (Custom APIs, `On<TRequest>()`).
+  (VELA018). `ctx.GetTarget<Account>()` / `TryGetTarget` / `GetTargetRef` are for Custom API handlers that
+  take `ILocalPluginContext`.
 - **Bulk (`*Multiple`):** `ctx.Request.Targets.Entities` (untyped). `e.ToEntity<Account>()` shares the
   attribute collection, so editing the typed copy in PreOperation edits the target. Never call `Update`
   per record inside the loop.
@@ -131,31 +132,30 @@ signature: it derives from the message context, stays stable when images change,
   `InvalidPluginExecutionException` from a **Sync PreValidation** step (before the operation and its
   cascades); an Async step blocks nothing.
 - **Depth:** `ctx.Depth` (recursion: `dataverse-gotchas.md`).
-- **Write to the org** (no `ctx.OrganizationService`, no `ctx.UserService`):
+- **Read and write the org as** (no `ctx.OrganizationService`, no `ctx.UserService`):
   - `ctx.Service` - the step's user (the impersonated user, else the caller); record-level security
     applies. **The default**, and what DI resolves for `IOrganizationService`.
   - `ctx.SystemService` - SYSTEM, bypasses security; only where elevation is intended.
   - `ctx.AsUser(userId)` - a specific user, e.g. `ctx.AsUser(ctx.InitiatingUserId)`.
 - **Secure configuration:** `.WithSecureConfigFrom("Name")`; the value is supplied at deploy time
-  (`vela plan|apply --secure-config Name=VALUE|Name=@file`, or `VELA_SECURE_CONFIG_Name`) and read through
+  (`vela plan|apply --secure-config Name=@file`, or `VELA_SECURE_CONFIG_Name`) and read through
   the base `SecureConfig` property. Only the name is in the assembly.
 - **Trace:** `ctx.Trace(format, args)`.
 
 ## Dependency injection (service into a handler)
 
 ```csharp
-using Vela.DI;
+// ProjectServices.Register(...) - once for the assembly (see "Project services" below):
+services.AddScoped<IAccountDescriptionDefault>(r => new AccountDescriptionDefault(r.GetRequiredService<IOrganizationService>()));
 
-protected override void ConfigureServices(SimpleServiceResolver services, ILocalPluginContext context)
-    => services.AddScoped<IAccountDescriptionDefault>(r => new AccountDescriptionDefault(r.GetRequiredService<IOrganizationService>()));
-
-private void HandleUpdate(HandleUpdateContext ctx)
+// the handler:
+private void OnDescriptionDefault(OnDescriptionDefaultContext ctx)
     => ctx.GetRequiredService<IAccountDescriptionDefault>().Execute(ctx.Request.Target);
 ```
 
 - `vela add service <Name> --entity Account` generates the interface + class (in `Account/Services/`; without
-  `--entity`, a shared service in `Services/`)
-  and prints the registration line. Reshape `Execute` to what the Canvas needs; a pure rule may drop the
+  `--entity`, a shared service in `Services/`) and prints the registration line: put it in `ProjectServices`,
+  not in a plugin's `ConfigureServices`. Reshape `Execute` to what the Canvas needs; a pure rule may drop the
   `IOrganizationService` parameter.
 - Keep the handler thin; real logic in the service. In a test, `WithService<T>(fake)` **replaces the
   registration** (`harness-api.md`) - no test-only constructor in the plugin.

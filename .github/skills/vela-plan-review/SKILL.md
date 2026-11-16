@@ -59,10 +59,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      "Outbound integration"). Record it in Structure, with the secure-config name the deployer must supply.
    - **Structure - target solution & publisher:** the existing **unmanaged solution** unique name and its
      **publisher prefix** (Vela doesn't create them): read from `PROJECT.md`, never copied into the Canvas. A new
-     project: confirm read-only with `vela solution show <uniquename> --json` - `--publisher-prefix` must equal
-     that prefix; `--prefix` is only the namespace. **Unknown and no org?** Ask the human once (`vela-grill`) if reachable; otherwise
-     scaffold with an obvious placeholder (`--publisher-prefix tbd`), list it as an open question, and state
-     in the Gate that apply is blocked until confirmed.
+     project: confirm it read-only as `vela-scaffold` step 2 says (unknown and no org: the `tbd` placeholder
+     there, apply blocked until confirmed).
    - **"When X changes" on Update:** the filter fires whenever the column is *sent*, even unchanged.
      Record whether the value must differ (compare `ctx.PreImage`); write, or set an unsent Target column,
      only when the value differs.
@@ -89,8 +87,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      Record each choice in the Canvas.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
      business decision: with a human reachable, ask (one question); a step that reads or writes another table as the
-     user gets read-denied (no Read privilege at all, and a row out of scope) and write-denied acceptance cases -
-     ask what each must do; none reachable → it goes back with the other
+     user gets acceptance cases for no Read privilege, a row out of the user's scope, and a denied write - ask
+     what each must do; none reachable → it goes back with the other
      business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** one plugin class per table (`<Entity>Plugin`), behaviour-named handlers, fixed shared-file names
@@ -100,11 +98,12 @@ Announce: `Using vela-plan-review to grill the plan`.
      gotcha; on Update "column not sent" vs "column cleared"; a `PluginPipeline` case when the step must
      (not) fire or could re-trigger. **Every behaviour-changing assumption** is also a case.
 3. **Fill the Vela Canvas** (`references/build-report-template.md`): seven sections, `rules:` (add / change /
-   retire, with ids), acceptance cases (the rule's case ids), and **write the rules into the registry now** - this is
-   the design phase, the only one where `docs/rules/` may change (with the human; a new or
+   retire, with ids), acceptance cases (the rule's case ids), assumptions, open questions - one line per
+   section for a simple story; a **small story** (`using-vela`) may keep front matter + cases only. **Write the
+   rules into the registry now** - this is
+   the design phase, the only one where `docs/rules/` may change (with the human; a
    retired rule is deleted with its tests - git keeps the history; no status - merging puts it in force). Commit the Canvas + registry
    before any test: that commit is the frozen spec the build is checked against.
-   assumptions, open questions - one line per section for a simple story.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
    **edge values that change an acceptance case**): then `vela-grill` first and resume with the answers.
@@ -112,8 +111,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    subagent) → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
    only platform facts and low-impact values go ahead as assumptions. A dispatcher's "don't ask, use defaults"
    does not cover such decisions - say so in the hand-back. A **blocked** outcome (framework
-   limit, undeliverable story) wins: set the Canvas `status: blocked` and stop (see the builder's
-   "Blocked stories").
+   limit, undeliverable story) wins: set the Canvas `status: blocked`, fill its Hand-off
+   (`references/build-report-template.md`) and stop.
 
 ## Rationalizations (excuse → rebuttal)
 

@@ -76,7 +76,7 @@ Announce: `Using vela-custom-api to <purpose>`.
 
 - The Canvas records global/bound, Action/Function (with callers), parameters and error cases, each with
   a reason.
-- Optional: a test reading `new <Api>(string.Empty, string.Empty).GetCustomApiDefinition()`.
+- The definition test reads `new <Api>(string.Empty, string.Empty).GetCustomApiDefinition()`.
 - Harness tests cover every acceptance case incl. failing inputs, seen RED then green (summary pasted).
 - Build clean of VELA diagnostics in authored code; review PASS; `vela plan` shows the Custom API with the
-  expected parameters (or `skipped - no org` with the exact command).
+  expected parameters (or `plan_preview: unavailable` with the exact command + exit code).

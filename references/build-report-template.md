@@ -50,14 +50,14 @@ status: draft             # draft | blocked (needs-input, undeliverable) | super
 entity: account           # table the step is registered on (may differ from the table it writes)
 # Multi-step plugin: a `steps:` list instead of the scalar fields, e.g.
 #   steps:
-#     - {message: Create, stage: PreOperation, mode: Synchronous, filter: [name], handler: OnDescriptionDefault, images: []}
-#     - {message: Update, stage: PreOperation, mode: Synchronous, filter: [description], handler: OnDescriptionCheck,
-#        images: [{pre: [accountnumber]}]}
+#     - {message: Create, stage: PreOperation, mode: Sync, filter: [Name], handler: OnDescriptionDefault, images: []}
+#     - {message: Update, stage: PreOperation, mode: Sync, filter: [Description], handler: OnDescriptionCheck,
+#        images: [{pre: [AccountNumber]}]}
 message: Create
 stage: PreOperation
-mode: Synchronous
+mode: Sync
 filtering_attributes: [Name]   # model property names (as FilterOn / --filtering-attributes take them)
-images: []                # e.g. [{pre: [statecode]}, {post: [statecode, parentcustomerid]}]
+images: []                # e.g. [{pre: [StateCode]}, {post: [StateCode, ParentCustomerId]}]
 # A Custom API replaces message/stage/mode/filtering_attributes/images with:
 #   custom_api: {unique_name: <pfx>_<Name>, binding: global | bound:<entity>, kind: action | function,
 #                callers: [flows | code | web-api], inputs: [email:string!], outputs: [leadScore:int]}
@@ -98,16 +98,16 @@ skills: [vela-plan-review, vela-scaffold, vela-models, vela-plugin-authoring, ve
 ## N - Norms
 <naming (generated conventions + prefix), thin handler/SRP, reuse over duplication>
 
-## Hand-off (only when status: blocked)
-<the blocker, its evidence, what would unblock it, open questions. Nothing is scaffolded or packaged.>
-
 ## S - Safeguards
 <registration legality (registration-rules), applicable gotchas, no secrets in code, stop before apply>
+
+## Hand-off (only when status: blocked)
+<the blocker, its evidence, what would unblock it, open questions. Nothing is scaffolded or packaged.>
 ```
 
 ## Build Report (deploy gate - the Canvas grown, with evidence)
 
-Keeps every Canvas front-matter key and adds the build keys below; only `kind` changes.
+Keeps every Canvas front-matter key (abridged below) and adds the build keys; `kind` and `status` change.
 
 ```markdown
 ---
@@ -119,14 +119,14 @@ entity: account
 message: Create
 vela_cli: <vela version>
 framework: <Vela.Plugins version>
-packages: [Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ Zava.Integrations.<ver>.nupkg for an outbound call)
+packages: [zava_Zava.Plugins.1.0.0.nupkg]   # every previewed package (+ zava_Zava.Integrations.<ver>.nupkg for an outbound call)
 package_sha256: <sha256 of the previewed package>   # one per package
 signed: no                # yes | no (a human signs before apply) | n/a (the human said not required) | unknown (asked at the gate) - `vela plan` does not tell
 harness: pass             # pass | fail  (must be pass; a run over 0 tests is fail - it checked nothing)
 analyzers: clean          # clean | violations  (authored code)
 review: pass              # pass | block  (no unresolved Critical/Required)
 plan_preview: changes     # changes (exit 8 with --detailed-exitcode) | clean (exit 0) | unavailable (record the command + exit)
-plan_command: "vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json"
+plan_command: "vela plan -p artifacts/zava_Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json"
 apply: pending
 ---
 
@@ -156,13 +156,13 @@ tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a 
 
 | # | step | skill | command | exit | verdict |
 |---|------|-------|---------|------|---------|
-| 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava` | 0 | ok |
+| 1 | scaffold | vela-scaffold | `vela init ZavaSales --prefix Zava --publisher-prefix zava --solution ZavaSales` | 0 | ok |
 | 2 | model | vela-models | `vela models --entities account --project src/Zava.Shared/Zava.Shared.csproj --url <org>` | 0 | Generated <N> file(s) |
 | 3 | test-red | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 1 | RED 2 fail (expected) |
 | 4 | verify | vela-test-harness | `mono …/xunit.console.exe … -parallel none` | 0 | GREEN 12/12 |
-| 5 | review | vela-code-review | (self-review) | - | PASS 2 Nits |
-| 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
-| 7 | plan | vela-apply | `vela plan -p artifacts/Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json` | 8 | changes: create package + 1 step |
+| 5 | review | vela-code-review | `vela-reviewer` | - | PASS 2 Nits |
+| 6 | package | vela-apply | `dotnet build ZavaSales.sln -c Release` (→ `artifacts/zava_Zava.Plugins.1.0.0.nupkg`, dll checked) | 0 | ok |
+| 7 | plan | vela-apply | `vela plan -p artifacts/zava_Zava.Plugins.1.0.0.nupkg --solution ZavaSales --url <org> --detailed-exitcode --out .vela-runs/<slug>/plan.json` | 8 | changes: create package + 1 step |
 
 ## Gate - human approval required
 Run to deploy (after `shasum -a 256 <pkg>` matches `package_sha256`):
@@ -215,8 +215,8 @@ Exceptions / assumptions:
   - Contacts the user cannot read are not counted (runs as the user - default security context)
 Affects: contact
 
-Implementation: AccountDeleteGuard · Delete · PreValidation · Sync
-Tests: AccountDeleteGuardTests
+Implementation: AccountPlugin.OnDeleteGuard · Delete · PreValidation · Sync
+Tests: AccountPluginTests
 
 ```
 
