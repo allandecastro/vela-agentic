@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git jq sudo python3 unzip libicu74 libssl3 libkrb5-3 zlib1g \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -m -s /bin/bash runner \
-    && echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner
+    && echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner \
+    && mkdir -p /usr/share/dotnet && chown runner:runner /usr/share/dotnet   # where setup-dotnet installs
 
 USER runner
 WORKDIR /home/runner/actions-runner

@@ -13,5 +13,5 @@ echo "runner image built - waiting for jobs on $REPO (Ctrl-C to stop)"
 trap 'exit 0' INT TERM
 while :; do
   token="$(gh api -X POST "repos/$REPO/actions/runners/registration-token" --jq .token)"
-  "$RUNTIME" run --rm -e REPO="$REPO" -e RUNNER_TOKEN="$token" "$IMAGE" || sleep 10
+  "$RUNTIME" run --rm --cpus 4 --memory 4g -e REPO="$REPO" -e RUNNER_TOKEN="$token" "$IMAGE" || sleep 10
 done
