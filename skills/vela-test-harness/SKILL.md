@@ -55,7 +55,7 @@ Announce: `Using vela-test-harness to <purpose>`.
    ```csharp
    var p = PluginPipeline.Empty().Register<AccountPlugin>();
    var id = p.Service.Create(new Account { Name = "Zava" });
-   var saved = p.Service.Retrieve(Account.EntityLogicalNameValue, id, new ColumnSet("description")).ToEntity<Account>();
+   var saved = p.Service.Retrieve<Account>(id, a => a.Description);
    Assert.Equal("Created via Vela plugin", saved.Description);                       // what was saved
    ```
 3. Write the full **Coverage** set.

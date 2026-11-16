@@ -4,8 +4,8 @@ The commands the loop needs and the traps `--help` does not show. A snapshot - t
 confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
 exit code as one JSON document).
 
-**Verified against:** `vela 0.29.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.42.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
+**Verified against:** `vela 0.31.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.43.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
 (also what `dotnet run tools/spec-check.cs` needs). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 

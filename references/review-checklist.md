@@ -74,7 +74,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
 - **Models:** typed properties, not magic strings; a hand-added/edited property in `Models/Generated` -
   **Required** (regenerate); a committed `*.generated.cs` - **Required**. Prefer typed
   `target.Contains(e => e.X)` (tells "not sent" from "cleared"). Logical-name strings
-  (`QueryExpression`, `GetAttributeValue<T>("x")`) where `Query.For<T>()` / `ToEntity<T>()` would do -
+  (`QueryExpression`, `Retrieve("account", id, new ColumnSet("name"))`, `GetAttributeValue<T>("x")`) where
+  `Query.For<T>()` / `Retrieve<T>(id, x => ...)` / `ToEntity<T>()` would do -
   **Nit** in tests, **Required** in plugin code.
 - **Service:** writes via `ctx.Service` (the step's user, default) / `ctx.SystemService` (SYSTEM) /
   `ctx.AsUser(id)`. `ctx.SystemService` without a Canvas reason - **Required**; data read as SYSTEM that
