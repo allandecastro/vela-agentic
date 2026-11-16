@@ -2,6 +2,9 @@
 name: vela-plan-review
 description: Use right after interpreting a user story and before scaffolding, when the plan needs pressure-testing before any code is written.
 compatibility: "vela CLI + dotnet SDK."
+license: MIT
+metadata:
+  version: "0.1.0"
 ---
 
 # Review the plan (self-grilling)

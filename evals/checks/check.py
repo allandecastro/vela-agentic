@@ -75,7 +75,7 @@ def main():
         return finish(scenario, work)
 
     if exp.get("spec_check"):
-        # The functional spec of the tests (docs/rules + Trait("Case")) - tools/spec-check.cs against the
+        # The functional spec of the tests (docs/rules + Trait("Case")) - spec-check (vela-code-review/scripts) against the
         # setup's last commit (<base>), with the story's Canvas (the newest docs/features/*/README.md not in <base>).
         for repo in sorted({os.path.dirname(os.path.dirname(os.path.dirname(g))) for g in files(work, "**/docs/rules/*.md")}):
             base = sh(f'git -C "{repo}" log --format=%H --grep="^refactor: simplify the empty check$" --grep="^baseline" -n 1')[1].strip() \
@@ -83,7 +83,7 @@ def main():
             new_docs = [d for d in sh(f'git -C "{repo}" diff --name-only --diff-filter=A {base}...HEAD -- docs/features')[1].split() if d.endswith("/README.md")]
             if not check("story Canvas found for spec-check", new_docs, ", ".join(new_docs)):
                 continue
-            code, out = sh(f'dotnet run "{os.path.join(ROOT, "tools", "spec-check.cs")}" -- --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
+            code, out = sh(f'dotnet run "{os.path.join(ROOT, "skills", "vela-code-review", "scripts", "spec-check.cs")}" -- --repo "{repo}" --base {base} --canvas "{new_docs[0]}"')
             check("spec-check passes (registry read-only in the build, regression tests not bent)", code == 0, out.strip()[-400:])
 
     slns = files(work, "**/*.sln")

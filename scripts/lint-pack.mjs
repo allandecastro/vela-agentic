@@ -65,6 +65,13 @@ async function lintSkills() {
       try { await fs.access(path.join(base, e.name, "references", m[1])); }
       catch { errors.push(`skills/${e.name}: cites references/${m[1]} but it is not bundled - run node scripts/sync-copilot.mjs`); }
     }
+    // Agent Skills specification (agentskills.io/specification): limits, license, a version under metadata.
+    if (fm.name && fm.name.length > 64) errors.push(`skills/${e.name}: name longer than 64 characters`);
+    if (fm.description && fm.description.length > 1024) errors.push(`skills/${e.name}: description longer than 1024 characters`);
+    if (fm.compatibility && fm.compatibility.length > 500) errors.push(`skills/${e.name}: compatibility longer than 500 characters`);
+    if (fm.license !== "MIT") errors.push(`skills/${e.name}: frontmatter 'license: MIT' missing`);
+    if (!/^metadata:\n(?:[ \t]+.*\n)*?[ \t]+version: "\d+\.\d+\.\d+"$/m.test(md))
+      errors.push(`skills/${e.name}: frontmatter 'metadata:' needs 'version: "x.y.z"' (bumped by CI when the skill changes)`);
     if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
     else {
       if (/\d+\.\d+\.\d+/.test(fm.compatibility))

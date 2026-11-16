@@ -2,6 +2,9 @@
 name: vela-code-review
 description: Use once a plugin change's tests are green and analyzers are clean, before the apply gate, to review the diff for correctness, spec-fidelity, and Dataverse pitfalls.
 compatibility: "vela CLI + dotnet SDK."
+license: MIT
+metadata:
+  version: "0.1.0"
 ---
 
 # Review the change before the apply gate
@@ -46,8 +49,8 @@ Announce: `Using vela-code-review to review the change`.
 
 ## Spec check (deterministic, before dispatching the reviewer)
 
-Run `dotnet run <pack>/tools/spec-check.cs -- --base <base> --canvas docs/features/<slug>/README.md` in the project
-(the pack is the folder holding `skills/`; after any `dotnet build` - it reads the restored Vela.Plugins.dll), with the **latest** base: `git fetch` then `origin/<main>` when there is a
+Run `dotnet run <this skill's folder>/scripts/spec-check.cs -- --base <base> --canvas docs/features/<slug>/README.md` in
+the project ( after any `dotnet build` - it reads the restored Vela.Plugins.dll), with the **latest** base: `git fetch` then `origin/<main>` when there is a
 remote, else the local main - read-only, never merge it into the branch. It fails when the registry changed outside the rules the Canvas declares,
 an existing test was modified / deleted for a rule the story does not
 change, or the story takes a rule id / ADR number already used on the base. Paste its output into the reviewer's material; a failure is a **BLOCK** before any review. Exit `2`
