@@ -2,6 +2,9 @@
 name: writing-vela-skills
 description: Use when adding, fixing, or reviewing a Vela skill or its wording.
 compatibility: "Meta skill - no vela CLI dependency."
+license: MIT
+metadata:
+  version: "0.1.0"
 ---
 
 # Writing Vela skills
@@ -35,7 +38,10 @@ never a workflow summary (an agent follows the summary instead of the body - obs
 model-invoked; one meant for a human conversation may name its slash command (e.g. `/vela-grill`).
 Never promise a command that does not exist - the end-to-end loop is the `vela-builder` agent.
 **`compatibility`** names the dependency, never a version (`"vela CLI + dotnet SDK."`): the verified version
-lives only in `references/cli-surface.md`; meta skills say so instead. Body: `Overview → When to use → Process
+lives only in `references/cli-surface.md`; meta skills say so instead. The frontmatter follows the
+[Agent Skills specification](https://agentskills.io/specification): `license: MIT` and `metadata:` `version:
+"x.y.z"` - the skill's own version, never hand-edited (CI bumps it when the skill's folder changes). Code a
+skill runs ships in its `scripts/` folder (`vela-code-review/scripts/spec-check.cs`). Body: `Overview → When to use → Process
 (announce "Using <skill> to <purpose>") → Rationalizations (excuse → rebuttal) → Red flags →
 Verification (the evidence required)`.
 `node scripts/sync-copilot.mjs` copies every cited reference (and what it cites) into the skill's own

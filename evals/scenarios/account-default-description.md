@@ -14,7 +14,7 @@ org_required: false        # local loop only; model/plan steps are noted, not ru
 
 ## Setup for the run
 - The evaluator gives you a work dir; nothing outside it.
-- `vela` and `dotnet` on PATH. The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only**
+- `vela` and `dotnet` on PATH. The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only**
   (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## Success criteria (a clean pass)

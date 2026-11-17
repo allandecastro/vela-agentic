@@ -16,6 +16,7 @@ model: claude-opus-5-5               # the model the actor ran on
 vela_cli: 0.19.6
 framework: 0.28.2
 runner: fresh subagent, local, no org
+mutation: 35/38, 1 missing test     # campaign runs only: evals/tools/mutate.cs killed/valid + survivors judged missing tests
 ---
 
 ## Loop outcome

@@ -13,7 +13,7 @@ depends_on: account-default-description   # a Create plugin already defaults Des
 ## Setup for the run
 - The evaluator provides the reviewed `account-default-description` baseline, which already has the
   `AccountDefaultDescription` Create plugin (`sh evals/setup/baseline.sh <work>` → `<work>/ZavaSales`,
-  a git repo). The dev org `https://dyn-premium-dev.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
+  a git repo). The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`.
 
 ## User story
 "When an Account is updated and its Description is cleared (set to empty), re-apply the same

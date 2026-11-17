@@ -89,7 +89,7 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
    tests) changes only in the design phase, with the human. In the build it is read-only, except its trace
    lines and the review-driven `amendments:` recorded in the Canvas. A failing regression test means the code
-   is wrong. `tools/spec-check.cs` (`dotnet run`) checks this at review; a team may copy it into its CI.
+   is wrong. `spec-check` (`vela-code-review`'s `scripts/spec-check.cs`, `dotnet run`) checks this at review; a team may copy it into its CI.
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
 
 ## Evidence (claim → proof)
@@ -112,7 +112,7 @@ The stop-before-apply boundary holds for a human, a fleet worker or a cloud agen
 - **The pack must be reachable**: this repo, a plugin marketplace install (**the repo must be pushed**),
   or a workspace carrying `skills/` + `agents/` + `AGENTS.md`. Skills bundle their references.
 - **Toolchain present**: the `vela` global tool (`dotnet tool install --global Vela.Cli`) and the `dotnet`
-  SDK it needs (`references/cli-surface.md`; it also runs `tools/spec-check.cs`). Missing: stop and say so - don't improvise.
+  SDK it needs (`references/cli-surface.md`; it also runs `spec-check`). Missing: stop and say so - don't improvise.
 - **Non-interactive auth**: `-i`/`--interactive` needs a screen. Headless options are in
   `references/cli-surface.md`. Never echo a secret.
 - **Test runner by OS**: net48 tests run with `dotnet test` on Windows; macOS/Linux use Mono + xunit
