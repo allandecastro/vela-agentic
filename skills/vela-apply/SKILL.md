@@ -4,7 +4,7 @@ description: Use when a built, reviewed, tested Vela plugin needs to be packaged
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Package, preview and apply to a Dataverse org

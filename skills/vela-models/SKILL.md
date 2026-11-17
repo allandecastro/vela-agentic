@@ -4,7 +4,7 @@ description: Use when a plugin needs typed models for an attribute or entity not
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Generate typed models

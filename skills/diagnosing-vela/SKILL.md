@@ -4,7 +4,7 @@ description: Use after an autonomous or eval run when you need to turn what happ
 compatibility: "Meta skill - no vela CLI dependency."
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Diagnosing Vela runs

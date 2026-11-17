@@ -4,7 +4,7 @@ description: Use right after interpreting a user story and before scaffolding, w
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Review the plan (self-grilling)
