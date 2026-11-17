@@ -2,11 +2,21 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Write|Edit|MultiEdit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/bin/guard.sh\" cc"
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/bin/guard.sh\" cc"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/bin/session.sh\" \"${CLAUDE_PLUGIN_ROOT}/references/cli-surface.md\""
           }
         ]
       }

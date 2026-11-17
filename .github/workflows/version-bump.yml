@@ -2,7 +2,8 @@ name: Version bump
 
 # Every merge to main bumps the plugin's patch version, so `claude plugin update` sees a new release
 # (an unchanged version keeps the cached copy), and the `metadata.version` patch of every skill whose folder
-# changed (Agent Skills frontmatter; a project that installs single skills compares them by it). The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
+# changed (Agent Skills frontmatter; a project that installs single skills compares them by it), and the
+# `# version:` line of every hook script that changed. The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
 on:
   push:
     branches: [main]
@@ -38,7 +39,7 @@ jobs:
             console.log(plugin.version);
           '
 
-      - name: Bump metadata.version of the changed skills
+      - name: Bump the version of the changed skills and hook scripts
         env:
           BEFORE: ${{ github.event.before }}
         run: |
@@ -54,12 +55,22 @@ jobs:
             ' "$f"
             echo "$s: $(grep -m1 '^  version:' "$f")"
           done
-          node scripts/sync-copilot.mjs   # carry the bumped versions into .github/skills/
+          for f in $(git diff --name-only "$BEFORE" HEAD -- hooks/bin/ | grep '\.sh$'); do
+            [ -f "$f" ] || continue
+            node -e '
+              const fs = require("fs"), f = process.argv[1], sh = fs.readFileSync(f, "utf8");
+              const out = sh.replace(/^(# version: )(\d+)\.(\d+)\.(\d+)$/m, (_, k, a, b, c) => `${k}${a}.${b}.${+c + 1}`);
+              if (out === sh) { console.error(`${f}: no version line`); process.exit(1); }
+              fs.writeFileSync(f, out);
+            ' "$f"
+            echo "$f: $(grep -m1 '^# version:' "$f")"
+          done
+          node scripts/sync-copilot.mjs   # carry the bumped versions into .github/skills/ and the embedded hooks
 
       - name: Commit
         run: |
           v=$(node -p 'require("./.claude-plugin/plugin.json").version')
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A skills .github/skills && git commit -am "chore(release): vela plugin $v"
+          git add -A skills hooks hooks.json .github && git commit -am "chore(release): vela plugin $v"
           git push

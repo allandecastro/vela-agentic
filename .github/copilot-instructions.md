@@ -90,7 +90,8 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 6. **Stop before `apply`.** Do everything through `vela plan` autonomously, then let a human run
    `apply`. No `--auto-approve` unless the user explicitly authorized it for this run. An **optional
    hook** (`hooks/`) **denies** `vela apply` unless the host was started with `VELA_APPLY_APPROVED=1`
-   (an inline prefix does not count); the rule holds without it.
+   (an inline prefix does not count); the rule holds without it. The same hook denies editing a generated
+   file, a push to main/master, a forced push, `--no-verify`, and a secret in a command or a written file.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
    tests) changes only in the design phase, with the human. In the build it is read-only, except its trace
    lines and the review-driven `amendments:` recorded in the Canvas. A failing regression test means the code

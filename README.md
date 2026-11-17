@@ -207,7 +207,7 @@ cleanly. Every run, failures included, is recorded in [`evals/runs/`](evals/runs
 | [`agents/`](agents/) | `vela-builder` and `vela-reviewer` |
 | [`references/`](references/) | The source of truth for CLI flags, APIs, Dataverse pitfalls and templates |
 | [`AGENTS.md`](AGENTS.md) | The rules every agent follows |
-| [`hooks/`](hooks/) | Optional guard that blocks `vela apply` without approval |
+| [`hooks/`](hooks/) | Optional guard (`vela apply` without approval, generated files, protected pushes, secrets) and the session version check |
 | [`tools/`](tools/) | The fixture tests of `spec-check` |
 | [`evals/`](evals/) | Scenarios, checks, grader tools and run records |
 | [`examples/`](examples/) | A story built end to end |
