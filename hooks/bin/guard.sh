@@ -1,5 +1,5 @@
 #!/bin/sh
-# version: 0.2.0
+# version: 0.2.1
 # vela-agentic guard (dual-target: Claude Code + GitHub Copilot) - a pre-tool hook on the shell and file-write
 # tools. Exit 2 denies on BOTH hosts; exit 0 allows. Denies:
 #   apply      `vela apply`, or `--auto-approve` / `--yes` on a vela command - unless the HOST process was started
