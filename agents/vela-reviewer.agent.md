@@ -33,7 +33,9 @@ Two independent axes, run separately so neither masks the other:
    Sync-vs-Async fit.
 
 Return `severity - file:line - what - why - suggested fix`, most severe first, severity **Critical /
-Required / Nit**, then **PASS** (no Critical/Required) or **BLOCK** (the blockers). On PASS, list the
+Required / Nit** - an item `review-checklist.md` labels Critical or Required keeps that label: never report it
+lower (if you think it does not apply here, say why in the finding and let the human decide) - then **PASS** (no
+Critical/Required) or **BLOCK** (the blockers). On PASS, list the
 Canvas decisions checked, one line each (Sync/Async + stage, reuse-vs-new, service-or-helper, filter).
 
 ## Boundaries

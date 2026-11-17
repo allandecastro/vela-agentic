@@ -42,7 +42,9 @@ Announce: `Using vela-grill to resolve the story`.
    - Event or invariant: a reaction to one event, or a rule that must always hold (then which other changes -
      another lookup, a re-parent - must also enforce it)?
    - Security context: calling user (default) or elevated? If the human defers to the defaults while you recommended otherwise, apply the
-     default and list your recommendation as an open question at the gate.
+     default and list your recommendation as an open question at the gate. When the behaviour depends on the
+     user's rights, also ask which security roles those users hold (exact names: the tests use the generated
+     `Roles`, `vela models --roles`).
    - A message the user sees: which languages, and where the texts live (project convention) - never
      assumed; no default covers it.
    - Target solution unique name, if `PROJECT.md` does not give it (never invented). Not the publisher prefix:
