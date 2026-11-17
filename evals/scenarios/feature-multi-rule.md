@@ -33,5 +33,6 @@ takes its account's website."
 - "http://x" becomes "https://x"; a website without a scheme gets "https://"; an empty website stays empty.
 - Contact: on Create only, when the contact has a parent account with a website; later changes to the
   account do not propagate.
+- If asked which security roles the users hold: "Salesperson" (a standard role of the dev org).
 - Target solution / publisher prefix: `ZavaSales` / `zava`.
 - Anything not listed: "Use the skills' defaults and record it as an assumption."

@@ -193,7 +193,9 @@ without the human is one of them>
 
 One file per table, holding the rules **triggered** on it; a rule that also affects another table gets one
 `See also` line in that table's file. Rules are written for the business, in Given / When / Then / Otherwise,
-with the technical trace separate. A rule in the file on the base branch is in force; a retired rule is deleted with its
+with the technical trace separate. A rule that relies on another names it in its **Given** (`Given the account's
+website, already https by ACC-003, ...`) and in the cases that depend on it - a `See also` line alone does not
+state the dependency. A rule in the file on the base branch is in force; a retired rule is deleted with its
 tests (git keeps the history).
 
 ```markdown

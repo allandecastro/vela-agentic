@@ -40,6 +40,8 @@ One case for each, from the Canvas's acceptance cases:
   untested behaviour is unprotected;
 - a "does nothing" case **seeds the state the bug would change** (reactivation: an *active* contact stays
   active) - a start state already equal to the expected one proves nothing;
+- a read of other rows (a lookup, a query) **seeds a non-matching row too** (another account, an inactive
+  contact) - with a single row seeded, a dropped filter still passes;
 
 **Runner per case:** **`PluginPipeline` by default** - it runs the registration as Dataverse does (filters,
 images, ranks, cascades, async); a class with several steps on one trigger is tested through it, on their combined
