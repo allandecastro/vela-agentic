@@ -51,5 +51,6 @@ compile) → **Critical** (it cannot block the delete); (b) the query without th
 - The message should say how many active contacts and to deactivate or move them first.
 - If asked about messages / languages: "our users work in English and French; messages are localized. For now
   the project keeps them in an in-code dictionary (1033 English, 1036 French)."
+- If asked which security roles the users hold: "Salesperson" (a standard role of the dev org).
 - Target solution / publisher prefix: `ZavaSales` / `zava`.
 - Anything not listed: "Use the skills' defaults and record it as an assumption."
