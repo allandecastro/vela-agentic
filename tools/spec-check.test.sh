@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Tests for tools/spec-check.cs on throwaway git repos: one fixture per check, plus the clean and plumbing cases.
+# Tests for spec-check (skills/vela-code-review/scripts/spec-check.cs) on throwaway git repos: one fixture per check, plus the clean and plumbing cases.
 #   bash tools/spec-check.test.sh
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SPEC="$HERE/spec-check.cs"
+SPEC="$HERE/../skills/vela-code-review/scripts/spec-check.cs"
 VELA_PLUGINS="${VELA_PLUGINS_VERSION:-0.41.1}"   # any published version: only its step API is read
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 pass=0; fail=0

@@ -2,6 +2,9 @@
 name: vela-plugin-testing
 description: Use when a Vela plugin's behaviour needs proving without a real Dataverse org, including writing the failing (RED) tests before implementation and reproducing a reported bug as a failing test.
 compatibility: "vela CLI + dotnet SDK."
+license: MIT
+metadata:
+  version: "0.1.0"
 ---
 
 # Verify with the Vela.Testing harness

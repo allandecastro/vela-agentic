@@ -1,7 +1,7 @@
 #:package Microsoft.CodeAnalysis.CSharp@4.14.0
 // spec-check - guard the functional spec of the tests (vela-agentic).
 //
-//   dotnet run <pack>/tools/spec-check.cs -- --base <ref> --canvas docs/features/<slug>/README.md [--repo .]
+//   dotnet run <vela-code-review skill>/scripts/spec-check.cs -- --base <ref> --canvas docs/features/<slug>/README.md [--repo .]
 //
 // Compares the story (fork point of <base>...HEAD) in a Vela project and fails (exit 1) when:
 //   1. a rule section in docs/rules/*.md changed or was added but its id is not declared in the Canvas `rules:`;
