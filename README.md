@@ -38,7 +38,7 @@ the `vela` CLI to build, test, review and preview Dataverse plugins, and stop be
 
 ## Overview
 
-**Vela Agentic** is a pack of 13 [Agent Skills](https://agentskills.io) and two agents for AI coding
+**Vela Agentic** is a pack of 11 [Agent Skills](https://agentskills.io) and two agents for AI coding
 assistants (Claude Code and GitHub Copilot, from one source). It teaches the assistant to build Microsoft
 Dataverse plugins the way a careful team would:
 
@@ -167,8 +167,6 @@ A story built end to end, unedited, is in [`examples/`](examples/).
 | `vela-code-review` | Reviews the change against the spec and the standards |
 | `vela-apply` | Packages, signs if needed, previews with `vela plan`, stops at the deploy gate |
 | `vela-debug-plugin` | Diagnoses a plugin that does not fire or misbehaves |
-| `writing-vela-skills` | How to add or fix a skill, test-first |
-| `diagnosing-vela` | Turns an agent run into line-level findings against the skills |
 
 The agents:
 
@@ -203,7 +201,8 @@ cleanly. Every run, failures included, is recorded in [`evals/runs/`](evals/runs
 
 | Path | Contents |
 | --- | --- |
-| [`skills/`](skills/) | The 13 skills. Each one carries a generated copy of the references it cites. |
+| [`skills/`](skills/) | The 11 skills. Each one carries a generated copy of the references it cites. |
+| [`.claude/skills/`](.claude/skills/) | The maintainer skills (writing skills, diagnosing runs); not shipped |
 | [`agents/`](agents/) | `vela-builder` and `vela-reviewer` |
 | [`references/`](references/) | The source of truth for CLI flags, APIs, Dataverse pitfalls and templates |
 | [`AGENTS.md`](AGENTS.md) | The rules every agent follows |
@@ -224,8 +223,10 @@ reported to Vela, not worked around in the skills. Plans are in [`ROADMAP.md`](R
 
 ## Contributing
 
-1. Follow [`skills/writing-vela-skills/SKILL.md`](skills/writing-vela-skills/SKILL.md): a change to
-   what an agent does ships with the eval that would have caught the problem.
+1. Follow [`.claude/skills/pack-writing-skills/SKILL.md`](.claude/skills/pack-writing-skills/SKILL.md): a change to
+   what an agent does ships with the eval that would have caught the problem. The maintainer skills
+   (`pack-writing-skills`, `pack-diagnosing-runs`: a run turned into line-level findings against the skills)
+   live in `.claude/skills/`, loaded when you work in this repo and never shipped with the pack.
 2. Edit the sources (`skills/`, `agents/`, `references/`, `AGENTS.md`), then regenerate with
    `node scripts/sync-copilot.mjs`.
 3. Run `sh scripts/check.sh` before pushing: lint, configs, shell syntax, guard tests, secret scan and

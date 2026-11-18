@@ -1,6 +1,6 @@
 # evals - loop engineering for the Vela skills
 
-We apply TDD to the skills themselves (the `writing-vela-skills` discipline). An eval is a
+We apply TDD to the skills themselves (the `pack-writing-skills` discipline). An eval is a
 **pressure scenario**: a fresh agent is told to satisfy it while following the skills *to the
 letter*, and every place it deviates, gets stuck, or hits a wrong command/flag is a **finding**
 against a skill - not a problem with the agent.
@@ -28,12 +28,11 @@ against a skill - not a problem with the agent.
 ## Coverage
 
 Generated from each scenario's `skills_exercised` by `scripts/sync-copilot.mjs` (do not edit by hand).
-The lint warns about any non-meta skill no scenario exercises.
+Shipped skills only (`skills/`); the lint warns about any that no scenario exercises.
 
 <!-- coverage:start -->
 | Skill | Exercised by |
 | --- | --- |
-| `diagnosing-vela` | diagnose-failed-run |
 | `using-vela` | account-delete-role-privilege, ambiguous-story-grill, apply-gate, dispatched-no-human, feature-multi-rule |
 | `vela-apply` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-rule-conflict, apply-gate, contact-association, creditlimit-threshold-role, debug-live-trace, deployed-plugin-change, feature-multi-rule, org-models-and-plan, regression-test-guard |
 | `vela-code-review` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, apply-gate, bulk-update-multiple, contact-association, contact-shared-default, creditlimit-threshold-role, debug-live-trace, deployed-plugin-change, feature-multi-rule, lead-score-custom-api, org-models-and-plan, regression-test-guard |
@@ -45,7 +44,6 @@ The lint warns about any non-meta skill no scenario exercises.
 | `vela-plugin-authoring` | account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, creditlimit-threshold-role, debug-filter-miss, deployed-plugin-change, feature-multi-rule, org-models-and-plan, regression-test-guard |
 | `vela-plugin-testing` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-rule-conflict, account-second-behaviour, account-territory-cache, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, creditlimit-threshold-role, debug-filter-miss, debug-live-trace, deployed-plugin-change, feature-multi-rule, lead-score-custom-api, org-models-and-plan, regression-test-guard |
 | `vela-scaffold` | account-credit-function, account-deactivate-cascade, account-default-description, account-delete-guard, account-erp-outbound, account-mi-outbound, account-multi-step, account-second-behaviour, account-typed-images, account-update-recursion, bulk-update-multiple, contact-association, contact-shared-default, lead-score-custom-api, org-models-and-plan |
-| `writing-vela-skills` | **none** |
 <!-- coverage:end -->
 
 ## Scenarios

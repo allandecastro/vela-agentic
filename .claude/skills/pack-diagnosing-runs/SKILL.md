@@ -1,15 +1,12 @@
 ---
-name: diagnosing-vela
+name: pack-diagnosing-runs
 description: Use after an autonomous or eval run when you need to turn what happened into concrete, line-level findings against the skills.
-compatibility: "Meta skill - no vela CLI dependency."
-license: MIT
-metadata:
-  version: "0.1.1"
+compatibility: "Maintainer skill of this repo, not shipped with the pack - no vela CLI dependency."
 ---
 
-# Diagnosing Vela runs
+# Diagnosing pack runs
 
-Turn a run into numbered, line-level findings against the skills, for `writing-vela-skills` to fix.
+Turn a run into numbered, line-level findings against the skills, for `pack-writing-skills` to fix.
 
 ## When to use
 
@@ -17,7 +14,7 @@ Turn a run into numbered, line-level findings against the skills, for `writing-v
 
 ## Process
 
-Announce: `Using diagnosing-vela to analyse the run`.
+Announce: `Using pack-diagnosing-runs to analyse the run`.
 
 1. Reconstruct the run against the build loop - from the **Run trace** (`.vela-runs/<slug>/trace.md`, or the PR body) when present,
    else the transcript.

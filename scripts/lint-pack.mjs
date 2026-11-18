@@ -59,7 +59,7 @@ async function lintSkills() {
       warnings.push(`skills/${e.name}: description looks like a workflow summary - keep it trigger-only ("Use when…")`);
     // Hosts may resolve relative paths against the working directory: say they are skill-relative.
     if (/references\/[a-z0-9-]+\.md/.test(md) && !md.includes("relative to **this skill's folder**"))
-      errors.push(`skills/${e.name}: cites references/ but lacks the skill-relative path note (see writing-vela-skills)`);
+      errors.push(`skills/${e.name}: cites references/ but lacks the skill-relative path note (see .claude/skills/pack-writing-skills)`);
     // Self-contained once installed: every cited reference must be bundled next to SKILL.md.
     for (const m of md.matchAll(/references\/([a-z0-9-]+\.md)/g)) {
       try { await fs.access(path.join(base, e.name, "references", m[1])); }
@@ -108,7 +108,11 @@ const skillNames = async () =>
   (await fs.readdir(path.join(root, "skills"), { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name);
 const agentNames = async () =>
   (await fs.readdir(path.join(root, "agents"))).filter((f) => f.endsWith(".agent.md")).map((f) => path.basename(f, ".agent.md"));
-const META_SKILLS = new Set(["writing-vela-skills", "diagnosing-vela"]);
+// Maintainer skills (.claude/skills/pack-*): used in this repo, never shipped, no eval coverage required.
+const maintainerSkillNames = async () => {
+  try { return (await fs.readdir(path.join(root, ".claude", "skills"), { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name); }
+  catch { return []; }
+};
 
 // Terms that must not come back (renamed or never real). [regex, hint]
 const FORBIDDEN = [
@@ -117,12 +121,14 @@ const FORBIDDEN = [
 ];
 
 // Former skill names: run records keep the name the skill had when the run happened; anywhere else they fail.
-const RETIRED = new Set(["vela-test-harness"]);   // renamed vela-plugin-testing
+const RETIRED = new Set(["vela-test-harness",   // renamed vela-plugin-testing
+  "writing-vela-skills", "diagnosing-vela"]);      // moved to .claude/skills as pack-writing-skills / pack-diagnosing-runs
 
 // Sources an agent reads (generated copies and the forward-looking ROADMAP excluded).
 async function sourceDocs() {
   const out = ["AGENTS.md", "README.md", "hooks/README.md"];
   for (const s of await skillNames()) out.push(`skills/${s}/SKILL.md`);
+  for (const s of await maintainerSkillNames()) out.push(`.claude/skills/${s}/SKILL.md`);
   for (const a of await agentNames()) out.push(`agents/${a}.agent.md`);
   for (const d of ["references", "evals", "evals/scenarios", "evals/runs"]) {
     try { for (const f of await fs.readdir(path.join(root, d))) if (f.endsWith(".md")) out.push(`${d}/${f}`); }
@@ -133,11 +139,13 @@ async function sourceDocs() {
 
 async function lintNamesAndTerms() {
   // Also the repo name.
-  const known = new Set([...(await skillNames()), ...(await agentNames()), "vela-agentic"]);
+  const known = new Set([...(await skillNames()), ...(await maintainerSkillNames()), ...(await agentNames()), "vela-agentic"]);
   for (const rel of await sourceDocs()) {
     const md = await fs.readFile(path.join(root, rel), "utf8");
     for (const m of md.matchAll(/`\/?(vela-[a-z-]+)`/g))
       if (!known.has(m[1]) && !(RETIRED.has(m[1]) && rel.startsWith("evals/runs/"))) errors.push(`${rel}: cites \`${m[1]}\`, which is neither a skill nor an agent`);
+    if (!rel.startsWith("evals/runs/"))
+      for (const old of RETIRED) if (md.includes(`\`${old}\``) || md.includes(`/${old}/`)) errors.push(`${rel}: cites the former skill name '${old}'`);
     for (const [re, hint] of FORBIDDEN) if (re.test(md)) errors.push(`${rel}: forbidden term ${re} - ${hint}`);
   }
 }
@@ -154,6 +162,7 @@ async function lintReadmeTable() {
 }
 
 async function lintEvals() {
+  const maintainer = new Set(await maintainerSkillNames());
   const skills = new Set(await skillNames());
   const dir = path.join(root, "evals", "scenarios");
   const covered = new Set();
@@ -169,12 +178,12 @@ async function lintEvals() {
     for (const k of ["skills_exercised", "gotchas_exercised", "org_required"])
       if (!fm[k]) errors.push(`${rel}: frontmatter missing '${k}'`);
     for (const s of list(fm.skills_exercised)) {
-      if (!skills.has(s)) errors.push(`${rel}: skills_exercised names unknown skill '${s}'`);
+      if (!skills.has(s) && !maintainer.has(s)) errors.push(`${rel}: skills_exercised names unknown skill '${s}'`);
       covered.add(s);
     }
   }
   for (const s of skills)
-    if (!covered.has(s) && !META_SKILLS.has(s)) warnings.push(`skills/${s}: no eval scenario exercises it (evals/README.md coverage)`);
+    if (!covered.has(s)) warnings.push(`skills/${s}: no eval scenario exercises it (evals/README.md coverage)`);
   let runs = [];
   try { runs = (await fs.readdir(path.join(root, "evals", "runs"))).filter((f) => f.endsWith(".md") && f !== "README.md"); }
   catch { /* no runs yet */ }

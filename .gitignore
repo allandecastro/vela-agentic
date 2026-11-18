@@ -16,3 +16,6 @@ evals/tools/probe/obj/
 __pycache__/
 *.results.xml
 evals/tools/shim-attempts.log
+
+# Claude Code local settings (the maintainer skills in .claude/skills/ are tracked)
+.claude/settings.local.json

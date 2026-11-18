@@ -1,18 +1,12 @@
 ---
-name: writing-vela-skills
+name: pack-writing-skills
 description: Use when adding, fixing, or reviewing a Vela skill or its wording.
-compatibility: "Meta skill - no vela CLI dependency."
-license: MIT
-metadata:
-  version: "0.1.2"
+compatibility: "Maintainer skill of this repo, not shipped with the pack - no vela CLI dependency."
 ---
 
 # Writing Vela skills
 
-> Paths like `references/<file>.md` in this skill are relative to **this skill's folder** (the
-> directory containing this `SKILL.md`), not to the project you are working in.
-
-Skills are process documentation under test. A skill is "done" when a fresh agent following it
+Paths are relative to the repo root. Skills are process documentation under test. A skill is "done" when a fresh agent following it
 literally reaches the right outcome.
 
 ## Lean principle
@@ -31,14 +25,21 @@ literally reaches the right outcome.
   have told the agent to run `--help`, read the generated code, or write a probe test; add a framework
   fact only when no such method would have found it.
 
-## House style (every skill)
+## Shipped skills vs maintainer skills
+
+`skills/` is the product: shipped with the Claude plugin and copied to `.github/skills/` for Copilot.
+A skill that serves only the pack's maintainers (this one, `pack-diagnosing-runs`) lives in
+`.claude/skills/`, is named `pack-*`, is never shipped, carries no `license`/`metadata` and needs no eval
+coverage.
+
+## House style (every shipped skill)
 
 Frontmatter: `name` (kebab) and a **trigger-only `description`** - *when* it applies ("Use when…"),
 never a workflow summary (an agent follows the summary instead of the body - observed). Every skill is
 model-invoked; one meant for a human conversation may name its slash command (e.g. `/vela-grill`).
 Never promise a command that does not exist - the end-to-end loop is the `vela-builder` agent.
 **`compatibility`** names the dependency, never a version (`"vela CLI + dotnet SDK."`): the verified version
-lives only in `references/cli-surface.md`; meta skills say so instead. The frontmatter follows the
+lives only in `references/cli-surface.md`. The frontmatter follows the
 [Agent Skills specification](https://agentskills.io/specification): `license: MIT` and `metadata:` `version:
 "x.y.z"` - the skill's own version, never hand-edited (CI bumps it when the skill's folder changes). Code a
 skill runs ships in its `scripts/` folder (`vela-code-review/scripts/spec-check.cs`). Body: `Overview → When to use → Process

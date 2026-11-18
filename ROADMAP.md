@@ -23,7 +23,7 @@ independent of the framework/CLI NuGet releases.
 - [x] Skills grounded in the verified CLI + harness surface (references are verbatim)
 - [x] Gated build loop with two artifacts (Vela Canvas + Build Report)
 - [x] Front challenge gate: `vela-plan-review` (self-grill) + `/vela-grill` (interview human)
-- [x] Loop engineering: `evals/` + `writing-vela-skills` + `diagnosing-vela`
+- [x] Loop engineering: `evals/` + the maintainer skills `pack-writing-skills` + `pack-diagnosing-runs`
 - [x] Skill taxonomy: every skill model-invoked (runnable by name); the loop is the `vela-builder` agent
 - [x] Code-review gate before apply: `vela-code-review` (two-axis, severities)
 - [x] Two agents: `vela-builder` + isolated read-only `vela-reviewer`
@@ -79,7 +79,7 @@ independent of the framework/CLI NuGet releases.
       violations replayed against a fresh reviewer, N runs per scenario, pass rate generated into
       `evals/README.md`; run records pin the CLI, framework and model versions
 - [x] Scenarios for outbound calls (Integrations, secure config), typed bound Custom API, Delete, deactivate
-      (Update on `statecode`), debug from the real trace log, changing a deployed plugin, `diagnosing-vela`
+      (Update on `statecode`), debug from the real trace log, changing a deployed plugin, `pack-diagnosing-runs`
 - [x] **Lean pack** (29.8k -> 19.4k words): skills drive Vela; API/CLI detail is discovered (`--help`, the
       generated code, Vela's `docs/llms.txt`), not copied; no version stamps in running text
 - [x] **Rules registry** (`docs/rules/<table>.md`, English Given/When/Then, read at intake, contradictions
