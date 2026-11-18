@@ -31,7 +31,9 @@ One case for each, from the Canvas's acceptance cases:
 - each **applicable gotcha** (`references/dataverse-gotchas.md`): image, filtering attribute,
   relationship scope, bulk `*Multiple`, async step (failure lands in `AsyncStepFailures`, not thrown);
 - on **Update**: column **not sent** vs **cleared** (sent as null) - different cases. A column that can't
-  be cleared (`statecode`): "sent with the same value" instead;
+  be cleared (`statecode`): "sent with the same value" instead. On **Create**, a filtered column sent as null
+  is its own case too;
+- a **bug repro** covers the class of inputs, not only the reported value (a host with and without a dot);
 - negative pipeline cases ("same value" **and** "cleared") assert the step **ran** (`ExecutionLog`,
   `HandlerInvoked`) and left the value alone - else a broken trigger passes too. "Does not fire" asserts
   `Assert.Empty(p.ExecutionLog)` (filter not matched) or `HandlerInvoked == false` (skipped: out of

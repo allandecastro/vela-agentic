@@ -92,7 +92,7 @@ Announce: `Using vela-plan-review to grill the plan`.
    - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
      business decision: with a human reachable, ask (one question); a step that reads or writes another table as the
      user gets acceptance cases for no Read privilege, a row out of the user's scope, and a denied write - ask
-     what each must do; none reachable → it goes back with the other
+     what each must do, and the role names of those users (never assumed); none reachable → it goes back with the other
      business questions (step 4), never decided alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** one plugin class per table (`<Entity>Plugin`), behaviour-named handlers, fixed shared-file names
