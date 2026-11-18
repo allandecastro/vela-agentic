@@ -1,4 +1,6 @@
 #!/bin/sh
 # Blocks a push when the local CI replay fails (the same checks as GitHub Actions, run before the push).
 # Enable once per clone:  git config core.hooksPath .githooks
-exec sh "$(git rev-parse --show-toplevel)/scripts/check.sh"
+top="$(git rev-parse --show-toplevel)"
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE   # exported to hooks; the checks' temp repos must not inherit them
+exec sh "$top/scripts/check.sh"

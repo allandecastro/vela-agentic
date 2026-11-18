@@ -59,6 +59,9 @@ symptom → cause → fix.
   throwing rolls back everything, including earlier plugin writes. PreValidation runs before it. Async runs
   after commit (failure = a failed system job, the save stays). External side effects never roll back -
   don't make them from a Sync step that may still fail after them.
+- **A failed write inside the transaction ends it, even when caught:** rethrow as
+  `InvalidPluginExecutionException`. A caught failed read (missing row, missing privilege, row out of depth)
+  does not end it; still handle it explicitly rather than swallowing it.
 - **User sees "An unexpected error occurred".** Only `InvalidPluginExecutionException` surfaces its
   message (VELA012). Throw it with an actionable message, never swallow, `ctx.Trace(...)` what you need.
 - **A secret in a solution export or the repo.** Unsecure config is exported; code is in git. Use secure
