@@ -4,7 +4,7 @@ description: Use when a user story is ambiguous or underspecified and only the h
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.5"
+  version: "0.1.6"
 ---
 
 # Grill the story (interview the human)
