@@ -150,7 +150,8 @@ Given / When / Then with numbered cases (`ACC-002/C1`), and each test cites the 
 - [`spec-check`](skills/vela-code-review/scripts/spec-check.cs), a script of the review skill, enforces this at review (`dotnet run`): no undeclared
   rule change, no deleted rule, no regression test bent to fit.
 
-A story built end to end, unedited, is in [`examples/`](examples/).
+What a full run produces (questions, review rounds, evidence, verdict) is in the run records, e.g.
+[`evals/runs/2026-11-18-feature-multi-rule.r1.md`](evals/runs/2026-11-18-feature-multi-rule.r1.md).
 
 ## Skills
 
@@ -209,7 +210,6 @@ cleanly. Every run, failures included, is recorded in [`evals/runs/`](evals/runs
 | [`hooks/`](hooks/) | Optional guard (`vela apply` without approval, generated files, protected pushes, secrets) and the session version check |
 | [`tools/`](tools/) | The fixture tests of `spec-check` |
 | [`evals/`](evals/) | Scenarios, checks, grader tools and run records |
-| [`examples/`](examples/) | A story built end to end |
 | [`scripts/`](scripts/) | Pack lint, Copilot surface generation, local CI |
 | `.claude-plugin/` | Plugin and marketplace manifests |
 | `.github/` | Copilot surface, generated from the sources above; never edited by hand |
