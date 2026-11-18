@@ -4,7 +4,7 @@ description: Use when a Vela plugin's behaviour needs proving without a real Dat
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.3"
+  version: "0.1.4"
 ---
 
 # Verify with the Vela.Testing harness

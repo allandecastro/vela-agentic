@@ -4,7 +4,7 @@ description: Use when adding, fixing, or reviewing a Vela skill or its wording.
 compatibility: "Meta skill - no vela CLI dependency."
 license: MIT
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
 ---
 
 # Writing Vela skills
