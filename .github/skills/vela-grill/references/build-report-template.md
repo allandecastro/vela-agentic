@@ -153,7 +153,7 @@ apply: pending
 <Canvas changes made during the build (requirement change → Canvas first; refactor → synced back)>
 
 ## Run trace (in `.vela-runs/<slug>/trace.md`, not in this README)
-One row per step, appended as you go; the input for `diagnosing-vela`. Every value is copied from the
+One row per step, appended as you go; the input for `vela-debug-plugin` and for diagnosing the run. Every value is copied from the
 tool's output - `exit` is the real code, `-` when nothing ran. Never estimate a value you did not observe.
 
 | # | step | skill | command | exit | verdict |

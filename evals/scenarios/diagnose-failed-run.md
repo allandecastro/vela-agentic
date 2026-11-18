@@ -1,6 +1,6 @@
 ---
 scenario: diagnose-failed-run
-skills_exercised: [diagnosing-vela]
+skills_exercised: [pack-diagnosing-runs]
 entity: none
 message: none
 gotchas_exercised: [skill-defect-not-model-blame, file-and-quote-findings, literal-reading]
@@ -11,7 +11,8 @@ org_required: false
 
 ## Context
 You maintain the Vela skill pack. A builder agent ran the pack on a story and a separate grader failed
-the run afterwards. Your job is the pack, not the plugin.
+the run afterwards. Your job is the pack, not the plugin. The maintainer skills are in the pack repo's
+`.claude/skills/` (not shipped with the pack).
 
 ## User story
 "The grader failed this run: nothing proves that the API key read from secure configuration reaches the ERP
@@ -27,7 +28,7 @@ why the skills let that happen and tell me exactly what to change in them."
 - Write your findings to `<work>/findings.md`. No org, no `vela` command needed.
 
 ## What the skills must get right
-- `diagnosing-vela` is followed: the run is reconstructed from the Build Report's Run trace and logs; each
+- `pack-diagnosing-runs` is followed: the run is reconstructed from the Build Report's Run trace and logs; each
   finding names a **file in `pack/`**, **quotes** what it said, states what the agent did and the correct path,
   and has a severity (blocker / minor); a verdict closes the list.
 - The real causes are found in the pack, not blamed on the model:
