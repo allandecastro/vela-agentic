@@ -4,7 +4,7 @@ description: Use once a plugin change's tests are green and analyzers are clean,
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.4"
+  version: "0.1.5"
 ---
 
 # Review the change before the apply gate
