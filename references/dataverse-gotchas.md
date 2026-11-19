@@ -58,9 +58,9 @@ symptom → cause → fix.
   after commit (failure = a failed system job, the save stays). External side effects never roll back -
   don't make them from a Sync step that may still fail after them.
 - **A failed write inside the transaction ends it, even when caught:** rethrow as
-  `InvalidPluginExecutionException`. The read check of `SetState`, `Merge` and `Associate` (1:N) counts as a
-  write. A caught failed plain read (missing row, missing privilege, row out of depth), or the read check of
-  `Update`, does not end it; still handle it explicitly rather than swallowing it.
+  `InvalidPluginExecutionException`. The read check of `Merge` and `Associate` (1:N) counts as a write. A
+  caught failed plain read (missing row, missing privilege, row out of depth), or the read check of `Update`,
+  does not end it; still handle it explicitly rather than swallowing it.
 - **User sees "An unexpected error occurred".** Only `InvalidPluginExecutionException` surfaces its
   message (VELA012). Throw it with an actionable message, never swallow, `ctx.Trace(...)` what you need.
 - **A secret in a solution export or the repo.** Unsecure config is exported; code is in git. Use secure
