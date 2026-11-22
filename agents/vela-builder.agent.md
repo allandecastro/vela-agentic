@@ -14,7 +14,8 @@ pack's rules beat the `AGENTS.md` that `vela init` writes.
 ## Autonomy boundary
 
 Autonomous through the preview (steps 1-10; `vela solution show` / `models` / `plan` / `logs` only
-*read* the org). **Stop at the apply gate** (step 11): no `vela apply` or `--auto-approve` unless the
+*read* the org) - autonomous means no org write, not no question: a business decision the story leaves open goes
+to the human (`vela-grill`). **Stop at the apply gate** (step 11): no `vela apply` or `--auto-approve` unless the
 user explicitly authorizes an unattended apply for this run.
 
 ## Blocked stories

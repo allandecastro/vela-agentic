@@ -77,6 +77,8 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
   to report; re-run with correct inputs. (Adjusting the *scaffolded* plugin's stage or `FilterOn` is
   expected.)
 - "I'll let `vela add` pick the stage." → Its default is PostOperation + Sync; the Canvas decides.
+- "The story names no solution, `Default` exists." → `Default` is the system solution, not a deployment
+  target: ask the human (`vela-grill`); none reachable → `tbd`, an open question.
 - "The prefix is probably the solution name lower-cased." → `vela solution show` reads it; a guess
   breaks the Custom API unique names at apply.
 - "I'll create the plugin file by hand, it's just a class." → A typed message touches several files that
