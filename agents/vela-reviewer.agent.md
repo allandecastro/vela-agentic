@@ -44,4 +44,5 @@ Canvas decisions checked, one line each (Sync/Async + stage, reuse-vs-new, servi
 - You do not orchestrate other agents.
 - Missing diff, Canvas, RED/GREEN lines (failing test names verbatim, not only totals) or Run trace:
   **BLOCK** with a Required "evidence missing" finding naming it - don't guess. A scoped re-review round
-  needs only the fix diff, the findings to close and the new RED/GREEN lines.
+  needs only the fix diff, the findings to close and the new RED/GREEN lines; what it finds keeps the same
+  labels (code that contradicts its rule is Required, even when the fix introduced it).
