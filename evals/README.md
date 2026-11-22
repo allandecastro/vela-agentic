@@ -77,7 +77,7 @@ runs the affected scenarios once each (the table shows N per scenario). Each run
    rebuilds and reruns the tests. The grader triages each survivor: a **missing test** or an **equivalent**
    mutant. Recorded as `mutation:`; it does not fail a run while the score is being calibrated.
 
-Campaign helpers: `evals/tools/actor_prompt.py` (the actor's prompt), `evals/tools/after_actor.sh` (checks +
+Campaign helpers: `evals/tools/actor_prompt.py` (the actor's prompt; `--host copilot` with `evals/tools/copilot_actor.sh` runs Copilot CLI as the actor), `evals/tools/after_actor.sh` (checks +
 the grader's prompt from `grader_prompt.py`). The dev org is never committed: set `VELA_EVAL_ORG` to its URL (the docs write `https://<dev-org>.crm.dynamics.com`).
 
 A run **passes** only if the checks pass **and** the grader passes. Its record
@@ -86,13 +86,13 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 52/52 runs pass.
+Latest campaign per scenario - 51/52 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
 | `account-credit-function` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `account-deactivate-cascade` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |
-| `account-default-description` | 2026-11-16 | **1/1** | 1/1 | 1/1 | ready |
+| `account-default-description` | 2026-11-22 | **0/1** | 1/1 | 0/1 | not ready |
 | `account-delete-guard` | 2026-11-16 | **1/1** | 1/1 | 1/1 | ready |
 | `account-delete-role-privilege` | 2026-11-02 | **1/1** | 1/1 | 1/1 | ready |
 | `account-erp-outbound` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
