@@ -30,8 +30,8 @@ Announce: `Using vela-grill to resolve the story`.
    skipping what the story answers. Only **business decisions** go to the human; platform facts are
    yours (or assumptions). A business value nobody raised (e.g. which Inactive status reason) may take the
    platform default as an assumption. Ask every edge value that changes an acceptance case (scope,
-   empty/malformed input) before ending; a one-line edge follow-up may ride along, never two independent
-   decisions.
+   empty/malformed input) before ending; only a one-line follow-up on the **same** decision may ride along -
+   any other question, edge or not, waits for the next turn.
    - Meaning: which column/table (standard or custom) does each story term mean?
    - Direction: which record drives the change, which is written, via which lookup/relationship?
    - Trigger: which message, which attribute? Do **other events** (delete, re-parent, bulk) reach the
