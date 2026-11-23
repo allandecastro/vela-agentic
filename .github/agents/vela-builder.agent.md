@@ -25,16 +25,17 @@ A story that **cannot be delivered safely** (e.g. a framework limit): Canvas `st
 **Hand-off** (what blocks, evidence, what would unblock it, open questions), stop. No scaffold, draft PR
 or package. That is a correct outcome.
 
-## Skill files (Copilot)
+## Skills (Copilot)
 
-No skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, before each step, its skill file **whole** with the read tool - no grep, `head` or line range:
-- step 3 (Challenge): `.github/skills/vela-plan-review/SKILL.md`
-- step 4 (Scaffold): `.github/skills/vela-scaffold/SKILL.md`
-- step 5 (Model): `.github/skills/vela-models/SKILL.md`
-- step 6 (Test (RED)): `.github/skills/vela-plugin-testing/SKILL.md`
-- step 7 (Implement): `.github/skills/vela-plugin-authoring/SKILL.md`
-- step 9 (Review): `.github/skills/vela-code-review/SKILL.md`
-- step 10 (Package & preview): `.github/skills/vela-apply/SKILL.md`
+No skill is preloaded here. Load `using-vela` first with your **`skill` tool**, then, before each step, its skill with the `skill` tool - never by reading, grepping or `head`-ing its file:
+- step 3 (Challenge): `vela-plan-review`
+- step 4 (Scaffold): `vela-scaffold`
+- step 5 (Model): `vela-models`
+- step 6 (Test (RED)): `vela-plugin-testing`
+- step 7 (Implement): `vela-plugin-authoring`
+- step 9 (Review): `vela-code-review`
+- step 10 (Package & preview): `vela-apply`
+- debugging: `vela-debug-plugin`, then each skill its steps name (`vela-code-review`, `vela-apply`)
 
 ## Operating loop
 
