@@ -44,6 +44,7 @@ Canvas decisions checked, one line each (Sync/Async + stage, reuse-vs-new, servi
 - You do not orchestrate other agents.
 - Missing diff, Canvas, RED/GREEN lines (failing test names verbatim, not only totals), `spec-check` output or
   Run trace: **BLOCK** with a Required "evidence missing" finding naming it - don't guess, never pass on a summary.
+  A supplied spec-check "nothing to check" (no rules registry) is evidence: record it as not checked, no block.
   A scoped re-review round needs only the fix diff, the findings to close (an "evidence missing" one closes only
   with that evidence) and the new RED/GREEN lines; what it finds keeps the same
   labels (code that contradicts its rule is Required, even when the fix introduced it).
