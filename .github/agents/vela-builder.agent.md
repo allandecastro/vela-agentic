@@ -52,14 +52,15 @@ No skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, the
    (the step's user) to write - `ctx.SystemService` / `ctx.AsUser(id)` only when the Canvas says so;
    code to **green**.
 8. **Verify** - full suite green (OS-correct runner) **and** no analyzer (VELA00x) violations.
-9. **Review** - commit, then `vela-code-review` (dispatches `vela-reviewer`). Unresolved
-   Critical/Required block: fix, re-verify, re-review as `vela-code-review` says.
+9. **Review** - commit, then `vela-code-review` (dispatches `vela-reviewer`); save its verbatim output to
+   `.vela-runs/<slug>/review.md` (each round appended). Unresolved Critical/Required block: fix, re-verify,
+   re-review as `vela-code-review` says.
 10. **Package & preview** - `vela-apply`: `dotnet build -c Release` (package in `artifacts/`), `vela sign`
     if required, `vela plan --solution <uniquename>` on **that exact package** (never writes). Last, on
     the final code: any later change means re-test, re-review (scoped to that change), rebuild, re-plan.
 11. **Apply gate** - emit the **Build Report** (harness pass, analyzers clean, review PASS, cases
-    checklist, the `vela plan` preview, the **Run trace**: one row per step - command, exit code, gate
-    verdict), stop, hand off to a human.
+    checklist, the `vela plan` preview; the **Run trace** - one row per step: command, exit code, gate
+    verdict - goes to `.vela-runs/<slug>/trace.md`), stop, hand off to a human.
 12. **Report** - a PR, **draft first**:
     - Branch before Scaffold; `gh pr create --draft` once the Canvas exists (after step 3, or,
       with no repository yet, right after the scaffold-move commit). The body
