@@ -27,7 +27,7 @@ or package. That is a correct outcome.
 
 ## Skill files (Copilot)
 
-No skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, before each step, its skill file **whole** with the read tool - never grep or `head` it:
+No skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, before each step, its skill file **whole** with the read tool - no grep, `head` or line range:
 - step 3 (Challenge): `.github/skills/vela-plan-review/SKILL.md`
 - step 4 (Scaffold): `.github/skills/vela-scaffold/SKILL.md`
 - step 5 (Model): `.github/skills/vela-models/SKILL.md`
