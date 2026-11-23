@@ -110,7 +110,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    before any test: that commit is the frozen spec the build is checked against.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
-   **edge values that change an acceptance case**): then `vela-grill` first and resume with the answers.
+   **edge values that change an acceptance case**, the users' roles and what a denied read or write must do):
+   then `vela-grill` first and resume with the answers.
    With a human reachable such a rule is **asked**, never assumed: its own numbered question (a proposed default
    is fine) - an "unless you object" beside another question is not asking. **No human reachable** (e.g. dispatched as a
    subagent) → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
