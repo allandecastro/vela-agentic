@@ -75,7 +75,7 @@ Announce: `Using vela-plugin-testing to <purpose>`.
 ## Tests carry their functional case
 
 - Every test carries the id of the registry case it proves: `[Trait("Case", "ACC-002/C1")]` (cases are in
-  `docs/rules/<table>.md`, written at design). No test without its functional
+  `docs/rules/<table>.md`, which you write in the design commit - a case missing there means back to design). No test without its functional
   justification - technical ones included (a generated `Fires_On_*` proves a case's trigger: tag it with that
   case). A test without a case id, or with an id not in the registry, fails `spec-check`.
 - **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code

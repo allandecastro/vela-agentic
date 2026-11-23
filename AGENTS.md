@@ -87,7 +87,8 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
    (an inline prefix does not count); the rule holds without it. The same hook denies editing a generated
    file, a push to main/master, a forced push, `--no-verify`, and a secret in a command or a written file.
 7. **The spec is not the agent's to bend.** `docs/rules/` (the business rules, the functional spec of the
-   tests) changes only in the design phase, with the human. In the build it is read-only, except its trace
+   tests) changes only in the design phase: you write the story's rules and cases there (`vela-plan-review`),
+   asking the human what only they can decide. In the build it is read-only, except its trace
    lines and the review-driven `amendments:` recorded in the Canvas. A failing regression test means the code
    is wrong. `spec-check` (`vela-code-review`'s `scripts/spec-check.cs`, `dotnet run`) checks this at review; a team may copy it into its CI.
 8. **Prefer generated code.** Regenerate models; never hand-edit generated files.
