@@ -108,10 +108,21 @@ async function genAgents() {
     const name = attrs.name || path.basename(f, ".agent.md");
     const fm = [`name: ${name}`, `description: ${JSON.stringify(attrs.description || "")}`];
     if (attrs.tools) fm.push(`tools: [${attrs.tools.split(",").map((t) => JSON.stringify(t.trim())).join(", ")}]`);
-    const out = `---\n${fm.join("\n")}\n---\n` + GENERATED_BANNER + body.trimStart();
+    const out = `---\n${fm.join("\n")}\n---\n` + GENERATED_BANNER + skillPaths(body.trimStart());
     await fs.writeFile(path.join(dst, `${name}.agent.md`), out);
   }
   return files.length;
+}
+
+// Copilot preloads no skill and, given a skill name, tends to grep it (eval runs 2026-11-23): each step of the
+// operating loop gets the path of the skill file to read whole.
+function skillPaths(body) {
+  const step = /^(\d+)\. \*\*([^*]+)\*\*[^\n]*?`((?:using-)?vela-[a-z-]+|using-vela)`/gm;
+  const rows = [...body.matchAll(step)].map((m) => `- step ${m[1]} (${m[2]}): \`.github/skills/${m[3]}/SKILL.md\``);
+  if (!rows.length) return body;
+  const note = "\n## Skill files (Copilot)\n\nNo skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, " +
+    "before each step, its skill file **whole** with the read tool - never grep or `head` it:\n" + rows.join("\n") + "\n";
+  return body.replace(/\n## Operating loop\n/, note + "\n## Operating loop\n");
 }
 
 async function genInstructions() {

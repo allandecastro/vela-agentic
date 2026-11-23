@@ -25,6 +25,17 @@ A story that **cannot be delivered safely** (e.g. a framework limit): Canvas `st
 **Hand-off** (what blocks, evidence, what would unblock it, open questions), stop. No scaffold, draft PR
 or package. That is a correct outcome.
 
+## Skill files (Copilot)
+
+No skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, before each step, its skill file **whole** with the read tool - never grep or `head` it:
+- step 3 (Challenge): `.github/skills/vela-plan-review/SKILL.md`
+- step 4 (Scaffold): `.github/skills/vela-scaffold/SKILL.md`
+- step 5 (Model): `.github/skills/vela-models/SKILL.md`
+- step 6 (Test (RED)): `.github/skills/vela-plugin-testing/SKILL.md`
+- step 7 (Implement): `.github/skills/vela-plugin-authoring/SKILL.md`
+- step 9 (Review): `.github/skills/vela-code-review/SKILL.md`
+- step 10 (Package & preview): `.github/skills/vela-apply/SKILL.md`
+
 ## Operating loop
 
 1. **Intake** - concrete spec: entity, message, stage, mode, images, filtering attributes, behaviour.
