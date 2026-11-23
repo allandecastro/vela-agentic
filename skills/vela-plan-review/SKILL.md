@@ -89,11 +89,12 @@ Announce: `Using vela-plan-review to grill the plan`.
      behind a shared cache is proven by a `WithSecurity` test; operational logs → `ctx.Log*`; behaviour that depends on rights → a `WithSecurity` test with the
      generated roles (`vela models --roles`, the role names asked of the human).
      Record each choice in the Canvas.
-   - **Security context:** default is the step's user (`ctx.Service`). SYSTEM (`ctx.SystemService`) is a
-     business decision: with a human reachable, ask (one question); a step that reads or writes another table as the
-     user gets acceptance cases for no Read privilege, a row out of the user's scope, and a denied write - ask
-     what each must do, and the role names of those users (never assumed); none reachable → it goes back with the other
-     business questions (step 4), never decided alone; record answer and reason. Data read as
+   - **Security context:** the step runs as its user (`ctx.Service`); SYSTEM (`ctx.SystemService`) is a
+     business decision: with a human reachable, ask (one question). **A read or write of another table as the
+     user is always a numbered question**, never an assumption, even with a proposed default: the role names of
+     those users, and what no Read privilege, a row out of the user's scope and a denied write must do (each an
+     acceptance case). None reachable → it goes back with the other business questions (step 4), never decided
+     alone; record answer and reason. Data read as
      SYSTEM never reaches the user beyond what they may read (a count, not names).
    - **Norms:** one plugin class per table (`<Entity>Plugin`), behaviour-named handlers, fixed shared-file names
      (registration-rules); the code documentation convention (plugin-authoring-api); SOLID/DRY; secrets →
