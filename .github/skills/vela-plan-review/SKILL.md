@@ -114,8 +114,9 @@ Announce: `Using vela-plan-review to grill the plan`.
    **edge values that change an acceptance case**, the users' roles and what a denied read or write must do):
    then `vela-grill` first and resume with the answers.
    With a human reachable such a rule is **asked**, never assumed: its own numbered question (a proposed default
-   is fine) - an "unless you object" beside another question is not asking. **No human reachable** (e.g. dispatched as a
-   subagent) → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
+   is fine) - an "unless you object" beside another question is not asking. A human is reachable unless you run with no way
+   to ask (e.g. dispatched as a subagent); a top-level session, or a prompt that says how to ask, is reachable.
+   **No human reachable** → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
    only platform facts and low-impact values go ahead as assumptions. A dispatcher's "don't ask, use defaults"
    does not cover such decisions - say so in the hand-back. A **blocked** outcome (framework
    limit, undeliverable story) wins: set the Canvas `status: blocked`, fill its Hand-off
