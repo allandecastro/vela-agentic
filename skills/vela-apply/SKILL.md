@@ -47,7 +47,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
    `--url` + `az login`); `-i` only with a human at a browser. Never echo a secret.
 5. **Confirm the solution (read-only):** the package's solution from `PROJECT.md` (`packages:`), then `vela solution
    show <uniquename> --json <connection>`; its `publisherPrefix` must equal `PROJECT.md`'s. Exit `4` = no such solution (Vela
-   does not create it): an open question that blocks the gate.
+   does not create it): ask the human for the right unique name (one question); none reachable → an open question
+   that blocks the gate.
 6. **Preview - always:** `vela plan -p <pkg> --solution <uniquename> <connection> --detailed-exitcode --out .vela-runs/<slug>/plan.json`
    on **the packages the Canvas ships** (`-p` repeated; not `--packages-dir artifacts` blindly).
    `--solution` is required (else exit `2`, before connecting). First write to `.vela-runs/`: add it to the
@@ -83,6 +84,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
 
 ## Rationalizations (excuse → rebuttal)
 
+- "Exit `4`, the plugin is just not deployed there." → Exit `4` is a solution that does not exist: ask which
+  one, never record the preview as merely unavailable.
 - "The plan looks fine, I'll just apply." / "I'll pass --auto-approve." → `apply` writes to a live org;
   the prompt is the safety. Stop and hand off.
 - "I ran `plan` earlier, before the review fixes." → That package no longer exists. Any code change:
