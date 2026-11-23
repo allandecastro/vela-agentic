@@ -23,7 +23,11 @@
 // harness plumbing - the trigger, stage and mode calls of Vela.Plugins' step API, read from the Vela.Plugins.dll
 // the project references - does not make a test "modified". Read-only: runs git, writes nothing.
 // Exit: 0 clean, 1 violations, 2 cannot check (bad base, Vela.Plugins not restored).
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
