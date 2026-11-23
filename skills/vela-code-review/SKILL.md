@@ -47,7 +47,8 @@ Announce: `Using vela-code-review to review the change`.
    is never dismissed by you: answer it with your evidence (rule text, output) in a scoped re-review round, or ask
    the human; only the reviewer or the human closes it. A finding on a rule's
    text in `docs/rules/` is not fixed in the build: it goes to the Gate as an open item for the human.
-6. Save the reviewer's verbatim output as `.vela-runs/<slug>/review.md` (untracked; each round appended), then record
+6. Save the reviewer's verbatim output as `.vela-runs/<slug>/review.md` (untracked; each round appended - a round is
+   not finished until it is saved), then record
    the findings in the Build Report (`references/build-report-template.md`).
 
 ## Spec check (deterministic, before dispatching the reviewer)
