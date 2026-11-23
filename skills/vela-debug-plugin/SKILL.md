@@ -57,8 +57,7 @@ instrument → fix → regression-test - not trial and error.
 3. **Reproduce locally (mandatory):** a failing harness test (`vela-plugin-testing`) capturing the symptom.
    **"Does not fire", filters, cascades and recursion: use `PluginPipeline`** - `PluginContext...Execute`
    ignores `FilterOn`. No org is the normal path: reproduce from the description. An unexpectedly green
-   repro is not exercising the registration - switch to the pipeline. Write a small-story Canvas
-   (`using-vela`: front matter + cases; record the symptom and hypothesis in `decisions:`) **before** the fix.
+   repro is not exercising the registration - switch to the pipeline.
 4. **Minimize** to the smallest failing input; add only the repro and directly related regressions.
 5. **Hypothesize** from registration + evidence against `references/dataverse-gotchas.md`: a filter
    excluding the changed attribute; a missing or incomplete image (`ctx.PreImage` null); wrong stage
@@ -69,12 +68,15 @@ instrument → fix → regression-test - not trial and error.
    Canvas / Build Report or the human - never guessed from the repo name.
 6. **Instrument** if still unclear: `ctx.Trace(...)`, reproduce, read `pipeline.Trace.Output` (or
    `vela logs --full`). A step that never fires writes no trace - read `pipeline.ExecutionLog`.
-7. **Fix only the most-likely cause.** The diff is the cause plus the repro tests - no incidental edit
+7. **Canvas, then fix only the most-likely cause.** First commit a small-story Canvas (`using-vela`: front matter
+   + cases; the symptom and hypothesis in `decisions:`). The diff is the cause plus the repro tests - no incidental edit
    elsewhere (each is a change the human must re-verify); the rest is a follow-up.
 8. **Regression-test.** Red now green and kept; full suite green; `vela inspect` **and** `vela plan` (or
    the recorded commands) confirm the registration matches intent. Faulty org unreachable → record the
    exact `vela inspect` / `vela plan` / `vela logs` commands against **that** org and aim the apply gate
    at it: an org you can reach does not ship the fix where the fault is.
+9. **Back to the build loop:** the fix goes through the same gates - review (`vela-code-review`), package and
+   preview (`vela-apply`), Build Report - then stops at the apply gate.
 
 When the harness and the org disagree, read Vela's limitations page (`references/plugin-authoring-api.md`,
 *Platform services*) before suspecting the code: the harness is a faithful-but-partial model.
