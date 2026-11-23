@@ -32,7 +32,6 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 - The class is already `sealed partial` (generated step contexts nest in it; non-partial = `CS0260`, VELA014).
 - The handler is named by `--handler` after the behaviour (default `Handle<Message>`); never rename a generated
   handler. `.Handle(...)` is required and last (VELA002).
-- A **single-step** plugin auto-derives its trigger; the harness need not restate it.
 - `Account` resolves only once the model exists: run `vela models --entities account ... --project
   src/<P>.Shared/<P>.Shared.csproj` first (a minimal `vela init` has no models).
 
@@ -41,7 +40,7 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 `vela add step <Plugin> --entity Account --message Update --stage PostOperation --filtering-attributes Telephone1`
 (with `--handler <Method>`) appends a step whose handler is that name (`OnPhoneNormalize(OnPhoneNormalizeContext ctx)`);
 without it, `Handle<Message>` - a duplicate error when the message already has a step. Don't rename generated
-handlers. The plugin is now multi-step: test it through `PluginPipeline` (`harness-api.md`).
+handlers.
 
 ## RegisterStep() fluent surface
 

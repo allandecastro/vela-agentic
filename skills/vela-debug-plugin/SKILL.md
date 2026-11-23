@@ -55,9 +55,9 @@ instrument → fix → regression-test - not trial and error.
    24h: reproduce it, then re-check): suspect the registration (filter, message, entity,
    relationship scope), not the handler.
 3. **Reproduce locally (mandatory):** a failing harness test (`vela-plugin-testing`) capturing the symptom.
-   **"Does not fire", filters, cascades and recursion: use `PluginPipeline`** - `PluginContext...Execute`
-   ignores `FilterOn`. No org is the normal path: reproduce from the description. An unexpectedly green
-   repro is not exercising the registration - switch to the pipeline.
+   **Through `PluginPipeline`**: it runs the registration, so filters, cascades and recursion reproduce. No org
+   is the normal path: reproduce from the description. An unexpectedly green repro does not send what the
+   user sent (the columns, the message, the table) - match the report.
 4. **Minimize** to the smallest failing input; add only the repro and directly related regressions.
 5. **Hypothesize** from registration + evidence against `references/dataverse-gotchas.md`: a filter
    excluding the changed attribute; a missing or incomplete image (`ctx.PreImage` null); wrong stage

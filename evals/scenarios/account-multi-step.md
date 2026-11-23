@@ -3,7 +3,7 @@ scenario: account-multi-step
 skills_exercised: [vela-plan-review, vela-scaffold, vela-plugin-authoring, vela-plugin-testing, vela-code-review]
 entity: account
 message: Create + Update
-gotchas_exercised: [add-step-handler-naming, vela001-placeholder, multi-step-harness-trigger, stage-choice]
+gotchas_exercised: [add-step-handler-naming, vela001-placeholder, multi-step-pipeline, stage-choice]
 org_required: false
 depends_on: account-default-description
 ---
@@ -29,10 +29,8 @@ depends_on: account-default-description
   that shows it; seeing the error is not required. (Rubric note 2026-10-17: the flag route is equally valid.) (Rubric corrected 2026-09-30: it used to require the
   error to be seen, which contradicts vela-scaffold's "align the step before building".)
 - **Stage:** PreOperation on `ctx.Request.Target` (same-record column).
-- **Harness:** the plugin is now multi-step, so every test states its trigger (`.OnCreate()` /
-  `.OnUpdate()`, plus `.Stage(...)` only when several steps share the message - `harness-api.md`); the
-  existing Create tests are updated accordingly and stay green. (Rubric note 2026-10-17: "+ stage" on every
-  test was stricter than the pack.)
+- **Harness:** the new step's tests run through `PluginPipeline` (`harness-api.md`); the existing Create
+  tests stay green unchanged.
 
 ## Success criteria (a clean pass)
 1. The Canvas records `reuse: add-step:AccountDefaultDescription` and the Update step.

@@ -20,7 +20,7 @@ this way, trim leading/trailing spaces from their Name."
   logic without a reason).
 - **Bulk surface:** if `UpdateMultiple` is chosen, the handler iterates the batch (`ctx.BulkTargets` /
   `GetTargets`), edits each target in PreOperation, and never calls `Update` per record.
-- Tests: the batch is supplied with `.OnMessage("UpdateMultiple")` + `WithTargets(...)` (see
+- Tests: the batch is sent through the pipeline as an `UpdateMultipleRequest` (see
   `harness-api.md`); cases: several records with spaces, a record without a name, a mixed batch.
 
 ## Success criteria (a clean pass)

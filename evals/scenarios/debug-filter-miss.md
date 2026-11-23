@@ -16,7 +16,7 @@ org_required: false
 
 ## Planted bug (evaluator only)
 The Update step that normalises `Description` is registered with `FilterOn(e => e.Name)` (copy/paste
-from a Create step); its only test calls the handler through `Execute`, which can't reveal it.
+from a Create step); its only test updates Name and Description together, so the step still fires and it can't reveal it.
 
 ## What the skills must get right
 - **Reproduce first:** a harness test that updates only `description` and expects the normalised value

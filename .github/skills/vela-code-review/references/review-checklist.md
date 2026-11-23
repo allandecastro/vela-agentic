@@ -21,8 +21,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
 - Every acceptance case is implemented and has a passing test (an isolated reviewer has no shell: the
   dispatcher pastes the runner summary with the diff).
 - **RED evidence:** the Run trace shows tests failing for the right reason, then passing; each case has a
-  test that would fail if the behaviour broke (not one that passes regardless, e.g. a "does not fire"
-  case run with `Execute`). An acceptance clause no test can falsify (e.g. "exactly one write" while the
+  test that would fail if the behaviour broke (not one that passes regardless, e.g. a "same value"
+  case asserting only the unchanged value, not that the step ran). An acceptance clause no test can falsify (e.g. "exactly one write" while the
   test only counts rows) - **Required**: add the assertion or drop the clause.
 - **Canvas consistency** with itself (DoD vs cases, status) and the Run trace - **Nit**, **Required** if a
   decision is contradicted.

@@ -23,8 +23,8 @@
  ],
  "require_tests": [
   {
-   "pattern": "WithTargets|UpdateMultipleRequest",
-   "why": "the batch is supplied as Targets (WithTargets or a pipeline UpdateMultipleRequest)"
+   "pattern": "UpdateMultipleRequest",
+   "why": "the batch is supplied as Targets (a pipeline UpdateMultipleRequest)"
   }
  ]
 }
