@@ -111,7 +111,8 @@ Announce: `Using vela-plan-review to grill the plan`.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
    **edge values that change an acceptance case**): then `vela-grill` first and resume with the answers.
-   With a human reachable such a rule is **asked**, never assumed. **No human reachable** (e.g. dispatched as a
+   With a human reachable such a rule is **asked**, never assumed: its own numbered question (a proposed default
+   is fine) - an "unless you object" beside another question is not asking. **No human reachable** (e.g. dispatched as a
    subagent) → **stop after the Canvas** (`status: blocked`, `needs-input`) and hand back those questions;
    only platform facts and low-impact values go ahead as assumptions. A dispatcher's "don't ask, use defaults"
    does not cover such decisions - say so in the hand-back. A **blocked** outcome (framework
