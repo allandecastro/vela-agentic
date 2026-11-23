@@ -114,18 +114,19 @@ async function genAgents() {
   return files.length;
 }
 
-// Copilot preloads no skill and, given a skill name, tends to grep it (eval runs 2026-11-23): each step of the
-// operating loop gets the path of the skill file to read whole.
+// Copilot preloads no skill; told to read the file it greps or skips it, while its `skill` tool loads every one
+// (eval runs 2026-11-23): each step of the operating loop names the skill to load with that tool.
 function skillPaths(body) {
   const step = /^(\d+)\. \*\*([^*]+)\*\*[^\n]*?`((?:using-)?vela-[a-z-]+|using-vela)`/gm;
-  const rows = [...body.matchAll(step)].map((m) => `- step ${m[1]} (${m[2]}): \`.github/skills/${m[3]}/SKILL.md\``);
+  const rows = [...body.matchAll(step)].map((m) => `- step ${m[1]} (${m[2]}): \`${m[3]}\``);
   if (!rows.length) {
     // The reviewer's only skill: Copilot preloads none.
     const one = body.match(/`(vela-[a-z-]+)` \(preloaded\)/);
-    return one ? body.replace(one[0], `\`${one[1]}\` (read \`.github/skills/${one[1]}/SKILL.md\` whole first - Copilot preloads no skill)`) : body;
+    return one ? body.replace(one[0], `\`${one[1]}\` (load it first with your \`skill\` tool - Copilot preloads no skill)`) : body;
   }
-  const note = "\n## Skill files (Copilot)\n\nNo skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, " +
-    "before each step, its skill file **whole** with the read tool - no grep, `head` or line range:\n" + rows.join("\n") + "\n";
+  rows.push("- debugging: `vela-debug-plugin`, then each skill its steps name (`vela-code-review`, `vela-apply`)");
+  const note = "\n## Skills (Copilot)\n\nNo skill is preloaded here. Load `using-vela` first with your **`skill` tool**, then, " +
+    "before each step, its skill with the `skill` tool - never by reading, grepping or `head`-ing its file:\n" + rows.join("\n") + "\n";
   return body.replace(/\n## Operating loop\n/, note + "\n## Operating loop\n");
 }
 

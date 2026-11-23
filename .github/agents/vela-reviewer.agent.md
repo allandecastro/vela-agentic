@@ -18,7 +18,7 @@ history; that isolation is the point. Follow `vela-code-review` and `references/
 - The project's ADRs: list `docs/adr/` by frontmatter yourself and read every one the diff touches (its
   `tables` or `areas`, `applies-to: all`, or no frontmatter) - code that contradicts one is **Required**, cited by the
   Canvas or not.
-- `vela-code-review` (read `.github/skills/vela-code-review/SKILL.md` whole first - Copilot preloads no skill) and its bundled references. Its repository steps (commit, Build Report)
+- `vela-code-review` (load it first with your `skill` tool - Copilot preloads no skill) and its bundled references. Its repository steps (commit, Build Report)
   are the dispatcher's; you only return findings.
 
 ## What you do
