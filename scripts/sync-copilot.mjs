@@ -119,9 +119,13 @@ async function genAgents() {
 function skillPaths(body) {
   const step = /^(\d+)\. \*\*([^*]+)\*\*[^\n]*?`((?:using-)?vela-[a-z-]+|using-vela)`/gm;
   const rows = [...body.matchAll(step)].map((m) => `- step ${m[1]} (${m[2]}): \`.github/skills/${m[3]}/SKILL.md\``);
-  if (!rows.length) return body;
+  if (!rows.length) {
+    // The reviewer's only skill: Copilot preloads none.
+    const one = body.match(/`(vela-[a-z-]+)` \(preloaded\)/);
+    return one ? body.replace(one[0], `\`${one[1]}\` (read \`.github/skills/${one[1]}/SKILL.md\` whole first - Copilot preloads no skill)`) : body;
+  }
   const note = "\n## Skill files (Copilot)\n\nNo skill is preloaded here. Read `.github/skills/using-vela/SKILL.md` first, then, " +
-    "before each step, its skill file **whole** with the read tool - never grep or `head` it:\n" + rows.join("\n") + "\n";
+    "before each step, its skill file **whole** with the read tool - no grep, `head` or line range:\n" + rows.join("\n") + "\n";
   return body.replace(/\n## Operating loop\n/, note + "\n## Operating loop\n");
 }
 
