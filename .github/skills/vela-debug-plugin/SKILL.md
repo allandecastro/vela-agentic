@@ -69,7 +69,9 @@ instrument → fix → regression-test - not trial and error.
 6. **Instrument** if still unclear: `ctx.Trace(...)`, reproduce, read `pipeline.Trace.Output` (or
    `vela logs --full`). A step that never fires writes no trace - read `pipeline.ExecutionLog`.
 7. **Commit the Canvas** - a small-story Canvas (`using-vela`: front matter + cases; the symptom and hypothesis
-   in `decisions:`) with the repro tests. No edit to `src/` before this commit.
+   in `decisions:`) with the repro tests, each tagged with the `Case` of the rule it proves. No registry, or no rule
+   covering the expected behaviour → write that rule and case in `docs/rules/<table>.md` in this commit (step 0: the
+   behaviour the human expects). No edit to `src/` before this commit.
 8. **Fix only the most-likely cause**, in its own commit. The diff is the cause - no incidental edit elsewhere
    (each is a change the human must re-verify); the rest is a follow-up. Red now green and kept; full suite green.
 9. **Back to the build loop, in order** - load each skill whole before its step: `vela-code-review` (run
