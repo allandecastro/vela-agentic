@@ -26,12 +26,12 @@ Announce: `Using vela-grill to resolve the story`.
 1. Read the ADRs that touch the story (`docs/adr/`, listed by their frontmatter) and the `docs/rules/` files of
    the tables involved: never ask what an ADR or a rule already
    answers. Restate the story and name the entity/message you think it implies.
-2. Ask **one focused question at a time** (multiple choice, one-line answer), roughly in this order,
+2. Ask **one focused question per decision** (multiple choice or a proposed default, one-line answer);
+   independent decisions may share a turn, numbered, each answerable on its own. Roughly in this order,
    skipping what the story answers. Only **business decisions** go to the human; platform facts are
    yours (or assumptions). A business value nobody raised (e.g. which Inactive status reason) may take the
    platform default as an assumption. Ask every edge value that changes an acceptance case (scope,
-   empty/malformed input) before ending; only a one-line follow-up on the **same** decision may ride along -
-   any other question, edge or not, waits for the next turn.
+   empty/malformed input) before ending.
    - Meaning: which column/table (standard or custom) does each story term mean?
    - Direction: which record drives the change, which is written, via which lookup/relationship?
    - Trigger: which message, which attribute? Do **other events** (delete, re-parent, bulk) reach the
@@ -61,7 +61,7 @@ Announce: `Using vela-grill to resolve the story`.
 
 - "I'll assume and move on." → Assumptions belong to `vela-plan-review`; this skill runs because the
   human must decide. Ask.
-- "Too many questions annoys the user." → One at a time, each load-bearing. Vague builds annoy more.
+- "Too many questions annoys the user." → Each load-bearing, numbered, one-line answers. Vague builds annoy more.
 
 ## Red flags
 

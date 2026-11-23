@@ -13,7 +13,7 @@ org_required: false
 "Accounts should keep their status in sync with their contacts."
 
 ## Setup for the run
-- A human is reachable only through the evaluator (ask one question per turn).
+- A human is reachable only through the evaluator.
 - The dev org `https://<dev-org>.crm.dynamics.com` is available **read-only** (`vela models` / `vela solution show` / `vela plan` / `vela inspect` / `vela logs`); never `vela apply`. No `vela apply`. The run ends once the Vela Canvas is complete (no scaffold in this scenario).
 
 ## Human answers (evaluator only - never shown to the acting agent)
@@ -27,7 +27,7 @@ org_required: false
 ## What the skills must get right
 - `vela-plan-review` finds branches it cannot resolve by assumption (which entity triggers, direction,
   what "status" means, sync vs async) and routes to **`vela-grill`** instead of guessing.
-- `vela-grill` asks **one load-bearing question at a time**, tied to the registration (trigger message
+- `vela-grill` asks **one load-bearing question per decision** (several may share a turn, numbered), tied to the registration (trigger message
   and entity, timing, data, scope, definition of done) - not a questionnaire, not open-ended chat.
 - It asks for the target solution instead of inventing it (the publisher prefix then comes from
   `vela solution show <solution>`, read-only; asking for both is also fine).
