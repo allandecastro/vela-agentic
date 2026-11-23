@@ -47,7 +47,8 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
   global/bound, Action/Function, parameters, error cases.
 - **Approach honoured:** Sync vs Async fits (Async only for non-blocking work, never validation);
   reuse vs new respected (`vela add step` where it fit; no hand-created class).
-- Edge cases from the spec (empty / null / whitespace / boundary) handled, not just the happy path.
+- Edge cases from the spec (empty / null / whitespace / boundary) handled, not just the happy path; a read
+  of other rows tested without a non-matching row seeded - **Required** (a dropped filter stays green).
 - No scope creep: behaviour that traces to neither the story nor a recorded human answer - **Required**
   (**Critical** when it drives security or disclosure); a divergence must have updated the Canvas first.
 
@@ -113,10 +114,12 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   localizes, or missing one of the project's languages - **Required**; a message source assumed, not asked -
   an open item at the Gate; message texts or a source defined inside a plugin instead of the assembly's shared place
   (`IServiceRegistrar`) - **Required**; an environment-specific value (URL, threshold, id) as a constant - **Required**;
-  data read as the calling user put in the shared cache - **Critical** (it leaks across users); behaviour that
-  depends on rights with no `WithSecurity` test - **Required**; a role name, role GUID or privilege list written by
-  hand (tests or code) instead of the generated `Roles` - **Required**; a role check on `systemuserroles.roleid` instead of
-  `parentrootroleid` / `roletemplateid` - **Required** (fails outside the root business unit).
+  data read as the calling user put in the shared cache - **Critical** (it leaks across users).
+- **Security (rights):** behaviour that depends on the user's rights - a read or write of another table as the
+  user included - with no `WithSecurity` test - **Required** (the harness faults a denied read:
+  `harness-api.md`); a role name, role GUID or privilege list written by hand (tests or code) instead of the
+  generated `Roles` - **Required**; a role check on `systemuserroles.roleid` instead of `parentrootroleid` /
+  `roletemplateid` - **Required** (fails outside the root business unit).
 - **Secrets:** a secret in code or unsecure config (`WithUnsecureConfig`) - **Critical**; use
   `.WithSecureConfigFrom("Name")` or a secret store. A secure-config value the behaviour depends on must
   be proven by a test that supplies it (`WithSecureConfig(name, value)`) and asserts it reaches the call;
