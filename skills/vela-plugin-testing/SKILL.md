@@ -45,10 +45,10 @@ One case for each, from the Canvas's acceptance cases:
 - a read of other rows (a lookup, a query) **seeds a non-matching row too** (another account, an inactive
   contact), seeded **first** so a dropped filter would return it - otherwise the filter is untested;
 
-**Runner per case:** **`PluginPipeline` by default** - it runs the registration as Dataverse does (filters,
-images, ranks, cascades, async); a class with several steps on one trigger is tested through it, on their combined
-effect. `PluginContext...Execute` only for an edge the pipeline cannot set up (`references/harness-api.md`) - it
-ignores `FilterOn`, stage/mode and registered images, so a "does not fire" case with it proves nothing.
+**Runner:** **`PluginPipeline`**, the only harness - it runs the registration as Dataverse does (filters,
+images, ranks, cascades, async); a class with several steps on one trigger is tested on their combined effect. A
+case needing a depth, shared variables or a parent context registers the plugins that produce them
+(`references/harness-api.md`).
 
 ## Process
 
@@ -81,9 +81,7 @@ Announce: `Using vela-plugin-testing to <purpose>`.
 - **Regression tests are not yours to bend.** A test that existed before the story and now fails means the code
   is wrong - fix the code, in its own commit, and record it in the Build Report (a regression found, not part
   of the story). Modify or delete an existing test only when its rule is listed in the Canvas `rules:`
-  as `change` or `retire`, and keep it faithful to the case's Given/When/Then. A `PluginContext` test that breaks
-  because its class gains a step on the same trigger moves to `PluginPipeline` (same data, action, assertion,
-  case id): declare its rule `{id: ..., change: tests}` - the rule text stays, every case keeps a test. If you believe the spec itself is
+  as `change` or `retire`, and keep it faithful to the case's Given/When/Then. If you believe the spec itself is
   wrong, stop and go back to design (ask the human); never edit `docs/rules/` during the build (its
   `Implementation:` / `Tests:` trace lines aside, and a review-driven amendment listed in the Canvas `amendments:`).
 - **CS0118** (a `...Tests.<Table>` namespace hides the model type): keep the usings inside the namespace, as the
@@ -96,8 +94,6 @@ Announce: `Using vela-plugin-testing to <purpose>`.
 ## Rationalizations (excuse → rebuttal)
 
 - "It builds, that's enough." → A green build proves nothing about behaviour.
-- "`Execute` passed, so the step fires." → `Execute` ignores the registration. Prove firing and saving
-  with `PluginPipeline`.
 - "`dotnet test` failed, the tests are broken." → On macOS/Linux it can't host net48; use Mono. A Mono
   segv without `-parallel none` is an environment crash, not a test failure.
 - "I'll test it on the org." → The org is for the gated `apply`.
@@ -106,7 +102,6 @@ Announce: `Using vela-plugin-testing to <purpose>`.
 
 - Claiming success from `dotnet build` alone, or from a partial/crashed run.
 - The generated "fires" test as the only assertion, or `Does_What_It_Should` left skipped.
-- A "does not fire" / filtering case written with `Execute` instead of `PluginPipeline`.
 - A Mono segv (missing `-parallel none`) reported as a test failure.
 
 ## Verification

@@ -3,18 +3,24 @@
 # Vela.Testing harness API (verbatim)
 
 Ground truth for writing and running harness tests. Skills point here. Snippets were compiled and run under
-the Mono runner (net48). For other members, read the IntelliSense on `PluginContext` / `PluginPipeline` - a
-failing build or probe test tells you.
+the Mono runner (net48). For other members, read the IntelliSense on `PluginPipeline` - a failing build or
+probe test tells you.
 
-## Two ways to run a plugin - pick by what the test must prove
+## `PluginPipeline` - the only harness
 
-| Test must prove | Use | Why |
-| --- | --- | --- |
-| **the default** - what is saved, whether the step fires (filters, message/stage, relationship scope), images, ranks, several plugins, cascades, rollback, async | **`PluginPipeline`** | runs the registration as Dataverse does; a class with several steps on one trigger is tested here (there is no per-step selector) |
-| an edge the pipeline cannot set up: `Depth` ≥ 2, a built `ParentContext`, `SharedVariables`, an invalid Custom API input, one precise error branch | `PluginContext.For<T>()...Execute(...)` | single handler, ignores the registration |
+Register the plugins (`PluginPipeline.Empty().Register<TPlugin>()`, or `FromAssemblyOf<T>()` for all of them),
+`Seed(...)` the starting rows (no plugin fires), send the triggering write through `p.Service`, then assert on
+`GetAll`, `ExecutionLog`, `Trace` and `LogCapture`. It runs the registration as Dataverse does: filters,
+message/stage, relationship scope, images, ranks, several plugins, cascades, rollback, async. A class with several
+steps on one trigger is tested on their combined effect (there is no per-step selector).
 
-A "does not fire when an unrelated column changes" test written with `Execute` passes **and proves
-nothing**. Write it with the pipeline:
+A test cannot hand a plugin a crafted context - produce the case as Dataverse does:
+- `Depth` ≥ 2, `SharedVariables`, `ParentContext`: register the plugins whose writes produce them; a `tag`:
+  set `request["tag"]` on a request object sent with `p.Service.Execute(...)` (`ctx.Tag`);
+- one error branch: seed the rows that lead to it;
+- an invalid Custom API input: send it - the request is checked against the definition first.
+
+A "does not fire when an unrelated column changes" test:
 ```csharp
 var id = Guid.NewGuid();
 var p = PluginPipeline.Empty().Register<AccountPlugin>().Seed(new Account { Id = id, Name = "orig" });
@@ -39,17 +45,10 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
 
 ## Easy-to-get-wrong facts
 
-- Run a step with `.Execute(new <Plugin>(string.Empty, string.Empty))` or `.Execute<TPlugin>()` (returns the instance).
-- **Trigger:** a single-step plugin derives it - don't chain `.OnUpdate().Stage()...`. A **multi-step** plugin
-  needs the message: `.OnCreate()` / `.OnUpdate()` resolves the single step on it; several or none throw with
-  the list - then add `.Stage(PluginStages.PreOperation)` (`using Vela.Constants;`). No trigger at all on a
-  multi-step plugin throws. The pipeline needs none of this.
-- `.Build()` does **not** derive the trigger (defaults to Update / PostOperation / Sync); `.Build<TPlugin>()`
-  and `.Build(plugin)` do. Use them to inspect a context.
-- **Bulk (`*Multiple`):** `WithTargets(params T[])` keeps your instances (assert on them); enough for a
-  single-step plugin, else `.OnMessage("UpdateMultiple").Stage(...)`. To prove what is saved:
-  `p.Service.Execute(new UpdateMultipleRequest { Targets = ... })` (`using Microsoft.Xrm.Sdk.Messages;`)
-  fires the step once for the batch; a single `p.Service.Update(...)` fires an UpdateMultiple step too.
+- **The step that fires is the one the write triggers** - a test never states the message or stage.
+- **Bulk (`*Multiple`):** `p.Service.Execute(new UpdateMultipleRequest { Targets = ... })`
+  (`using Microsoft.Xrm.Sdk.Messages;`) fires the step once for the batch; a single `p.Service.Update(...)` fires
+  an UpdateMultiple step too.
 - **Associate / Disassociate:** the step is **message-level** - it fires whichever table the call is issued
   from (`run.EntityLogicalName` is that side; see `dataverse-gotchas.md`). Out of a `.ForRelationship(...)`
   scope it is still logged with `HandlerInvoked == false` and a `SkipReason` - assert on that. The generated
@@ -61,8 +60,7 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
   p.Service.Associate("contact", contactId, new Relationship("listcontact_association"),
       new EntityReferenceCollection { new EntityReference("list", listId) });
   ```
-- **Images:** `.WithPreImage(preImage)` (alias optional). The pipeline builds the pre-image from the seeded
-  row **only if the step registers it** - so an image-dependent case also needs a pipeline test:
+- **Images:** the pipeline builds the pre-image from the seeded row **only if the step registers it**:
   ```csharp
   var p = PluginPipeline.Empty().Register<AccountPlugin>().Seed(new Account { Id = id, Revenue = new Money(10m) });
   Assert.Throws<InvalidPluginExecutionException>(() => p.Service.Update(new Account { Id = id, Revenue = new Money(5m) }));
@@ -77,42 +75,36 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
   `ctx.Request.Target` is what was saved); `Assert.Single(p.ExecutionLog)` proves no second write re-fired the step.
 - "Already correct → nothing re-set" in PreOperation is not observable: don't assert on trace text; cover it
   by design review and record it as a Canvas note.
-- **A handler that writes by `ctx.PrimaryEntityId`:** in a `PluginContext` test it follows the Target's id,
-  so seed that row before `Execute` (`.WithPrimaryEntity(...)` only to override).
-- Depth: `.Depth(n)`; above 8 the guard throws "Plugin execution stopped to prevent recursion."
-  (pipeline cap: `WithMaxDepth(n)`, default 8).
-- Traces: `builder.TraceCapture` (`.Output`, `.Traces`) and `pipeline.Trace` (whole cascade). Print with
-  `Console.WriteLine` - the Mono console runner hides `ITestOutputHelper` output for passing tests.
+- Depth: the cascade cap is `WithMaxDepth(n)` (default 8).
+- Traces: `pipeline.Trace` (`.Output`, `.Traces`, whole cascade). Print with `Console.WriteLine` - the Mono
+  console runner hides `ITestOutputHelper` output for passing tests.
 
 ## Custom APIs
 
-Entry points: `PluginContext.ForMessage("<uniquename>")` (global/message-only), `PluginContext.ForRequest(request)` (typed).
+Send the request through the pipeline: the typed request, or `new OrganizationRequest("<uniquename>") { ["Input"] = value }`
+(global/message-only); a bound API's request carries `request["Target"]`. Read the outputs from
+`response.Results["<Name>"]`, or typed:
 ```csharp
-// Typed request through the builder.
-var builder = PluginContext.ForRequest(new EstimateValueRequest { AccountId = accountId, Discount = 100m });
-builder.Execute(api);
-Assert.Equal(900m, builder.Context.OutputParameters["Value"]);
-
-// Through the pipeline, typed response (using Vela.Context; for ToResponse).
+// using Vela.Context; for ToResponse
 var p = PluginPipeline.Empty().Register<EstimateValueApi>();
 EstimateValueResponse response = p.Service
     .Execute(new EstimateValueRequest { AccountId = accountId, Discount = 100m })
     .ToResponse<EstimateValueResponse>();
 ```
 - `pipeline.Service.Execute(...)` returns a base `OrganizationResponse` that cannot be cast; `.ToResponse<T>()` views it as `T`.
-- Parameters use their **plain names**: `InputParameters["Discount"]` → `OutputParameters["Value"]`.
-- A handler that uses an org service needs `.WithOrganizationService(crm)`, or its lookups have nothing to read.
-- The generated `--kind customapi` test has a skipped "every output is set" test: set the inputs
-  (`.WithInputParameter(...)` or the request's properties), remove `Skip`, assert the values, not only presence.
-- A missing required input throws as on Dataverse, through the pipeline and `builder.Execute(api)` - test it:
+- Parameters use their **plain names**: `request["Discount"]` → `response.Results["Value"]`.
+- A handler that reads other rows needs them `Seed`ed, or its lookups have nothing to read.
+- The generated `--kind customapi` test has a skipped "every output is set" test: set the inputs (the request's
+  properties or `request["<Name>"]`), remove `Skip`, assert the values, not only presence.
+- A missing required input throws as on Dataverse - test it:
   `Assert.Throws<FaultException<OrganizationServiceFault>>(() => p.Service.Execute(new EstimateValueRequest()))`
-  (`using System.ServiceModel;`). `.Build()` + `api.Execute(context.ServiceProvider)` skips that validation.
+  (`using System.ServiceModel;`).
 
 ## Platform services and security
 
 Platform services are not replaced this way (`WithService` rejects them): fake a managed identity with
-`PluginPipeline.WithManagedIdentityService(fake)` (or the context builder's `WithManagedIdentityService`). Each
-harness has its own `IPluginCacheService`: test a TTL with `WithClock(() => now)` and move `now` past it.
+`PluginPipeline.WithManagedIdentityService(fake)`. Each pipeline has its own `IPluginCacheService`: test a TTL
+with `WithClock(() => now)` and move `now` past it.
 `WithSecurity` uses the **generated roles** (`vela models --roles`): `.Role(Roles.SalespersonName,
 Roles.SalespersonId, Roles.Salesperson)` (a system role: `.Role(Roles.XName, Roles.XId, Roles.XTemplateId, Roles.X)`)
 then `.User(alice, bu, Roles.SalespersonName)` - the org's real privileges and ids, never a hand-written grant list.
@@ -126,7 +118,7 @@ parental relationship (`WithParentalRelationship("account", "contact", "parentcu
 
 ## Replace a service - `WithService<TService>(instance)`
 
-On `PluginPipeline` and the context builder, `WithService<T>` replaces what `ConfigureServices` registers for `TService`,
+On `PluginPipeline`, `WithService<T>` replaces what `ConfigureServices` registers for `TService`,
 so the plugin runs end to end against a fake - no test-only constructor or seam in the plugin:
 ```csharp
 var p = PluginPipeline.Empty()
@@ -157,7 +149,8 @@ Associate/Disassociate; QueryExpression, QueryByAttribute, FetchExpression). Con
 - An `Update` needs the record to exist: `Seed` it (with its id) first, or it throws "... Does Not Exist".
   (Seeding the record a Create plugin just created so it can update it → the step should probably be
   PreOperation - see `registration-rules.md`.)
-- For anything it can't model, inject your own `IOrganizationService` via the context builder's `WithOrganizationService` (not on `PluginPipeline`).
+- The pipeline always drives its own store - no custom `IOrganizationService` can replace it. What it does not
+  model is on Vela's [limitations](https://allandecastro.github.io/vela/reference/limitations) page.
 
 ## Running the tests
 
