@@ -47,7 +47,8 @@ Announce: `Using vela-custom-api to <purpose>`.
    remove `Skip`), one test that pins the definition (kind, binding, parameters - a flow breaks when they change),
    then one test per acceptance case - outputs for valid inputs, each edge, each invalid
    input throwing `InvalidPluginExecutionException` (`references/harness-api.md`). A missing **required**
-   input is rejected by the harness itself - validate values, not presence. Watch them fail.
+   input is rejected before the handler, as on Dataverse: keep it as a test asserting that fault
+   (`FaultException<OrganizationServiceFault>`); the handler validates values, not presence. Watch them fail.
 5. **Implement** to green (`references/plugin-authoring-api.md`). Typed form: a property per parameter
    **and** its mapping in `.Request(...)` / `.Response(...)` - an unmapped property is not registered.
    Real logic in a service when it earns it.
