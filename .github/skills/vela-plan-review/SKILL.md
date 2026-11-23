@@ -108,7 +108,8 @@ Announce: `Using vela-plan-review to grill the plan`.
    rules into the registry now** - this is
    the design phase, the only one where `docs/rules/` may change (with the human; a
    retired rule is deleted with its tests - git keeps the history; no status - merging puts it in force). Commit the Canvas + registry
-   before any test: that commit is the frozen spec the build is checked against.
+   before any code or test commit (a fix to a regression found at the start included): that commit is the frozen
+   spec the build is checked against.
 4. Flag the assumptions in one line and **continue** to `vela-scaffold` - unless a branch is a **business
    decision only the human can make** (a story term's meaning, which record drives which, the rule itself,
    **edge values that change an acceptance case**, the users' roles and what a denied read or write must do):
