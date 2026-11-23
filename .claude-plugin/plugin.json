@@ -1,6 +1,6 @@
 {
   "name": "vela",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "description": "Skills and agents to scaffold, model, apply, and debug Vela plugins through the Vela CLI.",
   "author": {
     "name": "Allan De Castro"
