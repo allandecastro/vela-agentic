@@ -45,7 +45,8 @@ Announce: `Using vela-code-review to review the change`.
 5. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix, re-verify
    (`vela-plugin-authoring` / `vela-plugin-testing`), review again. Nits are optional. A finding on a rule's
    text in `docs/rules/` is not fixed in the build: it goes to the Gate as an open item for the human.
-6. Record the findings in the Build Report (`references/build-report-template.md`).
+6. Save the reviewer's verbatim output as `.vela-runs/<slug>/review.md` (untracked; each round appended), then record
+   the findings in the Build Report (`references/build-report-template.md`).
 
 ## Spec check (deterministic, before dispatching the reviewer)
 
@@ -63,8 +64,8 @@ registry) is recorded as **not checked**, never as a pass.
 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the material of step 2 and the
   spec-check output - **not** the session history, so the author's context does
-  not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes. Save its
-  verbatim output as `.vela-runs/<slug>/review.md` (untracked; later rounds appended) and quote it in the PR.
+  not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes; its output is saved (step 6) and quoted
+  in the PR.
 - **Proportional re-review** (the review is the costliest step of a build): after fixing its findings, or
   after a small later change (trace text, comment, wording), dispatch a fresh reviewer with **only** that
   diff, the findings it must close and the new RED/GREEN lines - not the whole material again. A **full**
