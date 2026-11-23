@@ -68,15 +68,17 @@ instrument → fix → regression-test - not trial and error.
    Canvas / Build Report or the human - never guessed from the repo name.
 6. **Instrument** if still unclear: `ctx.Trace(...)`, reproduce, read `pipeline.Trace.Output` (or
    `vela logs --full`). A step that never fires writes no trace - read `pipeline.ExecutionLog`.
-7. **Canvas, then fix only the most-likely cause.** First commit a small-story Canvas (`using-vela`: front matter
-   + cases; the symptom and hypothesis in `decisions:`). The diff is the cause plus the repro tests - no incidental edit
-   elsewhere (each is a change the human must re-verify); the rest is a follow-up.
-8. **Regression-test.** Red now green and kept; full suite green; `vela inspect` **and** `vela plan` (or
-   the recorded commands) confirm the registration matches intent. Faulty org unreachable → record the
-   exact `vela inspect` / `vela plan` / `vela logs` commands against **that** org and aim the apply gate
-   at it: an org you can reach does not ship the fix where the fault is.
-9. **Back to the build loop:** the fix goes through the same gates - review (`vela-code-review`), package and
-   preview (`vela-apply`), Build Report - then stops at the apply gate.
+7. **Commit the Canvas** - a small-story Canvas (`using-vela`: front matter + cases; the symptom and hypothesis
+   in `decisions:`) with the repro tests. No edit to `src/` before this commit.
+8. **Fix only the most-likely cause**, in its own commit. The diff is the cause - no incidental edit elsewhere
+   (each is a change the human must re-verify); the rest is a follow-up. Red now green and kept; full suite green.
+9. **Back to the build loop, in order** - load each skill whole before its step: `vela-code-review` (run
+   `spec-check` and hand its output, "nothing to check" included, and the Run trace to the reviewer; no
+   hand-off with a BLOCK open), **then** `vela-apply` (Release build after the last change, `vela plan`, its exit
+   code), then the Build Report; stop at the apply gate. Faulty org unreachable → the gate names **that** org with
+   the exact commands to run there, e.g. `vela inspect --url <faulty org>`, `vela plan --package <nupkg>
+   --solution <uniquename> --url <faulty org> --detailed-exitcode`, `vela logs --type <PluginType> --since 1d
+   --url <faulty org>`: an org you can reach does not ship the fix where the fault is.
 
 When the harness and the org disagree, read Vela's limitations page (`references/plugin-authoring-api.md`,
 *Platform services*) before suspecting the code: the harness is a faithful-but-partial model.

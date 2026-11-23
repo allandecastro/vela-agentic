@@ -86,7 +86,7 @@ and `model`. The pass-rate table below is generated from the records of the late
 "ready" = every run of the campaign passes.
 
 <!-- passrate:start -->
-Latest campaign per scenario - 51/56 runs pass.
+Latest campaign per scenario - 51/57 runs pass.
 
 | Scenario | Campaign | Runs passed | Checks | Grader | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -109,7 +109,7 @@ Latest campaign per scenario - 51/56 runs pass.
 | `contact-association` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `contact-shared-default` | 2026-10-23b | **1/1** | 1/1 | 1/1 | ready |
 | `creditlimit-threshold-role` | 2026-11-15 | **1/1** | 1/1 | 1/1 | ready |
-| `debug-filter-miss` | 2026-11-23 | **0/1** | 1/1 | 0/1 | not ready |
+| `debug-filter-miss` | 2026-11-23 | **0/2** | 2/2 | 0/2 | not ready |
 | `debug-live-trace` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
 | `deployed-plugin-change` | 2026-10-17 | **3/3** | 3/3 | 3/3 | ready |
 | `diagnose-failed-run` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
