@@ -76,8 +76,8 @@ instrument → fix → regression-test - not trial and error.
    (each is a change the human must re-verify); the rest is a follow-up. Red now green and kept; full suite green.
 9. **Back to the build loop, in order** - load each skill whole before its step: `vela-code-review` (run
    `spec-check` and hand its output, "nothing to check" included, and the Run trace to the reviewer; no
-   hand-off with a BLOCK open), **then** `vela-apply` (Release build after the last change, `vela plan`, its exit
-   code), then the Build Report in the Canvas (`docs/features/<slug>/README.md`); stop at the apply gate. Faulty org unreachable → the gate names **that** org with
+   hand-off with a BLOCK open), **then** `vela-apply` (Release build after the last change, `vela plan` on the org
+   you can reach, its exit code - exit `4` is a solution to ask about, its step 5, not "not deployed here"), then the Build Report in the Canvas (`docs/features/<slug>/README.md`); stop at the apply gate. Faulty org unreachable → the gate names **that** org with
    the exact commands to run there, e.g. `vela inspect --url <faulty org>`, `vela plan --package <nupkg>
    --solution <uniquename> --url <faulty org> --detailed-exitcode`, `vela logs --type <PluginType> --since 1d
    --url <faulty org>`: an org you can reach does not ship the fix where the fault is.
