@@ -1,0 +1,56 @@
+# The "AI agents" section of the Vela docs site. Source: vela-agentic/docs, copied to vela/docs/agents/ at a pinned tag.
+# Each page appears once; a title is the page's H1 or a short form of it.
+- name: AI agents
+  href: index.md
+- name: Get started
+  items:
+    - name: Overview
+      href: overview.md
+    - name: Install
+      href: install.md
+- name: How it works
+  items:
+    - name: The build loop
+      href: build-loop.md
+    - name: Project files
+      href: project-files.md
+    - name: The deploy guard (hooks)
+      href: hooks.md
+- name: Agents
+  items:
+    - name: vela-builder
+      href: vela-builder.md
+    - name: vela-reviewer
+      href: vela-reviewer.md
+- name: Skills
+  items:
+    - name: All skills
+      href: skills/index.md
+    - name: using-vela
+      href: skills/using-vela.md
+    - name: vela-plan-review
+      href: skills/vela-plan-review.md
+    - name: vela-grill
+      href: skills/vela-grill.md
+    - name: vela-scaffold
+      href: skills/vela-scaffold.md
+    - name: vela-models
+      href: skills/vela-models.md
+    - name: vela-plugin-testing
+      href: skills/vela-plugin-testing.md
+    - name: vela-plugin-authoring
+      href: skills/vela-plugin-authoring.md
+    - name: vela-custom-api
+      href: skills/vela-custom-api.md
+    - name: vela-code-review
+      href: skills/vela-code-review.md
+    - name: vela-apply
+      href: skills/vela-apply.md
+    - name: vela-debug-plugin
+      href: skills/vela-debug-plugin.md
+- name: Reference
+  items:
+    - name: How the pack is tested
+      href: testing-the-pack.md
+    - name: FAQ and troubleshooting
+      href: faq.md
