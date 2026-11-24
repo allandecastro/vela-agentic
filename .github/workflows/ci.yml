@@ -1,7 +1,7 @@
 name: CI
 
-# Runner: GitHub-hosted by default; the repo variable RUNS_ON='["self-hosted","linux"]' moves every job to the
-# self-hosted runner of ci/runner/ (e.g. when the hosted minutes run out).
+# Runner: GitHub-hosted only. The repository is public: never attach a self-hosted runner (a fork's pull request
+# could run code on it).
 on:
   push:
     branches: [main]
@@ -10,7 +10,7 @@ on:
 jobs:
   pack:
     name: Lint pack & check generated surface
-    runs-on: ${{ fromJSON(vars.RUNS_ON || '"ubuntu-latest"') }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
 
   secrets:
     name: Secret scan (gitleaks)
-    runs-on: ${{ fromJSON(vars.RUNS_ON || '"ubuntu-latest"') }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:

@@ -126,7 +126,7 @@ Latest campaign per scenario - 54/57 runs pass.
   generated Copilot surface in sync), the `spec-check` fixture tests and a gitleaks secret scan. Cheap, runs
   on the free runner.
 - **Behavioural (agent runner):** the pressure scenarios above need an LLM agent + `vela` + `dotnet`
-  (+ Mono on Linux/macOS), so they run on demand / on a self-hosted agent runner, not the free CI.
+  (+ Mono on Linux/macOS), so they run on demand on a maintainer machine, not in CI.
 
 ## Adding a scenario
 
