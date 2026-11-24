@@ -29,129 +29,60 @@ the `vela` CLI to build, test, review and preview Dataverse plugins, and stop be
 > [`ROADMAP.md`](ROADMAP.md) section) and every merge to `main` publishes a patch; the Vela version the pack is
 > verified against is recorded in [`references/cli-surface.md`](references/cli-surface.md).
 
-## 📖 Documentation
+## Documentation
 
-- **This pack:** [How it works](#how-it-works), [`AGENTS.md`](AGENTS.md) (the rules every agent follows) and the
-  [`references/`](references/) the skills read.
-- **Vela itself:** the [Vela documentation](https://allandecastro.github.io/vela/) (guides, CLI reference,
-  limitations) and [`llms.txt`](https://allandecastro.github.io/vela/llms.txt) for agents.
+The user documentation is the **AI agents** section of the Vela docs site:
+[allandecastro.github.io/vela/agents](https://allandecastro.github.io/vela/agents/) (live once Vela publishes the
+section from a pinned tag). Its source is [`docs/`](docs/): the build loop, the Vela Canvas and Build Report, one
+page per skill and agent, the deploy guard, the project files the pack uses, how the pack is tested, and a FAQ.
 
-## Overview
+For Vela itself, see the [Vela documentation](https://allandecastro.github.io/vela/) and
+[`llms.txt`](https://allandecastro.github.io/vela/llms.txt) for agents. Changes are listed in
+[`CHANGELOG.md`](CHANGELOG.md), plans in [`ROADMAP.md`](ROADMAP.md).
+
+## What it does
 
 **Vela Agentic** is a pack of 11 [Agent Skills](https://agentskills.io) and two agents for AI coding
-assistants (Claude Code and GitHub Copilot, from one source). It teaches the assistant to build Microsoft
-Dataverse plugins the way a careful team would:
+assistants (Claude Code and GitHub Copilot, from one source). From a user story, the assistant:
 
-1. **Plan** the story and pressure-test it, asking the human only what is theirs to decide.
-2. **Write failing tests first**, then the code that makes them pass.
-3. **Review** the change with an isolated reviewer agent.
-4. **Preview** the deployment with a read-only `vela plan`.
-5. **Stop** and hand over a Build Report. A human runs the deploy.
+1. **Plans** the story and pressure-tests it, asking the human only what is theirs to decide.
+2. **Writes failing tests first**, then the code that makes them pass.
+3. **Reviews** the change with an isolated reviewer agent.
+4. **Previews** the deployment with a read-only `vela plan`.
+5. **Stops** and hands over a Build Report. A human runs the deploy.
 
 Everything goes through the public `vela` CLI. The pack never reaches into Vela's internals and never
 writes to an org on its own.
 
-## Contents
+## Install
 
-- [Quick start](#quick-start)
-- [How it works](#how-it-works)
-- [Skills](#skills)
-- [Safety and guarantees](#safety-and-guarantees)
-- [Quality: the skills are tested too](#quality-the-skills-are-tested-too)
-- [Repository layout](#repository-layout)
-- [Compatibility](#compatibility)
-- [Contributing](#contributing)
+Prerequisites: the `vela` CLI (`dotnet tool install --global Vela.Cli`) and the .NET SDK it needs, a Dataverse
+development environment for the steps that read the org, and a test runner (`dotnet test` on Windows; Mono and the
+xUnit console runner on macOS and Linux). Details: [`docs/install.md`](docs/install.md).
 
-## Quick start
-
-### Prerequisites
-
-- The `vela` CLI: `dotnet tool install --global Vela.Cli`, and the .NET SDK it requires
-  (see [`references/cli-surface.md`](references/cli-surface.md)).
-- A Dataverse environment for the steps that read the org (`vela models`, `vela plan`). Sign in
-  interactively, or headless with `--url` and an `az login` session, a managed identity, a connection
-  string or a client secret.
-- A test runner: `dotnet test` on Windows; Mono and the xUnit console runner on macOS and Linux.
-
-### Claude Code
+Claude Code:
 
 ```text
 /plugin marketplace add allandecastro/vela-agentic
 /plugin install vela
 ```
 
-### GitHub Copilot CLI
+GitHub Copilot CLI:
 
 ```bash
 copilot plugin marketplace add allandecastro/vela-agentic
 copilot plugin install vela@vela-agentic
 ```
 
-Check what loaded with `copilot plugin list`. The optional deploy guard needs a one-time check,
-described in [`hooks/README.md`](hooks/README.md).
-
-### Skills only, any host
+Skills only, any host:
 
 ```bash
 gh skill preview allandecastro/vela-agentic   # inspect first
 gh skill install allandecastro/vela-agentic
 ```
 
-### First run
-
-Give `vela-builder` a user story, for example:
-
-> When an account is created, default its description to "New customer".
-
-It plans, scaffolds, tests, implements, reviews and previews, then stops at the deploy gate with a
-Build Report and the exact `vela apply` command for you to run.
-
-## How it works
-
-```mermaid
-flowchart LR
-    US([User story]) --> PL["Plan<br/>challenge, Canvas"]
-    PL --> SC["Scaffold<br/>and model"]
-    SC --> RED["Tests<br/>(failing)"]
-    RED --> IM["Implement<br/>to green"]
-    IM --> VR["Verify<br/>tests + analyzers"]
-    VR --> RV["Review<br/>isolated reviewer"]
-    RV -->|findings| IM
-    RV --> PV["Package<br/>vela plan"]
-    PV --> GATE{{"Human<br/>approval"}}
-    GATE --> AP["vela apply"]
-
-    classDef gate fill:#fde68a,stroke:#b45309,color:#1f2937;
-    classDef org fill:#fecaca,stroke:#b91c1c,color:#1f2937;
-    class GATE gate
-    class AP org
-```
-
-Every step before the gate is local and reversible; the org is only read. Each step needs evidence
-(the build summary, the test runner's summary line, the review findings, the plan output) before the
-agent may claim it is done.
-
-### Two artifacts per story
-
-Both live in `docs/features/<story>/README.md` in your project and double as the pull request body.
-
-- **Vela Canvas**, written before any code: the structured spec (requirements, entities, approach,
-  structure, operations, norms, safeguards), with the design decisions and the acceptance cases. It is a
-  living spec: a changed requirement updates the Canvas before the code.
-- **Build Report**, written at the gate: what was built, the evidence, and the command to deploy.
-
-### Business rules as the test spec
-
-The agent keeps a rules registry in your project, `docs/rules/<table>.md`. Each rule is written as
-Given / When / Then with numbered cases (`ACC-002/C1`), and each test cites the case it proves.
-
-- Rules change only in the design phase, with the human. During the build they are read-only: a
-  failing regression test means the code is wrong.
-- [`spec-check`](skills/vela-code-review/scripts/spec-check.cs), a script of the review skill, enforces this at review (`dotnet run`): no undeclared
-  rule change, no deleted rule, no regression test bent to fit.
-
-What a full run produces (questions, review rounds, evidence, verdict) is in the run records, e.g.
-[`evals/runs/2026-11-18-feature-multi-rule.r1.md`](evals/runs/2026-11-18-feature-multi-rule.r1.md).
+Then give `vela-builder` a user story, for example: *When an account is created, default its description to "New
+customer".* It stops at the deploy gate with a Build Report and the exact `vela apply` command for you to run.
 
 ## Skills
 
@@ -169,58 +100,8 @@ What a full run produces (questions, review rounds, evidence, verdict) is in the
 | `vela-apply` | Packages, signs if needed, previews with `vela plan`, stops at the deploy gate |
 | `vela-debug-plugin` | Diagnoses a plugin that does not fire or misbehaves |
 
-The agents:
-
-- **`vela-builder`** drives a story through the whole loop.
-- **`vela-reviewer`** is read-only and starts with a fresh context, so it does not share the author's
-  blind spots.
-
-## Safety and guarantees
-
-| Guarantee | How |
-| --- | --- |
-| No deploy without a human | The skills stop before `vela apply`. The optional hook in [`hooks/`](hooks/) blocks `vela apply` unless the session was started with `VELA_APPLY_APPROVED=1`. |
-| No untested code | Tests are seen failing before the code, then passing. A happy-path-only suite blocks the gate. |
-| No silent spec drift | `spec-check` compares the rules registry and the tests with the base branch. |
-| An independent review | `vela-reviewer` reviews every change; any Critical or Required finding blocks the gate. |
-| An auditable run | The run trace (each step, command and exit code, copied from the tool output) and the reviewer's verbatim output are kept in `.vela-runs/<story>/` and pasted into the pull request. |
-| No committed secrets | [gitleaks](https://github.com/gitleaks/gitleaks) scans the full history in CI and in the local check. |
-
-## Quality: the skills are tested too
-
-The pack is held under test in [`evals/`](evals/), with Claude Code and GitHub Copilot CLI as the acting agent.
-A fresh agent receives only the story, works through a scenario, and is graded against hidden criteria:
-
-- **Deterministic checks**: rebuild, rerun the tests, read the registration from the compiled
-  assembly, run a read-only `vela plan`.
-- **A separate grader** for the rest, including planted violations that the reviewer must catch.
-- **Mutation**: bugs planted in the finished code, one at a time; each one the tests miss is a missing test.
-
-Each deviation is fixed in the skill that allowed it, and the scenario is run again until it passes
-cleanly. Every run, failures included, is recorded in [`evals/runs/`](evals/runs/).
-
-## Repository layout
-
-| Path | Contents |
-| --- | --- |
-| [`skills/`](skills/) | The 11 skills. Each one carries a generated copy of the references it cites. |
-| [`.claude/skills/`](.claude/skills/) | The maintainer skills (writing skills, diagnosing runs); not shipped |
-| [`agents/`](agents/) | `vela-builder` and `vela-reviewer` |
-| [`references/`](references/) | The source of truth for CLI flags, APIs, Dataverse pitfalls and templates |
-| [`AGENTS.md`](AGENTS.md) | The rules every agent follows |
-| [`hooks/`](hooks/) | Optional guard (`vela apply` without approval, generated files, protected pushes, secrets) and the session version check |
-| [`tools/`](tools/) | The fixture tests of `spec-check` |
-| [`evals/`](evals/) | Scenarios, checks, grader tools and run records |
-| [`scripts/`](scripts/) | Pack lint, Copilot surface generation, local CI |
-| `.claude-plugin/` | Plugin and marketplace manifests |
-| `.github/` | Copilot surface, generated from the sources above; never edited by hand |
-
-## Compatibility
-
-The skills use the public `vela` command surface and confirm flags with `vela <command> --help` at
-run time, so additive CLI changes do not break them. The version the pack is verified against is
-recorded in one place, [`references/cli-surface.md`](references/cli-surface.md). A gap in Vela is
-reported to Vela, not worked around in the skills. Plans are in [`ROADMAP.md`](ROADMAP.md).
+The agents: **`vela-builder`** drives a story through the whole loop; **`vela-reviewer`** is read-only and starts
+with a fresh context.
 
 ## Contributing
 
@@ -230,7 +111,8 @@ reported to Vela, not worked around in the skills. Plans are in [`ROADMAP.md`](R
    live in `.claude/skills/`, loaded when you work in this repo and never shipped with the pack.
 2. Edit the sources (`skills/`, `agents/`, `references/`, `AGENTS.md`), then regenerate with
    `node scripts/sync-copilot.mjs`.
-3. Run `sh scripts/check.sh` before pushing: lint, configs, shell syntax, guard tests, secret scan and
+3. A change to what a user sees updates its page in [`docs/`](docs/) (and `docs/toc.yml` for a new page).
+4. Run `sh scripts/check.sh` before pushing: lint, docs check, configs, shell syntax, guard tests, secret scan and
    generated files in sync. To run it on every push: `git config core.hooksPath .githooks`.
 
 CI runs the same check, the `spec-check` tests and gitleaks on every pull request.

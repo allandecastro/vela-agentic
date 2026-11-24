@@ -130,7 +130,7 @@ async function sourceDocs() {
   for (const s of await skillNames()) out.push(`skills/${s}/SKILL.md`);
   for (const s of await maintainerSkillNames()) out.push(`.claude/skills/${s}/SKILL.md`);
   for (const a of await agentNames()) out.push(`agents/${a}.agent.md`);
-  for (const d of ["references", "evals", "evals/scenarios", "evals/runs"]) {
+  for (const d of ["references", "evals", "evals/scenarios", "evals/runs", "docs", "docs/skills"]) {
     try { for (const f of await fs.readdir(path.join(root, d))) if (f.endsWith(".md")) out.push(`${d}/${f}`); }
     catch { /* optional dir */ }
   }
