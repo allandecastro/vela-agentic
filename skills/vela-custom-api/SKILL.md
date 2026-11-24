@@ -4,7 +4,7 @@ description: Use when a story asks for a callable operation (an endpoint, action
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.7"
+  version: "0.1.8"
 ---
 
 # Build a Vela Custom API
