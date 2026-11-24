@@ -15,6 +15,17 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-24
+
+Verified against Vela CLI 0.33.0 and `Vela.Plugins` / `Vela.Testing` 0.44.0.
+
+### Changed
+
+- `README.md` shortened to what the pack is, how to install it and how to contribute; the rest moved to `docs/`.
+- `PluginPipeline` is the only test harness the skills teach, now that `PluginContext` is internal in
+  `Vela.Testing` 0.44. The harness, pitfalls and CLI references are aligned with framework 0.44.0 and CLI 0.33.0.
+- The generated Copilot agents load skills with Copilot's `skill` tool.
+
 ### Added
 
 - `docs/`: the user documentation of the pack (overview, install, the build loop, project files, the deploy guard,
@@ -23,27 +34,10 @@ All notable changes to Vela Agentic are documented here. The format is based on
 - `scripts/check-docs.mjs`, run by `scripts/check.sh`: every skill and agent has a page, every page is in the
   section's `toc.yml` with a description and one title, links stay inside the section or point at Vela's docs,
   links to this repository use a tag.
-
-### Changed
-
-- `README.md` shortened to what the pack is, how to install it and how to contribute; the rest moved to `docs/`.
-
-## [0.6.0] - 2026-11-24
-
-Verified against Vela CLI 0.33.0 and `Vela.Plugins` / `Vela.Testing` 0.44.0.
-
-### Changed
-
-- `PluginPipeline` is the only test harness the skills teach, now that `PluginContext` is internal in
-  `Vela.Testing` 0.44. The harness, pitfalls and CLI references are aligned with framework 0.44.0 and CLI 0.33.0.
-- The generated Copilot agents load skills with Copilot's `skill` tool.
-
-### Added
-
 - GitHub Copilot CLI as an eval actor (`evals/tools/copilot_actor.sh`).
 - Mutation checks in the evals: behaviour bugs planted after a run; each one the tests miss is a missing test.
-- Campaign 2026-11-24 (Copilot, Vela 0.44): 3 of 4 scenarios pass; the failure (a solution not asked of the human)
-  is fixed in the skills.
+- Campaign 2026-11-24 on Vela 0.44 / CLI 0.33: four scenarios pass on Claude Code and on GitHub Copilot CLI (on
+  Copilot after a fix: the target solution is asked of the human, never `tbd` when one is reachable).
 
 ## Earlier releases
 
