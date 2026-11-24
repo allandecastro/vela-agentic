@@ -17,7 +17,8 @@ host, and what must be on the machine before a run. It is for the developer who 
 | A Dataverse development environment | `vela models`, `vela solution show` and `vela plan` read it. | An unmanaged solution and its publisher must exist. Vela does not create them. |
 | `git`, and the GitHub CLI `gh` | The agent commits each step and opens a draft pull request. | Signed in to the repository the project lives in. |
 
-The v0.6.0 pack is verified against `vela` 0.33.0 and `Vela.Plugins` / `Vela.Testing` 0.44.0. At session start the
+The Vela versions a release of the pack is verified against are in its
+[`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/references/cli-surface.md). At session start the
 optional [hook](hooks.md) compares the installed CLI with that version. An older CLI: run `vela update`.
 
 ### Connect without a browser
