@@ -23,6 +23,6 @@ else
 fi
 cd "$proj"
 # shellcheck disable=SC2086
-copilot -p "$prompt" $session --agent vela-builder --allow-all-tools --add-dir "$run" --no-ask-user \
+copilot -p "$prompt" $session --agent vela-builder --allow-all-tools --add-dir "$run" --add-dir "$HOME/.nuget" --no-ask-user \
   --share "$run/copilot-session.md" -s $model > "$run/copilot-turn$n.md" 2> "$run/copilot-turn$n.err" || true
 cat "$run/copilot-turn$n.md"
