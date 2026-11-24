@@ -74,13 +74,12 @@ instrument → fix → regression-test - not trial and error.
    behaviour the human expects). No edit to `src/` before this commit.
 8. **Fix only the most-likely cause**, in its own commit. The diff is the cause - no incidental edit elsewhere
    (each is a change the human must re-verify); the rest is a follow-up. Red now green and kept; full suite green.
-9. **Back to the build loop, in order** - load each skill whole before its step: `vela-code-review` (run
-   `spec-check` and hand its output, "nothing to check" included, and the Run trace to the reviewer; no
-   hand-off with a BLOCK open), **then** `vela-apply` (Release build after the last change, `vela plan` on the org
-   you can reach, its exit code - exit `4` is a solution to ask about, its step 5, not "not deployed here"), then the Build Report in the Canvas (`docs/features/<slug>/README.md`); stop at the apply gate. Faulty org unreachable → the gate names **that** org with
-   the exact commands to run there, e.g. `vela inspect --url <faulty org>`, `vela plan --package <nupkg>
-   --solution <uniquename> --url <faulty org> --detailed-exitcode`, `vela logs --type <PluginType> --since 1d
-   --url <faulty org>`: an org you can reach does not ship the fix where the fault is.
+9. **Back to the build loop:** load `vela-code-review` and follow it, **then** load `vela-apply` and follow it
+   (through the preview) - don't redo their steps from memory. Then the Build Report in the Canvas
+   (`docs/features/<slug>/README.md`); stop at the apply gate.
+10. **Faulty org unreachable:** the gate also names **that** org with the exact commands to run there, e.g.
+   `vela inspect --url <faulty org>`, `vela plan --package <nupkg> --solution <uniquename> --url <faulty org>
+   --detailed-exitcode`, `vela logs --type <PluginType> --since 1d --url <faulty org>`.
 
 When the harness and the org disagree, read Vela's limitations page (`references/plugin-authoring-api.md`,
 *Platform services*) before suspecting the code: the harness is a faithful-but-partial model.
