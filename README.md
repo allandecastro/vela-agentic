@@ -25,9 +25,9 @@
 Vela Agentic is the AI layer of [Vela](https://github.com/allandecastro/vela): Agent Skills and two agents that drive
 the `vela` CLI to build, test, review and preview Dataverse plugins, and stop before anything is written to an org.
 
-> **Status** - Preview, actively developed alongside Vela. Every merge to `main` publishes a new plugin version;
-> the Vela version the pack is verified against is recorded in
-> [`references/cli-surface.md`](references/cli-surface.md).
+> **Status** - Preview, actively developed alongside Vela. Releases are tagged `vX.Y.0` (one per
+> [`ROADMAP.md`](ROADMAP.md) section) and every merge to `main` publishes a patch; the Vela version the pack is
+> verified against is recorded in [`references/cli-surface.md`](references/cli-surface.md).
 
 ## 📖 Documentation
 
@@ -183,17 +183,18 @@ The agents:
 | No untested code | Tests are seen failing before the code, then passing. A happy-path-only suite blocks the gate. |
 | No silent spec drift | `spec-check` compares the rules registry and the tests with the base branch. |
 | An independent review | `vela-reviewer` reviews every change; any Critical or Required finding blocks the gate. |
-| An auditable run | The Build Report carries the run trace: each step, command and exit code, copied from the tool output. |
+| An auditable run | The run trace (each step, command and exit code, copied from the tool output) and the reviewer's verbatim output are kept in `.vela-runs/<story>/` and pasted into the pull request. |
 | No committed secrets | [gitleaks](https://github.com/gitleaks/gitleaks) scans the full history in CI and in the local check. |
 
 ## Quality: the skills are tested too
 
-The pack is held under test in [`evals/`](evals/). A fresh agent receives only the story, works
-through a scenario, and is graded against hidden criteria:
+The pack is held under test in [`evals/`](evals/), with Claude Code and GitHub Copilot CLI as the acting agent.
+A fresh agent receives only the story, works through a scenario, and is graded against hidden criteria:
 
 - **Deterministic checks**: rebuild, rerun the tests, read the registration from the compiled
   assembly, run a read-only `vela plan`.
 - **A separate grader** for the rest, including planted violations that the reviewer must catch.
+- **Mutation**: bugs planted in the finished code, one at a time; each one the tests miss is a missing test.
 
 Each deviation is fixed in the skill that allowed it, and the scenario is run again until it passes
 cleanly. Every run, failures included, is recorded in [`evals/runs/`](evals/runs/).
