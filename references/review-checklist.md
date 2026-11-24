@@ -33,8 +33,9 @@ When a finding is both drift and "misbehaves on a live org", the higher wins: **
   `change`/`retire` in the Canvas - **Critical**; a modified test that no longer matches its case's
   Given/When/Then (data, action, assertion) - **Required**; a test without a `Case` id - **Required**;
   `docs/rules/` edited after the frozen-spec commit and not listed in the Canvas `amendments:` (trace lines aside) - **Critical** (`spec-check` reports these).
-- **Unconfirmed solution / publisher prefix** (`PROJECT.md` against `vela solution show`): must be an open
-  question blocking the apply gate - **Required** if not listed.
+- **Unconfirmed solution / publisher prefix** (`PROJECT.md` against `vela solution show`): with a human
+  reachable, never asked (a `tbd` or a guessed name) - **Required**; with none reachable, it must be an open question
+  blocking the apply gate - **Required** if not listed.
 - **Debug fix scope** (`vela-debug-plugin`): a diff touching more than the cause and its repro tests -
   **Required** (split out as a follow-up).
 - **Drift** (behaviour, write or decision the Canvas does not record) - **Required** (Canvas first, then
