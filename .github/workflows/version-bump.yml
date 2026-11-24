@@ -16,14 +16,14 @@ concurrency: version-bump
 
 jobs:
   bump:
-    runs-on: ${{ fromJSON(vars.RUNS_ON || '"ubuntu-latest"') }}   # see ci.yml
+    runs-on: ubuntu-latest   # see ci.yml
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main   # the latest main, so a queued run includes the previous bump
           fetch-depth: 0   # the skill bump diffs against the push's previous tip
 
-      - uses: actions/setup-node@v4   # the self-hosted runner image has no node
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
