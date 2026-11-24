@@ -1,6 +1,6 @@
 #!/bin/sh
 # Deterministic starting point for debug-filter-miss: an Update plugin that normalises Description but
-# is filtered on the wrong column (the planted bug), with one handler-level test that can't reveal it.
+# is filtered on the wrong column (the planted bug), with one test that sends Name too, so it can't reveal it.
 #   sh evals/setup/debug-filter-miss.sh <work-dir>   -> <work-dir>/DescNorm (git repo)
 set -e
 . "$(dirname "$0")/lib.sh"
@@ -38,12 +38,12 @@ namespace zava.Plugins.Tests.Account.Plugins
     public sealed class AccountNormalizeDescriptionTests
     {
         [Fact]
-        public void Handler_normalises_description()
+        public void Normalises_description()
         {
-            var target = new Account { Id = Guid.NewGuid(), Description = "  Hello   world  " };
-            PluginContext.For<Account>().WithTarget(target).WithOrganizationService(new InMemoryOrganizationService())
-                .Execute(new AccountNormalizeDescription(string.Empty, string.Empty));
-            Assert.Equal("Hello world", target.Description);
+            var id = Guid.NewGuid();
+            var p = PluginPipeline.Empty().Register<AccountNormalizeDescription>().Seed(new Account { Id = id, Name = "Zava" });
+            p.Service.Update(new Account { Id = id, Name = "Zava Ltd", Description = "  Hello   world  " });
+            Assert.Equal("Hello world", Assert.Single(p.GetAll(Account.EntityLogicalNameValue)).ToEntity<Account>().Description);
         }
     }
 }

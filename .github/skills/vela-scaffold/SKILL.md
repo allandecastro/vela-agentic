@@ -65,8 +65,6 @@ Announce: `Using vela-scaffold to <purpose>`. Exact flags: `vela init --help` / 
 7. **Pass the registration the Canvas decided** (`--stage`, `--mode`, `--filtering-attributes`; the
    defaults are Create / PostOperation / Sync), then **read the generated chain** against the Canvas:
    stage, mode and `FilterOn` must be what you asked for.
-   - After `vela add step` the plugin is **multi-step**: its tests run through `PluginPipeline`; an existing
-     `PluginContext` test on the same trigger moves there (`vela-plugin-testing`, `change: tests`).
 8. **Build:** `dotnet build <Name>.sln -c Release`; report the output. `CS1061` on a `FilterOn` column →
    regenerate the model (`vela-models`), never hand-edit it.
 9. Summarise what was generated and the next skill in the loop.

@@ -31,6 +31,8 @@ symptom → cause → fix.
   / `statuscode`, and react to it on Update filtered on `statecode`, checking the new state in the Target
   (`StateCode == Inactive`); reactivation fires the same step. A SetState step never fires (VELA022). Only when
   known legacy callers still send `SetStateRequest` (it also fires the Update step) add one pipeline test with it.
+- **An Upsert step never fires on a standard table** (verified live; Dataverse has Upsert filters for elastic
+  tables only). React on Create / Update: an upsert runs them.
 
 ## Runtime: recursion, state, sandbox, transactions, secrets
 
@@ -55,7 +57,8 @@ symptom → cause → fix.
   trust and pass. Make payload types public (review: **Critical**, every call fails).
 - **An error undoes more (or less) than expected.** Sync Pre/PostOperation run inside the transaction:
   throwing rolls back everything, including earlier plugin writes. PreValidation runs before it. Async runs
-  after commit (failure = a failed system job, the save stays). External side effects never roll back -
+  after commit, outside any transaction (failure = a failed system job; the save **and the writes the step made
+  before failing** stay - order them so a half-run is safe). External side effects never roll back -
   don't make them from a Sync step that may still fail after them.
 - **A failed write inside the transaction ends it, even when caught:** rethrow as
   `InvalidPluginExecutionException`. The read check of `Merge` and `Associate` (1:N) counts as a write. A
@@ -80,8 +83,8 @@ symptom → cause → fix.
 
 - **Parameter rejected: "only letters, digits and underscores".** Dotted names fail when the definition is
   built (harness `Register`, `vela plan`), not at `dotnet build`. Use plain identifiers (`AccountId`).
-- **Rejected at apply: unique name without the publisher prefix.** Nothing local checks it. Name it
-  `<publisher prefix>_<Name>` (`vela add customapi` does it); review guards hand-written names.
+- **Refused by `vela plan` (exit 4): unique name without the publisher prefix.** Nothing before the plan checks
+  it. Name it `<publisher prefix>_<Name>` (`vela add customapi` does it); review guards hand-written names.
 - **Function rejected: "declares no response property".** Add an output, or make it an Action.
 
 ## Deep insert / relationships
@@ -117,4 +120,5 @@ ungenerated typed image projection (VELA021) as **CS0246**.
 
 - Report the **observed** org/build/test state, never the intended one.
 - Non-zero exits are failures to surface (`models --verify` 5 = drift; `plan`/`apply` 2 = `--solution` missing,
-  4 = solution or publisher not found, 6 = connection; `apply` 7 = partial).
+  4 = solution missing or managed, or a refusal before any write - read the message; 6 = connection; `apply` 7 =
+  partial).

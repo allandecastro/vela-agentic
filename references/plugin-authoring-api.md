@@ -30,7 +30,6 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 - The class is already `sealed partial` (generated step contexts nest in it; non-partial = `CS0260`, VELA014).
 - The handler is named by `--handler` after the behaviour (default `Handle<Message>`); never rename a generated
   handler. `.Handle(...)` is required and last (VELA002).
-- A **single-step** plugin auto-derives its trigger; the harness need not restate it.
 - `Account` resolves only once the model exists: run `vela models --entities account ... --project
   src/<P>.Shared/<P>.Shared.csproj` first (a minimal `vela init` has no models).
 
@@ -39,7 +38,7 @@ public sealed partial class <Name>(string unsecureConfig, string secureConfig)
 `vela add step <Plugin> --entity Account --message Update --stage PostOperation --filtering-attributes Telephone1`
 (with `--handler <Method>`) appends a step whose handler is that name (`OnPhoneNormalize(OnPhoneNormalizeContext ctx)`);
 without it, `Handle<Message>` - a duplicate error when the message already has a step. Don't rename generated
-handlers. The plugin is now multi-step: test it through `PluginPipeline` (`harness-api.md`).
+handlers.
 
 ## RegisterStep() fluent surface
 
@@ -135,7 +134,9 @@ doesn't match the step is VELA015. Generated files don't import `Microsoft.Xrm.S
 - **Read and write the org as** (no `ctx.OrganizationService`, no `ctx.UserService`):
   - `ctx.Service` - the step's user (the impersonated user, else the caller); record-level security
     applies. **The default**, and what DI resolves for `IOrganizationService`.
-  - `ctx.SystemService` - SYSTEM, bypasses security; only where elevation is intended.
+  - `ctx.SystemService` - SYSTEM, bypasses security; only where elevation is intended. What it writes is
+    created / modified **and owned** by SYSTEM (the caller is only `createdonbehalfby`). Inside a plugin `WhoAmI`
+    returns SYSTEM: read the caller from `ctx.UserId` / `ctx.InitiatingUserId`.
   - `ctx.AsUser(userId)` - a specific user, e.g. `ctx.AsUser(ctx.InitiatingUserId)`.
 - **Secure configuration:** `.WithSecureConfigFrom("Name")`; the value is supplied at deploy time
   (`vela plan|apply --secure-config Name=@file`, or `VELA_SECURE_CONFIG_Name`) and read through

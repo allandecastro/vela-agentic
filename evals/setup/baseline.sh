@@ -26,7 +26,6 @@ mkdir -p tests/zava.Plugins.Tests/Account/Plugins
 cat > tests/zava.Plugins.Tests/Account/Plugins/AccountDefaultDescriptionTests.cs <<'CS'
 namespace zava.Plugins.Tests.Account.Plugins
 {
-    using System;
     using Vela.Testing;
     using Xunit;
     using zava.Plugins.Account.Plugins;
@@ -36,10 +35,9 @@ namespace zava.Plugins.Tests.Account.Plugins
     {
         private static Account Run(string description)
         {
-            var target = new Account { Id = Guid.NewGuid(), Name = "Zava", Description = description };
-            PluginContext.For<Account>().WithTarget(target).WithOrganizationService(new InMemoryOrganizationService())
-                .Execute(new AccountDefaultDescription(string.Empty, string.Empty));
-            return target;
+            var p = PluginPipeline.Empty().Register<AccountDefaultDescription>();
+            p.Service.Create(new Account { Name = "Zava", Description = description });
+            return Assert.Single(p.GetAll(Account.EntityLogicalNameValue)).ToEntity<Account>();
         }
 
         [Fact, Trait("Case", "ACC-001/C1")] public void Null_description_is_defaulted() => Assert.Equal("Created via Vela plugin", Run(null).Description);
