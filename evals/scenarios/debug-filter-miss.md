@@ -36,5 +36,4 @@ from a Create step); its only test calls the handler through `Execute`, which ca
 
 ## Human answers (evaluator only - never shown to the acting agent)
 - The expected behaviour is exactly what the plugin already does, only when Description is edited.
-- Target solution / publisher prefix: `ZavaSales` / `zava`.
 - Anything not listed: "Use the skills' defaults and record it as an assumption."
