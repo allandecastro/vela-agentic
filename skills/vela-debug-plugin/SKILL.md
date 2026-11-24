@@ -4,7 +4,7 @@ description: Use when a Vela plugin does not fire, fires on the wrong message or
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.8"
+  version: "0.1.9"
 ---
 
 # Debug a Vela plugin
