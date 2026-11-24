@@ -99,6 +99,15 @@ independent of the framework/CLI NuGet releases.
 - [x] Campaign 2026-11-15: five scenarios pass on checks and grader
 - [x] Secret scan (gitleaks) in CI and the local check; the spec-check tests in CI
 
+## v0.6 (2026-11) - Vela 0.44 / CLI 0.33, PluginPipeline only, GitHub Copilot
+
+- [x] `PluginPipeline` is the only harness taught (`PluginContext` is internal in Vela.Testing 0.44); harness,
+      gotchas and CLI references aligned with framework 0.44.0 / CLI 0.33.0
+- [x] GitHub Copilot CLI as an eval actor (`evals/tools/copilot_actor.sh`); the generated Copilot agents load
+      skills with Copilot's `skill` tool
+- [x] Mutation checks in the evals: planted behaviour bugs after a run, every survivor a missing test
+- [x] Campaign 2026-11-24 (Copilot, Vela 0.44): 3 of 4 scenarios pass; the fail (an unasked solution) fixed
+
 ## Next
 
 - [x] Omitted Vela features as decisions + pointers (localized messages, environment variables, cache,
@@ -110,6 +119,4 @@ independent of the framework/CLI NuGet releases.
       installing from the marketplace - to design
 - [ ] A dedicated agent to migrate an existing plugin project to Vela
 - [ ] `debug-live-trace`: refresh the live trace rows before a run (plug-in trace logs expire, often after 24h)
-- [ ] Run a few scenarios with GitHub Copilot CLI as the actor (the pack targets it; evaluated on Claude Code only so far)
-- [ ] Mutation checks in the evals: plant behaviour bugs after a run and require the tests to fail
 - [ ] Web resources (`form-script`, `ribbon-script`) - out of scope while in preview
