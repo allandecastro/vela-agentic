@@ -31,6 +31,8 @@ symptom → cause → fix.
   / `statuscode`, and react to it on Update filtered on `statecode`, checking the new state in the Target
   (`StateCode == Inactive`); reactivation fires the same step. A SetState step never fires (VELA022). Only when
   known legacy callers still send `SetStateRequest` (it also fires the Update step) add one pipeline test with it.
+- **An Upsert step never fires on a standard table** (verified live; Dataverse has Upsert filters for elastic
+  tables only). React on Create / Update: an upsert runs them.
 
 ## Runtime: recursion, state, sandbox, transactions, secrets
 
@@ -55,7 +57,8 @@ symptom → cause → fix.
   trust and pass. Make payload types public (review: **Critical**, every call fails).
 - **An error undoes more (or less) than expected.** Sync Pre/PostOperation run inside the transaction:
   throwing rolls back everything, including earlier plugin writes. PreValidation runs before it. Async runs
-  after commit (failure = a failed system job, the save stays). External side effects never roll back -
+  after commit, outside any transaction (failure = a failed system job; the save **and the writes the step made
+  before failing** stay - order them so a half-run is safe). External side effects never roll back -
   don't make them from a Sync step that may still fail after them.
 - **A failed write inside the transaction ends it, even when caught:** rethrow as
   `InvalidPluginExecutionException`. The read check of `Merge` and `Associate` (1:N) counts as a write. A

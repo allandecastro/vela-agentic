@@ -136,7 +136,9 @@ doesn't match the step is VELA015. Generated files don't import `Microsoft.Xrm.S
 - **Read and write the org as** (no `ctx.OrganizationService`, no `ctx.UserService`):
   - `ctx.Service` - the step's user (the impersonated user, else the caller); record-level security
     applies. **The default**, and what DI resolves for `IOrganizationService`.
-  - `ctx.SystemService` - SYSTEM, bypasses security; only where elevation is intended.
+  - `ctx.SystemService` - SYSTEM, bypasses security; only where elevation is intended. What it writes is
+    created / modified **and owned** by SYSTEM (the caller is only `createdonbehalfby`). Inside a plugin `WhoAmI`
+    returns SYSTEM: read the caller from `ctx.UserId` / `ctx.InitiatingUserId`.
   - `ctx.AsUser(userId)` - a specific user, e.g. `ctx.AsUser(ctx.InitiatingUserId)`.
 - **Secure configuration:** `.WithSecureConfigFrom("Name")`; the value is supplied at deploy time
   (`vela plan|apply --secure-config Name=@file`, or `VELA_SECURE_CONFIG_Name`) and read through
