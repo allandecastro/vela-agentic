@@ -26,7 +26,7 @@ JSON). The API trusts our Dataverse environment's managed identity - no secret t
 - **Project:** `vela init ... --managed-identity` (implies Integrations; never `--samples`); the plugin in the
   Integrations project; the call in a service.
 - **Managed identity, no secret:** `ctx.AcquireManagedIdentityToken(new[] { "<scope>" })`, bearer header; no
-  secure config, no key in code. Tests fake it with `WithManagedIdentityService(...)` (pipeline or context) -
+  secure config, no key in code. Tests fake it with `WithManagedIdentityService(...)` on the pipeline -
   never `WithService<IManagedIdentityService>`.
 - **Async PostOperation** (never blocks the save); HTTPS DNS name, explicit timeout.
 - **Signed package:** a managed identity needs a signed package → `vela sign` with the dev pfx, password through
