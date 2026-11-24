@@ -5,6 +5,8 @@
 set -e
 . "$(dirname "$0")/lib.sh"
 sol=$(new_solution "$1" DescNorm zava)
+# The customer's solution, as in the dev org (the scenario tests debugging, not the solution question).
+sed -i.bak "s/: DescNorm$/: ZavaSales/" "$sol/PROJECT.md" && rm "$sol/PROJECT.md.bak"
 cd "$sol"
 vela add plugin AccountNormalizeDescription --entity Account --message Update --stage PreOperation --mode Sync --filtering-attributes Name --handler OnDescriptionNormalize \
   --project src/zava.Plugins/zava.Plugins.csproj >/dev/null

@@ -40,16 +40,15 @@ Announce: `Using vela-code-review to review the change`.
      (fix-spec-first).
    - **Standards** - analyzer intent + Dataverse smell baseline + **registration legality**
      (`references/registration-rules.md`) + **SOLID/DRY**.
-4. Emit findings, most severe first: `severity - file:line - what - why - fix`, severity **Critical**,
+4. **As soon as the reviewer returns, before acting on it**, append its verbatim output to
+   `.vela-runs/<slug>/review.md` (untracked; one section per round). Findings, most severe first: `severity - file:line - what - why - fix`, severity **Critical**,
    **Required** or **Nit**.
 5. **Gate:** any unresolved **Critical/Required** blocks the apply gate - fix, re-verify
    (`vela-plugin-authoring` / `vela-plugin-testing`), review again. Nits are optional. A finding you think wrong
    is never dismissed by you: answer it with your evidence (rule text, output) in a scoped re-review round, or ask
    the human; only the reviewer or the human closes it. A finding on a rule's
    text in `docs/rules/` is not fixed in the build: it goes to the Gate as an open item for the human.
-6. Save the reviewer's verbatim output as `.vela-runs/<slug>/review.md` (untracked; each round appended - a round is
-   not finished until it is saved), then record
-   the findings in the Build Report (`references/build-report-template.md`).
+6. Record the findings in the Build Report (`references/build-report-template.md`).
 
 ## Spec check (deterministic, before dispatching the reviewer)
 
@@ -67,7 +66,7 @@ registry) is recorded as **not checked**, never as a pass.
 
 - **Default - `vela-reviewer` agent** (read-only, no shell), given only the material of step 2 and the
   spec-check output - **not** the session history, so the author's context does
-  not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes; its output is saved (step 6) and quoted
+  not anchor it (in eval runs it caught what self-review passed). **One** reviewer covers both axes; its output is saved (step 4) and quoted
   in the PR.
 - **Proportional re-review** (the review is the costliest step of a build): after fixing its findings, or
   after a small later change (trace text, comment, wording), dispatch a fresh reviewer with **only** that
