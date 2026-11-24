@@ -5,8 +5,8 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## Versioning policy
 
-- A **release** is a section of [`ROADMAP.md`](ROADMAP.md): `vX.Y.0`, tagged and published as a GitHub release
-  whose notes are that section. See the roadmap's **Versioning** section.
+- A **release** is a minor version `vX.Y.0`, tagged and published as a GitHub release whose notes are its section
+  below. How to cut one: [`RELEASING.md`](RELEASING.md).
 - Every other merge to `main` publishes a patch (`X.Y.1`, `X.Y.2`, ...), so plugin hosts see the update. Skills and
   hook scripts carry their own patch versions, bumped when they change.
 - The pack is pre-1.0. `1.0.0` waits for Vela 1.0, the public CLI contract the pack drives.
@@ -41,7 +41,7 @@ Verified against Vela CLI 0.33.0 and `Vela.Plugins` / `Vela.Testing` 0.44.0.
 
 ## Earlier releases
 
-Condensed; the full history is in [`ROADMAP.md`](ROADMAP.md).
+Condensed; the full history is in git (`ROADMAP.md` at [v0.6.0](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/ROADMAP.md)).
 
 - **0.5 (2026-11):** `PROJECT.md` as the only source of the publisher prefix and solutions, `--solution` required on
   plan and apply; one plugin class per table with behaviour-named handlers; one requirement per story; security-role
