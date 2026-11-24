@@ -115,7 +115,8 @@ independent of the framework/CLI NuGet releases.
 - [x] GitHub Copilot CLI as an eval actor (`evals/tools/copilot_actor.sh`); the generated Copilot agents load
       skills with Copilot's `skill` tool
 - [x] Mutation checks in the evals: planted behaviour bugs after a run, every survivor a missing test
-- [x] Campaign 2026-11-24 (Copilot, Vela 0.44): 3 of 4 scenarios pass; the fail (an unasked solution) fixed
+- [x] Campaign 2026-11-24 (Vela 0.44): 4 scenarios pass on Claude Code and on Copilot (Copilot after the unasked-solution fix)
+- [x] User documentation in `docs/`, published by the Vela site as its "AI agents" section; `CHANGELOG.md`
 
 ## Next
 
