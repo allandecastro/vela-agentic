@@ -4,7 +4,7 @@ description: Use when implementing the logic of a Vela plugin, after scaffolding
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.4"
+  version: "0.1.5"
 ---
 
 # Author a Vela plugin

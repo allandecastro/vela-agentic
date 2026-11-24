@@ -4,7 +4,7 @@ description: Read first when starting any Vela work, or when unsure which Vela s
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.4"
+  version: "0.1.5"
 ---
 
 # Using Vela

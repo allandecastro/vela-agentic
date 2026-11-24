@@ -4,7 +4,7 @@ description: Use when a new Vela solution is needed, or a component (plugin, cus
 compatibility: "vela CLI + dotnet SDK."
 license: MIT
 metadata:
-  version: "0.1.5"
+  version: "0.1.6"
 ---
 
 # Scaffold Vela projects and components
