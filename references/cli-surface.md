@@ -4,8 +4,8 @@ The commands the loop needs and the traps `--help` does not show. A snapshot - t
 confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
 exit code as one JSON document).
 
-**Verified against:** `vela 0.31.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.43.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
+**Verified against:** `vela 0.33.0` (CLI; flags diffed from its changelog) · `Vela.Plugins` /
+`Vela.Testing` `0.44.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
 (also what `spec-check` needs, run with `dotnet run`). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 
@@ -79,9 +79,12 @@ command line.
 `--packages-dir`; `--strict`, `--detailed-exitcode` in `--help`).
 - **`--solution` is required on `plan` and `apply`** (resolves the publisher prefix; `apply` adds every
   component to it). Without it: exit `2` before connecting, "vela plan requires --solution <uniquename>".
-  The solution + publisher must already exist (else exit `4`).
+  The solution + publisher must already exist and the solution be **unmanaged** there: checked right after
+  connecting, before anything is read or written - missing or managed → exit `4` (a managed one means the
+  connection points at a test/production org, not the development one).
 - `--secure-config <NAME=@file>` (one trailing line ending is dropped) or env `VELA_SECURE_CONFIG_<NAME>` - never
-  `NAME=VALUE` on a command line.
+  `NAME=VALUE` on a command line. An empty variable or file keeps the live value (with a warning); only
+  `--secure-config NAME=` clears it.
 - `vela plan` never writes; run it on the exact package you will apply.
 - `vela apply` writes. On a TTY it requires a typed `yes`; non-interactive refuses unless `--auto-approve`.
   **Do not auto-approve unless explicitly told to.** Operations are idempotent upserts: a partial apply
@@ -99,7 +102,8 @@ command line.
   - A rank collision with a Microsoft managed step: `dataverse-gotchas.md` (Execution order).
 - **`apply` JSON:** the plan shape plus **`executed`** (`created`, `updated`, `deleted`, `packageRepublished`,
   `addedToSolution`, `byKind`). `summary` is the diff remaining *after* the apply: report from `executed` +
-  the exit code, never from `summary`.
+  the exit code, never from `summary`. On exit `7`, the `apply-failed` document's `failure` object lists every operation under `completed`,
+  `failed` or `notApplied`.
 - **`inspect --json`:** `{mode, environment, local, current: {assemblies, steps}, diagnostics}` - empty
   `diagnostics` after an apply means they match.
 
@@ -114,7 +118,10 @@ Resolution order:
 
 ## Exit codes
 `0` success · `2` invalid arguments (incl. `plan`/`apply` without `--solution`, before connecting) · `3` file not found · `4` error (incl. `--strict`, a missing
-solution on `solution show`) · `5` drift (`models --verify`) or apply not converged ·
+solution on `solution show`; on `plan`/`apply` a refusal **before any write**, its message naming the cause: a
+missing or managed solution, a Custom API name without the publisher prefix, a step on a message or table the org
+has no filter for, a bound-API step on another table, a removed plugin type that still has steps, a changed
+assembly set) · `5` drift (`models --verify`) or apply not converged ·
 `6` Dataverse connection failure (any network error on any Dataverse call; `models` stops rather than
 skipping) · `7` partial apply (fix, re-run `apply`) · `8` changes pending (`plan --detailed-exitcode` only).
 

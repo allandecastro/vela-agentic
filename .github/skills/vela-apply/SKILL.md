@@ -66,6 +66,9 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
      **Never a placeholder value** - it silences the diagnostic and previews a config nobody deploys.
    - A story that leaves the package with **no plugin** (all removed): `plan` creates nothing and deletes
      nothing - the deployed steps stay; record them at the Gate for a human to unregister.
+   - Exit `4` - refused before any write; its message names the cause (`references/cli-surface.md`). A solution
+     **managed** there → the connection points at a test/production org: ask the human for the development org.
+     Any other cause is the package's: fix it, rebuild, re-plan.
    - Exit `6` (connection genuinely failed) → `plan_preview: unavailable` with the exact command + exit code.
 7. **Summarise** in the Build Report's **Gate** section (`references/build-report-template.md`): the apply
    command, the rollback and its limits, and the check on the org when the harness cannot prove the story. The registry is
@@ -84,8 +87,8 @@ Announce: `Using vela-apply to <purpose>`. Flags and JSON shapes: `vela <cmd> --
 
 ## Rationalizations (excuse → rebuttal)
 
-- "Exit `4`, the plugin is just not deployed there." → Exit `4` is a solution that does not exist: ask which
-  one, never record the preview as merely unavailable.
+- "Exit `4`, the plugin is just not deployed there." → Exit `4` is a missing or managed solution (wrong org) or a
+  package `plan` refuses - read its message; never record the preview as merely unavailable.
 - "The plan looks fine, I'll just apply." / "I'll pass --auto-approve." → `apply` writes to a live org;
   the prompt is the safety. Stop and hand off.
 - "I ran `plan` earlier, before the review fixes." → That package no longer exists. Any code change:

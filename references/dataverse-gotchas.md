@@ -80,8 +80,8 @@ symptom → cause → fix.
 
 - **Parameter rejected: "only letters, digits and underscores".** Dotted names fail when the definition is
   built (harness `Register`, `vela plan`), not at `dotnet build`. Use plain identifiers (`AccountId`).
-- **Rejected at apply: unique name without the publisher prefix.** Nothing local checks it. Name it
-  `<publisher prefix>_<Name>` (`vela add customapi` does it); review guards hand-written names.
+- **Refused by `vela plan` (exit 4): unique name without the publisher prefix.** Nothing before the plan checks
+  it. Name it `<publisher prefix>_<Name>` (`vela add customapi` does it); review guards hand-written names.
 - **Function rejected: "declares no response property".** Add an output, or make it an Action.
 
 ## Deep insert / relationships
@@ -117,4 +117,5 @@ ungenerated typed image projection (VELA021) as **CS0246**.
 
 - Report the **observed** org/build/test state, never the intended one.
 - Non-zero exits are failures to surface (`models --verify` 5 = drift; `plan`/`apply` 2 = `--solution` missing,
-  4 = solution or publisher not found, 6 = connection; `apply` 7 = partial).
+  4 = solution missing or managed, or a refusal before any write - read the message; 6 = connection; `apply` 7 =
+  partial).
