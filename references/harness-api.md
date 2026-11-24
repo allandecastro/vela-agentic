@@ -6,7 +6,8 @@ probe test tells you.
 
 ## `PluginPipeline` - the only harness
 
-Register the plugins (`PluginPipeline.Empty().Register<TPlugin>()`, or `FromAssemblyOf<T>()` for all of them),
+Register the plugins (`PluginPipeline.Empty().Register<TPlugin>()`, or `FromAssemblyOf<T>()` for all of them -
+a type registered twice throws),
 `Seed(...)` the starting rows (no plugin fires), send the triggering write through `p.Service`, then assert on
 `GetAll`, `ExecutionLog`, `Trace` and `LogCapture`. It runs the registration as Dataverse does: filters,
 message/stage, relationship scope, images, ranks, several plugins, cascades, rollback, async. A class with several
@@ -66,9 +67,12 @@ proves (e.g. the Create case) - never leave it untagged, never delete it to dodg
   ```
 - **Async steps:** the pipeline runs them **after the outermost operation commits**, never on rollback. An
   async failure is **not thrown** (a failed system job, as on Dataverse): it is in `p.AsyncStepFailures`
-  and the triggering write stays saved. Assert `run.Mode == ExecutionMode.Asynchronous` (`using Vela.Steps;`)
+  and the triggering write stays saved - so do the writes the step made before failing. Assert `run.Mode == ExecutionMode.Asynchronous` (`using Vela.Steps;`)
   and `Assert.Empty(p.AsyncStepFailures)` (or `Single` for a failure case).
 - Assert by reading records back (`GetAll`, `Retrieve`), not by counting calls.
+- **Stamped as on Dataverse:** `createdon`, `createdby`, `modifiedon`, `modifiedby`, `owningbusinessunit` sent on a
+  write are ignored - arrange them with `Seed(...)`. A Create with `statecode` but no `statuscode` is active:
+  send both.
 - **PreOperation (a column of the same record):** through the pipeline, read the row back (the edit of
   `ctx.Request.Target` is what was saved); `Assert.Single(p.ExecutionLog)` proves no second write re-fired the step.
 - "Already correct → nothing re-set" in PreOperation is not observable: don't assert on trace text; cover it
@@ -113,6 +117,11 @@ read-denied case), named for what it lacks.
 A `WithSecurity` test that depends on who can read a child row (e.g. an account's contacts) declares the
 parental relationship (`WithParentalRelationship("account", "contact", "parentcustomerid")`): inherited access
 (the parent's owner reads its children) applies only then - see Vela's security-model guide.
+Like Dataverse, it also checks: a new owner (Create with `ownerid`, Assign, a PreOperation setting it) holds Read
+on the table (`0x80040299`); an N:N Associate/Disassociate has Append on both tables; a Create setting a secured
+column has `FieldPermission(..., create: true)`. A `User`/`Team`/`FieldPermission` naming an undeclared principal
+or business unit throws at `WithSecurity`. Such a fault is a real denial or a missing declaration, not a harness
+bug.
 
 ## Replace a service - `WithService<TService>(instance)`
 
@@ -165,4 +174,5 @@ Plugin and test projects target **net48**.
   Success is `Total: N, Errors: 0, Failed: 0, Skipped: 0` with **N > 0 in every test assembly and at least the
   declared cases** - a run over zero tests checked nothing (wrong path, filter, discovery) and is not green. **Always pass `-parallel none` on Mono** - a
   `mono-sgen` "Got a segv" without it is an environment crash, **not** a test failure.
+- `Vela.Testing` pins its own `Vela.Plugins` version (NU1608 otherwise): upgrade both together.
 - Built against a stale package? Purge `vela.testing` under `~/.nuget` and rebuild.
