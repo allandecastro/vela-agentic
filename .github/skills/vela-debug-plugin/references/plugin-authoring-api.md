@@ -184,7 +184,7 @@ public sealed class ScoreLead(string unsecureConfig, string secureConfig)
     {
         var email = ctx.GetInputParameter<string>("email");
         if (string.IsNullOrWhiteSpace(email))
-            throw new InvalidPluginExecutionException("email is required");   // VELA012
+            throw ctx.BusinessError(LeadMessages.EmailRequired);   // a localized key (see the table below)
         ctx.SetOutputParameter("leadScore", 55);
     }
 }

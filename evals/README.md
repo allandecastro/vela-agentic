@@ -115,7 +115,7 @@ Latest campaign per scenario - 50/61 runs pass.
 | `diagnose-failed-run` | 2026-10-17b | **3/3** | 3/3 | 3/3 | ready |
 | `dispatched-no-human` | 2026-10-23 | **1/1** | 1/1 | 1/1 | ready |
 | `feature-multi-rule` | 2026-11-23 | **1/3** | 3/3 | 1/3 | not ready |
-| `lead-score-custom-api` | 2026-11-23 | **1/1** | 1/1 | 1/1 | ready |
+| `lead-score-custom-api` | 2026-11-24 | **1/1** | 1/1 | 1/1 | ready |
 | `org-models-and-plan` | 2026-10-13 | **3/3** | 3/3 | 3/3 | ready |
 | `regression-test-guard` | 2026-11-23 | **3/5** | 3/5 | 3/5 | not ready |
 <!-- passrate:end -->
