@@ -16,6 +16,15 @@ independent of the framework/CLI NuGet releases.
 - Skills discover exact flags at runtime via `vela <command> --help`, so additive CLI changes do not break
   them. A breaking CLI change is matched by a skill update.
 
+## Versioning
+
+- A **release** is a section of this roadmap: `vX.Y.0`. Its release commit sets `.claude-plugin/plugin.json` and
+  `marketplace.json` to `X.Y.0` (the version-bump workflow then leaves it), is tagged `vX.Y.0`, and gets a GitHub
+  release whose notes are the section.
+- Every other merge to `main` bumps the patch (`X.Y.1`, `X.Y.2`, ...), so `claude plugin update` sees it; skills and
+  hook scripts carry their own patch versions, bumped when they change.
+- A new section starts at the next minor; `1.0.0` waits for Vela 1.0 (the public CLI contract it drives).
+
 ## v0.1 (initial)
 
 - [x] Single source of truth: `skills/`, `agents/`, `AGENTS.md`, `references/`

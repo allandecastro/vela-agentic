@@ -1,6 +1,7 @@
 name: Version bump
 
-# Every merge to main bumps the plugin's patch version, so `claude plugin update` sees a new release
+# A release commit sets the plugin version to X.Y.0 itself (ROADMAP.md, "Versioning"): the plugin bump is skipped for
+# it. Every other merge to main bumps the plugin's patch version, so `claude plugin update` sees a new release
 # (an unchanged version keeps the cached copy), and the `metadata.version` patch of every skill whose folder
 # changed (Agent Skills frontmatter; a project that installs single skills compares them by it), and the
 # `# version:` line of every hook script that changed. The push uses GITHUB_TOKEN, which triggers no workflow: no loop.
@@ -27,7 +28,12 @@ jobs:
           node-version: "20"
 
       - name: Bump patch in plugin.json and marketplace.json
+        env:
+          BEFORE: ${{ github.event.before }}
         run: |
+          if git cat-file -e "$BEFORE^{commit}" 2>/dev/null && git diff "$BEFORE" HEAD -- .claude-plugin/plugin.json | grep -q '^+  "version"'; then
+            echo "release commit: version set by hand, not bumped"; exit 0
+          fi
           node -e '
             const fs = require("fs");
             const p = ".claude-plugin/plugin.json", m = ".claude-plugin/marketplace.json";
@@ -72,5 +78,7 @@ jobs:
           v=$(node -p 'require("./.claude-plugin/plugin.json").version')
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A skills hooks hooks.json .github && git commit -am "chore(release): vela plugin $v"
+          git add -A skills hooks hooks.json .github .claude-plugin
+          git diff --cached --quiet && { echo "nothing to bump"; exit 0; }
+          git commit -m "chore(release): vela plugin $v"
           git push
