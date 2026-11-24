@@ -63,8 +63,8 @@ Announce: `Using vela-plan-review to grill the plan`.
      "Outbound integration"). Record it in Structure, with the secure-config name the deployer must supply.
    - **Structure - target solution & publisher:** the existing **unmanaged solution** unique name and its
      **publisher prefix** (Vela doesn't create them): read from `PROJECT.md`, never copied into the Canvas. A new
-     project: confirm it read-only as `vela-scaffold` step 2 says (unknown and no org: the `tbd` placeholder
-     there, apply blocked until confirmed).
+     project: confirm it read-only as `vela-scaffold` step 2 says (unknown: asked, its own numbered question; the `tbd`
+     placeholder only with no human reachable, apply blocked until confirmed).
    - **"When X changes" on Update:** the filter fires whenever the column is *sent*, even unchanged.
      Record whether the value must differ (compare `ctx.PreImage`); write, or set an unsent Target column,
      only when the value differs.
