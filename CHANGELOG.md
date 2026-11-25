@@ -9,7 +9,8 @@ All notable changes to Vela Agentic are documented here. The format is based on
   below. How to cut one: [`RELEASING.md`](RELEASING.md).
 - Every other merge to `main` publishes a patch (`X.Y.1`, `X.Y.2`, ...), so plugin hosts see the update. Skills and
   hook scripts carry their own patch versions, bumped when they change.
-- The pack is pre-1.0. `1.0.0` waits for Vela 1.0, the public CLI contract the pack drives.
+- The pack is pre-1.0 (public preview): a minor release may break compatibility, a patch does not. `1.0.0` waits for
+  Vela 1.0, the public CLI contract the pack drives.
 - The Vela version a release is verified against is recorded in
   [`references/cli-surface.md`](references/cli-surface.md).
 
