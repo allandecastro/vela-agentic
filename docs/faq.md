@@ -54,7 +54,8 @@ and exit code. Run that command yourself with a working connection before you ap
 
 ### The CLI is older than the pack expects
 
-The session hook says so at start. Run `vela update`. The agent stops only if a feature the task needs is missing.
+The session hook says so at start. Run `vela update`. An older minor version (0.32 for a pack verified against 0.33)
+stops the agent; an older patch only warns. The minimum is in [Install](install.md#minimum-vela-cli-version).
 
 ### The review blocks
 

@@ -32,7 +32,24 @@
   at run time with `vela <command> --help`, so additive CLI changes do not break them. A breaking change is
   matched by a skill update.
 - The Vela version the pack is verified against lives in **one place**, the top of `references/cli-surface.md`.
-  Skills carry no version (the lint rejects one in `compatibility`). Agents run `vela version`, ask for
-  `vela update` if older, and stop only if a named feature is genuinely missing (`AGENTS.md`, golden rule 2).
+  Skills carry no version (the lint rejects one in `compatibility`). Agents run `vela --version`: an older minor
+  stops the run with `vela update`, an older patch warns (`AGENTS.md`, golden rule 2).
 - On a Vela CLI or framework release: diff `vela help --json`, update `references/cli-surface.md` and any skill
   whose guidance changed, smoke-test a fresh `vela init` + `vela add`, and rerun the affected evals.
+
+## Vela CLI contract
+
+`contract/vela-help.json` is `vela help --json` of the CLI the pack is verified against, `contract/vela-cli.version`
+its version. `scripts/check-cli-contract.mjs` (in `scripts/check.sh`) fails when a skill or doc cites a `vela`
+command or option the snapshot lacks, or when `references/cli-surface.md` ("Verified against") or `docs/install.md`
+(minimum CLI) state another version. `.github/workflows/cli-contract.yml` diffs the newest Vela.Cli daily and opens
+an issue "Vela CLI X.Y.Z changes the contract" listing what changed and where the pack uses it.
+
+The update is one pull request:
+
+1. `node scripts/check-cli-contract.mjs --latest --update` - installs the newest Vela.Cli, prints the diff, and
+   rewrites `contract/` from it.
+2. Fix every skill and doc the diff (or the issue) lists as used; set the same version in the "Verified against"
+   line of `references/cli-surface.md` and the minimum of `docs/install.md`; `node scripts/sync-copilot.mjs`.
+3. `sh scripts/check.sh` green; the pull request's `--pinned` job confirms the snapshot matches its version.
+4. Decide whether the pack needs a release (a breaking change does) and add a `CHANGELOG.md` entry.

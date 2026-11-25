@@ -1,0 +1,76 @@
+name: Vela CLI contract
+
+# Fails the day a Vela CLI release changes something the pack relies on (scripts/check-cli-contract.mjs).
+# - schedule / workflow_dispatch: the newest Vela.Cli against contract/vela-help.json; a difference opens one issue
+#   "Vela CLI X.Y.Z changes the contract" (or comments on the open one for that version); breaking = the job fails.
+# - pull_request touching contract/ or the script: the snapshot's own Vela.Cli version must produce the snapshot.
+# Runner: GitHub-hosted only (public repository).
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "contract/**"
+      - "scripts/check-cli-contract.mjs"
+      - ".github/workflows/cli-contract.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  contract:
+    name: CLI contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # The CLI targets .NET 10 (references/cli-surface.md).
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Usage check (offline)
+        run: node scripts/check-cli-contract.mjs
+
+      - name: Snapshot = its own CLI version (--pinned)
+        if: github.event_name == 'pull_request'
+        run: node scripts/check-cli-contract.mjs --pinned
+
+      - name: Drift against the newest CLI (--latest)
+        id: drift
+        if: github.event_name != 'pull_request'
+        run: |
+          set +e
+          node scripts/check-cli-contract.mjs --latest --report "$RUNNER_TEMP/cli-contract.md"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the drift issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ runner.temp }}/cli-contract.md
+        run: |
+          [ -f "$REPORT" ] || { echo "no contract difference"; exit 0; }
+          title="$(head -1 "$REPORT" | sed 's/^# //')"
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" \
+            --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")"
+          if [ -n "$existing" ]; then
+            # Daily runs: comment only when the report changed since the issue body or its last comment.
+            last="$(gh issue view "$existing" --repo "$GITHUB_REPOSITORY" --json body,comments --jq '(.comments | last | .body) // .body')"
+            [ "$last" = "$(cat "$REPORT")" ] && { echo "issue #$existing already carries this report"; exit 0; }
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$REPORT"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --label "area: ci" --body-file "$REPORT"
+          fi
+
+      - name: Fail on a breaking change
+        if: github.event_name != 'pull_request' && steps.drift.outputs.code != '0'
+        run: |
+          echo "check-cli-contract --latest exited ${{ steps.drift.outputs.code }}: a breaking change, a schemaVersion change or an install failure - see the drift step."
+          exit 1

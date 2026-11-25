@@ -1,0 +1,1546 @@
+{
+  "schemaVersion": 1,
+  "tool": "vela",
+  "version": "0.33.0",
+  "commands": [
+    {
+      "name": "plan",
+      "aliases": [],
+      "summary": "Preview registration changes; never writes to Dataverse.",
+      "usage": [
+        "vela plan (--package <file.nupkg>... | --packages-dir <folder>) --solution <uniquename> [options] [connection options]"
+      ],
+      "options": [
+        {
+          "name": "--package",
+          "aliases": [
+            "-p"
+          ],
+          "kind": "value",
+          "value": "file.nupkg",
+          "description": "A built plugin package (repeatable)."
+        },
+        {
+          "name": "--packages-dir",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "Every .nupkg in a folder (the newest version of each package id)."
+        },
+        {
+          "name": "--package-assembly",
+          "aliases": [],
+          "kind": "value",
+          "value": "name.dll",
+          "description": "The primary assembly inside the package(s), when it cannot be inferred."
+        },
+        {
+          "name": "--solution",
+          "aliases": [
+            "--solution-unique-name"
+          ],
+          "kind": "value",
+          "value": "uniquename",
+          "description": "Required (prompted for with --interactive). Target solution: writes and components not yet in it are added to it; also resolves the publisher prefix."
+        },
+        {
+          "name": "--webresources",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "(preview) Mirror a web resources folder."
+        },
+        {
+          "name": "--secure-config",
+          "aliases": [],
+          "kind": "value",
+          "value": "NAME=VALUE|NAME=@file",
+          "description": "Value of a step's named secure configuration (repeatable); or VELA_SECURE_CONFIG_<NAME>."
+        },
+        {
+          "name": "--managed-identity",
+          "aliases": [],
+          "kind": "value",
+          "value": "managedidentityid",
+          "description": "Link the published plugin package(s) to this managedidentity record of the environment; without it the link is left untouched."
+        },
+        {
+          "name": "--environment",
+          "aliases": [],
+          "kind": "value",
+          "value": "label",
+          "description": "Label shown in the output (defaults to --url)."
+        },
+        {
+          "name": "--out",
+          "aliases": [],
+          "kind": "value",
+          "value": "file",
+          "description": "Write the JSON document to a file instead of stdout."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--strict",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Fail (exit 4) when there is any warning in diagnostics. Info notices never fail."
+        },
+        {
+          "name": "--detailed-exitcode",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Exit 8 when the plan has changes to apply, 0 when there is nothing to do."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "apply",
+      "aliases": [],
+      "summary": "Apply the plan (prompts for confirmation on a terminal).",
+      "usage": [
+        "vela apply (--package <file.nupkg>... | --packages-dir <folder>) --solution <uniquename> [options] [connection options]"
+      ],
+      "options": [
+        {
+          "name": "--package",
+          "aliases": [
+            "-p"
+          ],
+          "kind": "value",
+          "value": "file.nupkg",
+          "description": "A built plugin package (repeatable)."
+        },
+        {
+          "name": "--packages-dir",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "Every .nupkg in a folder (the newest version of each package id)."
+        },
+        {
+          "name": "--package-assembly",
+          "aliases": [],
+          "kind": "value",
+          "value": "name.dll",
+          "description": "The primary assembly inside the package(s), when it cannot be inferred."
+        },
+        {
+          "name": "--solution",
+          "aliases": [
+            "--solution-unique-name"
+          ],
+          "kind": "value",
+          "value": "uniquename",
+          "description": "Required (prompted for with --interactive). Target solution: writes and components not yet in it are added to it; also resolves the publisher prefix."
+        },
+        {
+          "name": "--webresources",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "(preview) Mirror a web resources folder."
+        },
+        {
+          "name": "--secure-config",
+          "aliases": [],
+          "kind": "value",
+          "value": "NAME=VALUE|NAME=@file",
+          "description": "Value of a step's named secure configuration (repeatable); or VELA_SECURE_CONFIG_<NAME>."
+        },
+        {
+          "name": "--managed-identity",
+          "aliases": [],
+          "kind": "value",
+          "value": "managedidentityid",
+          "description": "Link the published plugin package(s) to this managedidentity record of the environment; without it the link is left untouched."
+        },
+        {
+          "name": "--auto-approve",
+          "aliases": [
+            "--yes"
+          ],
+          "kind": "flag",
+          "description": "Apply without the confirmation prompt (required in a non-interactive session)."
+        },
+        {
+          "name": "--batch-size",
+          "aliases": [],
+          "kind": "value",
+          "value": "n",
+          "description": "ExecuteMultiple chunk size (1-1000, default 100)."
+        },
+        {
+          "name": "--strict",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Fail (exit 4) when there is any warning in diagnostics. Info notices never fail."
+        },
+        {
+          "name": "--environment",
+          "aliases": [],
+          "kind": "value",
+          "value": "label",
+          "description": "Label shown in the output (defaults to --url)."
+        },
+        {
+          "name": "--out",
+          "aliases": [],
+          "kind": "value",
+          "value": "file",
+          "description": "Write the JSON document to a file instead of stdout."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "inspect",
+      "aliases": [],
+      "summary": "Show local and live registrations side by side (read-only).",
+      "usage": [
+        "vela inspect (--package <file.nupkg>... | --packages-dir <folder>) [options] [connection options]"
+      ],
+      "options": [
+        {
+          "name": "--package",
+          "aliases": [
+            "-p"
+          ],
+          "kind": "value",
+          "value": "file.nupkg",
+          "description": "A built plugin package (repeatable)."
+        },
+        {
+          "name": "--packages-dir",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "Every .nupkg in a folder (the newest version of each package id)."
+        },
+        {
+          "name": "--package-assembly",
+          "aliases": [],
+          "kind": "value",
+          "value": "name.dll",
+          "description": "The primary assembly inside the package(s), when it cannot be inferred."
+        },
+        {
+          "name": "--solution",
+          "aliases": [
+            "--solution-unique-name"
+          ],
+          "kind": "value",
+          "value": "uniquename",
+          "description": "Target solution: scopes the read and resolves the publisher prefix; required with --webresources."
+        },
+        {
+          "name": "--webresources",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "(preview) Mirror a web resources folder."
+        },
+        {
+          "name": "--secure-config",
+          "aliases": [],
+          "kind": "value",
+          "value": "NAME=VALUE|NAME=@file",
+          "description": "Value of a step's named secure configuration (repeatable); or VELA_SECURE_CONFIG_<NAME>."
+        },
+        {
+          "name": "--environment",
+          "aliases": [],
+          "kind": "value",
+          "value": "label",
+          "description": "Label shown in the output (defaults to --url)."
+        },
+        {
+          "name": "--out",
+          "aliases": [],
+          "kind": "value",
+          "value": "file",
+          "description": "Write the JSON document to a file instead of stdout."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "aliases": [
+        "new"
+      ],
+      "summary": "Scaffold a new solution on disk (minimal by default; --samples for worked examples).",
+      "usage": [
+        "vela init --name <SolutionName> [--prefix <Prefix>] [--publisher-prefix <prefix>] [--solution <uniquename>] [--samples] [options]"
+      ],
+      "options": [
+        {
+          "name": "--name",
+          "aliases": [],
+          "kind": "value",
+          "value": "SolutionName",
+          "description": "Solution name (also accepted as the first positional argument)."
+        },
+        {
+          "name": "--prefix",
+          "aliases": [],
+          "kind": "value",
+          "value": "Prefix",
+          "description": "Namespace / assembly prefix of the projects."
+        },
+        {
+          "name": "--publisher-prefix",
+          "aliases": [],
+          "kind": "value",
+          "value": "prefix",
+          "description": "Dataverse publisher prefix (2-8 chars): names the packages and the sample Custom APIs; written to PROJECT.md."
+        },
+        {
+          "name": "--solution",
+          "aliases": [],
+          "kind": "value",
+          "value": "uniquename",
+          "description": "Unique name of the Dataverse solution every generated package deploys into; written to PROJECT.md (never read by the CLI)."
+        },
+        {
+          "name": "--output",
+          "aliases": [
+            "-o"
+          ],
+          "kind": "value",
+          "value": "dir",
+          "description": "Parent folder: the solution is created in <dir>/<SolutionName> (default: current directory)."
+        },
+        {
+          "name": "--samples",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Add the demo code and the Integrations/ConsoleApp projects."
+        },
+        {
+          "name": "--minimal",
+          "aliases": [
+            "--no-demos"
+          ],
+          "kind": "flag",
+          "description": "The default: no demo code (kept as an alias)."
+        },
+        {
+          "name": "--integrations",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Add an empty Integrations plugin project (and its tests) without --samples."
+        },
+        {
+          "name": "--no-integrations",
+          "aliases": [],
+          "kind": "flag",
+          "description": "With --samples: skip the Integrations project."
+        },
+        {
+          "name": "--no-tests",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Skip the unit tests project."
+        },
+        {
+          "name": "--no-console",
+          "aliases": [],
+          "kind": "flag",
+          "description": "With --samples: skip the console project."
+        },
+        {
+          "name": "--core-version",
+          "aliases": [],
+          "kind": "value",
+          "value": "ver",
+          "description": "Vela.Plugins version (default: latest compatible release on nuget.org)."
+        },
+        {
+          "name": "--managed-identity",
+          "aliases": [
+            "--mi"
+          ],
+          "kind": "flag",
+          "description": "Add the signing step to the Integrations package (implies --integrations)."
+        },
+        {
+          "name": "--web-resources",
+          "aliases": [
+            "--webresources"
+          ],
+          "kind": "flag",
+          "description": "(preview) Add a TypeScript web resources project."
+        },
+        {
+          "name": "--web-resources-namespace",
+          "aliases": [],
+          "kind": "value",
+          "value": "name",
+          "description": "(preview) Namespace of the web resources."
+        },
+        {
+          "name": "--web-resources-folder",
+          "aliases": [],
+          "kind": "value",
+          "value": "dir",
+          "description": "(preview) Folder of the web resources."
+        },
+        {
+          "name": "--force",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Regenerate into a non-empty folder; only files Vela wrote and you did not edit are overwritten or removed."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Guided prompts."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "add",
+      "aliases": [],
+      "summary": "Add a plugin, service, Custom API, test or step to a project.",
+      "usage": [
+        "vela add (plugin|service|customapi|test|step|form-script|ribbon-script) <Name> [options]",
+        "vela add plugin [<Name>] --entity <ModelType> [options]",
+        "vela add --interactive"
+      ],
+      "options": [
+        {
+          "name": "--entity",
+          "aliases": [
+            "-e"
+          ],
+          "kind": "value",
+          "value": "ModelType",
+          "description": "Table model type: the early-bound class (Account) or the table logical name (account), resolved to its generated model (plugin/step; optional for service and customapi)."
+        },
+        {
+          "name": "--message",
+          "aliases": [],
+          "kind": "value",
+          "value": "Message",
+          "description": "SDK message (plugin/step/test)."
+        },
+        {
+          "name": "--stage",
+          "aliases": [],
+          "kind": "value",
+          "value": "stage",
+          "description": "PreValidation | PreOperation | PostOperation."
+        },
+        {
+          "name": "--mode",
+          "aliases": [],
+          "kind": "value",
+          "value": "mode",
+          "description": "Sync | Async."
+        },
+        {
+          "name": "--filtering-attributes",
+          "aliases": [
+            "--filter"
+          ],
+          "kind": "value",
+          "value": "Col1,Col2",
+          "description": "Columns the step filters on (required for Create/Update)."
+        },
+        {
+          "name": "--handler",
+          "aliases": [],
+          "kind": "value",
+          "value": "Method",
+          "description": "Handler method name (plugin/step; default: Handle<Message>)."
+        },
+        {
+          "name": "--kind",
+          "aliases": [],
+          "kind": "value",
+          "value": "kind",
+          "description": "plugin | customapi (test)."
+        },
+        {
+          "name": "--bound",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Entity-bound Custom API."
+        },
+        {
+          "name": "--global",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Global (unbound) Custom API."
+        },
+        {
+          "name": "--function",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Custom API is a function."
+        },
+        {
+          "name": "--action",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Custom API is an action."
+        },
+        {
+          "name": "--prefix",
+          "aliases": [],
+          "kind": "value",
+          "value": "prefix",
+          "description": "Custom API publisher prefix: required for customapi (prompted for by the wizard); test --kind customapi needs it when the unique name cannot be read."
+        },
+        {
+          "name": "--project",
+          "aliases": [
+            "-p"
+          ],
+          "kind": "value",
+          "value": "csproj",
+          "description": "Target project (default: the single .csproj in the current folder)."
+        },
+        {
+          "name": "--force",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Overwrite an existing file (not step; test completes an existing class without it)."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Guided wizard."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "aliases": [],
+      "summary": "Generate early-bound models, typed messages or roles.",
+      "usage": [
+        "vela models <scope>... [options] [connection options]",
+        "vela models --from-solution <solution.zip> --namespace <ns>   (offline)"
+      ],
+      "options": [
+        {
+          "name": "--solution",
+          "aliases": [],
+          "kind": "value",
+          "value": "uniquename",
+          "description": "Tables taken from the solution's components."
+        },
+        {
+          "name": "--entities",
+          "aliases": [],
+          "kind": "value",
+          "value": "a,b,c",
+          "description": "Table logical names."
+        },
+        {
+          "name": "--custom-apis",
+          "aliases": [],
+          "kind": "optional-value",
+          "value": "a,b,c",
+          "description": "Custom API unique names (bare: every Custom API, with a warning)."
+        },
+        {
+          "name": "--messages",
+          "aliases": [],
+          "kind": "optional-value",
+          "value": "a,b,c",
+          "description": "SDK request names, e.g. SendEmail (bare: one class per request of every consumable message)."
+        },
+        {
+          "name": "--roles",
+          "aliases": [],
+          "kind": "value",
+          "value": "a,b,c",
+          "description": "Security role names: a dependency-light Roles class."
+        },
+        {
+          "name": "--solution-roles",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Every security role in --solution."
+        },
+        {
+          "name": "--intersect",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Also the N:N intersect tables of the scoped tables."
+        },
+        {
+          "name": "--from-solution",
+          "aliases": [],
+          "kind": "value",
+          "value": "zip",
+          "description": "Offline: entity models and option sets from an exported solution zip."
+        },
+        {
+          "name": "--forms",
+          "aliases": [],
+          "kind": "flag",
+          "description": "(preview) TypeScript FormModel files."
+        },
+        {
+          "name": "--tables",
+          "aliases": [],
+          "kind": "flag",
+          "description": "(preview) TypeScript Web API record interfaces."
+        },
+        {
+          "name": "--package",
+          "aliases": [
+            "-p"
+          ],
+          "kind": "value",
+          "value": "file.nupkg",
+          "description": "Built plugin package(s): with a bare --custom-apis, excludes the typed Custom APIs you authored (repeatable)."
+        },
+        {
+          "name": "--packages-dir",
+          "aliases": [],
+          "kind": "value",
+          "value": "folder",
+          "description": "A folder of .nupkg packages, used like --package."
+        },
+        {
+          "name": "--package-assembly",
+          "aliases": [],
+          "kind": "value",
+          "value": "name.dll",
+          "description": "The primary assembly inside the package(s)."
+        },
+        {
+          "name": "--lang",
+          "aliases": [],
+          "kind": "value",
+          "value": "lang",
+          "description": "csharp (default) | ts."
+        },
+        {
+          "name": "--namespace",
+          "aliases": [],
+          "kind": "value",
+          "value": "ns",
+          "description": "Output namespace (default: inferred from the project)."
+        },
+        {
+          "name": "--project",
+          "aliases": [],
+          "kind": "value",
+          "value": "csproj",
+          "description": "Project whose namespace and Models/Generated folder are used."
+        },
+        {
+          "name": "--out",
+          "aliases": [],
+          "kind": "value",
+          "value": "dir",
+          "description": "Output directory (default: current directory)."
+        },
+        {
+          "name": "--no-annotations",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Omit DataAnnotations ([StringLength]/[Range])."
+        },
+        {
+          "name": "--overwrite",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Overwrite existing files."
+        },
+        {
+          "name": "--verify",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Do not write: report drift of the model on disk, and of the Roles class with --roles/--solution-roles (exit 5 on drift)."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "logs",
+      "aliases": [
+        "trace"
+      ],
+      "summary": "Read plug-in trace logs or failed system jobs (read-only).",
+      "usage": [
+        "vela logs [options] [connection options]"
+      ],
+      "options": [
+        {
+          "name": "--jobs",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Failed system jobs (asyncoperation) instead of the trace log."
+        },
+        {
+          "name": "--all-statuses",
+          "aliases": [],
+          "kind": "flag",
+          "description": "With --jobs: every status, not only failed."
+        },
+        {
+          "name": "--errors",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Trace log entries with an exception only."
+        },
+        {
+          "name": "--top",
+          "aliases": [],
+          "kind": "value",
+          "value": "n",
+          "description": "Max entries, newest first (1-200, default 20)."
+        },
+        {
+          "name": "--since",
+          "aliases": [],
+          "kind": "value",
+          "value": "when",
+          "description": "A duration (30m, 2h, 3d) or a date."
+        },
+        {
+          "name": "--type",
+          "aliases": [],
+          "kind": "value",
+          "value": "name",
+          "description": "Plugin type name (substring)."
+        },
+        {
+          "name": "--message",
+          "aliases": [],
+          "kind": "value",
+          "value": "m",
+          "description": "SDK message."
+        },
+        {
+          "name": "--entity",
+          "aliases": [],
+          "kind": "value",
+          "value": "logical",
+          "description": "Table logical name."
+        },
+        {
+          "name": "--correlation",
+          "aliases": [],
+          "kind": "value",
+          "value": "guid",
+          "description": "Correlation id."
+        },
+        {
+          "name": "--full",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Do not truncate trace and exception text."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "solution",
+      "aliases": [],
+      "summary": "Print a solution's publisher prefix (read-only).",
+      "usage": [
+        "vela solution show <uniquename> [--json] [connection options]"
+      ],
+      "options": [
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--verbose",
+          "aliases": [
+            "-v"
+          ],
+          "kind": "flag",
+          "description": "More detail on stderr (and full stack traces on failure); never changes stdout."
+        },
+        {
+          "name": "--interactive",
+          "aliases": [
+            "-i"
+          ],
+          "kind": "flag",
+          "description": "Browser (MSAL) login; the token is cached under ~/.vela so repeat runs are silent."
+        },
+        {
+          "name": "--url",
+          "aliases": [],
+          "kind": "value",
+          "value": "https://org.crm.dynamics.com",
+          "description": "Environment URL. Alone, uses your ambient Azure credential (az login / managed identity)."
+        },
+        {
+          "name": "--tenant-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "id",
+          "description": "Tenant for client-secret auth."
+        },
+        {
+          "name": "--client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "App registration for client-secret auth."
+        },
+        {
+          "name": "--client-secret",
+          "aliases": [],
+          "kind": "value",
+          "value": "secret",
+          "description": "Client secret (warned: it leaks to shell history; prefer the two below)."
+        },
+        {
+          "name": "--client-secret-stdin",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Read the client secret from piped stdin (or set DATAVERSE_CLIENT_SECRET)."
+        },
+        {
+          "name": "--connection-string",
+          "aliases": [],
+          "kind": "value",
+          "value": "cs",
+          "description": "Full Dataverse connection string (or DATAVERSE_CONNECTION_STRING)."
+        },
+        {
+          "name": "--auth-client-id",
+          "aliases": [],
+          "kind": "value",
+          "value": "appId",
+          "description": "MSAL public client id for --interactive."
+        },
+        {
+          "name": "--authority",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "MSAL authority (sovereign clouds)."
+        },
+        {
+          "name": "--fresh-login",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Forget the cached interactive account and prompt again."
+        },
+        {
+          "name": "--timeout",
+          "aliases": [],
+          "kind": "value",
+          "value": "minutes",
+          "description": "Dataverse connection timeout (1-60, default 10)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "sign",
+      "aliases": [],
+      "summary": "Sign a plugin package (managed-identity plugins).",
+      "usage": [
+        "vela sign --package <path.nupkg> (--fingerprint <hex> | (--pfx <file> | --pfx-base64-env <VAR>) (--pfx-password-env <VAR> | --pfx-credential <target>)) [--timestamp <url>]"
+      ],
+      "options": [
+        {
+          "name": "--package",
+          "aliases": [],
+          "kind": "value",
+          "value": "path.nupkg",
+          "description": "The package to sign."
+        },
+        {
+          "name": "--fingerprint",
+          "aliases": [],
+          "kind": "value",
+          "value": "hex",
+          "description": "SHA-256 fingerprint of a certificate in the certificate store."
+        },
+        {
+          "name": "--pfx",
+          "aliases": [],
+          "kind": "value",
+          "value": "file",
+          "description": "A PFX certificate file."
+        },
+        {
+          "name": "--pfx-base64-env",
+          "aliases": [],
+          "kind": "value",
+          "value": "VAR",
+          "description": "Environment variable holding the PFX as base64 (CI secrets)."
+        },
+        {
+          "name": "--pfx-base64",
+          "aliases": [],
+          "kind": "value",
+          "value": "content",
+          "description": "The PFX as base64 on the command line (warns: visible to other users; prefer --pfx-base64-env)."
+        },
+        {
+          "name": "--pfx-password-env",
+          "aliases": [],
+          "kind": "value",
+          "value": "VAR",
+          "description": "Environment variable holding the PFX password."
+        },
+        {
+          "name": "--pfx-password",
+          "aliases": [],
+          "kind": "value",
+          "value": "pw",
+          "description": "The PFX password on the command line (warns: visible to other users; prefer --pfx-password-env)."
+        },
+        {
+          "name": "--pfx-credential",
+          "aliases": [],
+          "kind": "value",
+          "value": "target",
+          "description": "Read the PFX password from the Windows Credential Manager."
+        },
+        {
+          "name": "--timestamp",
+          "aliases": [],
+          "kind": "value",
+          "value": "url",
+          "description": "RFC 3161 timestamp server."
+        },
+        {
+          "name": "--json",
+          "aliases": [],
+          "kind": "flag",
+          "description": "Machine-readable output on stdout (see docs/reference/machine-readable-output.md)."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "logout",
+      "aliases": [],
+      "summary": "Clear the cached login token and the remembered URL.",
+      "usage": [
+        "vela logout"
+      ],
+      "options": [
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "update",
+      "aliases": [],
+      "summary": "Update the vela global tool.",
+      "usage": [
+        "vela update [--version <x.y.z>]"
+      ],
+      "options": [
+        {
+          "name": "--version",
+          "aliases": [],
+          "kind": "value",
+          "value": "x.y.z",
+          "description": "Install this version instead of the latest."
+        },
+        {
+          "name": "--help",
+          "aliases": [
+            "-h"
+          ],
+          "kind": "flag",
+          "description": "Show this help."
+        }
+      ]
+    },
+    {
+      "name": "menu",
+      "aliases": [],
+      "summary": "Launch the interactive menu (the default with no arguments).",
+      "usage": [
+        "vela menu"
+      ],
+      "options": []
+    },
+    {
+      "name": "version",
+      "aliases": [],
+      "summary": "Print the tool version.",
+      "usage": [
+        "vela version"
+      ],
+      "options": []
+    },
+    {
+      "name": "help",
+      "aliases": [],
+      "summary": "Help for one command (vela help <command>), or all as JSON (--json).",
+      "usage": [
+        "vela help [<command>] [--json]"
+      ],
+      "options": []
+    }
+  ],
+  "exitCodes": {
+    "0": "success",
+    "2": "invalid arguments",
+    "3": "file not found",
+    "4": "error (including a --strict failure)",
+    "5": "drift detected (models --verify, apply not converged)",
+    "6": "Dataverse connection failure",
+    "7": "partial apply",
+    "8": "changes pending (plan --detailed-exitcode)"
+  }
+}
