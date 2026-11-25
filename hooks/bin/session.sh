@@ -1,5 +1,5 @@
 #!/bin/sh
-# version: 0.1.1
+# version: 0.1.2
 # vela-agentic session hook: at session start, tells the agent which vela CLI is installed against the version the
 # skills were verified with (AGENTS.md golden rule 2: an older minor stops the run, an older patch warns). Prints
 # context on stdout; never blocks itself (always exit 0). POSIX sh + grep + sort only.
