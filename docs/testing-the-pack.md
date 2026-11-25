@@ -44,4 +44,4 @@ tests, a secret scan, and a check that the generated Copilot files are in step w
 
 Every run, failures included, is recorded with the CLI, framework and model versions it used. The scenarios, the
 coverage of each skill and the pass rate of the latest campaign are in
-[`evals/README.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/evals/README.md).
+[`evals/README.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/evals/README.md).
