@@ -47,4 +47,4 @@ case id, or with an id missing from `docs/rules/`, fails `spec-check` at review.
   is wrong.
 - Encode a known harness difference from Dataverse in a test. See [Limitations](../../reference/limitations.md).
 
-Source: [`skills/vela-plugin-testing/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/skills/vela-plugin-testing/SKILL.md).
+Source: [`skills/vela-plugin-testing/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/skills/vela-plugin-testing/SKILL.md).

@@ -37,4 +37,4 @@ It has read-only tools (`Read`, `Grep`, `Glob`, `Skill`): no shell, no edit, no 
 code or dispatch other agents, and it never reports an item the checklist labels Critical or Required at a lower
 severity.
 
-Source: [`agents/vela-reviewer.agent.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/agents/vela-reviewer.agent.md).
+Source: [`agents/vela-reviewer.agent.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/agents/vela-reviewer.agent.md).

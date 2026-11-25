@@ -16,6 +16,10 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-25
+
+Verified against Vela CLI 0.33.0 (0.33.1 has the same contract) and `Vela.Plugins` / `Vela.Testing` 0.44.0.
+
 ### Added
 
 - Vela CLI contract check: `contract/` holds `vela help --json` of the verified CLI (0.33.0) and its version, the
@@ -29,6 +33,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 - Version policy (`AGENTS.md` golden rule 2, `using-vela`, the session hook): an older minor Vela CLI stops the
   run with `vela update`, an older patch warns.
+- Public preview: until 1.0 a minor release may break compatibility, a patch does not (`docs/overview.md`,
+  `docs/install.md`, README).
+- `ROADMAP.md` removed: the versioning rule, the release steps and the Vela compatibility policy are in
+  `RELEASING.md`; plans and follow-ups are GitHub issues, triaged with `priority:` and `area:` labels.
+- CI runs on GitHub-hosted runners only (the repository is public); the self-hosted runner is removed.
 
 ## [0.6.0] - 2026-11-24
 
