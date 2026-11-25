@@ -6,7 +6,9 @@
 //           without `_description` front matter or without exactly one H1; a relative link to a missing file inside
 //           docs/, or one that leaves docs/ other than into a top-level folder of the Vela docs; a link to this repo
 //           on GitHub at a branch instead of a tag; page-level layout (`<div`, `<style`, `<script`, `style=`); an
-//           opening code fence without a language; an emoji; docs/index.md not pointing pack issues to this repo.
+//           opening code fence without a language; an emoji; docs/index.md not pointing pack issues to this repo;
+//           a tag reference (link /blob|tree/vX.Y.Z/, or "tag `vX.Y.Z`" in text) other than vX.Y.0 of the plugin's
+//           minor version (.claude-plugin/plugin.json) - a release PR retargets them all (RELEASING.md).
 //
 //   node scripts/check-docs.mjs
 // Exit 0 = clean, 1 = errors.
@@ -65,6 +67,11 @@ for (const p of pages) {
   if (!hrefs.has(r)) errors.push(`docs/${r}: not listed in docs/toc.yml`);
 }
 
+// Every tag the pages name: one release tag, the plugin's minor (X.Y.0), so a release PR cannot miss one.
+const plugin = JSON.parse(await fs.readFile(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
+const releaseTag = `v${plugin.version.split(".").slice(0, 2).join(".")}.0`;
+const TAG_REF = /\/(?:blob|tree)\/(v\d+\.\d+\.\d+)\/|\btag `(v\d+\.\d+\.\d+)`/g;
+
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/u;
 
 for (const p of pages) {
@@ -92,6 +99,12 @@ for (const p of pages) {
   for (const [re, what] of [[/<div\b/i, "<div"], [/<style\b/i, "<style"], [/<script\b/i, "<script"], [/\bstyle\s*=/i, "style="]])
     if (re.test(md)) errors.push(`${name}: '${what}' - pages bring content only; the Vela template does the layout`);
   if (EMOJI.test(md)) errors.push(`${name}: emoji - none in the docs`);
+  md.split("\n").forEach((line, i) => {
+    for (const m of line.matchAll(TAG_REF)) {
+      const tag = m[1] ?? m[2];
+      if (tag !== releaseTag) errors.push(`${name}:${i + 1}: tag ${tag} - the docs name ${releaseTag}, the release of plugin ${plugin.version} (RELEASING.md)`);
+    }
+  });
 
   // Links: [text](target) outside code.
   const text = prose.join("\n").replace(/`[^`\n]*`/g, "");

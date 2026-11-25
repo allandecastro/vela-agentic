@@ -16,7 +16,8 @@
 
 1. One pull request: set `.claude-plugin/plugin.json` and `marketplace.json` to `X.Y.0` (the version-bump workflow
    skips a push that changed the version itself), fold `[Unreleased]` into `## [X.Y.0] - YYYY-MM-DD` in
-   `CHANGELOG.md`, and point the links to this repository in `docs/` at the new tag (`/blob/vX.Y.0/`).
+   `CHANGELOG.md`, and point every tag reference in `docs/` at the new tag: links (`/blob/vX.Y.0/`, `/tree/vX.Y.0/`)
+   and the text of `docs/index.md` ("at tag `vX.Y.0`"). `scripts/check-docs.mjs` fails on any other tag.
 2. Before merging: `sh scripts/check.sh`, and the DocFX build of the docs in a Vela checkout:
    ```bash
    rm -rf docs/agents && cp -R ../vela-agentic/docs docs/agents
