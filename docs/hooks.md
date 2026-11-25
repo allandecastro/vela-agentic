@@ -26,7 +26,8 @@ The messages name the kind of secret, never its value.
 ## The session check
 
 At session start a second hook compares the installed `vela` CLI with the version the pack was verified against,
-and tells the agent to ask for `vela update` when it is older, or that the CLI is missing. It never blocks.
+and tells the agent to stop and ask for `vela update` when its minor version is older, to warn when only the patch
+is older, or that the CLI is missing. The hook itself never blocks.
 
 ## Approve a deploy
 

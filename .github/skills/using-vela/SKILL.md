@@ -57,7 +57,8 @@ are agents; there is no build or apply slash command.
 - **The CLI is the contract.** Confirm flags with `vela <command> --help` (or `vela help --json`). For framework API
   detail this pack doesn't carry, read Vela's own docs: `https://allandecastro.github.io/vela/llms.txt`
   (index of the guides) - don't guess an API.
-- **Version first.** `vela version` before relying on a feature.
+- **Version first.** `vela --version` against the version in `references/cli-surface.md`: an older **minor** →
+  stop and tell the user to run `vela update`; an older patch → warn and continue.
 - **Announce the skill.** `Using <skill> to <purpose>`.
 - **Evidence over claims.** Paste the build/test/plan output.
 - **Stop before `apply`.** No live-org write without explicit human go-ahead; no `--auto-approve`

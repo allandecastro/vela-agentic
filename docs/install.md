@@ -26,9 +26,10 @@ installed one:
 vela --version
 ```
 
-An older CLI: run `vela update`. The Vela versions a release is verified against are in its
+An older minor version (for example 0.32.x) stops the agent: run `vela update`. An older patch only warns. The
+Vela versions a release is verified against are in its
 [`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/references/cli-surface.md). At session start the
-optional [hook](hooks.md) compares the installed CLI with that version.
+optional [hook](hooks.md) runs the same comparison.
 
 ### Connect without a browser
 

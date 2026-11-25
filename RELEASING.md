@@ -32,8 +32,8 @@
   at run time with `vela <command> --help`, so additive CLI changes do not break them. A breaking change is
   matched by a skill update.
 - The Vela version the pack is verified against lives in **one place**, the top of `references/cli-surface.md`.
-  Skills carry no version (the lint rejects one in `compatibility`). Agents run `vela version`, ask for
-  `vela update` if older, and stop only if a named feature is genuinely missing (`AGENTS.md`, golden rule 2).
+  Skills carry no version (the lint rejects one in `compatibility`). Agents run `vela --version`: an older minor
+  stops the run with `vela update`, an older patch warns (`AGENTS.md`, golden rule 2).
 - On a Vela CLI or framework release: diff `vela help --json`, update `references/cli-surface.md` and any skill
   whose guidance changed, smoke-test a fresh `vela init` + `vela add`, and rerun the affected evals.
 

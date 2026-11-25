@@ -24,6 +24,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
   when a release changes something the pack uses (#149).
 - `docs/install.md` states the minimum Vela CLI version and how to check it.
 
+### Changed
+
+- Version policy (`AGENTS.md` golden rule 2, `using-vela`, the session hook): an older minor Vela CLI stops the
+  run with `vela update`, an older patch warns.
+
 ## [0.6.0] - 2026-11-24
 
 Verified against Vela CLI 0.33.0 and `Vela.Plugins` / `Vela.Testing` 0.44.0.

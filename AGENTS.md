@@ -71,9 +71,8 @@ INTAKE → PLAN → CHALLENGE ··plan gate·· SCAFFOLD → MODEL → TEST(RED)
 ## Golden rules
 
 1. **The CLI is the contract.** Confirm flags with `vela <command> --help`. Never invent one.
-2. **Check the version.** `vela version` against the version in `references/cli-surface.md`. Older: tell the
-   user to `vela update`; **stop** only if a *named* feature the skill needs is missing - not over a patch
-   difference.
+2. **Check the version.** `vela --version` against the version in `references/cli-surface.md`. An older
+   **minor** (or major): **stop** and tell the user to run `vela update`. An older patch: warn and continue.
 3. **Announce the skill.** `Using <skill> to <purpose>`.
 4. **Evidence over claims** - see below.
 5. **Quality gate before the apply gate.** Unreachable unless the full harness suite is **green** and
