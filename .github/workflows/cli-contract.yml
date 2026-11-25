@@ -66,7 +66,7 @@ jobs:
             [ "$last" = "$(cat "$REPORT")" ] && { echo "issue #$existing already carries this report"; exit 0; }
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$REPORT"
           else
-            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$REPORT"
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --label "area: ci" --body-file "$REPORT"
           fi
 
       - name: Fail on a breaking change
