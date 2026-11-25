@@ -1,13 +1,15 @@
 #!/bin/sh
 # Local replay of the CI (.github/workflows/ci.yml) - run before every push.
 #   sh scripts/check.sh
-# Fails on: lint errors, docs/ errors (scripts/check-docs.mjs), invalid JSON configs, shell syntax, guard test failures, a secret (gitleaks), or generated
+# Fails on: lint errors, docs/ errors (scripts/check-docs.mjs), a vela command or option the CLI contract lacks
+# (scripts/check-cli-contract.mjs), invalid JSON configs, shell syntax, guard test failures, a secret (gitleaks), or generated
 # surfaces (.github/, skills/*/references/, hooks.json, evals coverage) out of sync with the source.
 set -e
 cd "$(dirname "$0")/.."
 
 node scripts/lint-pack.mjs
 node scripts/check-docs.mjs
+node scripts/check-cli-contract.mjs
 
 for f in .claude-plugin/marketplace.json .claude-plugin/plugin.json hooks/hooks.json hooks.json .github/hooks/vela.json .github/copilot/settings.json; do
   node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || { echo "invalid JSON: $f"; exit 1; }
