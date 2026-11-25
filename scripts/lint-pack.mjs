@@ -124,7 +124,7 @@ const FORBIDDEN = [
 const RETIRED = new Set(["vela-test-harness",   // renamed vela-plugin-testing
   "writing-vela-skills", "diagnosing-vela"]);      // moved to .claude/skills as pack-writing-skills / pack-diagnosing-runs
 
-// Sources an agent reads (generated copies and the forward-looking ROADMAP excluded).
+// Sources an agent reads (generated copies excluded).
 async function sourceDocs() {
   const out = ["AGENTS.md", "README.md", "hooks/README.md"];
   for (const s of await skillNames()) out.push(`skills/${s}/SKILL.md`);

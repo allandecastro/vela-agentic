@@ -25,8 +25,8 @@
 Vela Agentic is the AI layer of [Vela](https://github.com/allandecastro/vela): Agent Skills and two agents that drive
 the `vela` CLI to build, test, review and preview Dataverse plugins, and stop before anything is written to an org.
 
-> **Status** - Preview, actively developed alongside Vela. Releases are tagged `vX.Y.0` (one per
-> [`ROADMAP.md`](ROADMAP.md) section) and every merge to `main` publishes a patch; the Vela version the pack is
+> **Status** - Preview, actively developed alongside Vela. Releases are tagged `vX.Y.0`
+> ([`RELEASING.md`](RELEASING.md)) and every merge to `main` publishes a patch; the Vela version the pack is
 > verified against is recorded in [`references/cli-surface.md`](references/cli-surface.md).
 
 ## Documentation
@@ -38,7 +38,7 @@ page per skill and agent, the deploy guard, the project files the pack uses, how
 
 For Vela itself, see the [Vela documentation](https://allandecastro.github.io/vela/) and
 [`llms.txt`](https://allandecastro.github.io/vela/llms.txt) for agents. Changes are listed in
-[`CHANGELOG.md`](CHANGELOG.md), plans in [`ROADMAP.md`](ROADMAP.md).
+[`CHANGELOG.md`](CHANGELOG.md); plans and follow-ups are [issues](https://github.com/allandecastro/vela-agentic/issues).
 
 ## What it does
 

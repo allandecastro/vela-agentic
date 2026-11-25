@@ -52,7 +52,8 @@ A gap in Vela is reported to Vela, not worked around in the skills.
 
 ## Status
 
-The pack is in preview and developed alongside Vela. Releases are tagged `vX.Y.0`, one per section of the
-[roadmap](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/ROADMAP.md). The Vela version a release is
+The pack is in preview and developed alongside Vela. Releases are tagged `vX.Y.0` and listed in the
+[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/CHANGELOG.md); plans are
+[issues](https://github.com/allandecastro/vela-agentic/issues). The Vela version a release is
 verified against is recorded in
 [`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/references/cli-surface.md).
