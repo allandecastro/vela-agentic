@@ -88,3 +88,8 @@ a Build Report and the `vela apply` command for you to run. See [The build loop]
 
 The plugin publishes a patch on every change to the pack. Update it with your host's plugin update command, and
 keep the CLI current with `vela update`.
+
+> [!IMPORTANT]
+> Vela and the pack are in public preview: a minor release (`0.x.0`) may break compatibility. Update the pack and
+> the CLI together, and read the [changelog](https://github.com/allandecastro/vela-agentic/blob/v0.6.0/CHANGELOG.md)
+> and the Vela release notes first. An agent stops when the installed CLI is an older minor than the pack expects.
