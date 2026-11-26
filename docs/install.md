@@ -19,7 +19,7 @@ host, and what must be on the machine before a run. It is for the developer who 
 
 ### Minimum Vela CLI version
 
-The minimum Vela CLI version is `0.33.0`, the version this release of the pack is verified against. Check the
+The minimum Vela CLI version is `0.34.0`, the version this release of the pack is verified against. Check the
 installed one:
 
 ```bash

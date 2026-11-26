@@ -16,6 +16,12 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+### Changed
+
+- Verified against Vela CLI `0.34.0` and `Vela.Plugins` / `Vela.Testing` `0.45.0`: `contract/` refreshed,
+  `references/cli-surface.md` points to the schemas of `vela help --json` (`documents.<name>.schema`, per-command
+  `exitCodes`) instead of copying the JSON shapes; `plan`/`apply` exit `4` writes no JSON document.
+
 ## [0.7.6] - 2026-11-26
 
 ### Changed

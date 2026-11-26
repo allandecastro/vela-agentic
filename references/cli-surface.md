@@ -1,11 +1,11 @@
 # Vela CLI surface (reference)
 
 The commands the loop needs and the traps `--help` does not show. A snapshot - the CLI is the contract:
-confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias and
-exit code as one JSON document).
+confirm every flag with `vela <command> --help`, or `vela help --json` (every command, option, alias, exit codes
+per command, and the JSON Schema of each output document under `documents.<name>.schema`).
 
-**Verified against:** `vela 0.33.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
-`Vela.Testing` `0.44.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
+**Verified against:** `vela 0.34.0` (CLI; flags re-diffed from `vela help --json`) · `Vela.Plugins` /
+`Vela.Testing` `0.45.0` (scaffold default, resolved by `vela init`) · the CLI targets .NET 10: the .NET 10 SDK
 (also what `spec-check` needs, run with `dotnet run`). This is the pack's only version
 record: when the CLI moves, re-run `vela help --json` and update this file.
 
@@ -63,7 +63,7 @@ project, namespaces from its `RootNamespace`. Run it **inside the project direct
   `Roles` class (ids, template ids, privileges) - run it before a deployment.
 
 ## Read-only org commands - `vela solution`, `vela logs`
-- **`vela solution show <uniquename> --json <connection>`** → `{"solution","publisherPrefix"}`, exit `0`;
+- **`vela solution show <uniquename> --json <connection>`** → `solution` + `publisherPrefix` (`documents.solution.schema`), exit `0`;
   missing solution → exit `4`. Confirms the target solution exists and `--publisher-prefix` matches.
 - **`vela logs` (alias `vela trace`) `<connection>`** - plug-in trace rows (newest first), or failed system
   jobs with `--jobs`. Filters (`--errors`, `--since`, `--type`, `--correlation`, `--full`, `--json`...) in
@@ -91,9 +91,10 @@ command line.
   (exit `7`) is fixed then re-run.
 - `vela inspect` - local packages vs the live environment (read-only).
 - **Output:** JSON when piped (an agent's shell usually is), or force `--json` / `--out <file>`; notices on stderr.
-- **`plan` JSON:** `{schemaVersion, mode, environment, hasChanges, summary: {added, removed, changed},
-  operations: [{action, kind, type, reason}], diff: {localAssemblies, currentAssemblies, ...}, diagnostics,
-  notes, unmanaged, info}`. Read `operations` and every `diagnostics` line; don't parse `notes`.
+  Shapes: `documents.<plan|inspect|solution>.schema` in `vela help --json` - fields are added without a
+  `schemaVersion` bump, a nullable one may be absent. `plan`/`apply` exit `4` writes no JSON document.
+- **`plan` JSON:** decide on `hasChanges`; read `operations` (match by `action`, `kind`, `type`) and every
+  `diagnostics` line; don't parse `notes`.
   - A **`package` operation** creates/republishes the package; after a recompile with no definition change,
     the registration diff is empty yet `hasChanges` is true. `summary` counts registrations, not the package.
   - Each step's `definition` carries its `relationships` (`ForRelationship` scope): check it matches the Canvas.
@@ -102,10 +103,10 @@ command line.
   - A rank collision with a Microsoft managed step: `dataverse-gotchas.md` (Execution order).
 - **`apply` JSON:** the plan shape plus **`executed`** (`created`, `updated`, `deleted`, `packageRepublished`,
   `addedToSolution`, `byKind`). `summary` is the diff remaining *after* the apply: report from `executed` +
-  the exit code, never from `summary`. On exit `7`, the `apply-failed` document's `failure` object lists every operation under `completed`,
+  the exit code, never from `summary` (exit `0` also covers nothing to apply and a prompt not
+  answered `yes`). On exit `7`, the `apply-failed` document's `failure` object lists every operation under `completed`,
   `failed` or `notApplied`.
-- **`inspect --json`:** `{mode, environment, local, current: {assemblies, steps}, diagnostics}` - empty
-  `diagnostics` after an apply means they match.
+- **`inspect --json`:** empty `diagnostics` after an apply means local and live match.
 
 ## Auth / connection (on models/plan/apply/inspect/solution/logs)
 Resolution order:
@@ -117,6 +118,8 @@ Resolution order:
 4. `--url` alone → ambient Azure credential (`az login` / managed identity) - headless.
 
 ## Exit codes
+Per command (with its own meaning): `commands[].exitCodes` in `vela help --json`.
+
 `0` success · `2` invalid arguments (incl. `plan`/`apply` without `--solution`, before connecting) · `3` file not found · `4` error (incl. `--strict`, a missing
 solution on `solution show`; on `plan`/`apply` a refusal **before any write**, its message naming the cause: a
 missing or managed solution, a Custom API name without the publisher prefix, a step on a message or table the org

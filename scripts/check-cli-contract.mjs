@@ -54,7 +54,7 @@ if ((opt.report || opt.update) && opt.mode === "offline") { console.error("--rep
 
 // ---------- snapshot ----------
 // Stable key order: the known keys in this order, any other key after them, alphabetically.
-const KEY_ORDER = ["schemaVersion", "tool", "version", "name", "aliases", "kind", "value", "summary", "usage", "description", "options", "commands", "exitCodes"];
+const KEY_ORDER = ["schemaVersion", "tool", "version", "name", "aliases", "kind", "value", "summary", "usage", "description", "options", "commands", "exitCodes", "outputs", "documents", "code", "document", "modes", "schema"];
 function canonical(v) {
   if (Array.isArray(v)) return v.map(canonical);
   if (v && typeof v === "object") {
