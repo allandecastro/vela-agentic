@@ -60,4 +60,4 @@ stay in place: the CLI's own typed `yes` confirmation, its refusal of a non-inte
 `--auto-approve`, and not giving the agent credentials that can write to a production org.
 
 The full rules, the wiring per host and the live verification are in
-[`hooks/README.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/hooks/README.md).
+[`hooks/README.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/hooks/README.md).

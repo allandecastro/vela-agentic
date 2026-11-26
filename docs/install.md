@@ -12,7 +12,7 @@ host, and what must be on the machine before a run. It is for the developer who 
 | Need | Why | How |
 | --- | --- | --- |
 | The `vela` CLI | Every step goes through it. | `dotnet tool install --global Vela.Cli`. See [Install Vela](../getting-started/install.md). |
-| The .NET SDK the CLI needs | Builds, tests and the review's `spec-check` script. | The version is in [`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/references/cli-surface.md). |
+| The .NET SDK the CLI needs | Builds, tests and the review's `spec-check` script. | The version is in [`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/references/cli-surface.md). |
 | A test runner | Tests run before any deploy. | `dotnet test` on Windows; Mono and the xUnit console runner on macOS and Linux. See [Testing](../guides/testing.md). |
 | A Dataverse development environment | `vela models`, `vela solution show` and `vela plan` read it. | An unmanaged solution and its publisher must exist. Vela does not create them. |
 | `git`, and the GitHub CLI `gh` | The agent commits each step and opens a draft pull request. | Signed in to the repository the project lives in. |
@@ -28,7 +28,7 @@ vela --version
 
 An older minor version (for example 0.32.x) stops the agent: run `vela update`. An older patch only warns. The
 Vela versions a release is verified against are in its
-[`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/references/cli-surface.md). At session start the
+[`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/references/cli-surface.md). At session start the
 optional [hook](hooks.md) runs the same comparison.
 
 ### Connect without a browser
@@ -91,5 +91,5 @@ keep the CLI current with `vela update`.
 
 > [!IMPORTANT]
 > Vela and the pack are in public preview: a minor release (`0.x.0`) may break compatibility. Update the pack and
-> the CLI together, and read the [changelog](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/CHANGELOG.md)
+> the CLI together, and read the [changelog](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/CHANGELOG.md)
 > and the Vela release notes first. An agent stops when the installed CLI is an older minor than the pack expects.

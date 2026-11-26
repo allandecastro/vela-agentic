@@ -6,7 +6,7 @@ _description: "The files Vela Agentic reads and writes in your project: PROJECT.
 
 This page lists the files the pack reads and writes in a Vela project, what each one holds and who may change it.
 It is for developers and reviewers who work in a project an agent has built. The templates are in
-[`references/build-report-template.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/references/build-report-template.md).
+[`references/build-report-template.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/references/build-report-template.md).
 
 | Path | Written by | Committed | Holds |
 | --- | --- | --- | --- |

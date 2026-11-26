@@ -44,4 +44,4 @@ vela add plugin AccountPlugin --entity Account --message Create --stage PreOpera
   `tbd`, recorded as an open question that blocks apply.
 - Follow the `AGENTS.md` that `vela init` writes where it contradicts the pack.
 
-Source: [`skills/vela-scaffold/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/skills/vela-scaffold/SKILL.md).
+Source: [`skills/vela-scaffold/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-scaffold/SKILL.md).

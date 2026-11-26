@@ -16,6 +16,27 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-11-26
+
+Documentation and release-process fix on top of v0.7.3; verified against the same Vela versions as 0.7.0.
+
+### Fixed
+
+- The pages of v0.7.3 named v0.7.0 (`docs/index.md` and the links to this repository). They now name their own tag;
+  `scripts/check-docs.mjs --release vX.Y.Z` fails on any other tag or a plugin version that differs, and the
+  `release-check` workflow runs it on every published release.
+- The build loop diagram is back on one row (the two-row version lost the Verify → Review and findings → Implement
+  arrows); the findings loop is dashed.
+
+### Changed
+
+- `RELEASING.md`: every release, a patch included, goes through a release pull request that names its tag.
+
+## [0.7.3] - 2026-11-26
+
+- Documentation patch: the build loop diagram on two rows (reverted in 0.7.5), `RELEASING.md` in three steps, the
+  tag check in `scripts/check-docs.mjs`.
+
 ## [0.7.0] - 2026-11-25
 
 Verified against Vela CLI 0.33.0 (0.33.1 has the same contract) and `Vela.Plugins` / `Vela.Testing` 0.44.0.
