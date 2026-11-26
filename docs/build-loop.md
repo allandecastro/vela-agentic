@@ -11,18 +11,17 @@ run the agent and for reviewers who read its output.
 ## The steps
 
 ```mermaid
-flowchart TB
-    subgraph BUILD ["Local and reversible"]
-        direction LR
-        PL["Plan<br/>challenge, Canvas"] --> SC["Scaffold<br/>and model"] --> RED["Tests<br/>(failing)"] --> IM["Implement<br/>to green"] --> VR["Verify<br/>tests + analyzers"]
-    end
-    subgraph SHIP ["Review, preview, deploy"]
-        direction LR
-        RV["Review<br/>isolated reviewer"] --> PV["Package<br/>vela plan"] --> GATE{{"Human<br/>approval"}} --> AP["vela apply"]
-    end
-    US([User story]) --> BUILD
-    BUILD --> SHIP
-    SHIP -->|review findings| BUILD
+flowchart LR
+    US([User story]) --> PL["Plan<br/>challenge, Canvas"]
+    PL --> SC["Scaffold<br/>and model"]
+    SC --> RED["Tests<br/>(failing)"]
+    RED --> IM["Implement<br/>to green"]
+    IM --> VR["Verify<br/>tests + analyzers"]
+    VR --> RV["Review<br/>isolated reviewer"]
+    RV -.->|findings| IM
+    RV --> PV["Package<br/>vela plan"]
+    PV --> GATE{{"Human<br/>approval"}}
+    GATE --> AP["vela apply"]
 ```
 
 Every step before the gate is local and reversible. The org is only read.
