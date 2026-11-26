@@ -43,4 +43,4 @@ any code. The plan gate is advisory: the agent flags its assumptions and continu
   ([vela-grill](vela-grill.md)). With none reachable, the agent stops after the Canvas with `status: blocked`.
 - Add behaviour the story or the human did not ask for. A provided draft is material to reuse, not spec.
 
-Source: [`skills/vela-plan-review/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/skills/vela-plan-review/SKILL.md).
+Source: [`skills/vela-plan-review/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-plan-review/SKILL.md).

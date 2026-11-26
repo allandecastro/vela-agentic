@@ -44,4 +44,4 @@ It follows reproduce, minimize, hypothesize, instrument, fix, regression-test. N
 
 See also [Troubleshooting](../../guides/troubleshooting.md) for Vela's own errors.
 
-Source: [`skills/vela-debug-plugin/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/skills/vela-debug-plugin/SKILL.md).
+Source: [`skills/vela-debug-plugin/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-debug-plugin/SKILL.md).

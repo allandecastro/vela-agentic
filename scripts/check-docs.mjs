@@ -7,8 +7,11 @@
 //           docs/, or one that leaves docs/ other than into a top-level folder of the Vela docs; a link to this repo
 //           on GitHub at a branch instead of a tag; page-level layout (`<div`, `<style`, `<script`, `style=`); an
 //           opening code fence without a language; an emoji; docs/index.md not pointing pack issues to this repo;
-//           a tag reference (link /blob|tree/vX.Y.Z/, or "tag `vX.Y.Z`" in text) other than vX.Y.0 of the plugin's
-//           minor version (.claude-plugin/plugin.json) - a release PR retargets them all (RELEASING.md).
+//           tag references (link /blob|tree/vX.Y.Z/, or "tag `vX.Y.Z`" in text) naming more than one tag, or a tag
+//           ahead of the plugin version (.claude-plugin/plugin.json) or of another minor.
+//
+//   node scripts/check-docs.mjs --release vX.Y.Z   before tagging (RELEASING.md): every tag reference must be
+//                                                  vX.Y.Z and plugin.json must hold X.Y.Z.
 //
 //   node scripts/check-docs.mjs
 // Exit 0 = clean, 1 = errors.
@@ -67,9 +70,14 @@ for (const p of pages) {
   if (!hrefs.has(r)) errors.push(`docs/${r}: not listed in docs/toc.yml`);
 }
 
-// Every tag the pages name: one release tag, the plugin's minor (X.Y.0), so a release PR cannot miss one.
+// Every tag the pages name: one release tag. With --release, exactly that tag, so a release cannot ship pages that
+// name another one; otherwise the last release of the plugin's minor (not ahead of plugin.json).
 const plugin = JSON.parse(await fs.readFile(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
-const releaseTag = `v${plugin.version.split(".").slice(0, 2).join(".")}.0`;
+const ai = process.argv.indexOf("--release");
+const release = ai > 0 ? process.argv[ai + 1] : null;
+if (ai > 0 && !/^v\d+\.\d+\.\d+$/.test(release ?? "")) { console.error("--release needs a tag vX.Y.Z"); process.exit(2); }
+if (release && release !== `v${plugin.version}`) errors.push(`.claude-plugin/plugin.json: version ${plugin.version} - the release ${release} needs ${release.slice(1)} (RELEASING.md)`);
+const tagRefs = [];
 const TAG_REF = /\/(?:blob|tree)\/(v\d+\.\d+\.\d+)\/|\btag `(v\d+\.\d+\.\d+)`/g;
 
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/u;
@@ -101,8 +109,7 @@ for (const p of pages) {
   if (EMOJI.test(md)) errors.push(`${name}: emoji - none in the docs`);
   md.split("\n").forEach((line, i) => {
     for (const m of line.matchAll(TAG_REF)) {
-      const tag = m[1] ?? m[2];
-      if (tag !== releaseTag) errors.push(`${name}:${i + 1}: tag ${tag} - the docs name ${releaseTag}, the release of plugin ${plugin.version} (RELEASING.md)`);
+      tagRefs.push({ where: `${name}:${i + 1}`, tag: m[1] ?? m[2] });
     }
   });
 
@@ -130,6 +137,15 @@ for (const p of pages) {
     if (parts[0] !== ".." || parts[1] === ".." || !VELA_DIRS.has(parts[1]) || parts.length < 3)
       errors.push(`${name}: link '${target}' leaves docs/ - only into a Vela docs folder (${[...VELA_DIRS].join(", ")})`);
   }
+}
+
+const num = (t) => t.replace(/^v/, "").split(".").map(Number);
+const [pM, pm, pp] = num(plugin.version);
+const named = release ?? tagRefs[0]?.tag;
+for (const { where, tag } of tagRefs) {
+  const [M, m, p] = num(tag);
+  if (tag !== named) errors.push(`${where}: tag ${tag} - every tag reference names ${named}${release ? ", the release being cut" : ""} (RELEASING.md)`);
+  else if (!release && (M !== pM || m !== pm || p > pp)) errors.push(`${where}: tag ${tag} - not a release of plugin ${plugin.version}'s minor (RELEASING.md)`);
 }
 
 const index = await fs.readFile(path.join(docs, "index.md"), "utf8").catch(() => "");

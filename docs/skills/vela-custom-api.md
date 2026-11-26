@@ -42,4 +42,4 @@ flow breaks when it changes) and one per acceptance case, including invalid inpu
 - Use a parameter name that is not a plain identifier.
 - Report an error through an output instead of a fault.
 
-Source: [`skills/vela-custom-api/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.0/skills/vela-custom-api/SKILL.md).
+Source: [`skills/vela-custom-api/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-custom-api/SKILL.md).
