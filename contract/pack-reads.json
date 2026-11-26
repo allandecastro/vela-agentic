@@ -1,0 +1,50 @@
+{
+  "$comment": "What the pack reads from the Vela CLI's machine-readable output (scripts/check-cli-contract.mjs; how to update: RELEASING.md, 'Vela CLI contract'). documents.<name>: each JSON path a skill or reference reads ('a.b', 'a[].b'), with the files that read it; it must exist in documents.<name>.schema of contract/vela-help.json. commands.<name>: the exit codes the pack handles (references/cli-surface.md 'Exit codes' + the cited files) and the documents (and modes) it reads from that command. A drift that touches one of these is breaking; anything else is information.",
+  "documents": {
+    "plan": {
+      "hasChanges": ["references/cli-surface.md"],
+      "summary": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"],
+      "operations": ["references/cli-surface.md", "skills/vela-apply/SKILL.md", "references/build-report-template.md"],
+      "operations[].action": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"],
+      "operations[].kind": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"],
+      "operations[].type": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"],
+      "diff.currentAssemblies": ["references/cli-surface.md"],
+      "diff.added[].definition": ["references/cli-surface.md"],
+      "diagnostics": ["references/cli-surface.md", "skills/vela-apply/SKILL.md", "references/build-report-template.md"],
+      "info": ["references/cli-surface.md"],
+      "executed": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"],
+      "executed.created": ["references/cli-surface.md"],
+      "executed.updated": ["references/cli-surface.md"],
+      "executed.deleted": ["references/cli-surface.md"],
+      "executed.packageRepublished": ["references/cli-surface.md"],
+      "executed.addedToSolution": ["references/cli-surface.md"],
+      "executed.byKind": ["references/cli-surface.md"],
+      "failure": ["references/cli-surface.md"],
+      "failure.completed": ["references/cli-surface.md"],
+      "failure.failed": ["references/cli-surface.md"],
+      "failure.notApplied": ["references/cli-surface.md"]
+    },
+    "inspect": {
+      "diagnostics": ["references/cli-surface.md"]
+    },
+    "solution": {
+      "solution": ["references/cli-surface.md", "references/build-report-template.md"],
+      "publisherPrefix": ["references/cli-surface.md", "skills/vela-apply/SKILL.md", "skills/vela-scaffold/SKILL.md", "references/build-report-template.md"]
+    }
+  },
+  "commands": {
+    "plan": { "exitCodes": [0, 2, 3, 4, 6, 8], "outputs": { "plan": ["plan"] }, "where": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"] },
+    "apply": { "exitCodes": [0, 2, 3, 4, 5, 6, 7], "outputs": { "plan": ["apply-execute", "apply-not-converged", "apply-failed"] }, "where": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"] },
+    "inspect": { "exitCodes": [0, 2, 3, 4, 6], "outputs": { "inspect": ["inspect"] }, "where": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"] },
+    "solution": { "exitCodes": [0, 2, 4, 6], "outputs": { "solution": [] }, "where": ["references/cli-surface.md", "skills/vela-apply/SKILL.md", "references/registration-rules.md"] },
+    "models": { "exitCodes": [0, 2, 3, 4, 5, 6], "where": ["references/cli-surface.md", "skills/vela-models/SKILL.md"] },
+    "init": { "exitCodes": [0, 2, 4], "where": ["references/cli-surface.md", "skills/vela-scaffold/SKILL.md"] },
+    "add": { "exitCodes": [0, 2], "where": ["references/cli-surface.md", "skills/vela-scaffold/SKILL.md"] },
+    "logs": { "exitCodes": [0, 2, 4, 6], "where": ["references/cli-surface.md", "skills/vela-debug-plugin/SKILL.md"] },
+    "sign": { "exitCodes": [0, 2, 3, 4], "where": ["references/cli-surface.md", "skills/vela-apply/SKILL.md"] },
+    "logout": { "exitCodes": [0, 2], "where": ["references/cli-surface.md"] },
+    "update": { "exitCodes": [0, 2, 4], "where": ["references/cli-surface.md", "AGENTS.md"] },
+    "version": { "exitCodes": [0], "where": ["references/cli-surface.md", "AGENTS.md"] },
+    "help": { "exitCodes": [0, 2], "where": ["references/cli-surface.md", "AGENTS.md"] }
+  }
+}

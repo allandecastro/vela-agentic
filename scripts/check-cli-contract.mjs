@@ -1,17 +1,26 @@
 #!/usr/bin/env node
 // The Vela CLI contract: the pack drives Vela only through the `vela` CLI, so every command and option it cites must
 // exist in the CLI it is verified against. contract/vela-help.json is that CLI's `vela help --json`,
-// contract/vela-cli.version its version (the pack's single source of it).
+// contract/vela-cli.version its version (the pack's single source of it), contract/pack-reads.json what the pack reads
+// from the CLI's JSON documents (fields per document) and the exit codes it handles per command.
 //
 //   node scripts/check-cli-contract.mjs                 offline (scripts/check.sh, every PR):
 //       - contract/vela-cli.version = the "Verified against" CLI of references/cli-surface.md = the minimum in
 //         docs/install.md;
 //       - usage check: every `vela <command> [--option]` cited in the sources (skills/*/SKILL.md, references/*.md,
-//         agents/*.md, AGENTS.md, docs/**/*.md; generated copies excluded) exists in the snapshot - file:line on error.
+//         agents/*.md, AGENTS.md, docs/**/*.md; generated copies excluded) exists in the snapshot - file:line on error;
+//       - pack-reads check: every declared field exists in the snapshot's documents.<name>.schema and is named by the
+//         files it cites; every handled exit code / document / mode exists on its command, and every exit code a
+//         declared command returns is handled.
 //   node scripts/check-cli-contract.mjs --pinned        installs the snapshot's exact Vela.Cli and fails on any
 //                                                       difference with the snapshot (guards the snapshot).
 //   node scripts/check-cli-contract.mjs --latest        installs the newest Vela.Cli and diffs its structure with the
 //                                                       snapshot: a removed/changed item the pack uses is BREAKING.
+//       BREAKING (only what the pack uses or reads): a cited command/option/alias/exit code removed or changed; a read
+//       field removed, its type changed, or no longer required; a handled exit code gone from its command, or a
+//       declared command returning a code the pack does not handle; a read document or mode gone; a read document's
+//       schemaVersion changed. Everything else (a field, mode, code or document added, a description changed, a
+//       change to something the pack does not read) is information.
 //     --against <file>   diff a given `help --json` document instead of installing (tests the diff).
 //     --report <file>    write a markdown report (first line: the issue title) when there is a difference;
 //                        the file is removed when there is none.
@@ -30,6 +39,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTRACT_JSON = path.join(root, "contract", "vela-help.json");
 const CONTRACT_VERSION = path.join(root, "contract", "vela-cli.version");
+const CONTRACT_READS = path.join(root, "contract", "pack-reads.json");
 const VERSION_RE = /^\d+\.\d+\.\d+$/;
 
 // Options the CLI accepts before any command (`vela --version`, `vela --help`); `help --json` lists none.
@@ -69,6 +79,7 @@ const serialize = (doc) => JSON.stringify(canonical(doc), null, 2) + "\n";
 
 const snapshot = JSON.parse(await fs.readFile(CONTRACT_JSON, "utf8"));
 const snapshotVersion = (await fs.readFile(CONTRACT_VERSION, "utf8")).trim();
+const reads = JSON.parse(await fs.readFile(CONTRACT_READS, "utf8"));
 
 // Lookup tables of one `help --json` document.
 function model(doc) {
@@ -332,6 +343,171 @@ function diff(oldDoc, newDoc, uses) {
   return items;
 }
 
+// ---------- what the pack reads (contract/pack-reads.json) ----------
+// documents.<name>: JSON paths (`a.b`, `a[].b`) the pack reads from that document, each with the files that read it;
+// commands.<name>: the exit codes the pack handles and the documents (+ modes) it reads from that command.
+// Vela's compatibility rule: a field is added without a schemaVersion bump, a nullable field is not `required`, so
+// only what the pack reads can break it - everything else is information.
+
+// A local `$ref` (`#/properties/diff/properties/added/items`) followed to its schema.
+function deref(s, rootSchema) {
+  for (let i = 0; s && typeof s === "object" && typeof s.$ref === "string" && s.$ref.startsWith("#") && i < 32; i++)
+    s = s.$ref.slice(1).split("/").filter(Boolean).map((t) => t.replace(/~1/g, "/").replace(/~0/g, "~")).reduce((o, k) => o?.[k], rootSchema);
+  return s;
+}
+// `true` (any JSON), `{}` and a schema without a type are "any"; a type list ("string","null") is sorted.
+const typeOf = (s) => (Array.isArray(s?.type) ? [...s.type].sort().join("|") : s?.type ?? (s?.properties ? "object" : "any"));
+
+// The schema steps of a declared path: [{ path, type, required }], or { missing: "<path so far>" } / { open: path }
+// when a segment is not in the schema / sits under an any-JSON value (nothing to check there).
+function resolvePath(rootSchema, p) {
+  const steps = [];
+  let s = deref(rootSchema, rootSchema), at = "";
+  for (const seg of p.split(".")) {
+    const [, key, arr] = seg.match(/^([^[\]]+)((?:\[\])*)$/) || [];
+    if (!key) return { steps, bad: seg };
+    if (s === true || typeOf(s) === "any") return { steps, open: at || "(root)" };
+    at = at ? `${at}.${key}` : key;
+    if (!s.properties || !(key in s.properties)) return { steps, missing: at };
+    const req = (s.required || []).includes(key);
+    s = deref(s.properties[key], rootSchema);
+    steps.push({ path: at, type: typeOf(s), required: req });
+    for (let i = 0; i < arr.length / 2; i++) {
+      at += "[]";
+      s = deref(s?.items, rootSchema);
+      if (s === undefined) return { steps, missing: at };
+      steps.push({ path: at, type: typeOf(s), required: true });
+    }
+  }
+  return { steps };
+}
+
+// Every field of a schema: Map(path -> { type, required, description }), $ref followed (once per path).
+function flatten(rootSchema) {
+  const out = new Map();
+  const walk = (s, at, seen) => {
+    s = deref(s, rootSchema);
+    if (!s || typeof s !== "object") return;
+    for (const [k, v] of Object.entries(s.properties || {})) {
+      const p = at ? `${at}.${k}` : k, r = v?.$ref, d = deref(v, rootSchema);
+      out.set(p, { type: typeOf(d), required: (s.required || []).includes(k), description: d?.description });
+      if (!r || !seen.has(r)) walk(d, p, new Set([...seen, r]));
+    }
+    if (s.items !== undefined) {
+      const p = `${at}[]`, d = deref(s.items, rootSchema);
+      out.set(p, { type: typeOf(d), required: true, description: d?.description });
+      if (!s.items?.$ref || !seen.has(s.items.$ref)) walk(d, p, new Set([...seen, s.items?.$ref]));
+    }
+  };
+  walk(rootSchema, "", new Set());
+  return out;
+}
+const under = (p, q) => p.startsWith(`${q}.`) || p.startsWith(`${q}[]`);
+const codesOf = (c) => new Map((c?.exitCodes || []).map((e) => [e.code, e.description]));
+const outputsOf = (c) => new Map((c?.outputs || []).map((o) => [o.document, new Set(o.modes || [])]));
+
+// Offline: what pack-reads.json declares exists in the snapshot, the cited files exist and name the field, and every
+// exit code a declared command can return is one the pack handles.
+async function readsChecks(doc) {
+  const errors = [];
+  const cites = async (where, words, label) => {
+    for (const f of where || []) {
+      const text = await fs.readFile(path.join(root, f), "utf8").catch(() => null);
+      if (text === null) errors.push(`contract/pack-reads.json: ${label} cites ${f}, which does not exist`);
+      else if (words.length && !words.some((w) => new RegExp(`\\b${w}\\b`).test(text))) errors.push(`contract/pack-reads.json: ${label} cites ${f}, which names none of ${words.join(", ")}`);
+    }
+  };
+  for (const [name, paths] of Object.entries(reads.documents || {})) {
+    const d = doc.documents?.[name];
+    if (!d) { errors.push(`contract/pack-reads.json: document '${name}' is not in the snapshot's documents`); continue; }
+    for (const [p, where] of Object.entries(paths)) {
+      const r = resolvePath(d.schema, p);
+      if (r.bad) errors.push(`contract/pack-reads.json: ${name}.${p} - bad segment '${r.bad}' (use a.b or a[].b)`);
+      else if (r.missing) errors.push(`contract/pack-reads.json: ${name}.${p} - '${r.missing}' is not in documents.${name}.schema of the snapshot`);
+      else if (r.open) errors.push(`contract/pack-reads.json: ${name}.${p} - '${r.open}' is any JSON in the schema; declare that path, not one below it`);
+      await cites(where, p.split(".").map((s) => s.replace(/\[\]/g, "")), `${name}.${p}`);
+    }
+  }
+  const cmds = new Map((doc.commands || []).map((c) => [c.name, c]));
+  for (const [name, r] of Object.entries(reads.commands || {})) {
+    const c = cmds.get(name);
+    if (!c) { errors.push(`contract/pack-reads.json: command '${name}' is not in the snapshot`); continue; }
+    const codes = codesOf(c), outs = outputsOf(c);
+    for (const code of r.exitCodes || []) if (!codes.has(code)) errors.push(`contract/pack-reads.json: \`${name}\` exit code ${code} - the snapshot's \`${name}\` does not return it`);
+    for (const code of codes.keys()) if (!(r.exitCodes || []).includes(code)) errors.push(`contract/pack-reads.json: \`${name}\` can return exit code ${code} ("${codes.get(code)}") - not in its handled exitCodes`);
+    for (const [d, modes] of Object.entries(r.outputs || {})) {
+      if (!outs.has(d)) { errors.push(`contract/pack-reads.json: \`${name}\` does not write the '${d}' document in the snapshot`); continue; }
+      for (const m of modes) if (!outs.get(d).has(m)) errors.push(`contract/pack-reads.json: \`${name}\` '${d}' mode '${m}' is not in the snapshot`);
+    }
+    await cites(r.where, [], `command ${name}`);
+  }
+  return errors;
+}
+
+// Drift of the per-command exit codes and outputs and of the documents, old -> new. Breaking only where the pack reads.
+function readsDiff(oldDoc, newDoc) {
+  const items = [];
+  const push = (what, level, uses = []) => { const same = items.find((i) => i.what === what); if (same) same.uses = [...new Set([...same.uses, ...uses])]; else items.push({ what, level, uses }); };
+  const breaking = (what, uses) => push(what, "breaking", uses?.length ? uses : ["contract/pack-reads.json"]);
+  const info = (what) => push(what, "info");
+
+  const oc = new Map((oldDoc.commands || []).map((c) => [c.name, c])), nc = new Map((newDoc.commands || []).map((c) => [c.name, c]));
+  for (const [name, was] of oc) {
+    const is = nc.get(name);
+    if (!is) continue; // a removed command: diff() reports it
+    const r = reads.commands?.[name], handled = new Set(r?.exitCodes || []), where = r?.where;
+    const oCodes = codesOf(was), nCodes = codesOf(is);
+    for (const [code, d] of oCodes) {
+      if (!nCodes.has(code)) (handled.has(code) ? breaking : info)(`\`${name}\` no longer returns exit code ${code} ("${d}")`, where);
+      else if (nCodes.get(code) !== d) info(`\`${name}\` exit code ${code} description changed: "${nCodes.get(code)}"`);
+    }
+    for (const [code, d] of nCodes)
+      if (!oCodes.has(code)) (r && !handled.has(code) ? breaking : info)(`\`${name}\` returns a new exit code ${code} ("${d}")${r && !handled.has(code) ? " the pack does not handle" : ""}`, where);
+    const oOut = outputsOf(was), nOut = outputsOf(is), readOut = r?.outputs || {};
+    for (const [d, modes] of oOut) {
+      if (!nOut.has(d)) { (d in readOut ? breaking : info)(`\`${name}\` no longer writes the '${d}' document`, where); continue; }
+      for (const m of modes) if (!nOut.get(d).has(m)) ((readOut[d] || []).includes(m) ? breaking : info)(`\`${name}\` '${d}' mode '${m}' removed`, where);
+      for (const m of nOut.get(d)) if (!modes.has(m)) info(`\`${name}\` '${d}' mode '${m}' added`);
+    }
+    for (const d of nOut.keys()) if (!oOut.has(d)) info(`\`${name}\` writes a new '${d}' document`);
+  }
+
+  const od = oldDoc.documents || {}, nd = newDoc.documents || {};
+  for (const [name, was] of Object.entries(od)) {
+    const read = reads.documents?.[name] || {}, isRead = name in (reads.documents || {});
+    const allUses = [...new Set(Object.values(read).flat())];
+    const is = nd[name];
+    if (!is) { (isRead ? breaking : info)(`document '${name}' removed`, allUses); continue; }
+    if (was.schemaVersion !== is.schemaVersion) (isRead ? breaking : info)(`document '${name}' schemaVersion ${was.schemaVersion} -> ${is.schemaVersion}: an existing field changed meaning or shape`, allUses);
+    // What the pack reads: removed, type changed, no longer required.
+    const readSteps = new Set();
+    for (const [p, where] of Object.entries(read)) {
+      const o = resolvePath(was.schema, p), n = resolvePath(is.schema, p);
+      for (const [i, s] of o.steps.entries()) {
+        readSteps.add(s.path);
+        const t = n.steps[i];
+        if (!t) { breaking(`${name}.${s.path} removed`, where); break; }
+        if (t.type !== s.type) { breaking(`${name}.${s.path} type changed: ${s.type} -> ${t.type}`, where); break; }
+        if (s.required && !t.required) { breaking(`${name}.${s.path} no longer required (it may be absent)`, where); break; }
+      }
+    }
+    // Everything else: information, the topmost added or removed field only.
+    const of = flatten(was.schema), nf = flatten(is.schema);
+    const gone = [...of.keys()].filter((p) => !nf.has(p) && !readSteps.has(p)), added = [...nf.keys()].filter((p) => !of.has(p));
+    for (const p of gone) if (!gone.some((q) => under(p, q)) && ![...readSteps].some((q) => under(p, q))) info(`${name}.${p} removed (not read by the pack)`);
+    for (const p of added) if (!added.some((q) => under(p, q))) info(`${name}.${p} added`);
+    for (const [p, a] of of) {
+      const b = nf.get(p);
+      if (!b || readSteps.has(p)) continue;
+      if (a.type !== b.type) info(`${name}.${p} type changed: ${a.type} -> ${b.type} (not read by the pack)`);
+      else if (a.required !== b.required) info(`${name}.${p} ${b.required ? "now" : "no longer"} required (not read by the pack)`);
+      else if (a.description !== b.description) info(`${name}.${p} description changed`);
+    }
+  }
+  for (const name of Object.keys(nd)) if (!(name in od)) info(`document '${name}' added`);
+  return items;
+}
+
 function reportMarkdown(cliVersion, items, schemaChanged, mode) {
   const b = items.filter((i) => i.level === "breaking"), inf = items.filter((i) => i.level === "info");
   const out = [`# Vela CLI ${cliVersion} changes the contract`, ""];
@@ -354,7 +530,7 @@ const snapModel = model(snapshot);
 if (opt.mode === "offline") {
   const errors = await versionChecks();
   const { errors: usage, invocations } = await scan(snapModel);
-  errors.push(...usage);
+  errors.push(...usage, ...(await readsChecks(snapshot)));
   for (const e of errors) console.error(`ERROR ${e}`);
   console.log(`\ncheck-cli-contract: vela ${snapshotVersion}, ${invocations} invocation(s) checked, ${errors.length} error(s).`);
   process.exit(errors.length ? 1 : 0);
@@ -366,7 +542,7 @@ else ({ doc: current, cleanup } = installCli(opt.mode === "pinned" ? snapshotVer
 const cliVersion = current.version || "unknown";
 const { uses } = await scan(snapModel);
 const schemaChanged = current.schemaVersion !== snapshot.schemaVersion ? current.schemaVersion : null;
-let items = diff(snapshot, current, uses);
+let items = [...diff(snapshot, current, uses), ...readsDiff(snapshot, current)];
 let failed = !!schemaChanged || items.some((i) => i.level === "breaking");
 if (opt.mode === "pinned") {
   // The snapshot must be exactly the output of its own version.

@@ -21,6 +21,10 @@ All notable changes to Vela Agentic are documented here. The format is based on
 - Verified against Vela CLI `0.34.0` and `Vela.Plugins` / `Vela.Testing` `0.45.0`: `contract/` refreshed,
   `references/cli-surface.md` points to the schemas of `vela help --json` (`documents.<name>.schema`, per-command
   `exitCodes`) instead of copying the JSON shapes; `plan`/`apply` exit `4` writes no JSON document.
+- The CLI contract check also covers the JSON output: `contract/pack-reads.json` declares the fields the pack reads
+  per document and the exit codes it handles per command. The daily drift fails only when one of them breaks (a read
+  field removed, retyped or no longer required, a handled code gone, an unhandled code added, a read mode gone, a
+  `schemaVersion` change); additive changes are reported as information.
 
 ## [0.7.6] - 2026-11-26
 
