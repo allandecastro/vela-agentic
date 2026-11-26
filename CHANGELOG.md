@@ -16,6 +16,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-26
+
+Verified against Vela CLI 0.34.0 and `Vela.Plugins` / `Vela.Testing` 0.45.0 (campaign 2026-11-26:
+account-erp-outbound passes on Claude Code).
+
 ### Changed
 
 - Verified against Vela CLI `0.34.0` and `Vela.Plugins` / `Vela.Testing` `0.45.0`: `contract/` refreshed,

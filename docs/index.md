@@ -33,8 +33,8 @@ It then stops and hands over a Build Report. A human runs `vela apply`.
 
 ## Versions and issues
 
-These pages describe the pack at tag `v0.7.6`. The pack has its own release cadence, separate from Vela's; its
-[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/CHANGELOG.md) lists what each release
+These pages describe the pack at tag `v0.8.0`. The pack has its own release cadence, separate from Vela's; its
+[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/CHANGELOG.md) lists what each release
 changed.
 
 > [!NOTE]
