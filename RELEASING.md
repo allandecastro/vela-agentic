@@ -30,9 +30,9 @@ the next patch above the one `main` holds (merges bump it: `main` at `0.7.4` rel
 - Checks: `node scripts/check-docs.mjs --release vX.Y.Z` (fails on any other tag or a different plugin version),
   `sh scripts/check.sh`, then the DocFX build of the docs inside a Vela checkout (0 warnings):
   ```bash
-  rm -rf docs/agents && cp -R ../vela-agentic/docs docs/agents
+  rm -rf docs/ai-layer && cp -R ../vela-agentic/docs docs/ai-layer
   dotnet tool restore && dotnet tool run docfx docs/docfx.json --warningsAsErrors
-  rm -rf docs/agents
+  rm -rf docs/ai-layer
   ```
 - Merge once CI is green; check that `main` still says `X.Y.Z` after the version-bump run.
 
@@ -55,9 +55,9 @@ fixed by a new release.
 ### 3. After the tag: the Vela side
 
 - Vela watches this repository's releases and opens an issue when one is newer than the tag it pins.
-- The Vela maintainer moves the pin of `docs/agents` to `vX.Y.0`. Vela's docs build then runs on the pack's pages
+- The Vela maintainer moves the pin of `docs/ai-layer` to `vX.Y.Z`. Vela's docs build then runs on the pack's pages
   (DocFX `--warningsAsErrors`): a link to a renamed Vela page fails that pull request, not the published site.
-- Once merged, Vela deploys the site: the "AI agents" section shows the new release.
+- Once merged, Vela deploys the site: the "AI layer" section shows the new release.
 - Plugin users need nothing: their host's plugin update picks up the new version.
 
 ### Minor or patch

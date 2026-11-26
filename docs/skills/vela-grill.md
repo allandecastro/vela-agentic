@@ -43,4 +43,4 @@ It stops once every branch that changes the registration or the acceptance cases
 - End with a branch unresolved, or treat "use the defaults" as an answer to a question not yet asked.
 - Ask for the publisher prefix: `vela solution show` reads it.
 
-Source: [`skills/vela-grill/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-grill/SKILL.md).
+Source: [`skills/vela-grill/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/skills/vela-grill/SKILL.md).

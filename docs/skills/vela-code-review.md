@@ -40,6 +40,6 @@ intent, Dataverse pitfalls, registration legality, SOLID and DRY).
 - Self-review when a reviewer agent can be dispatched. When none can, the Build Report says so.
 
 You can run `spec-check` in your own CI: see
-[`spec-check.cs`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-code-review/scripts/spec-check.cs).
+[`spec-check.cs`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/skills/vela-code-review/scripts/spec-check.cs).
 
-Source: [`skills/vela-code-review/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-code-review/SKILL.md).
+Source: [`skills/vela-code-review/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/skills/vela-code-review/SKILL.md).

@@ -34,5 +34,5 @@ the references it cites, so it works once installed.
 - Stop before `vela apply`.
 
 The skills' source is in
-[`skills/`](https://github.com/allandecastro/vela-agentic/tree/v0.7.5/skills); the rules every agent follows are in
-[`AGENTS.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/AGENTS.md).
+[`skills/`](https://github.com/allandecastro/vela-agentic/tree/v0.7.6/skills); the rules every agent follows are in
+[`AGENTS.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/AGENTS.md).

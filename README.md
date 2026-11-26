@@ -32,9 +32,9 @@ the `vela` CLI to build, test, review and preview Dataverse plugins, and stop be
 
 ## Documentation
 
-The user documentation is the **AI agents** section of the Vela docs site:
-[allandecastro.github.io/vela/agents](https://allandecastro.github.io/vela/agents/) (live once Vela publishes the
-section from a pinned tag). Its source is [`docs/`](docs/): the build loop, the Vela Canvas and Build Report, one
+The user documentation is the **AI layer** section of the Vela docs site:
+[allandecastro.github.io/vela/ai-layer](https://allandecastro.github.io/vela/ai-layer/), published from a pinned release
+of this repository. Its source is [`docs/`](docs/): the build loop, the Vela Canvas and Build Report, one
 page per skill and agent, the deploy guard, the project files the pack uses, how the pack is tested, and a FAQ.
 
 For Vela itself, see the [Vela documentation](https://allandecastro.github.io/vela/) and
