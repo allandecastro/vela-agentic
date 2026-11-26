@@ -46,7 +46,18 @@ gh release create vX.Y.0 --target <merge commit sha> --title vX.Y.0 --notes-file
 ```
 
 A tag is never moved or deleted: the Vela site and the links in `docs/` resolve through it. A mistake is fixed
-by a new release (`vX.Y.1` for a docs or wording fix, published the same way).
+by a new release.
+
+**Patch release** (a docs or wording fix to publish before the next minor): no release pull request. Merges have
+already bumped the patch, so tag the latest commit of `main` with the version its `plugin.json` holds (e.g.
+`v0.7.3`), never a lower one, and write short notes listing the merged pull requests:
+
+```bash
+git fetch && git show origin/main:.claude-plugin/plugin.json | grep '"version"'
+gh release create vX.Y.Z --target "$(git rev-parse origin/main)" --title vX.Y.Z --notes-file notes.md
+```
+
+`--target` takes the full commit sha.
 
 ### 3. After the tag: the Vela side
 
