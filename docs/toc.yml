@@ -1,6 +1,6 @@
-# The "AI agents" section of the Vela docs site. Source: vela-agentic/docs, copied to vela/docs/agents/ at a pinned tag.
+# The "AI layer" section of the Vela docs site. Source: vela-agentic/docs, copied to vela/docs/ai-layer/ at a pinned tag.
 # Each page appears once; a title is the page's H1 or a short form of it.
-- name: AI agents
+- name: AI layer
   href: index.md
 - name: Get started
   items:

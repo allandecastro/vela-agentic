@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Structural check of docs/ - the "AI agents" section the Vela docs site copies to vela/docs/agents/ at a pinned tag
+// Structural check of docs/ - the "AI layer" section the Vela docs site copies to vela/docs/ai-layer/ at a pinned tag
 // and builds with DocFX --warningsAsErrors (runs in CI through scripts/check.sh).
 // Fails on: a skill (skills/<name>) without docs/skills/<name>.md, an agent (agents/<name>.agent.md) without
 //           docs/<name>.md; a docs/**/*.md page missing from docs/toc.yml, or a toc href to a missing file; a page
@@ -24,7 +24,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const docs = path.join(root, "docs");
 const errors = [];
 
-// Top-level folders of the Vela docs (vela/docs) a page may link into, as ../<folder>/... from docs/agents/.
+// Top-level folders of the Vela docs (vela/docs) a page may link into, as ../<folder>/... from docs/ai-layer/.
 const VELA_DIRS = new Set(["getting-started", "guides", "configuration", "reference", "advanced", "contributing", "images"]);
 const REPO = "https://github.com/allandecastro/vela-agentic";
 const ISSUES = `${REPO}/issues`;
@@ -132,7 +132,7 @@ for (const p of pages) {
       if (!(await exists(resolved))) errors.push(`${name}: link '${target}' - no such file in docs/`);
       continue;
     }
-    // Leaves docs/: must land in docs/agents/../<Vela folder>/..., i.e. exactly one level up, into a known folder.
+    // Leaves docs/: must land in docs/ai-layer/../<Vela folder>/..., i.e. exactly one level up, into a known folder.
     const parts = inside.split(path.sep);
     if (parts[0] !== ".." || parts[1] === ".." || !VELA_DIRS.has(parts[1]) || parts.length < 3)
       errors.push(`${name}: link '${target}' leaves docs/ - only into a Vela docs folder (${[...VELA_DIRS].join(", ")})`);

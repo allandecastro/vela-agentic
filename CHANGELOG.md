@@ -16,6 +16,13 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-11-26
+
+### Changed
+
+- The Vela site section is named **AI layer** and lives at `/vela/ai-layer/` (was "AI agents", `/vela/agents/`):
+  it covers the whole pack, not only the agents (`docs/index.md`, `docs/toc.yml`, README, RELEASING.md).
+
 ## [0.7.5] - 2026-11-26
 
 Documentation and release-process fix on top of v0.7.3; verified against the same Vela versions as 0.7.0.

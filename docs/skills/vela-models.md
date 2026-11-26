@@ -40,4 +40,4 @@ exported solution zip. A failed connection (exit `6`) is recorded with the comma
 - Generate into the Plugins project or the current directory.
 - Guess a role name.
 
-Source: [`skills/vela-models/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.5/skills/vela-models/SKILL.md).
+Source: [`skills/vela-models/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/skills/vela-models/SKILL.md).
