@@ -1,0 +1,23 @@
+name: Release check
+
+# A published release must ship docs/ naming its own tag (the Vela site serves the pages at that tag) and a
+# plugin.json at its version (RELEASING.md). Runs after the fact: a failure means a fix release is needed.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Docs name the release tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/check-docs.mjs --release "${{ github.event.release.tag_name }}"

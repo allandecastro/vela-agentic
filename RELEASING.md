@@ -18,46 +18,39 @@ Pushing a tag triggers nothing in this repository: a release is three manual ste
 
 ### 1. Before the tag: the release pull request
 
-One pull request, `release/vX.Y.0`:
+Every release - a minor `vX.Y.0` or a patch `vX.Y.Z` - has one pull request, `release/vX.Y.Z`. For a patch, pick
+the next patch above the one `main` holds (merges bump it: `main` at `0.7.4` releases `v0.7.5`).
 
-- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: `"version": "X.Y.0"`. The version-bump
-  workflow skips a push that changed the version itself, so `main` stays at `X.Y.0`.
-- `CHANGELOG.md`: rename `[Unreleased]` to `## [X.Y.0] - YYYY-MM-DD` (with the Vela versions it is verified
+- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: `"version": "X.Y.Z"`. The version-bump
+  workflow skips a push that changed the version itself, so `main` stays at `X.Y.Z`.
+- `CHANGELOG.md`: rename `[Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` (with the Vela versions it is verified
   against), and open an empty `[Unreleased]` above it.
-- `docs/`: every tag reference names the new tag - links (`/blob/vX.Y.0/`, `/tree/vX.Y.0/`) and the text of
-  `docs/index.md` ("at tag `vX.Y.0`"). `scripts/check-docs.mjs` fails on any other tag.
-- Checks: `sh scripts/check.sh`, then the DocFX build of the docs inside a Vela checkout (0 warnings):
+- `docs/`: every tag reference names the new tag - links (`/blob/vX.Y.Z/`, `/tree/vX.Y.Z/`) and the text of
+  `docs/index.md` ("at tag `vX.Y.Z`"). The Vela site serves these pages at that tag, so they must name it.
+- Checks: `node scripts/check-docs.mjs --release vX.Y.Z` (fails on any other tag or a different plugin version),
+  `sh scripts/check.sh`, then the DocFX build of the docs inside a Vela checkout (0 warnings):
   ```bash
   rm -rf docs/agents && cp -R ../vela-agentic/docs docs/agents
   dotnet tool restore && dotnet tool run docfx docs/docfx.json --warningsAsErrors
   rm -rf docs/agents
   ```
-- Merge once CI is green; check that `main` still says `X.Y.0` after the version-bump run.
+- Merge once CI is green; check that `main` still says `X.Y.Z` after the version-bump run.
 
 ### 2. The tag and the GitHub release
 
-On the merge commit of the release pull request, one command creates the tag and the release; its notes are the
-`[X.Y.0]` section of `CHANGELOG.md`:
+On the merge commit of the release pull request (`--target` takes the full sha), check again, then one command
+creates the tag and the release; its notes are the `[X.Y.Z]` section of `CHANGELOG.md`:
 
 ```bash
-git fetch
-awk '/^## \[X.Y.0\]/{f=1;next} f&&/^## /{exit} f' CHANGELOG.md > notes.md
-gh release create vX.Y.0 --target <merge commit sha> --title vX.Y.0 --notes-file notes.md
+git fetch && git switch --detach <merge commit sha>
+node scripts/check-docs.mjs --release vX.Y.Z
+awk '/^## \[X.Y.Z\]/{f=1;next} f&&/^## /{exit} f' CHANGELOG.md > notes.md
+gh release create vX.Y.Z --target <merge commit sha> --title vX.Y.Z --notes-file notes.md
 ```
 
-A tag is never moved or deleted: the Vela site and the links in `docs/` resolve through it. A mistake is fixed
-by a new release.
-
-**Patch release** (a docs or wording fix to publish before the next minor): no release pull request. Merges have
-already bumped the patch, so tag the latest commit of `main` with the version its `plugin.json` holds (e.g.
-`v0.7.3`), never a lower one, and write short notes listing the merged pull requests:
-
-```bash
-git fetch && git show origin/main:.claude-plugin/plugin.json | grep '"version"'
-gh release create vX.Y.Z --target "$(git rev-parse origin/main)" --title vX.Y.Z --notes-file notes.md
-```
-
-`--target` takes the full commit sha.
+The `release-check` workflow runs the same check on every published release and fails if the pages name another
+tag. A tag is never moved or deleted: the Vela site and the links in `docs/` resolve through it. A mistake is
+fixed by a new release.
 
 ### 3. After the tag: the Vela side
 
@@ -69,7 +62,8 @@ gh release create vX.Y.Z --target "$(git rev-parse origin/main)" --title vX.Y.Z 
 
 ### Minor or patch
 
-- Every merge to `main` is a patch, published automatically.
+- Every merge to `main` bumps the patch of the plugin, which hosts pick up; a patch **release** (tag, Vela site)
+  goes through a release pull request like a minor.
 - A release (`X.Y.0`) is a decision: a coherent set of changes, or a change of behaviour. During the public
   preview it is the only place a breaking change may land.
 
