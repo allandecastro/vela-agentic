@@ -158,6 +158,9 @@ private void OnDescriptionDefault(OnDescriptionDefaultContext ctx)
   `--entity`, a shared service in `Services/`) and prints the registration line: put it in `ProjectServices`,
   not in a plugin's `ConfigureServices`. Reshape `Execute` to what the Canvas needs; a pure rule may drop the
   `IOrganizationService` parameter.
+- An `IDisposable` service from an `AddScoped` factory is **disposed at the end of each execution**: the factory
+  returns a new instance every time, never one kept in a static field (an `HttpClient` included - create it per
+  call with `using`, or return a wrapper over the shared one).
 - Keep the handler thin; real logic in the service. In a test, `WithService<T>(fake)` **replaces the
   registration** (`harness-api.md`) - no test-only constructor in the plugin.
 

@@ -100,7 +100,8 @@ if the pasted build output is clean they hold - don't re-litigate; a suppressed 
   service where it earns it, existing services/plugins reused, no service for a one-liner. A service
   trigger met (second consumer, data access plus decisions, an oversized handler) with logic left inline
   - **Required** for a second consumer, an outbound call or a shared business definition; **Nit** otherwise. The same query or rule definition in two places, a
-  block repeated per column, a service registered twice or outside `ProjectServices` - **Required**.
+  block repeated per column, a service registered twice or outside `ProjectServices` - **Required**. An `AddScoped`
+  factory returning an `IDisposable` kept in a static field (disposed after the first execution) - **Required**.
 - **Stage:** a PostOperation `Update` of its own primary record where a PreOperation Target edit would do
   - **Required**, unless the Canvas records why.
 - **Recursion:** a write that re-triggers its own step - **Critical**, even when a `ctx.Depth` check or

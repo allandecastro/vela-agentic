@@ -25,6 +25,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
   per document and the exit codes it handles per command. The daily drift fails only when one of them breaks (a read
   field removed, retyped or no longer required, a handled code gone, an unhandled code added, a read mode gone, a
   `schemaVersion` change); additive changes are reported as information.
+- Vela.Plugins 0.45.0 disposes the `IDisposable` services an `AddScoped` factory creates: `plugin-authoring-api.md`
+  says to return a new instance per execution (never a static one), and the review checklist rates a static one
+  Required.
+- `docs/index.md`: a clearer intro (the pack builds a Dataverse plugin from a user story and stops before
+  deploying).
 
 ## [0.7.6] - 2026-11-26
 
