@@ -95,7 +95,7 @@ Latest campaign per scenario - 54/57 runs pass.
 | `account-default-description` | 2026-11-24 | **2/3** | 3/3 | 2/3 | not ready |
 | `account-delete-guard` | 2026-11-23 | **1/1** | 1/1 | 1/1 | ready |
 | `account-delete-role-privilege` | 2026-11-02 | **1/1** | 1/1 | 1/1 | ready |
-| `account-erp-outbound` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
+| `account-erp-outbound` | 2026-11-26 | **1/1** | 1/1 | 1/1 | ready |
 | `account-mi-outbound` | 2026-10-20 | **1/1** | 1/1 | 1/1 | ready |
 | `account-multi-step` | 2026-11-15 | **1/1** | 1/1 | 1/1 | ready |
 | `account-rule-conflict` | 2026-10-19 | **3/3** | 3/3 | 3/3 | ready |

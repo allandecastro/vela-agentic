@@ -16,6 +16,26 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-26
+
+Verified against Vela CLI 0.34.0 and `Vela.Plugins` / `Vela.Testing` 0.45.0 (campaign 2026-11-26:
+account-erp-outbound passes on Claude Code).
+
+### Changed
+
+- Verified against Vela CLI `0.34.0` and `Vela.Plugins` / `Vela.Testing` `0.45.0`: `contract/` refreshed,
+  `references/cli-surface.md` points to the schemas of `vela help --json` (`documents.<name>.schema`, per-command
+  `exitCodes`) instead of copying the JSON shapes; `plan`/`apply` exit `4` writes no JSON document.
+- The CLI contract check also covers the JSON output: `contract/pack-reads.json` declares the fields the pack reads
+  per document and the exit codes it handles per command. The daily drift fails only when one of them breaks (a read
+  field removed, retyped or no longer required, a handled code gone, an unhandled code added, a read mode gone, a
+  `schemaVersion` change); additive changes are reported as information.
+- Vela.Plugins 0.45.0 disposes the `IDisposable` services an `AddScoped` factory creates: `plugin-authoring-api.md`
+  says to return a new instance per execution (never a static one), and the review checklist rates a static one
+  Required.
+- `docs/index.md`: a clearer intro (the pack builds a Dataverse plugin from a user story and stops before
+  deploying).
+
 ## [0.7.6] - 2026-11-26
 
 ### Changed

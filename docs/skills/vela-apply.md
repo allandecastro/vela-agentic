@@ -46,4 +46,4 @@ preview, reports from the result's `executed` block, then runs `vela inspect` to
 - Reuse a preview after any code change: tests, review, package and preview run again.
 - Report success on a partial apply (exit `7`) or one that did not converge (exit `5`).
 
-Source: [`skills/vela-apply/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/skills/vela-apply/SKILL.md).
+Source: [`skills/vela-apply/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/skills/vela-apply/SKILL.md).

@@ -4,10 +4,11 @@ _description: "Vela Agentic: Agent Skills and agents that build Dataverse plugin
 
 # AI layer
 
-This section documents Vela Agentic, the pack of Agent Skills and agents that lets an AI coding assistant build
-Dataverse plugins with Vela. It is for developers who want Claude Code or GitHub Copilot to take a user story to a
-tested, reviewed and previewed plugin, and for reviewers who read what such a run produces. It assumes you know
-the basics of Vela: see [Install](../getting-started/install.md) and the [Quickstart](../getting-started/quickstart.md).
+This section documents Vela Agentic, a pack of Agent Skills and agents for Claude Code and GitHub Copilot. Give the
+assistant a user story and it builds the Dataverse plugin with Vela: it writes the tests and the code, has the change
+reviewed, previews the deployment with `vela plan`, then stops for your approval before anything is deployed. These
+pages are for the developers who run it and for the reviewers who check its work. They assume you know the basics of
+Vela: see [Install](../getting-started/install.md) and the [Quickstart](../getting-started/quickstart.md).
 
 ## What the pack does
 
@@ -32,8 +33,8 @@ It then stops and hands over a Build Report. A human runs `vela apply`.
 
 ## Versions and issues
 
-These pages describe the pack at tag `v0.7.6`. The pack has its own release cadence, separate from Vela's; its
-[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/CHANGELOG.md) lists what each release
+These pages describe the pack at tag `v0.8.0`. The pack has its own release cadence, separate from Vela's; its
+[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/CHANGELOG.md) lists what each release
 changed.
 
 > [!NOTE]

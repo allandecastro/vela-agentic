@@ -86,6 +86,20 @@ command or option the snapshot lacks, or when `references/cli-surface.md` ("Veri
 (minimum CLI) state another version. `.github/workflows/cli-contract.yml` diffs the newest Vela.Cli daily and opens
 an issue "Vela CLI X.Y.Z changes the contract" listing what changed and where the pack uses it.
 
+`contract/pack-reads.json` declares what the pack reads from the CLI's JSON output: per document (`plan`,
+`inspect`, `solution`), the fields the skills and references read (`operations[].kind`), each with the files that
+read it; per command, the exit codes the pack handles and the documents (and `mode` values) it reads. The offline
+check requires every field to exist in the snapshot's `documents.<name>.schema` and to be named by the files it
+cites, and every exit code a declared command returns to be handled. The drift is breaking only where the pack
+reads: a read field removed, retyped or no longer required, a handled exit code gone, a declared command returning
+a new code, a read mode or document gone, a read document's `schemaVersion` changed. An added field, mode or code
+elsewhere, or a changed description, is information (reported, exit 0).
+
+When a skill or reference starts reading a new field (or handling a new exit code, or relying on a `mode`), add it
+to `contract/pack-reads.json` in the same pull request: the path as `a.b` / `a[].b` (`vela help --json`,
+`documents.<name>.schema`), the files that read it; `node scripts/check-cli-contract.mjs` must pass. When one stops
+reading it, remove the entry or the file from its list.
+
 The update is one pull request:
 
 1. `node scripts/check-cli-contract.mjs --latest --update` - installs the newest Vela.Cli, prints the diff, and

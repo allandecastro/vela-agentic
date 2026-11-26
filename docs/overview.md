@@ -55,7 +55,7 @@ A gap in Vela is reported to Vela, not worked around in the skills.
 The pack is in public preview and developed alongside Vela. Until 1.0, Vela and the pack may make breaking
 changes in a minor release (`0.x.0`); patches do not. A Vela CLI release that changes a command or option the pack
 uses is caught by the pack's daily contract check, and the pack follows it in its next release. Releases are tagged `vX.Y.0` and listed in the
-[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/CHANGELOG.md); plans are
+[changelog](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/CHANGELOG.md); plans are
 [issues](https://github.com/allandecastro/vela-agentic/issues). The Vela version a release is
 verified against is recorded in
-[`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/references/cli-surface.md).
+[`references/cli-surface.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/references/cli-surface.md).

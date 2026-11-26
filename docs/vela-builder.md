@@ -37,4 +37,4 @@ Report and stops.
 `Bash`, `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Skill` and `Agent`. On Claude Code `using-vela` is preloaded;
 on Copilot the generated agent loads the skills with Copilot's `skill` tool.
 
-Source: [`agents/vela-builder.agent.md`](https://github.com/allandecastro/vela-agentic/blob/v0.7.6/agents/vela-builder.agent.md).
+Source: [`agents/vela-builder.agent.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/agents/vela-builder.agent.md).

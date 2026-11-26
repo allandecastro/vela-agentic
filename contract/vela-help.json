@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "tool": "vela",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "commands": [
     {
       "name": "plan",
@@ -187,6 +187,40 @@
           ],
           "kind": "flag",
           "description": "Show this help."
+        }
+      ],
+      "exitCodes": [
+        {
+          "description": "the plan ran; with --detailed-exitcode, there is nothing to apply",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "a package, a packages folder, a web resources folder or a --secure-config file was not found",
+          "code": 3
+        },
+        {
+          "description": "a --strict failure, a --solution missing or managed in the environment, or a problem that would make apply fail (a Custom API without the publisher prefix, an unknown message or table filter, a removed plugin type that unmanaged steps use): no JSON document",
+          "code": 4
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        },
+        {
+          "description": "--detailed-exitcode only: the plan has changes to apply",
+          "code": 8
+        }
+      ],
+      "outputs": [
+        {
+          "document": "plan",
+          "modes": [
+            "plan"
+          ]
         }
       ]
     },
@@ -384,6 +418,46 @@
           "kind": "flag",
           "description": "Show this help."
         }
+      ],
+      "exitCodes": [
+        {
+          "description": "the apply finished (mode apply-execute), there was nothing to apply, or the prompt was not answered yes",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "a package, a packages folder, a web resources folder or a --secure-config file was not found",
+          "code": 3
+        },
+        {
+          "description": "a --strict failure, stdin is not a terminal and --auto-approve is missing, a --solution missing or managed in the environment, or a problem found before any write: no JSON document",
+          "code": 4
+        },
+        {
+          "description": "every write ran but the environment still differs (mode apply-not-converged)",
+          "code": 5
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        },
+        {
+          "description": "the apply stopped mid-run (mode apply-failed): Dataverse may be partly updated; run apply again",
+          "code": 7
+        }
+      ],
+      "outputs": [
+        {
+          "document": "plan",
+          "modes": [
+            "apply-execute",
+            "apply-not-converged",
+            "apply-failed"
+          ]
+        }
       ]
     },
     {
@@ -552,6 +626,36 @@
           "kind": "flag",
           "description": "Show this help."
         }
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "a package, a packages folder, a web resources folder or a --secure-config file was not found",
+          "code": 3
+        },
+        {
+          "description": "error (including a --strict failure)",
+          "code": 4
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        }
+      ],
+      "outputs": [
+        {
+          "document": "inspect",
+          "modes": [
+            "inspect"
+          ]
+        }
       ]
     },
     {
@@ -712,7 +816,22 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "the scaffold failed (a file could not be written)",
+          "code": 4
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "add",
@@ -845,7 +964,18 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "models",
@@ -1089,7 +1219,34 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "a file or folder was not found (a package, a packages folder, a --from-solution zip)",
+          "code": 3
+        },
+        {
+          "description": "the generation failed",
+          "code": 4
+        },
+        {
+          "description": "--verify only: the model on disk is out of date",
+          "code": 5
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "logs",
@@ -1265,7 +1422,26 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "the trace log or the system jobs could not be read",
+          "code": 4
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "solution",
@@ -1373,6 +1549,29 @@
           "kind": "flag",
           "description": "Show this help."
         }
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "the publisher prefix could not be read (for example, no such solution)",
+          "code": 4
+        },
+        {
+          "description": "Dataverse connection failure",
+          "code": 6
+        }
+      ],
+      "outputs": [
+        {
+          "document": "solution"
+        }
       ]
     },
     {
@@ -1460,7 +1659,26 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "the package or the PFX file was not found",
+          "code": 3
+        },
+        {
+          "description": "dotnet nuget sign failed",
+          "code": 4
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "logout",
@@ -1478,7 +1696,18 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "update",
@@ -1503,7 +1732,22 @@
           "kind": "flag",
           "description": "Show this help."
         }
-      ]
+      ],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "invalid arguments: an unknown option, an option of another command, a missing value",
+          "code": 2
+        },
+        {
+          "description": "dotnet tool update failed",
+          "code": 4
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "menu",
@@ -1512,7 +1756,42 @@
       "usage": [
         "vela menu"
       ],
-      "options": []
+      "options": [],
+      "exitCodes": [
+        {
+          "description": "the menu was closed, or the chosen command succeeded",
+          "code": 0
+        },
+        {
+          "description": "returned by the chosen command: invalid arguments",
+          "code": 2
+        },
+        {
+          "description": "returned by the chosen command: file not found",
+          "code": 3
+        },
+        {
+          "description": "returned by the chosen command: error (including a --strict failure)",
+          "code": 4
+        },
+        {
+          "description": "returned by the chosen command: drift detected (models --verify, apply not converged)",
+          "code": 5
+        },
+        {
+          "description": "returned by the chosen command: Dataverse connection failure",
+          "code": 6
+        },
+        {
+          "description": "returned by the chosen command: partial apply",
+          "code": 7
+        },
+        {
+          "description": "returned by the chosen command: changes pending (plan --detailed-exitcode)",
+          "code": 8
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "version",
@@ -1521,7 +1800,14 @@
       "usage": [
         "vela version"
       ],
-      "options": []
+      "options": [],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        }
+      ],
+      "outputs": []
     },
     {
       "name": "help",
@@ -1530,7 +1816,18 @@
       "usage": [
         "vela help [<command>] [--json]"
       ],
-      "options": []
+      "options": [],
+      "exitCodes": [
+        {
+          "description": "success",
+          "code": 0
+        },
+        {
+          "description": "an unknown command",
+          "code": 2
+        }
+      ],
+      "outputs": []
     }
   ],
   "exitCodes": {
@@ -1542,5 +1839,496 @@
     "6": "Dataverse connection failure",
     "7": "partial apply",
     "8": "changes pending (plan --detailed-exitcode)"
+  },
+  "documents": {
+    "inspect": {
+      "schemaVersion": 1,
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "current": {
+            "properties": {
+              "assemblies": {
+                "$ref": "#/properties/local/properties/assemblies"
+              },
+              "customApis": {
+                "$ref": "#/properties/local/properties/customApis"
+              },
+              "steps": {
+                "$ref": "#/properties/local/properties/steps"
+              }
+            },
+            "required": [
+              "assemblies",
+              "steps",
+              "customApis"
+            ],
+            "type": "object"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "environment": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "info": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "local": {
+            "properties": {
+              "assemblies": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "customApis": {
+                "items": {
+                  "$ref": "#/properties/local/properties/steps/items"
+                },
+                "type": "array"
+              },
+              "steps": {
+                "items": {
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "definition": true,
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "type",
+                    "definition"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "assemblies",
+              "steps",
+              "customApis"
+            ],
+            "type": "object"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "unmanaged": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "mode",
+          "local",
+          "current",
+          "unmanaged",
+          "diagnostics",
+          "info"
+        ],
+        "type": "object"
+      }
+    },
+    "plan": {
+      "schemaVersion": 1,
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "summary": {
+            "properties": {
+              "added": {
+                "type": "integer"
+              },
+              "changed": {
+                "type": "integer"
+              },
+              "removed": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "added",
+              "removed",
+              "changed"
+            ],
+            "type": "object"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "diff": {
+            "properties": {
+              "summary": {
+                "properties": {
+                  "added": {
+                    "type": "integer"
+                  },
+                  "changed": {
+                    "type": "integer"
+                  },
+                  "removed": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "added",
+                  "removed",
+                  "changed"
+                ],
+                "type": "object"
+              },
+              "added": {
+                "items": {
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "definition": true,
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "type",
+                    "definition"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "changed": {
+                "items": {
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "after": true,
+                    "before": true,
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "type",
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "currentAssemblies": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "currentItems": {
+                "items": {
+                  "$ref": "#/properties/diff/properties/added/items"
+                },
+                "type": "array"
+              },
+              "localAssemblies": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "localItems": {
+                "items": {
+                  "$ref": "#/properties/diff/properties/added/items"
+                },
+                "type": "array"
+              },
+              "removed": {
+                "items": {
+                  "$ref": "#/properties/diff/properties/added/items"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "localAssemblies",
+              "currentAssemblies",
+              "added",
+              "removed",
+              "changed",
+              "localItems",
+              "currentItems"
+            ],
+            "type": "object"
+          },
+          "environment": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "executed": {
+            "default": null,
+            "properties": {
+              "addedToSolution": {
+                "default": 0,
+                "type": "integer"
+              },
+              "byKind": {
+                "items": {
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "created",
+                    "updated",
+                    "deleted"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "created": {
+                "type": "integer"
+              },
+              "deleted": {
+                "type": "integer"
+              },
+              "linkedToManagedIdentity": {
+                "default": 0,
+                "type": "integer"
+              },
+              "packageRepublished": {
+                "type": "boolean"
+              },
+              "updated": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "created",
+              "updated",
+              "deleted",
+              "packageRepublished",
+              "byKind"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "failure": {
+            "default": null,
+            "properties": {
+              "completed": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "error": {
+                "type": "string"
+              },
+              "failed": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "notApplied": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "error",
+              "completed",
+              "failed",
+              "notApplied"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "hasChanges": {
+            "type": "boolean"
+          },
+          "info": {
+            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "managedIdentity": {
+            "default": null,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "packages": {
+                "items": {
+                  "properties": {
+                    "currentManagedIdentityId": {
+                      "default": null,
+                      "format": "uuid",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "package": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "package",
+                    "status"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "packages"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "mode": {
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "operations": {
+            "items": {
+              "properties": {
+                "kind": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "action",
+                "kind",
+                "type",
+                "reason"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "unmanaged": {
+            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "mode",
+          "hasChanges",
+          "summary",
+          "operations",
+          "diff",
+          "diagnostics",
+          "notes"
+        ],
+        "type": "object"
+      }
+    },
+    "solution": {
+      "schemaVersion": 1,
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "publisherPrefix": {
+            "type": "string"
+          },
+          "solution": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "solution",
+          "publisherPrefix"
+        ],
+        "type": "object"
+      }
+    }
   }
 }
