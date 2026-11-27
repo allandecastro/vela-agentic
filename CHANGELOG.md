@@ -16,6 +16,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-27
+
+Verified against Vela CLI 0.34.0 and `Vela.Plugins` / `Vela.Testing` 0.45.0 (no change since 0.8.0). The skills'
+`metadata.version` patches move once more: the last automatic bump landed after the `v0.8.0` tag.
+
 ### Changed
 
 - Versions change only in a release pull request, prepared by `node scripts/release.mjs vX.Y.Z` (plugin version,

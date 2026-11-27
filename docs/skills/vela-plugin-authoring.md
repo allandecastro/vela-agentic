@@ -37,4 +37,4 @@ The shape of the code is Vela's: see [Write a plugin](../../guides/plugins.md). 
 - Hand-write a parallel plugin class or rename the generated handler.
 - Leave a `VELA` analyzer warning in authored code. See [Analyzers and generators](../../reference/analyzers.md).
 
-Source: [`skills/vela-plugin-authoring/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/skills/vela-plugin-authoring/SKILL.md).
+Source: [`skills/vela-plugin-authoring/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.1/skills/vela-plugin-authoring/SKILL.md).
