@@ -12,8 +12,8 @@ deterministic guardrail. This is **optional hardening** - the pack works without
 Windows, and the cloud agents' images. No `jq`. `gitleaks` adds to the secret check when it is on the machine,
 and is never required.
 
-**Versioned:** each script carries `# version: x.y.z` in its head; CI bumps the patch when the script changes
-(like a skill's `metadata.version`), and lint requires it.
+**Versioned:** each script carries `# version: x.y.z` in its head; the release pull request bumps the patch
+when the script changed (like a skill's `metadata.version`, `scripts/release.mjs`), and lint requires it.
 
 ## What the guard denies (exit `2`, which denies on both hosts)
 

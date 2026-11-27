@@ -7,14 +7,21 @@ All notable changes to Vela Agentic are documented here. The format is based on
 
 - A **release** is a minor version `vX.Y.0`, tagged and published as a GitHub release whose notes are its section
   below. How to cut one: [`RELEASING.md`](RELEASING.md).
-- Every other merge to `main` publishes a patch (`X.Y.1`, `X.Y.2`, ...), so plugin hosts see the update. Skills and
-  hook scripts carry their own patch versions, bumped when they change.
+- Versions change only in a release pull request (`node scripts/release.mjs vX.Y.Z`): a patch for fixes and docs,
+  a minor for new behaviour. Skills and hook scripts carry their own patch versions, bumped in that pull request.
 - The pack is pre-1.0 (public preview): a minor release may break compatibility, a patch does not. `1.0.0` waits for
   Vela 1.0, the public CLI contract the pack drives.
 - The Vela version a release is verified against is recorded in
   [`references/cli-surface.md`](references/cli-surface.md).
 
 ## [Unreleased]
+
+### Changed
+
+- Versions change only in a release pull request, prepared by `node scripts/release.mjs vX.Y.Z` (plugin version,
+  changed skills and hook scripts, docs tag references, CHANGELOG section); the version-bump workflow that pushed a
+  commit to `main` after every merge is removed, and `main` is protected (pull request with green CI, no force
+  push, no deletion).
 
 ## [0.8.0] - 2026-11-26
 

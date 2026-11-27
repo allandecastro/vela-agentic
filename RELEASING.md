@@ -6,11 +6,13 @@
 
 ## Versioning
 
-- A **release** is a minor version `vX.Y.0` (`1.0.0` waits for Vela 1.0, the CLI contract the pack drives). Its
-  scope is the `[Unreleased]` section of `CHANGELOG.md`.
-- Every other merge to `main` bumps the patch (`X.Y.1`, `X.Y.2`, ...) of `.claude-plugin/plugin.json` and
-  `marketplace.json`, so `claude plugin update` sees it; skills and hook scripts carry their own patch versions,
-  bumped when they change (`.github/workflows/version-bump.yml`).
+- Versions change **only in a release pull request**, never on an ordinary merge: `main` always carries the version
+  of the last release (or of the one being cut). Plugin users get releases, not every merge.
+- A **release** is a minor `vX.Y.0` or a patch `vX.Y.Z` (`1.0.0` waits for Vela 1.0, the CLI contract the pack
+  drives). Its scope is the `[Unreleased]` section of `CHANGELOG.md`.
+- Skills (`metadata.version`) and hook scripts (`# version:`) carry their own patch versions, bumped in the release
+  pull request when they changed since the last tag.
+- `main` is protected (ruleset): changes go through a pull request with green CI; no force push, no deletion.
 
 ## Cutting a release
 
@@ -18,23 +20,26 @@ Pushing a tag triggers nothing in this repository: a release is three manual ste
 
 ### 1. Before the tag: the release pull request
 
-Every release - a minor `vX.Y.0` or a patch `vX.Y.Z` - has one pull request, `release/vX.Y.Z`. For a patch, pick
-the next patch above the one `main` holds (merges bump it: `main` at `0.7.4` releases `v0.7.5`).
+Every release - a minor `vX.Y.0` or the next patch `vX.Y.Z` - has one pull request, `release/vX.Y.Z`, prepared by
+one command:
 
-- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: `"version": "X.Y.Z"`. The version-bump
-  workflow skips a push that changed the version itself, so `main` stays at `X.Y.Z`.
-- `CHANGELOG.md`: rename `[Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` (with the Vela versions it is verified
-  against), and open an empty `[Unreleased]` above it.
-- `docs/`: every tag reference names the new tag - links (`/blob/vX.Y.Z/`, `/tree/vX.Y.Z/`) and the text of
-  `docs/index.md` ("at tag `vX.Y.Z`"). The Vela site serves these pages at that tag, so they must name it.
-- Checks: `node scripts/check-docs.mjs --release vX.Y.Z` (fails on any other tag or a different plugin version),
-  `sh scripts/check.sh`, then the DocFX build of the docs inside a Vela checkout (0 warnings):
+```bash
+node scripts/release.mjs vX.Y.Z
+```
+
+It sets `.claude-plugin/plugin.json` and `marketplace.json` to `X.Y.Z`; bumps the patch of every skill and hook
+script changed since the last tag; points every tag reference in `docs/` at `vX.Y.Z` (links `/blob/`, `/tree/` and
+the "at tag" text of `docs/index.md` - the Vela site serves these pages at that tag); opens `## [X.Y.Z] - <today>`
+under `[Unreleased]` in `CHANGELOG.md`; syncs the generated copies; and runs `check-docs --release vX.Y.Z`. Then:
+
+- `CHANGELOG.md`: add the Vela versions the release is verified against at the top of its section.
+- Checks: `sh scripts/check.sh`, then the DocFX build of the docs inside a Vela checkout (0 warnings):
   ```bash
   rm -rf docs/ai-layer && cp -R ../vela-agentic/docs docs/ai-layer
   dotnet tool restore && dotnet tool run docfx docs/docfx.json --warningsAsErrors
   rm -rf docs/ai-layer
   ```
-- Merge once CI is green; check that `main` still says `X.Y.Z` after the version-bump run.
+- Commit `chore(release): vX.Y.Z`, open the pull request, merge once CI is green.
 
 ### 2. The tag and the GitHub release
 
@@ -62,9 +67,8 @@ fixed by a new release.
 
 ### Minor or patch
 
-- Every merge to `main` bumps the patch of the plugin, which hosts pick up; a patch **release** (tag, Vela site)
-  goes through a release pull request like a minor.
-- A release (`X.Y.0`) is a decision: a coherent set of changes, or a change of behaviour. During the public
+- A patch (`X.Y.Z`): fixes, docs, wording - nothing that changes what a user must do.
+- A minor (`X.Y.0`) is a decision: a coherent set of changes, or a change of behaviour. During the public
   preview it is the only place a breaking change may land.
 
 ## Compatibility with Vela

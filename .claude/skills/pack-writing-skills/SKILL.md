@@ -41,7 +41,7 @@ Never promise a command that does not exist - the end-to-end loop is the `vela-b
 **`compatibility`** names the dependency, never a version (`"vela CLI + dotnet SDK."`): the verified version
 lives only in `references/cli-surface.md`. The frontmatter follows the
 [Agent Skills specification](https://agentskills.io/specification): `license: MIT` and `metadata:` `version:
-"x.y.z"` - the skill's own version, never hand-edited (CI bumps it when the skill's folder changes). Code a
+"x.y.z"` - the skill's own version, never hand-edited (`scripts/release.mjs` bumps it in the release pull request when the skill changed). Code a
 skill runs ships in its `scripts/` folder (`vela-code-review/scripts/spec-check.cs`). Body: `Overview → When to use → Process
 (announce "Using <skill> to <purpose>") → Rationalizations (excuse → rebuttal) → Red flags →
 Verification (the evidence required)`.
