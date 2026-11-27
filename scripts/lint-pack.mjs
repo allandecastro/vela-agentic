@@ -70,7 +70,11 @@ async function lintSkills() {
     if (fm.description && fm.description.length > 1024) errors.push(`skills/${e.name}: description longer than 1024 characters`);
     if (fm.compatibility && fm.compatibility.length > 500) errors.push(`skills/${e.name}: compatibility longer than 500 characters`);
     if (fm.license !== "MIT") errors.push(`skills/${e.name}: frontmatter 'license: MIT' missing`);
-    if (!/^metadata:\n(?:[ \t]+.*\n)*?[ \t]+version: "\d+\.\d+\.\d+"$/m.test(md))
+    // Line by line, not one regex (CodeQL js/redos): the indented lines that follow 'metadata:'.
+    const lines = md.split("\n"), at = lines.indexOf("metadata:");
+    const meta = [];
+    for (let i = at + 1; at >= 0 && i < lines.length && /^[ \t]/.test(lines[i]); i++) meta.push(lines[i]);
+    if (!meta.some((l) => /^[ \t]+version: "\d+\.\d+\.\d+"$/.test(l)))
       errors.push(`skills/${e.name}: frontmatter 'metadata:' needs 'version: "x.y.z"' (bumped by scripts/release.mjs when the skill changed)`);
     if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
     else {

@@ -23,6 +23,11 @@ All notable changes to Vela Agentic are documented here. The format is based on
   commit to `main` after every merge is removed, and `main` is protected (pull request with green CI, no force
   push, no deletion).
 
+### Fixed
+
+- CodeQL alerts: the CI workflow declares `permissions: contents: read`; the lint checks a skill's
+  `metadata.version` line by line instead of a regex open to exponential backtracking.
+
 ## [0.8.0] - 2026-11-26
 
 Verified against Vela CLI 0.34.0 and `Vela.Plugins` / `Vela.Testing` 0.45.0 (campaign 2026-11-26:
