@@ -33,4 +33,4 @@ It reads the pack's references on the CLI surface, Dataverse pitfalls and regist
 
 It does not run a step itself, and it never allows a write to an org without a human's go-ahead.
 
-Source: [`skills/using-vela/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/skills/using-vela/SKILL.md).
+Source: [`skills/using-vela/SKILL.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.1/skills/using-vela/SKILL.md).

@@ -79,7 +79,7 @@ cases, the decisions and who made them, the assumptions and open questions) and 
 
 The Canvas is a living spec: a changed requirement updates the Canvas before the code. A small story (one step on
 one table, no outbound call, no open security decision) keeps the front matter and the cases only. The template is
-in [`references/build-report-template.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.0/references/build-report-template.md).
+in [`references/build-report-template.md`](https://github.com/allandecastro/vela-agentic/blob/v0.8.1/references/build-report-template.md).
 
 ## The rules registry
 
