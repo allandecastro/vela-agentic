@@ -59,9 +59,11 @@ fixed by a new release.
 
 ### 3. After the tag: the Vela side
 
-- Vela watches this repository's releases and opens an issue when one is newer than the tag it pins.
-- The Vela maintainer moves the pin of `docs/ai-layer` to `vX.Y.Z`. Vela's docs build then runs on the pack's pages
-  (DocFX `--warningsAsErrors`): a link to a renamed Vela page fails that pull request, not the published site.
+- Nothing to do here. Every day at 06:00 UTC, Vela's "AI layer version" workflow detects the latest release,
+  fetches its pages, checks that every tag they cite is that release (hence `check-docs --release`), regenerates
+  `llms.txt`, builds the site (DocFX, 0 warnings) and pushes a branch `docs/agents-vX.Y.Z`.
+- The Vela maintainer opens the pull request from it, which moves the pin `docs/ai-layer.version` to `vX.Y.Z`; Vela's
+  CI runs on it before the merge: a link to a renamed Vela page fails that pull request, not the published site.
 - Once merged, Vela deploys the site: the "AI layer" section shows the new release.
 - Plugin users need nothing: their host's plugin update picks up the new version.
 
