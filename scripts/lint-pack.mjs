@@ -71,7 +71,7 @@ async function lintSkills() {
     if (fm.compatibility && fm.compatibility.length > 500) errors.push(`skills/${e.name}: compatibility longer than 500 characters`);
     if (fm.license !== "MIT") errors.push(`skills/${e.name}: frontmatter 'license: MIT' missing`);
     if (!/^metadata:\n(?:[ \t]+.*\n)*?[ \t]+version: "\d+\.\d+\.\d+"$/m.test(md))
-      errors.push(`skills/${e.name}: frontmatter 'metadata:' needs 'version: "x.y.z"' (bumped by CI when the skill changes)`);
+      errors.push(`skills/${e.name}: frontmatter 'metadata:' needs 'version: "x.y.z"' (bumped by scripts/release.mjs when the skill changed)`);
     if (!fm.compatibility) errors.push(`skills/${e.name}: frontmatter missing 'compatibility'`);
     else {
       if (/\d+\.\d+\.\d+/.test(fm.compatibility))
@@ -80,7 +80,7 @@ async function lintSkills() {
   }
 }
 
-// Every hook script carries its own version (CI bumps it when the script changes), like a skill's metadata.version.
+// Every hook script carries its own version (scripts/release.mjs bumps it when the script changed), like a skill's metadata.version.
 async function lintHooks() {
   const base = path.join(root, "hooks", "bin");
   for (const f of await fs.readdir(base)) {

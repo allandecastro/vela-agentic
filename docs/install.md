@@ -86,7 +86,7 @@ a Build Report and the `vela apply` command for you to run. See [The build loop]
 
 ## Update
 
-The plugin publishes a patch on every change to the pack. Update it with your host's plugin update command, and
+The plugin's version changes at each release of the pack. Update it with your host's plugin update command, and
 keep the CLI current with `vela update`.
 
 > [!IMPORTANT]

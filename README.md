@@ -26,8 +26,8 @@ Vela Agentic is the AI layer of [Vela](https://github.com/allandecastro/vela): A
 the `vela` CLI to build, test, review and preview Dataverse plugins, and stop before anything is written to an org.
 
 > **Status** - Public preview, actively developed alongside Vela: until 1.0 a minor release may break
-> compatibility. Releases are tagged `vX.Y.0`
-> ([`RELEASING.md`](RELEASING.md)) and every merge to `main` publishes a patch; the Vela version the pack is
+> compatibility. Versions change only at a release, tagged `vX.Y.Z`
+> ([`RELEASING.md`](RELEASING.md)); the Vela version the pack is
 > verified against is recorded in [`references/cli-surface.md`](references/cli-surface.md).
 
 ## Documentation
